@@ -1,15 +1,14 @@
 'use client';
 import axios from 'axios';
 import { useMemo } from 'react';
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL;
+const baseURL = 'http://127.0.0.1:8070/';
 
 function useApi() {
-    axios.defaults.withCredentials = true;
+    //axios.defaults.withCredentials = true;
 
     const axiosConfig = {
         baseURL: baseURL,
-        withCredentials: true,
+        //withCredentials: true,
     };
 
     const axiosInstance = axios.create(axiosConfig);

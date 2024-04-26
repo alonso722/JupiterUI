@@ -3,10 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
 
-import AuthOptions from '@/components/auth/authOptions'; 
 import LoginForm from '@/components/auth/loginForm';
 import LandingNav from '@/app/landing/landingNav';
-//import MustBeNotAuth from '@/components/auth/MustBeNotAuth';
+import MustBeNotAuth from '@/components/auth/mustBeNotAuth';
 
 export default function Page(data: { searchParams: { callback?: string } }) {
     const queryParams = useMemo(() => {
@@ -22,8 +21,7 @@ export default function Page(data: { searchParams: { callback?: string } }) {
     return (
       <>
         <LandingNav />
-        {/* <MustBeNotAuth /> */}
-        <div className="grid grid-cols-1 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 bg-[#FDD500]">
           <div className="order-last p-16 md:order-first">
             <div className='items-center justify-center'>
               <h1 className="mb-12 text-[28px] font-semibold text-gray-800 items-center justify-center">
@@ -33,12 +31,9 @@ export default function Page(data: { searchParams: { callback?: string } }) {
               <div className=" flex items-center justify-center">
                 <LoginForm queryParams={queryParams} />
               </div>
-              {/* <div className="flex justify-center">
-                <AuthOptions />
-              </div> */}
               <div className="mt-14">
                 <p className="text-center">
-                  <span className="mr-1 text-[#718096]">
+                  <span className="mr-1 text-[#2C1C47]">
                     ¿Aún no tienes una cuenta?
                   </span>
                   <Link
@@ -51,7 +46,7 @@ export default function Page(data: { searchParams: { callback?: string } }) {
             </div>
           </div>
           <div
-            className="flex h-[227px] items-center justify-center bg-cover bg-center text-[64px] font-bold leading-[64px] text-white md:h-full md:min-h-[100vh]">
+            className="flex h-[227px] items-center justify-center bg-[#2C1C47] bg-center text-[64px] font-bold leading-[64px] text-white md:h-full md:min-h-[100vh]">
             <p className="hidden text-center md:block">
               ¡Qué bueno verte otra vez!
             </p>

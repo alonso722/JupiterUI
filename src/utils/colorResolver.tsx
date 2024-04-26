@@ -3,14 +3,14 @@ import { colors } from "@/components/types/enums/colors";
 export const getBgColor = (color: colors): string => {
     switch (color) {
         case colors.BLUE_JSUITE_HOVER:
-            return 'bg-azulJSuite text-white hover:bgdarkJupiter ';
+            return 'bg-#FDD500 text-white hover:bgdarkJupiter ';
         case colors.BLUE_JSUITE:
         case colors.PRIMARY:
             return 'bg-primary text-white';
         case colors.ALTERNATIVE:
-            return 'bg-alternative text-white';
+            return 'bg-[#2C1C47] text-white';
         case colors.DANGER:
-            return 'bg-red text-white';
+            return 'bg-[#FDD500]';
         case colors.DANGER_OUTLINE:
             return 'bg-white text-red hover:bg-red hover:text-white';
         case colors.DARK:

@@ -34,8 +34,6 @@ export default {
                 ipsum: '#384FF6',
                 alternative: '#2C1C47',
                 coolGrey: '#DDE1EB',
-                azulJSuite: '#3850FB',
-                darkJupiter: '#2C1C47',
                 muted: '#7A828A',
                 camposDark: '#E6E8EC',
                 greyJupiter: '#363940',

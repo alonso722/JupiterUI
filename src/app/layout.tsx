@@ -1,8 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Montserrat, Poppins } from "next/font/google";
 import * as React from 'react';
 
 import '@/styles/globals.css';
+import '@/styles/colors.css'
+import 'react-toastify/dist/ReactToastify.css';
+
+
+import ToastProvider from "@/components/lib/toastProvider";
+import RecoilRootWrapper from "@/components/ReciolRootWrapper";
+
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  variable: '--font-montserrat',
+});
+const poppins = Poppins({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-poppins',
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
+});
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,12 +30,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
-    </html>
+      <html>
+          <body className={`${montserrat.variable} ${poppins.variable}`}>
+              <RecoilRootWrapper>
+                  <ToastProvider>{children}</ToastProvider>
+              </RecoilRootWrapper>
+          </body>
+      </html>
   );
 }

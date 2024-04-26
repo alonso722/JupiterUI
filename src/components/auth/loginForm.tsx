@@ -1,16 +1,15 @@
+'use client';
 import { validateSync } from 'class-validator';
-import { useRouter } from 'next/router'; 
+import { useRouter } from 'next/navigation'; 
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
-import axios from 'axios';
-axios.defaults.baseURL = 'http://127.0.0.1:8070/';
-
 import { Input } from '../form/input';
 import { CredentialsValidation } from '@/validation/credentialsValidation';
 import { Button } from '../form/button';
 import PasswordInput from '../form/passwordInput';
 import { CLink } from '../link';
 import { colors } from '../types/enums/colors';
+import useApi from '@/hooks/useApi';
 
 interface LoginFormValues {
     email: string | null;
@@ -22,12 +21,15 @@ export default function LoginForm({
 }: {
     queryParams: string;
 }) {
-    const router = useRouter(); // Cambia esta línea
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+    const [showErrorMessage, setShowErrorMessage] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const router = useRouter(); 
 
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [isLoading, setIsLoading] = useState<boolean>(false);
-
+    const api= useApi();
     const [errors, setErrors] = useState<LoginFormValues>({
         email: '',
         password: '',
@@ -35,34 +37,30 @@ export default function LoginForm({
 
     const submitForm = useCallback(() => {
         setIsLoading(true);
-        console.log("a")
-        console.log("Datos que se están enviando al backend:", {
+        api.post('/user/auth/login', { 
             email: email,
             password: password,
-        });
-        console.log("a")
-        axios.post('/user/auth/login', { 
-            email: email,
-            password: password,
-        }) .then((response) => {
+        })
+        .then((response) => {
+            setShowSuccessMessage(true);
+            setTimeout(() => setShowSuccessMessage(false), 2000);
             console.log("Respuesta del backend:", response.data); 
-            toast.success(
-                'Usuario y contraseña correctos'
-            );
-            console.log("Respuesta del backend:", response.data); 
-            console.log("Redireccionando a /auth/complete/");
-            router.push(`/auth/complete/`); 
+            toast.success('Usuario y contraseña correctos');
+            router.push(`/auth/complete?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);     
         })
         .catch((error) => {
             console.error("Error al realizar la solicitud:", error); 
             console.log("Respuesta del backend:", error.response.data); 
-            toast.error(error.response.data.message || "Error desconocido");
+            console.log("Respuesta del backend:", error.response.data.error); 
+            setErrorMessage(error.response.data.error || "Error desconocidoasdf");
+            setShowErrorMessage(true); 
+            setTimeout(() => setShowErrorMessage(false), 2000); 
+            toast.error(error.response.data.error || "Error en los datosqwert");
         })
-            .finally(() => {
-                setIsLoading(false);
-            });
-            console.log("b")
-    }, [email, password, router, queryParams]);
+        .finally(() => {
+            setIsLoading(false);
+        });
+    }, [api, email, password, router, queryParams]);
 
     const validate = useCallback(
         (e?: React.MouseEvent<HTMLButtonElement>) => {
@@ -72,8 +70,6 @@ export default function LoginForm({
             dto.email = email;
             dto.password = password;
             const errors = validateSync(dto);
-            if (errors.length > 0) {
-            }
             if (errors.length <= 0) {
                 submitForm();
             } else {
@@ -82,6 +78,11 @@ export default function LoginForm({
         },
         [email, password, submitForm]
     );
+    const onPwdKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key == 'Enter') {
+            validate();
+        }
+    };
 
     return (
         <>
@@ -91,7 +92,7 @@ export default function LoginForm({
                     validate(); 
                 }}>
                 <div className="mb-7 grid grid-rows-1">
-                    <label htmlFor="" className="mb-2 flex w-full">
+                    <label htmlFor="" className="justify-center mb-2 flex w-full">
                         Correo electrónico
                     </label>
                     <Input
@@ -101,20 +102,21 @@ export default function LoginForm({
                         error={errors.email}
                         placeholder="Dirección de correo electrónico."/>
                 </div>
-                <div className="mb-3 grid grid-rows-1">
-                    <label htmlFor="" className="mb-2 flex w-full">
+                <div className=" mb-3 grid grid-rows-1">
+                    <label htmlFor="" className="justify-center mb-2 flex w-full">
                         Contraseña
                     </label>
                     <PasswordInput
                         password={password}
                         setPassword={setPassword}
+                        onKeyDown={onPwdKeyDown}
                         error={errors.password}
                         placeholder="Contraseña"/>
                 </div>
                 <div>
                     <CLink
                         href="/auth/forgot-password"
-                        className="mb-4 mt-2 flex text-[11px] text-[#777E90] no-underline">
+                        className="mb-4 mt-2 flex text-[11px] text-[#2C1C47] no-underline">
                         ¿Olvidó su contraseña?
                     </CLink>
                 </div>
@@ -123,7 +125,8 @@ export default function LoginForm({
                         rounded
                         isLoading={isLoading}
                         type="submit" 
-                        >
+                        onClick={validate}
+                        color={colors.ALTERNATIVE}>
                         Entrar
                     </Button>
                 </div>
