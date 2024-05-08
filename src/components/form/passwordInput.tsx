@@ -39,6 +39,7 @@ export default function PasswordInput({
                 onKeyDown={onKeyDown}
                 error={error}
                 name={name}
+                className='p-2'
             />
         </>
     );

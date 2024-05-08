@@ -5,6 +5,7 @@ import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
 
+import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 
 export default function Page({ }) {
@@ -25,11 +26,10 @@ export default function Page({ }) {
                 <TopNavbar />
             </div>
             
-            <div className='bg-[#FDD500]'>
-                <p>
-                    sdfghjk
-                </p>
-                ey';lkjhgghj
+
+            <div className="">
+                {/* <SideNavbarClientDashboard />
+                {children} */}
             </div>
         </>
     );

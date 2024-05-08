@@ -62,7 +62,7 @@ export const Input: React.FC<InputProps> = ({
                     value={value}
                     className={`rounded-md border-none ${
                         isUpperCase ? 'uppercase placeholder:normal-case' : ''
-                    } bg-camposDark ${className} min-h-[41px] py-2 w-full ${computedClass}`}
+                    } bg-camposDark ${className} min-h-[41px] p-2 w-full ${computedClass}`}
                     id={id}
                     placeholder={placeholder}
                     onKeyDown={onKeyDown}
@@ -80,7 +80,8 @@ export const Input: React.FC<InputProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    cursor: 'pointer'
+                    cursor: 'pointer',
+                    padding: "px"
                 }}>{React.createElement(icon, {
                     size: 24,
                     color: iconColor

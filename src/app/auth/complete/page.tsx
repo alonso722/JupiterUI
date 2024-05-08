@@ -15,57 +15,32 @@ import Alert from '@/components/misc/alert';
 import { authState } from '@/state/auth';
 
 export default function CompleteAuth({
-    searchParams: { email, password, callback },
+    searchParams: { token, password, callback },
 }: {
-    searchParams: { email?: string; password?: string; callback?: string };
+    searchParams: { token?: string; password?: string; callback?: string };
 }) {
     const [_, setAuth] = useRecoilState(authState);
     const [failed, setFailed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const router = useRouter();
-    const api = useApi();
 
     useEffect(() => {
         const controller = new AbortController();
         setIsLoading(true);
-        api.post('/user/auth/jwt', {
-            email: email,
-            password: password,
-            signal: controller.signal,
-        }).then(({ data }) => {
-                if (data.token) {
-                    toast.success('Autenticación completada.');
-                    setAuth({
-                        loggedIn: true,
-                        token: data.token,
-                        refresh_token: null,
-                        verified: null,    
-                    });
-                    if (callback) {
-                        console.log("entra a call 1")
-                        setTimeout(() => {
-                            // window.location.assign(callback);
-                            router.push(callback);
-                        });
-                    }
-                    router.push('/dashboard/home');
-                } else {
-                    setFailed(true);
-                }
-            })
-            .catch(() => {
-                setFailed(true);
-            })
-            .finally(() => {
-                setIsLoading(false);
+        if (token) {
+            setAuth({
+                loggedIn: true,
+                token: token,
+                refresh_token: null,
+                verified: null,    
             });
-            console.log("el state",authState)
-        return () => {
-            controller.abort();
-            setFailed(false);
-        };
-    }, [setAuth, api, callback, router]);
+            router.push('/dashboard/home');
+            toast.success('Autenticación completada.');
+        } else {
+            setFailed(true);
+        }
+    }, [setAuth, router]);
 
     return (
         <>

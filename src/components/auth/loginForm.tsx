@@ -36,6 +36,7 @@ export default function LoginForm({
     });
 
     const submitForm = useCallback(() => {
+        console.log("sdfghjkl",email,password)
         setIsLoading(true);
         api.post('/user/auth/login', { 
             email: email,
@@ -44,18 +45,15 @@ export default function LoginForm({
         .then((response) => {
             setShowSuccessMessage(true);
             setTimeout(() => setShowSuccessMessage(false), 2000);
-            console.log("Respuesta del backend:", response.data); 
             toast.success('Usuario y contraseña correctos');
-            router.push(`/auth/complete?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);     
+            router.push(`/auth/complete?token=${response.data}`);     
         })
         .catch((error) => {
             console.error("Error al realizar la solicitud:", error); 
-            console.log("Respuesta del backend:", error.response.data); 
-            console.log("Respuesta del backend:", error.response.data.error); 
-            setErrorMessage(error.response.data.error || "Error desconocidoasdf");
+            setErrorMessage(error.response || "Error desconocidoasdf");
             setShowErrorMessage(true); 
             setTimeout(() => setShowErrorMessage(false), 2000); 
-            toast.error(error.response.data.error || "Error en los datosqwert");
+            toast.error(error.response || "Error en los datos");
         })
         .finally(() => {
             setIsLoading(false);
