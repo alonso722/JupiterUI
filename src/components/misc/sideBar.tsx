@@ -15,8 +15,25 @@ import { authState, tokenData } from '@/state/auth';
 import { allMenuItemsClient } from './allMenuItemsDashboard';
 import { SideBarItemContent } from './sideBarItem';
 import { MenuItem } from '../types/menu';
+import { Fragment } from 'react'
+import { Popover, Transition } from '@headlessui/react'
+import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
+import {
+  ArrowPathIcon,
+  ChartPieIcon,
+  CursorArrowRaysIcon,
+  FingerPrintIcon,
+  SquaresPlusIcon,
+} from '@heroicons/react/24/outline'
 
 export default function SideNavbarClientDashboard() {
+    const solutions = [
+        { name: 'Procesos', description: 'procesos', href: '#', icon: ChartPieIcon },
+        { name: 'Procesos', description: 'procesos', href: '#', icon: CursorArrowRaysIcon },
+        { name: 'Procesos', description: 'procesos', href: '#', icon: FingerPrintIcon },
+        { name: 'Procesos', description: 'procesos', href: '#', icon: SquaresPlusIcon },
+        { name: 'Procesos', description: 'procesos', href: '#', icon: ArrowPathIcon },
+      ]
     const sidebarDivRef = useRef<HTMLDivElement>(null);
     const [isAbsolute, setIsAbsolute] = useState<boolean>(false);
     const [showLabels, setShowLabels] = useState<boolean>(false);
@@ -153,78 +170,47 @@ export default function SideNavbarClientDashboard() {
             <div
                 ref={sidebarDivRef}
                 className="shadow-sideNavbarClients 
-                flex h-[684px] w-[66px] flex-col bg-white fixed top-[98px]"
-                style={{ width: '66px' }}
-            >
-                <div
-                    className="mb-[33px] ml-[21px] mt-8 h-max cursor-pointer"
-                    onClick={() => {
-                        setIsExpanded((prevValue: boolean) => {
-                            return !prevValue;
-                        });
-                    }}
-                >
-                    <span>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="23"
-                            height="15"
-                            viewBox="0 0 23 15"
-                            fill="none"
-                        >
-                            <path
-                                d="M0 0H23V2.44922H0V0ZM0 6.12305H23V8.57227H0V6.12305ZM0 12.2461H23V14.6953H0V12.2461Z"
-                                fill="#2C1C47"
-                            />
-                        </svg>
-                    </span>
-                </div>
-                <div>
-                    {isAbsolute && nav.isExpanded && (
-                        <div className="flex justify-end p-3 text-white">
-                            <AiFillCloseSquare
-                                size={48}
-                                className="cursor-pointer text-white hover:text-red-500"
-                                onClick={() => nav.setIsExpanded(false)}
-                            />
+                flex h-[684px] w-[66px] flex-col bg-white fixed top-[88px]"
+                style={{ width: '66px' }}>
+                <div className="mb-[3px] ml-[21px] mt-0 h-max cursor-pointer">
+                        <div className="relative">
+                        <Popover>
+                            <Popover.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
+                            <span>Menu</span>
+                            <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+                            </Popover.Button>
+
+                            <Transition
+                            as={Fragment}
+                            enter="transition ease-out duration-200"
+                            enterFrom="opacity-0 translate-y-1"
+                            enterTo="opacity-100 translate-y-0"
+                            leave="transition ease-in duration-150"
+                            leaveFrom="opacity-100 translate-y-0"
+                            leaveTo="opacity-0 translate-y-1">
+                            <Popover.Panel className="w-screen max-w-md px-0 sm:px-0 divide-x divide-gray-900/5 bg-gray-50">
+                                <div className="overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
+                                    <div className="p-4">
+                                        {solutions.map((item) => (
+                                        <div key={item.name} className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
+                                            <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
+                                            <item.icon className="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
+                                            </div>
+                                            <div>
+                                            <a href={item.href} className="font-semibold text-gray-900">
+                                                {item.name}
+                                                <span className="absolute inset-0" />
+                                            </a>
+                                            <p className="mt-1 text-gray-600">{item.description}</p>
+                                            </div>
+                                        </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </Popover.Panel>
+                            </Transition>
+                        </Popover>
                         </div>
-                    )}
-                    <nav>
-                        <ul className="mt-2">
-                            {menuItems.map((item, idx) => {
-                                return (
-                                    item != null && (
-                                        <li
-                                            key={`menu-item-${idx}`}
-                                            className="mb-1"
-                                        >
-                                            {Array.isArray(item.subItems) ? (
-                                                <>
-                                                    <span>
-                                                        <SideBarItemContent
-                                                            item={item}
-                                                            showLabel={
-                                                                showLabels
-                                                            }
-                                                            isClient={true}
-                                                        />
-                                                    </span>
-                                                </>
-                                            ) : (
-                                                <Link href={item.to || '#'}>
-                                                    <SideBarItemContent
-                                                        item={item}
-                                                        showLabel={showLabels}
-                                                        isClient={true}
-                                                    />
-                                                </Link>
-                                            )}
-                                        </li>
-                                    )
-                                );
-                            })}
-                        </ul>
-                    </nav>
                 </div>
             </div>
         </>

@@ -8,15 +8,15 @@ export interface INavigationContextProps {
 export interface INavigationContext {
     isExpanded: boolean;
     setIsExpanded: {
-        (newValue: boolean): void; // Aceptar un nuevo valor booleano
-        (callback: (prev: boolean) => boolean): void; // Se puede aceptar un callback con el valor anterior.
+        (newValue: boolean): void; 
+        (callback: (prev: boolean) => boolean): void; 
     };
 }
 
 const defaultValue: INavigationContext = {
     isExpanded: false,
     setIsExpanded: () => {
-        alert('Function not implemented yet.');
+        alert('Menu');
     },
 };
 
@@ -33,8 +33,7 @@ export const NavigationProvider = ({ children }: INavigationContextProps) => {
             value={{
                 isExpanded,
                 setIsExpanded,
-            }}
-        >
+            }}>
             {children}
         </NavigationContext.Provider>
     );

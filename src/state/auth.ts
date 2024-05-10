@@ -1,4 +1,4 @@
-import jwt_decode from 'jwt-decode';
+// import jwt_decode from 'jwt-decode';
 import { atom, selector } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
 
@@ -47,7 +47,7 @@ export const tokenData = selector({
         console.log("entra a")
         const token = get(authState)?.token;
         if (typeof token === 'string' && token.length > 0) {
-            const decodedValue = jwt_decode<TokenData>(token);
+            const decodedValue = token;
             return decodedValue;
         } else {
             return null;

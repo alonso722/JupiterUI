@@ -1,4 +1,3 @@
-'use client';
 import { validateSync } from 'class-validator';
 import { useRouter } from 'next/navigation'; 
 import { useCallback, useState } from 'react';
@@ -36,21 +35,23 @@ export default function LoginForm({
     });
 
     const submitForm = useCallback(() => {
-        console.log("sdfghjkl",email,password)
         setIsLoading(true);
         api.post('/user/auth/login', { 
             email: email,
             password: password,
         })
         .then((response) => {
+            console.log(response.data)
             setShowSuccessMessage(true);
             setTimeout(() => setShowSuccessMessage(false), 2000);
             toast.success('Usuario y contraseña correctos');
+            // localStorage
+            localStorage.setItem('token', response.data);
             router.push(`/auth/complete?token=${response.data}`);     
         })
         .catch((error) => {
             console.error("Error al realizar la solicitud:", error); 
-            setErrorMessage(error.response || "Error desconocidoasdf");
+            setErrorMessage(error.response || "Error desconocido");
             setShowErrorMessage(true); 
             setTimeout(() => setShowErrorMessage(false), 2000); 
             toast.error(error.response || "Error en los datos");
@@ -77,7 +78,7 @@ export default function LoginForm({
         [email, password, submitForm]
     );
     const onPwdKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key == 'Enter') {
+        if (e.key === 'Enter') {
             validate();
         }
     };

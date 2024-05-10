@@ -19,9 +19,9 @@ export interface MenuItemClient {
     subItems?: SubItem[];
 }
 
-export interface MenuItemNew {
-    label: string;
-    icon: SVGProps<SVGSVGElement>;
-    to?: string;
-    subItems?: SubItem[];
-}
+// export interface MenuItemNew {
+//     label: string;
+//     icon: SVGProps<SVGSVGElement>;
+//     to?: string;
+//     subItems?: SubItem[];
+// }

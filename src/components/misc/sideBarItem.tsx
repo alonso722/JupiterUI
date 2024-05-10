@@ -15,9 +15,11 @@ interface SideBarItemContentProps {
     isClient?: boolean;
 }
 
+import { AiFillHome } from 'react-icons/ai';
+
 export function SideBarItemContent({
     item,
-    isClient = false,
+    isClient = true,
 }: SideBarItemContentProps) {
     const { isExpanded } = useNavigationContext();
     const labelRef = useRef<HTMLSpanElement>(null);
@@ -56,15 +58,16 @@ export function SideBarItemContent({
                     isClient ? 'text-black' : 'text-white'
                 }`}
             >
-                {React.createElement(item.icon, {
+                {/* Utilizamos el icono AiFillHome */}
+                {React.createElement(AiFillHome, {
                     size: 24,
-                    className: `hover:fill-text-azulJSuite ${
+                    className: `hover:fill-text-#3850FB ${
                         isClient
                             ? item.label == 'Mis métodos de pago'
                                 ? 'p-3'
                                 : 'p-4'
                             : ''
-                    } hover:text-azulJSuite`,
+                    } hover:text-#3850FB`,
                 })}
                 <span
                     style={{ display: 'none', opacity: 0 }}
