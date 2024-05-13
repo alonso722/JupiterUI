@@ -3,13 +3,10 @@ import React, { useEffect, useState } from "react";
   import Link from 'next/link';
   import Image from 'next/image';
   import LandingNav from "./landing/landingNav"; 
-  interface Organization {
-    id: number;
-    name: string;
-  }
+
   
   function Index() {
-    const [organizationData, setOrganizationData] = useState<Organization[]>([]);
+  
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [mountCount, setMountCount] = useState(0);

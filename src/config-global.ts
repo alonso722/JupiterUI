@@ -1,3 +1,3 @@
-import { paths } from "./routes/paths"; 
+// import { paths } from "./routes/paths"; 
 
-export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
+// export const PATH_AFTER_LOGIN = paths.dashboard.root; // as '/dashboard'
