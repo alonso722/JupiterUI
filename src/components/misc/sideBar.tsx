@@ -1,218 +1,52 @@
-'use client';
+import { useState } from 'react';
+import { Transition } from '@headlessui/react';
 
-import animejs from 'animejs';
-import Link from 'next/link';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import React from 'react';
-import { AiFillCloseSquare } from 'react-icons/ai';
-import { useRecoilValue } from 'recoil';
-
-import useBreakpoints, { breakpoints } from '@/hooks/useBreakpoints';
-
-import { useNavigationContext } from '@/context/navigationContext';
-import { authState, tokenData } from '@/state/auth';
-
-import { allMenuItemsClient } from './allMenuItemsDashboard';
-import { SideBarItemContent } from './sideBarItem';
-import { MenuItem } from '../types/menu';
-import { Fragment } from 'react'
-import { Popover, Transition } from '@headlessui/react'
-import { ChevronDownIcon, PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
-import {
-  ArrowPathIcon,
-  ChartPieIcon,
-  CursorArrowRaysIcon,
-  FingerPrintIcon,
-  SquaresPlusIcon,
-} from '@heroicons/react/24/outline'
-
-export default function SideNavbarClientDashboard() {
-    const solutions = [
-        { name: 'Procesos', description: 'procesos', href: '#', icon: ChartPieIcon },
-        { name: 'Procesos', description: 'procesos', href: '#', icon: CursorArrowRaysIcon },
-        { name: 'Procesos', description: 'procesos', href: '#', icon: FingerPrintIcon },
-        { name: 'Procesos', description: 'procesos', href: '#', icon: SquaresPlusIcon },
-        { name: 'Procesos', description: 'procesos', href: '#', icon: ArrowPathIcon },
-      ]
-    const sidebarDivRef = useRef<HTMLDivElement>(null);
-    const [isAbsolute, setIsAbsolute] = useState<boolean>(false);
-    const [showLabels, setShowLabels] = useState<boolean>(false);
-    const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-
-    const { setIsExpanded } = useNavigationContext();
-    const auth = true;
-    const nav = useNavigationContext();
-    const { breakpoint } = useBreakpoints();
-
-    useEffect(() => {
-        if (auth) {
-            const newMenuItems: MenuItem[] = [];
-            newMenuItems.push(allMenuItemsClient.home);
-            newMenuItems.push(allMenuItemsClient.shopping);
-            newMenuItems.push(allMenuItemsClient.paymentMethod);
-            setMenuItems(newMenuItems);
-        }
-    }, [auth]);
-
-    const expand = useCallback(() => {
-        if (sidebarDivRef.current) {
-            const styles = sidebarDivRef.current.style;
-            if (isAbsolute) {
-                styles.position = 'fixed';
-                animejs({
-                    targets: sidebarDivRef.current,
-                    width: '100vw',
-                    height: '100%',
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    top: 0,
-                    easing: 'linear',
-                    duration: 250,
-                    update(anim) {
-                        const progress = anim.progress;
-                        if (progress > 50 && progress < 60) {
-                            setShowLabels(true);
-                        }
-                    },
-                });
-            } else {
-                animejs({
-                    targets: sidebarDivRef.current,
-                    width: '275px',
-                    position: 'relative',
-                    duration: 250,
-                    easing: 'linear',
-                    update: (anim) => {
-                        const progress = anim.progress;
-                        if (progress > 50 && progress < 60) {
-                            setShowLabels(true);
-                        }
-                    },
-                });
-            }
-        }
-    }, [sidebarDivRef, isAbsolute]);
-
-    const collapse = useCallback(() => {
-        if (sidebarDivRef.current) {
-            if (isAbsolute) {
-                animejs({
-                    targets: sidebarDivRef.current,
-                    width: '66px',
-                    easing: 'easeOutElastic',
-                    duration: 150,
-                    complete() {
-                        setShowLabels(false);
-                    },
-                });
-            } else {
-                animejs({
-                    targets: sidebarDivRef.current,
-                    width: '66px',
-                    duration: 250,
-                    easing: 'linear',
-                    update: (anim) => {
-                        const progress = anim.progress;
-                        if (progress > 50 && progress < 60) {
-                            setShowLabels(false);
-                        }
-                    },
-                });
-            }
-        }
-    }, [sidebarDivRef, isAbsolute]);
-
-    useEffect(() => {
-        const to = setTimeout(() => {
-            setIsAbsolute(breakpoints.sm == breakpoint);
-            if (nav.isExpanded) {
-                expand();
-            } else {
-                collapse();
-            }
-        }, 300);
-        return () => {
-            clearTimeout(to);
-        };
-    }, [breakpoint, nav.isExpanded, expand, collapse]);
-
-    useEffect(() => {
-        let documentElement: HTMLElement | null = document.documentElement;
-        let body: HTMLElement | null = document.body;
-
-        if (documentElement != null) {
-            if (nav.isExpanded) {
-                // Remove the scroll
-                documentElement.style.overflow = 'hidden';
-                body.style.overflow = 'hidden';
-            } else {
-                // Undo what we did in the if.
-                documentElement.style.overflow = '';
-                body.style.overflow = '';
-            }
-        }
-
-        return () => {
-            if (documentElement != null) {
-                documentElement.style.overflow = '';
-                documentElement = null;
-            }
-            if (body != null) {
-                body.style.overflow = '';
-                body = null;
-            }
-        };
-    }, [nav.isExpanded]);
+export default function DropdownMenu() {
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <>
-            <div
-                ref={sidebarDivRef}
-                className="shadow-sideNavbarClients 
-                flex h-[684px] w-[66px] flex-col bg-white fixed top-[88px]"
-                style={{ width: '66px' }}>
-                <div className="mb-[3px] ml-[21px] mt-0 h-max cursor-pointer">
-                        <div className="relative">
-                        <Popover>
-                            <Popover.Button className="inline-flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
-                            <span>Menu</span>
-                            <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
-                            </Popover.Button>
+        <div className="relative w-[100px] inline-block text-left top-[88px] left-[50px]">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                type="button"
+                className="inline-flex justify-center w-full px-4 py-2 rounded-lg outline outline-1  shadow-2xl shadow-violet-950"
+                id="options-menu"
+                aria-haspopup="true"
+                aria-expanded="true">
+                Menu
+            </button>
 
-                            <Transition
-                            as={Fragment}
-                            enter="transition ease-out duration-200"
-                            enterFrom="opacity-0 translate-y-1"
-                            enterTo="opacity-100 translate-y-0"
-                            leave="transition ease-in duration-150"
-                            leaveFrom="opacity-100 translate-y-0"
-                            leaveTo="opacity-0 translate-y-1">
-                            <Popover.Panel className="w-screen max-w-md px-0 sm:px-0 divide-x divide-gray-900/5 bg-gray-50">
-                                <div className="overflow-hidden rounded-lg bg-white text-sm leading-6 shadow-lg ring-1 ring-gray-900/5">
-                                    <div className="p-4">
-                                        {solutions.map((item) => (
-                                        <div key={item.name} className="group relative flex gap-x-6 rounded-lg p-4 hover:bg-gray-50">
-                                            <div className="mt-1 flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-gray-50 group-hover:bg-white">
-                                            <item.icon className="h-6 w-6 text-gray-600 group-hover:text-indigo-600" aria-hidden="true" />
-                                            </div>
-                                            <div>
-                                            <a href={item.href} className="font-semibold text-gray-900">
-                                                {item.name}
-                                                <span className="absolute inset-0" />
-                                            </a>
-                                            <p className="mt-1 text-gray-600">{item.description}</p>
-                                            </div>
-                                        </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </Popover.Panel>
-                            </Transition>
-                        </Popover>
-                        </div>
+            <Transition
+                show={isOpen}
+                enter="transition ease-out duration-200"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-150"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95">
+                <div className="absolute top-full right-0 mt-1 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg shadow-violet-950">
+                    <div className="py-1">
+                        <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            role="menuitem">
+                            Opción 1
+                        </a>
+                        <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            role="menuitem">
+                            Opción 2
+                        </a>
+                        <a
+                            href="#"
+                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                            role="menuitem">
+                            Opción 3
+                        </a>
+                    </div>
                 </div>
-            </div>
-        </>
+            </Transition>
+        </div>
     );
 }

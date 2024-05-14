@@ -1,3 +1,4 @@
+'use client';
 import { colors } from '../types/enums/colors';
 import { Button } from '../form/button';
 import React, { useEffect, useRef, useState } from 'react';
@@ -23,18 +24,37 @@ export default function TextEditor() {
   const editorRef = useRef(null);
   const saveDocumentRef = useRef(null);
   const [mounted, setMounted] = useState(false);
+  const effectMounted = useRef(false);
+  const [width, setWidth] = useState(window.innerWidth);
+
+  const initialData =  {
+    "time": new Date().getTime(),
+    "blocks": [
+      {
+        "type": "header",
+        "data": {
+          "text": "Editor de texto listo!",
+          "level": 1
+        }
+      },
+    ]
+}
 
   useEffect(() => {
-    if (mounted) return;
-
     let editorInstance = null;
-
+    if(effectMounted.current === false ){
     const initializeEditor = async () => {
       try {
         if (!editorRef.current) return;
 
         editorInstance = await new EditorJS({
           holder: editorRef.current,
+          data: initialData,
+          // onChange: async () => {
+          //   let content = await editorInstance.saver.save();
+
+          //   console.log(content);
+          // },
           tools: {
             header: {
               class: Header,
@@ -75,7 +95,6 @@ export default function TextEditor() {
 
     initializeEditor();
 
-    // Asignar la función a saveDocumentRef.current
     saveDocumentRef.current = () => {
       console.log('Clic:')
       editorInstance.save().then((outputData)=>{
@@ -89,24 +108,24 @@ export default function TextEditor() {
       if (editorInstance) {
         editorInstance.destroy();
       }
+      effectMounted.current=true;
     };
-  }, [mounted]);
-
-  // Log para ver cuántas veces se monta el componente
+  }
+  }, []);
+  console.log(width)
   console.log('TextEditor montado');
 
   return (
     <>
-    <div ref={editorRef} className=" h-[700px] w-[1506px] fixed left-[300px] top-[110px] outline-color-[#FDD500] rounded-lg p-5  outline outline-1  shadow-2xl shadow-violet-950"
-    style={{width: '1306px',
-    height: '700px',
-    overflowY: 'auto',
-    scrollbarWidth: 'thin',
-    //scrollbarColor: '#FDD500 transparent' 
-  }}>
-      Texto
+    <div ref={editorRef} className=" h-[700px] w-[70%]  fixed left-[20%] top-[110px] outline-color-[#FDD500] rounded-lg px-8 py-5  outline outline-1  shadow-2xl shadow-violet-950"
+      style={{          
+      overflowY: 'auto',
+      scrollbarWidth: 'thin',
+      //scrollbarColor: 'transparent' 
+    }}
+    >
     </div>
-    <div className='left-[350px] top-[840px] fixed outline-2 outline-offset-2'>
+    <div className='left-[20%] top-[840px] fixed outline-2 outline-offset-2 '>
       <Button
         rounded
         type="submit" 

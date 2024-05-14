@@ -1,5 +1,4 @@
 'use client';
-'use client';
 import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 //import { ChevronDownIcon } from '@heroicons/react/20/solid'
@@ -13,9 +12,7 @@ export default function TopNewMenuClientDashboard() {
         <>
             <div className="flex flex-row items-center justify-between fixed bg-white w-full">
                 <div
-                    className="justify-left flex w-full items-center pb-7 pl-12 
-                        pt-9"
-                >
+                    className="justify-left flex w-full items-center pb-7 pl-12 pt-9">
                     <div className="">
                     <Image
                         src="/logos/Lg_JIso.svg"

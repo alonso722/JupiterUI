@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { PiSpinnerGapBold } from 'react-icons/pi';
 import { PiWarningBold } from 'react-icons/pi';
 import { toast } from 'react-toastify';
@@ -22,10 +22,12 @@ export default function CompleteAuth({
     const [_, setAuth] = useRecoilState(authState);
     const [failed, setFailed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
+    const effectMounted = useRef(false);
 
     const router = useRouter();
 
     useEffect(() => {
+        if(effectMounted.current === false ){
         const controller = new AbortController();
         setIsLoading(true);
         if (token) {
@@ -40,6 +42,10 @@ export default function CompleteAuth({
         } else {
             setFailed(true);
         }
+        return()=>{
+            effectMounted.current=true;
+        }
+    }
     }, [setAuth, router]);
 
     return (

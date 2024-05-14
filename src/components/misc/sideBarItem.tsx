@@ -56,9 +56,7 @@ export function SideBarItemContent({
                     isClient ? '' : 'hover:bg-dark'
                 } flex cursor-pointer flex-row items-center p-2 ${
                     isClient ? 'text-black' : 'text-white'
-                }`}
-            >
-                {/* Utilizamos el icono AiFillHome */}
+                }`}>
                 {React.createElement(AiFillHome, {
                     size: 24,
                     className: `hover:fill-text-#3850FB ${
@@ -74,8 +72,7 @@ export function SideBarItemContent({
                     ref={labelRef}
                     className={`ml-4 mt-2 ${
                         isClient ? 'hover:text-azulJSuite' : ''
-                    }`}
-                >
+                    }`}>
                     {item.label}
                 </span>
             </span>
