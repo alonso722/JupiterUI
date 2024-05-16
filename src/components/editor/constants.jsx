@@ -32,18 +32,30 @@ export const EDITOR_JS_TOOLS = {
   inlineCode: InlineCode,
   simpleImage: SimpleImage,
   comment: {
-    class: Comment, // Agrega la clase del componente de comentario
+    class: Comment,
     inlineToolbar: true,
     config: {
-      renderBody: ({ commentBlockId, blockId, onClose, addCommentBlockData }) => {
-        // Aquí debes devolver el cuerpo del comentario
-        // Esto podría implicar llamar a una función que renderice el cuerpo del comentario
-        // Asegúrate de implementar esta función correctamente según las necesidades de tu aplicación
-        // Por ejemplo:
+      renderBody: ({ commentBlockId, blockId, onClose }) => {
+        const text = "Este es un texto de ejemplo."; 
+        const saveComment = () => {
+          const inputValue = document.getElementById("commentInput").value;
+          console.log("Comentario guardado:", inputValue);
+        };
         return (
-          <div>
-            Comentario: {commentBlockId}, Bloque: {blockId}
-            <button onClick={onClose}>Cerrar</button>
+          <div className="text-right">
+            <button className="bg-blue-500 text-white px-4 py-2 rounded" onClick={onClose}>Cerrar</button>
+            <div className="m-4">
+              <div>{text}</div>
+              <div>
+                <input 
+                  id="commentInput"
+                  type="text"
+                  className="border border-gray-300 rounded px-4 py-2 mt-2" 
+                  placeholder="Escribe aquí tu comentario" 
+                />
+                <button className="bg-blue-500 text-white px-4 py-2 rounded mt-2" onClick={saveComment}>Agregar comentario</button>
+              </div>
+            </div>
           </div>
         );
       }
