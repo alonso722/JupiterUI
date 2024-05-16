@@ -32,17 +32,11 @@ export default function Page({ }) {
     }, []);
 
     return (
-        <div className="bg-[#FDD500] ">
-            <div className="flex bg-[#FDD500]">
-                <div>
-                    <TopNavbar />
-                    <SideNavbarClientDashboard />
-                </div>
-                <div className="ml-4">
-                    <div className='left-[100px] top-[108px] bg-zinc-500 p-5 '>
-                        <TextEditor></TextEditor>
-                    </div>
-                </div>
+        <div >
+            <div>
+                <TopNavbar />                
+                <SideNavbarClientDashboard />
+                <TextEditor></TextEditor>
             </div>
         </div>
     );

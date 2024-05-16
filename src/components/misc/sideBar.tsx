@@ -1,52 +1,113 @@
 import { useState } from 'react';
-import { Transition } from '@headlessui/react';
 
-export default function DropdownMenu() {
-    const [isOpen, setIsOpen] = useState(false);
+export default function Sidebar() {
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    const handleToggleExpand = () => {
+        setIsExpanded(!isExpanded);
+    };
+
+    const handleCloseSidebar = () => {
+        if (isExpanded) {
+            setIsExpanded(false);
+        }
+    };
 
     return (
-        <div className="relative w-[100px] inline-block text-left top-[88px] left-[50px]">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                type="button"
-                className="inline-flex justify-center w-full px-4 py-2 rounded-lg outline outline-1  shadow-2xl shadow-violet-950"
-                id="options-menu"
-                aria-haspopup="true"
-                aria-expanded="true">
-                Menu
-            </button>
-
-            <Transition
-                show={isOpen}
-                enter="transition ease-out duration-200"
-                enterFrom="transform opacity-0 scale-95"
-                enterTo="transform opacity-100 scale-100"
-                leave="transition ease-in duration-150"
-                leaveFrom="transform opacity-100 scale-100"
-                leaveTo="transform opacity-0 scale-95">
-                <div className="absolute top-full right-0 mt-1 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg shadow-violet-950">
-                    <div className="py-1">
-                        <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem">
-                            Opción 1
-                        </a>
-                        <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem">
-                            Opción 2
-                        </a>
-                        <a
-                            href="#"
-                            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                            role="menuitem">
-                            Opción 3
-                        </a>
+        <div className="ml-[0px] mt-[100px] flex h-screen rounded"
+        style={{ maxHeight: '823px' }}>
+            <div 
+                onMouseLeave={() => handleCloseSidebar()}
+                className={`max-h-[823px] w-${isExpanded ? '200' : '20'} bg-[#FDD500] transition-all duration-300 mt-100 flex flex-col rounded p-2`}
+                > 
+                <button
+                    type="button"
+                    onClick={handleToggleExpand}
+                    className="flex items-center ml-[0px]  justify-center h-10 w-10 bg-purple hover:bg-purple-950 focus:outline-none rounded">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-6 w-6 text-gray-600"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M4 6h16M4 12h16m-7 6h7"/>
+                    </svg>
+                </button>
+                {!isExpanded && (
+                    <div className="flex flex-col mt-2">
+                        <button
+                            type="button"
+                            className="flex items-center ml-[0px] justify-center h-10 w-10 hover:bg-purple-950 rounded">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
                     </div>
-                </div>
-            </Transition>
+                )}
+                {isExpanded && (
+                    <div className="mt-2 ml-2 min-w-[200px] max-w-[200px]">
+                      <div className='flex mt-[8px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded'>
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-6 w-6 text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                          </svg>
+                          <p className="text-black-600 ml-[10px]">Link 1</p>
+                      </div>
+                        <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded'>
+                        <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-6 w-6 text-white"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        <p className="text-black-600 ml-[10px]">Link 2</p>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

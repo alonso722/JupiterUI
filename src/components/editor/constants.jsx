@@ -1,18 +1,19 @@
-import Embed from '@editorjs/embed'
-import Table from '@editorjs/table'
-import List from '@editorjs/list'
-import Warning from '@editorjs/warning'
-import Code from '@editorjs/code'
-import LinkTool from '@editorjs/link'
-import Image from '@editorjs/image'
-import Raw from '@editorjs/raw'
-import Header from '@editorjs/header'
-import Quote from '@editorjs/quote'
-import Marker from '@editorjs/marker'
-import CheckList from '@editorjs/checklist'
-import Delimiter from '@editorjs/delimiter'
-import InlineCode from '@editorjs/inline-code'
-import SimpleImage from '@editorjs/simple-image'
+import Embed from '@editorjs/embed';
+import Table from '@editorjs/table';
+import List from '@editorjs/list';
+import Warning from '@editorjs/warning';
+import Code from '@editorjs/code';
+import LinkTool from '@editorjs/link';
+import Image from '@editorjs/image';
+import Raw from '@editorjs/raw';
+import Header from '@editorjs/header';
+import Quote from '@editorjs/quote';
+import Marker from '@editorjs/marker';
+import CheckList from '@editorjs/checklist';
+import Delimiter from '@editorjs/delimiter';
+import InlineCode from '@editorjs/inline-code';
+import SimpleImage from '@editorjs/simple-image';
+import Comment from 'editorjs-comment'; // Importa el componente de comentario
 
 export const EDITOR_JS_TOOLS = {
   embed: Embed,
@@ -30,4 +31,22 @@ export const EDITOR_JS_TOOLS = {
   delimiter: Delimiter,
   inlineCode: InlineCode,
   simpleImage: SimpleImage,
-}
+  comment: {
+    class: Comment, // Agrega la clase del componente de comentario
+    inlineToolbar: true,
+    config: {
+      renderBody: ({ commentBlockId, blockId, onClose, addCommentBlockData }) => {
+        // Aquí debes devolver el cuerpo del comentario
+        // Esto podría implicar llamar a una función que renderice el cuerpo del comentario
+        // Asegúrate de implementar esta función correctamente según las necesidades de tu aplicación
+        // Por ejemplo:
+        return (
+          <div>
+            Comentario: {commentBlockId}, Bloque: {blockId}
+            <button onClick={onClose}>Cerrar</button>
+          </div>
+        );
+      }
+    }
+  }
+};
