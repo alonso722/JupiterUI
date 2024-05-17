@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import EditorJS from '@editorjs/editorjs';
 import { Button } from '../form/button';
 import { colors } from '../types/enums/colors';
-import { EDITOR_JS_TOOLS } from './constants'; // Importa EDITOR_JS_TOOLS desde constants.jsx
+import { EDITOR_JS_TOOLS } from './constants'; 
 
 import Embed from '@editorjs/embed';
 import Table from '@editorjs/table';
@@ -61,7 +61,7 @@ const COMMENT_TOOL = {
 export default function TextEditor() {
   const editorRef = useRef(null);
   const saveDocumentRef = useRef(null);
-  const [blockId, setBlockId] = useState(null); // Agregar estado para almacenar el blockId
+  const [blockId, setBlockId] = useState(null); 
   const [mounted, setMounted] = useState(false);
   const effectMounted = useRef(false);
 
@@ -119,7 +119,6 @@ export default function TextEditor() {
         console.log('Clic:')
         editorInstance.save().then((outputData)=>{
           console.log('Article data:', outputData)
-          // Agregar el blockId al outputData antes de imprimirlo en la consola
           outputData.blocks.forEach(block => {
             block.blockId = blockId;
           });
