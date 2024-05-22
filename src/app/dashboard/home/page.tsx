@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 import TextEditor from '@/components/editor/editor';
+import Kanban  from '@/components/kanban/columns';
 
 
 export default function Page({ }) {
@@ -33,10 +34,11 @@ export default function Page({ }) {
 
     return (
         <div >
-            <div>
+            <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <TextEditor></TextEditor>
+                {/* <TextEditor></TextEditor> */}
+                <Kanban/>
             </div>
         </div>
     );

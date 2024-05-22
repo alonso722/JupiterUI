@@ -12,8 +12,7 @@ export const CLink: React.FC<LinkProps> = ({ href, className, children }) => {
         <>
             <Link
                 href={href}
-                className={`text-blue-600 underline ${className}`}
-            >
+                className={`text-blue-600 underline ${className}`}>
                 {children}
             </Link>
         </>
