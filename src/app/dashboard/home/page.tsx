@@ -37,8 +37,8 @@ export default function Page({ }) {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                {/* <TextEditor></TextEditor> */}
                 <Kanban/>
+                {/* <TextEditor/> */}
             </div>
         </div>
     );

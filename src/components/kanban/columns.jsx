@@ -2,26 +2,44 @@ import React, { useState } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash, FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
+import Details from '../details/details'; 
 
 export const Kanban = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCard, setSelectedCard] = useState(null);
+
+    const handleCardClick = (card) => {
+        setSelectedCard(card);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedCard(null);
+    };
+
     return (
-        <div className="mt-[100px] h-[824px] w-full text-neutral-50">
-            <Board />
+        <div className="mt-[100px] ml-[50px] h-[624px] w-[1600px] text-neutral-50 rounded shadow-2xl shadow-violet-950">
+            <Board onCardClick={handleCardClick} />
+            {isModalOpen && selectedCard && (
+                <Details card={selectedCard} onClose={handleCloseModal} />
+            )}
         </div>
     );
 };
 
-const Board = () => {
+const Board = ({ onCardClick }) => {
     const [cards, setCards] = useState(DEFAULT_CARDS);
 
     return (
-        <div className="flex h-full w-full gap-3 p-12">
+        <div className="flex h-full w-full gap-3 p-12 justify-between">
             <Column
                 title="Edición"
                 column="Edicion"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
+                onCardClick={onCardClick}
             />
             <Column
                 title="Revisión"
@@ -29,6 +47,7 @@ const Board = () => {
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
+                onCardClick={onCardClick}
             />
             <Column
                 title="Aprobación"
@@ -36,6 +55,7 @@ const Board = () => {
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
+                onCardClick={onCardClick}
             />
             <Column
                 title="Aprobado"
@@ -43,13 +63,14 @@ const Board = () => {
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
+                onCardClick={onCardClick}
             />
             {/* <DelBarrel setCards={setCards} /> */}
         </div>
     );
 };
 
-const Column = ({ title, headingColor, column, cards, setCards }) => {
+const Column = ({ title, headingColor, column, cards, setCards, onCardClick }) => {
     const [active, setActive] = useState(false);
 
     const handleDragStart = (e, card) => {
@@ -167,7 +188,7 @@ const Column = ({ title, headingColor, column, cards, setCards }) => {
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
-                    return <Card key={c.id} {...c} handleDragStart={handleDragStart} />;
+                    return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
                 <AddCard column={column} setCards={setCards} />
@@ -176,7 +197,7 @@ const Column = ({ title, headingColor, column, cards, setCards }) => {
     );
 };
 
-const Card = ({ title, id, column, handleDragStart }) => {
+const Card = ({ title, id, column, handleDragStart, onCardClick }) => {
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
@@ -185,6 +206,7 @@ const Card = ({ title, id, column, handleDragStart }) => {
                 layoutId={id}
                 draggable="true"
                 onDragStart={(e) => handleDragStart(e, { title, id, column })}
+                onClick={() => onCardClick({ title, id, column })}
                 className="cursor-grab rounded border border-neutral-700 bg-[#2C1C47] p-3 active:cursor-grabbing">
                 <p className="text-sm text-neutral-50">
                     {title}
@@ -299,23 +321,23 @@ const AddCard = ({ column, setCards }) => {
 
 const DEFAULT_CARDS = [
     // Edicion
-    { title: "Texto 1", id: "1", column: "Edicion" },
-    { title: "Texto 2", id: "2", column: "Edicion" },
-    { title: "Texto 3", id: "3", column: "Edicion" },
-    { title: "Texto 4", id: "4", column: "Edicion" },
+    { title: "Edicion 1", id: "1", column: "Edicion" },
+    { title: "Edicion 2", id: "2", column: "Edicion" },
+    { title: "Edicion 3", id: "3", column: "Edicion" },
+    { title: "Edicion 4", id: "4", column: "Edicion" },
 
     // Revision
-    { title: "Texto 1", id: "4", column: "Revision" },
-    { title: "Texto 2", id: "5", column: "Revision" },
-    { title: "Texto 3", id: "6", column: "Revision" },
+    { title: "Revision 1", id: "4", column: "Revision" },
+    { title: "Revision 2", id: "5", column: "Revision" },
+    { title: "Revision 3", id: "6", column: "Revision" },
 
     // Aprobacion
-    { title: "Texto 1", id: "7", column: "Aprobacion" },
-    { title: "Texto 2", id: "8", column: "Aprobacion" },
+    { title: "Aprobacion 1", id: "7", column: "Aprobacion" },
+    { title: "Aprobacion 2", id: "8", column: "Aprobacion" },
 
     // Aprobado
-    { title: "Texto 1", id: "9", column: "Aprobado" },
-    { title: "Texto 2", id: "10", column: "Aprobado" },
+    { title: "Aprobado 1", id: "9", column: "Aprobado" },
+    { title: "Aprobado 2", id: "10", column: "Aprobado" },
 ];
 
 export default Kanban;
