@@ -4,41 +4,54 @@ import { useEffect, useRef } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
-import TextEditor from '@/components/editor/editor';
-import Kanban  from '@/components/kanban/columns';
-
+import Kanban from '@/components/kanban/columns';
 
 export default function Page({ }) {
-    // const token = localStorage.getItem('token');
-    // console.log("extraido del local storage", token)
+
     const [authStateValue, setAuth] = useRecoilState(authState);
-    console.log("el auth",authStateValue)
     const router = useRouter();
+    const api= useApi();
     const effectMounted = useRef(false);
 
-    useEffect(() => {
-        console.log(effectMounted.current)
-        if(effectMounted.current === false ){
-        if (!authStateValue.loggedIn) {
-            toast.error('Sin autenticación');
-            router.push('/auth/login');
+    useEffect(() => {    
+        if (effectMounted.current === false) {        
+            const storedToken = localStorage.getItem('token');
+            const storedPermissions = localStorage.getItem('permissions'); 
+    
+            if (!authStateValue.loggedIn) {
+                toast.error('Sin autenticación');
+                router.push('/auth/login');
+            } else {
+                api.post('/user/auth/state', { token: storedToken })
+                    .then((response) => {
+                        const permissions = response.data.permissions[0];
+                        setAuth((prevState: any) => ({
+                            ...prevState,
+                            token: storedToken
+                        }));
+                        localStorage.setItem('permissions', JSON.stringify(permissions));
+                    })
+                    .catch((error) => {
+                        console.error("Error al enviar el token:", error);
+                        toast.error('Error al enviar el token');
+                    });
+            }
+            effectMounted.current = true;
         }
-        return () =>{
-            effectMounted.current=true;
-        }
-    }
-    }, []);
+    }, [authStateValue.loggedIn, router, setAuth]);
+    
 
     return (
-        <div >
+        <div>
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
                 <Kanban/>
-                {/* <TextEditor/> */}
             </div>
         </div>
     );

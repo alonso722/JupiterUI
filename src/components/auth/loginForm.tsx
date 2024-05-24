@@ -41,12 +41,12 @@ export default function LoginForm({
             password: password,
         })
         .then((response) => {
-            console.log(response.data)
             setShowSuccessMessage(true);
             setTimeout(() => setShowSuccessMessage(false), 2000);
             toast.success('Usuario y contraseña correctos');
             // localStorage
-            localStorage.setItem('token', response.data);
+            console.log("data en response",response.data.token)
+            localStorage.setItem('token', response.data.token);
             router.push(`/auth/complete?token=${response.data}`);     
         })
         .catch((error) => {

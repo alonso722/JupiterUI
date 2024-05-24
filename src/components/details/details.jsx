@@ -33,11 +33,17 @@ const DocumentUploadModal = ({ isOpen, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
-        <button onClick={onClose} className="bg-red-600 absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
+        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
         <h2 className="text-2xl mb-4">Cargar documento</h2>
         <input type="file" onChange={handleFileChange} className="mb-4" />
+        {file && (
+          <div className="mb-4 text-black">
+            <p>Archivo seleccionado: {file.name}</p>
+            <p>Tamaño: {file.size < 1024 ? file.size + " bytes" : file.size < 1048576 ? (file.size / 1024).toFixed(2) + " KB" : (file.size / 1048576).toFixed(2) + " MB"}</p>
+          </div>
+        )}
         <input
           type="text"
           placeholder="Título del documento"
@@ -71,7 +77,7 @@ const Details = ({ card, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[1500px] h-[700px] relative">
-        <button onClick={onClose} className="bg-red-600 absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
+        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
         <div className='flex'>

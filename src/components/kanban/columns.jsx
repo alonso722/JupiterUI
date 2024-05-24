@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FaFire } from "react-icons/fa";
 import { FiTrash, FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
-import Details from '../details/details'; 
+import Details from '../details/details';
 
 export const Kanban = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
+    const [permissions, setPermissions] = useState([]);
+    const effectMounted = useRef(false);
+
+    useEffect(() => {
+        if (effectMounted.current === false) { 
+        const storedPermissions = localStorage.getItem('permissions');
+        if (storedPermissions) {
+            const parsedPermissions = JSON.parse(storedPermissions);
+            setPermissions(parsedPermissions);
+        }
+        effectMounted.current = true;
+    }
+    }, []);
 
     const handleCardClick = (card) => {
         setSelectedCard(card);
@@ -20,7 +33,7 @@ export const Kanban = () => {
 
     return (
         <div className="mt-[100px] ml-[50px] h-[624px] w-[1600px] text-neutral-50 rounded shadow-2xl shadow-violet-950">
-            <Board onCardClick={handleCardClick} />
+            <Board onCardClick={handleCardClick} permissions={permissions} />
             {isModalOpen && selectedCard && (
                 <Details card={selectedCard} onClose={handleCloseModal} />
             )}
@@ -28,7 +41,7 @@ export const Kanban = () => {
     );
 };
 
-const Board = ({ onCardClick }) => {
+const Board = ({ onCardClick, permissions }) => {
     const [cards, setCards] = useState(DEFAULT_CARDS);
 
     return (
@@ -40,6 +53,7 @@ const Board = ({ onCardClick }) => {
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
+                permissions={permissions}
             />
             <Column
                 title="Revisión"
@@ -48,6 +62,7 @@ const Board = ({ onCardClick }) => {
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
+                                permissions={permissions}
             />
             <Column
                 title="Aprobación"
@@ -56,6 +71,7 @@ const Board = ({ onCardClick }) => {
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
+                permissions={permissions}
             />
             <Column
                 title="Aprobado"
@@ -64,13 +80,14 @@ const Board = ({ onCardClick }) => {
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
+                permissions={permissions}
             />
             {/* <DelBarrel setCards={setCards} /> */}
         </div>
     );
 };
 
-const Column = ({ title, headingColor, column, cards, setCards, onCardClick }) => {
+const Column = ({ title, headingColor, column, cards, setCards, onCardClick, permissions }) => {
     const [active, setActive] = useState(false);
 
     const handleDragStart = (e, card) => {
@@ -107,7 +124,6 @@ const Column = ({ title, headingColor, column, cards, setCards, onCardClick }) =
 
                 copy.splice(insertAtIndex, 0, cardToTransfer);
             }
-
             setCards(copy);
         }
     };
@@ -191,7 +207,7 @@ const Column = ({ title, headingColor, column, cards, setCards, onCardClick }) =
                     return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
-                <AddCard column={column} setCards={setCards} />
+                <AddCard column={column} setCards={setCards} permissions={permissions} />
             </div>
         </div>
     );
@@ -261,7 +277,7 @@ const DelBarrel = ({ setCards }) => {
     );
 };
 
-const AddCard = ({ column, setCards }) => {
+const AddCard = ({ column, setCards, permissions }) => {
     const [text, setText] = useState("");
     const [adding, setAdding] = useState(false);
 
@@ -283,41 +299,48 @@ const AddCard = ({ column, setCards }) => {
 
     return (
         <>
-            {adding ? (
-                <motion.form onSubmit={handleSubmit}>
-                    <textarea
-                        onChange={(e) => setText(e.target.value)}
-                        autoFocus
-                        placeholder="Añadir proceso..."
-                        className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0" />
-                    <div className="mt-1 flex items=center justify-end gap-1.5">
-                        <button
-                            onClick={() => setAdding(false)}
-                            className="px-3 py-1 text-xs text-[#2C1C47] transition-colors">
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
-                            <span>Añadir</span>
+            {permissions.Create === 1 && ( // Condición para mostrar el botón solo si permissions.Create es igual a 1
+                <>
+                    {adding ? (
+                        <motion.form onSubmit={handleSubmit}>
+                            <textarea
+                                onChange={(e) => setText(e.target.value)}
+                                autoFocus
+                                placeholder="Añadir proceso..."
+                                className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"
+                            />
+                            <div className="mt-1 flex items=center justify-end gap-1.5">
+                                <button
+                                    onClick={() => setAdding(false)}
+                                    className="px-3 py-1 text-xs text-[#2C1C47] transition-colors"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors"
+                                >
+                                    <span>Añadir</span>
+                                    <FiPlus />
+                                </button>
+                            </div>
+                        </motion.form>
+                    ) : (
+                        <motion.button
+                            layout
+                            onClick={() => setAdding(true)}
+                            className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]"
+                        >
+                            <span>Añadir proceso</span>
                             <FiPlus />
-                        </button>
-                    </div>
-                </motion.form>
-            ) : (
-                <motion.button
-                    layout
-                    onClick={() => setAdding(true)}
-                    className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]">
-                    <span>
-                        Añadir proceso
-                    </span>
-                    <FiPlus />
-                </motion.button>)
-            }
+                        </motion.button>
+                    )}
+                </>
+            )}
         </>
     );
 };
+
 
 const DEFAULT_CARDS = [
     // Edicion
@@ -327,17 +350,17 @@ const DEFAULT_CARDS = [
     { title: "Edicion 4", id: "4", column: "Edicion" },
 
     // Revision
-    { title: "Revision 1", id: "4", column: "Revision" },
-    { title: "Revision 2", id: "5", column: "Revision" },
-    { title: "Revision 3", id: "6", column: "Revision" },
+    { title: "Revision 1", id: "5", column: "Revision" },
+    { title: "Revision 2", id: "6", column: "Revision" },
+    { title: "Revision 3", id: "7", column: "Revision" },
 
     // Aprobacion
-    { title: "Aprobacion 1", id: "7", column: "Aprobacion" },
-    { title: "Aprobacion 2", id: "8", column: "Aprobacion" },
+    { title: "Aprobacion 1", id: "8", column: "Aprobacion" },
+    { title: "Aprobacion 2", id: "9", column: "Aprobacion" },
 
     // Aprobado
-    { title: "Aprobado 1", id: "9", column: "Aprobado" },
-    { title: "Aprobado 2", id: "10", column: "Aprobado" },
+    { title: "Aprobado 1", id: "10", column: "Aprobado" },
+    { title: "Aprobado 2", id: "11", column: "Aprobado" },
 ];
 
 export default Kanban;

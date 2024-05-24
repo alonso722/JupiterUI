@@ -83,8 +83,7 @@ export default function CompleteAuth({
                                                 callback
                                                     ? '?callback=' + callback
                                                     : ''
-                                            }`}
-                                        >
+                                            }`}>
                                             Intentar de nuevo
                                         </CLink>
                                     </p>
