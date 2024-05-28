@@ -3,10 +3,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
-import { toast } from 'react-toastify';
-
-import Logout from '@/components/auth/logout'; 
 import Spinner from '@/components/misc/spinner';
+import Logout from '@/components/auth/logout'; 
 
 export default function Page() {
     const [authStateValue, setAuth] = useRecoilState(authState);
@@ -15,12 +13,11 @@ export default function Page() {
     const router = useRouter();
 
     useEffect(() => {
-
         setAuth((prevAuthState: any) => ({
             ...prevAuthState,
             loggedIn: false 
         }));
-        
+
         const timer = setTimeout(() => {
             setIsLoading(false); 
             router.push('/auth/login'); 
@@ -40,7 +37,7 @@ export default function Page() {
             <div className='flex justify-center py-3'>
                 <Spinner />
             </div>
-            <Logout />
+            <Logout /> 
         </>
     );
 }

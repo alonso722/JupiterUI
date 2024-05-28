@@ -82,8 +82,8 @@ const Details = ({ card, onClose }) => {
         </button>
         <div className='flex'>
           <div className='w-[800px]'>
-            <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.title}</h2>
-            <p className="mb-4 text-black">Detalles de la tarjeta.</p>
+            <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
+            <p className="mb-4 text-black">Detalles del proceso.</p>
             <div>
                 <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white'>
                     Cargar documento

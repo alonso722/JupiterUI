@@ -3,23 +3,55 @@ import { FaFire } from "react-icons/fa";
 import { FiTrash, FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Details from '../details/details';
+import useApi from '@/hooks/useApi';
 
 export const Kanban = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [permissions, setPermissions] = useState([]);
+    const [cards, setCards] = useState([]);
     const effectMounted = useRef(false);
+    const api= useApi();
 
     useEffect(() => {
         if (effectMounted.current === false) { 
-        const storedPermissions = localStorage.getItem('permissions');
-        if (storedPermissions) {
-            const parsedPermissions = JSON.parse(storedPermissions);
-            setPermissions(parsedPermissions);
+            const storedPermissions = localStorage.getItem('permissions');
+            if (storedPermissions) {
+                const parsedPermissions = JSON.parse(storedPermissions);
+                setPermissions(parsedPermissions);
+            }
+            api.post('/user/process/fetch')
+                .then((response) => {
+                    console.log("response en front",response.data.data);
+                    const fetchedCards = response.data.data.map(item => ({
+                        id: item.id.toString(),
+                        name: item.name,
+                        column: convertStatusToColumn(item.status)
+                    }));
+                    setCards(fetchedCards); 
+                })
+                .catch((error) => {
+                    console.error("Error al consultar procesos:", error);
+                });
+
+            effectMounted.current = true;
         }
-        effectMounted.current = true;
-    }
     }, []);
+
+    const convertStatusToColumn = (status) => {
+        switch(status) {
+            case '1':
+                return 'Edicion';
+            case '2':
+                return 'Revision';
+            case '3':
+                return 'Aprobacion';
+            case '4':
+                return 'Aprobado';
+            default:
+                return 'Edicion';
+        }
+    };
 
     const handleCardClick = (card) => {
         setSelectedCard(card);
@@ -33,7 +65,7 @@ export const Kanban = () => {
 
     return (
         <div className="mt-[100px] ml-[50px] h-[624px] w-[1600px] text-neutral-50 rounded shadow-2xl shadow-violet-950">
-            <Board onCardClick={handleCardClick} permissions={permissions} />
+            <Board onCardClick={handleCardClick} cards={cards} setCards={setCards} permissions={permissions} />
             {isModalOpen && selectedCard && (
                 <Details card={selectedCard} onClose={handleCloseModal} />
             )}
@@ -41,13 +73,11 @@ export const Kanban = () => {
     );
 };
 
-const Board = ({ onCardClick, permissions }) => {
-    const [cards, setCards] = useState(DEFAULT_CARDS);
-
+const Board = ({ onCardClick, cards, setCards, permissions }) => {
     return (
         <div className="flex h-full w-full gap-3 p-12 justify-between">
             <Column
-                title="Edición"
+                name="Edición"
                 column="Edicion"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
@@ -56,16 +86,16 @@ const Board = ({ onCardClick, permissions }) => {
                 permissions={permissions}
             />
             <Column
-                title="Revisión"
+                name="Revisión"
                 column="Revision"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
-                                permissions={permissions}
+                permissions={permissions}
             />
             <Column
-                title="Aprobación"
+                name="Aprobación"
                 column="Aprobacion"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
@@ -74,7 +104,7 @@ const Board = ({ onCardClick, permissions }) => {
                 permissions={permissions}
             />
             <Column
-                title="Aprobado"
+                name="Aprobado"
                 column="Aprobado"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
@@ -87,8 +117,9 @@ const Board = ({ onCardClick, permissions }) => {
     );
 };
 
-const Column = ({ title, headingColor, column, cards, setCards, onCardClick, permissions }) => {
+const Column = ({ name, headingColor, column, cards, setCards, onCardClick, permissions }) => {
     const [active, setActive] = useState(false);
+    const api = useApi(); // Inicializar el hook de API
 
     const handleDragStart = (e, card) => {
         e.dataTransfer.setData("cardId", card.id);
@@ -110,6 +141,7 @@ const Column = ({ title, headingColor, column, cards, setCards, onCardClick, per
 
             let cardToTransfer = copy.find((c) => c.id === cardId);
             if (!cardToTransfer) return;
+            const oldColumn = cardToTransfer.column; 
             cardToTransfer = { ...cardToTransfer, column };
 
             copy = copy.filter((c) => c.id !== cardId);
@@ -121,10 +153,22 @@ const Column = ({ title, headingColor, column, cards, setCards, onCardClick, per
             } else {
                 const insertAtIndex = copy.findIndex((el) => el.id === before);
                 if (insertAtIndex === undefined) return;
-
                 copy.splice(insertAtIndex, 0, cardToTransfer);
             }
+
             setCards(copy);
+
+            api.post('/user/process/update', {
+                id: cardId,
+                newColumn: column,
+                oldColumn: oldColumn,
+            })
+            .then((response) => {
+                console.log("Columna actualizada en backend:", response.data);
+            })
+            .catch((error) => {
+                console.error("Error al actualizar la columna en backend:", error);
+            });
         }
     };
 
@@ -191,7 +235,7 @@ const Column = ({ title, headingColor, column, cards, setCards, onCardClick, per
     return (
         <div className="w-56 shrink-0">
             <div className="mb-3 flex items-center justify-between">
-                <h3 className={`font-medium ${headingColor}`}>{title}</h3>
+                <h3 className={`font-medium ${headingColor}`}>{name}</h3>
                 <span className="rounded text-sm text-[#2C1C47]">
                     {filteredCards.length}
                 </span>
@@ -213,7 +257,8 @@ const Column = ({ title, headingColor, column, cards, setCards, onCardClick, per
     );
 };
 
-const Card = ({ title, id, column, handleDragStart, onCardClick }) => {
+
+const Card = ({ name, id, column, handleDragStart, onCardClick }) => {
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
@@ -221,11 +266,11 @@ const Card = ({ title, id, column, handleDragStart, onCardClick }) => {
                 layout
                 layoutId={id}
                 draggable="true"
-                onDragStart={(e) => handleDragStart(e, { title, id, column })}
-                onClick={() => onCardClick({ title, id, column })}
+                onDragStart={(e) => handleDragStart(e, { name, id, column })}
+                onClick={() => onCardClick({ name, id, column })}
                 className="cursor-grab rounded border border-neutral-700 bg-[#2C1C47] p-3 active:cursor-grabbing">
                 <p className="text-sm text-neutral-50">
-                    {title}
+                    {name}
                 </p>
             </motion.div>
         </>
@@ -280,26 +325,39 @@ const DelBarrel = ({ setCards }) => {
 const AddCard = ({ column, setCards, permissions }) => {
     const [text, setText] = useState("");
     const [adding, setAdding] = useState(false);
+    const api = useApi();
 
     const handleSubmit = (e) => {
         e.preventDefault();
 
         if (!text.trim().length) return;
 
+        const tempId = Date.now().toString();  
+
         const newCard = {
             column,
-            title: text.trim(),
-            id: Math.random().toString(),
+            name: text.trim(),
+            id: tempId,  
         };
 
-        setCards((pv) => [...pv, newCard]);
+        setCards((prevCards) => [...prevCards, newCard]); 
+        
+        api.post('/user/process/add', newCard)
+            .then((response) => {
+
+            })
+            .catch((error) => {
+                console.error("Error al añadir:", error);
+            });
+
+        //setCards((pv) => [...pv, newCard]);
 
         setAdding(false);
     };
 
     return (
         <>
-            {permissions.Create === 1 && ( // Condición para mostrar el botón solo si permissions.Create es igual a 1
+            {permissions.Create === 1 && ( 
                 <>
                     {adding ? (
                         <motion.form onSubmit={handleSubmit}>
@@ -307,19 +365,16 @@ const AddCard = ({ column, setCards, permissions }) => {
                                 onChange={(e) => setText(e.target.value)}
                                 autoFocus
                                 placeholder="Añadir proceso..."
-                                className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"
-                            />
+                                className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"/>
                             <div className="mt-1 flex items=center justify-end gap-1.5">
                                 <button
                                     onClick={() => setAdding(false)}
-                                    className="px-3 py-1 text-xs text-[#2C1C47] transition-colors"
-                                >
+                                    className="px-3 py-1 text-xs text-[#2C1C47] transition-colors">
                                     Cancelar
                                 </button>
                                 <button
                                     type="submit"
-                                    className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors"
-                                >
+                                    className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
                                     <span>Añadir</span>
                                     <FiPlus />
                                 </button>
@@ -329,8 +384,7 @@ const AddCard = ({ column, setCards, permissions }) => {
                         <motion.button
                             layout
                             onClick={() => setAdding(true)}
-                            className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]"
-                        >
+                            className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]">
                             <span>Añadir proceso</span>
                             <FiPlus />
                         </motion.button>
@@ -340,27 +394,5 @@ const AddCard = ({ column, setCards, permissions }) => {
         </>
     );
 };
-
-
-const DEFAULT_CARDS = [
-    // Edicion
-    { title: "Edicion 1", id: "1", column: "Edicion" },
-    { title: "Edicion 2", id: "2", column: "Edicion" },
-    { title: "Edicion 3", id: "3", column: "Edicion" },
-    { title: "Edicion 4", id: "4", column: "Edicion" },
-
-    // Revision
-    { title: "Revision 1", id: "5", column: "Revision" },
-    { title: "Revision 2", id: "6", column: "Revision" },
-    { title: "Revision 3", id: "7", column: "Revision" },
-
-    // Aprobacion
-    { title: "Aprobacion 1", id: "8", column: "Aprobacion" },
-    { title: "Aprobacion 2", id: "9", column: "Aprobacion" },
-
-    // Aprobado
-    { title: "Aprobado 1", id: "10", column: "Aprobado" },
-    { title: "Aprobado 2", id: "11", column: "Aprobado" },
-];
 
 export default Kanban;
