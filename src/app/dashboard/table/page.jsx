@@ -9,7 +9,7 @@ import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
-import Kanban from '@/components/kanban/columns';
+import TanStackTable from '@/components/table/table';
 
 export default function Page({ }) {
 
@@ -51,7 +51,7 @@ export default function Page({ }) {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <Kanban/>
+                <TanStackTable/>
             </div>
         </div>
     );
