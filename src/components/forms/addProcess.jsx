@@ -1,0 +1,428 @@
+import React, { useState, useEffect, Fragment, useRef } from 'react';
+import { Listbox, Transition } from '@headlessui/react';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import useApi from '@/hooks/useApi';
+
+const status = [
+  { id: 1, column: 'Edicion' },
+  { id: 2, column: 'Revision' },
+  { id: 3, column: 'Aprobacion' },
+  { id: 4, column: 'Aprobado' },
+];
+
+function classNames(...classes) {
+  return classes.filter(Boolean).join(' ');
+}
+
+const DocumentUploadModal = ({ isOpen, onClose }) => {
+    const [file, setFile] = useState(null);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const effectMounted = useRef(false);
+
+    const handleFileChange = (e) => {
+      setFile(e.target.files[0]);
+    };
+  
+    const handleSubmit = () => {
+      // Logic to handle the document submission
+      console.log({ file, title, description });
+      onClose(); // Close the modal after submission
+    };
+  
+    if (!isOpen) return null;
+  
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
+          <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
+            &times;
+          </button>
+          <h2 className="text-2xl mb-4">Cargar documento</h2>
+          <input type="file" onChange={handleFileChange} className="mb-4" />
+          {file && (
+            <div className="mb-4 text-black">
+              <p>Archivo seleccionado: {file.name}</p>
+              <p>Tamaño: {file.size < 1024 ? file.size + " bytes" : file.size < 1048576 ? (file.size / 1024).toFixed(2) + " KB" : (file.size / 1048576).toFixed(2) + " MB"}</p>
+            </div>
+          )}
+          <input
+            type="text"
+            placeholder="Título del documento"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="mb-4 w-full p-2 border border-gray-300 rounded"
+          />
+          <textarea
+            placeholder="Descripción del documento"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="mb-4 w-full p-2 border border-gray-300 rounded"
+          />
+          <button onClick={handleSubmit} className="bg-[#2C1C47] p-2 rounded text-white">
+            Cargar
+          </button>
+        </div>
+      </div>
+    );
+};
+
+const AddProcessForm = ({ card, onClose }) => {
+  const [selectedStatus, setSelectedStatus] = useState(status[0]);
+  const [selectedUser1, setSelectedUser1] = useState(null);
+  const [selectedUser2, setSelectedUser2] = useState(null);
+  const [selectedUser3, setSelectedUser3] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [processName, setProcessName] = useState('');
+  const effectMounted = useRef(false);
+  const api = useApi();
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    if (effectMounted.current === false) {
+      api.post('/user/process/fetchUsers')
+        .then((response) => {
+          console.log("response en front", response.data);
+          const usersData = response.data;
+          setUsers(usersData);
+        })
+        .catch((error) => {
+          console.error("Error al consultar procesos:", error);
+        });
+      effectMounted.current = true;
+      console.log(selectedUser1, selectedUser2, selectedUser3);
+    }
+  }, []);
+
+  const userOptions = users.map(user => ({
+    id: user.id,
+    column: user.userName
+  }));
+
+  const handleAddProcess = () => {
+    const convertColumnToStatus = (column) => {
+      switch(column) {
+        case 'Edicion':
+          return '1';
+        case 'Revision':
+          return '2';
+        case 'Aprobacion':
+          return '3';
+        case 'Aprobado':
+          return '4';
+        default:
+          return '1';
+      }
+    };
+  
+    const processDetails = {
+      processName,
+      selectedStatus: convertColumnToStatus(selectedStatus.column),
+      editor: selectedUser1 ? { name: selectedUser1.column, uuid: null } : null,
+      revisor: selectedUser2 ? { name: selectedUser2.column, uuid: null } : null,
+      aprobator: selectedUser3 ? { name: selectedUser3.column, uuid: null } : null,
+    };
+  
+    if (users.length > 0 && selectedUser1 && selectedUser2 && selectedUser3) {
+      const user1 = users.find(user => user.userName === selectedUser1.column);
+      const user2 = users.find(user => user.userName === selectedUser2.column);
+      const user3 = users.find(user => user.userName === selectedUser3.column);
+  
+      if (user1 && user2 && user3) {
+        processDetails.editor.uuid = user1.userUuid;
+        processDetails.revisor.uuid = user2.userUuid;
+        processDetails.aprobator.uuid = user3.userUuid;
+  
+        console.log("Detalles del proceso con UUIDs:", processDetails);
+      } else {
+        console.log("Error: No se encontró el UUID de algún usuario seleccionado.");
+      }
+    } else {
+      console.log("Error: No se han cargado usuarios o no se han seleccionado todos los usuarios.");
+    }
+  };
+  
+  
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[800px] h-[700px] relative">
+        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
+          &times;
+        </button>
+        <div className='flex'>
+          <div className='w-[400px]'>
+            <h2 className="text-2xl mt-[15px] mb-4 text-black">                
+                <input
+                    type="text"
+                    placeholder="Nombre del proceso"
+                    value={processName}
+                    onChange={(e) => setProcessName(e.target.value)}
+                    className="w-full border-none focus:outline-none"/>
+            </h2>
+            <p className="mb-4 text-black">Detalles del proceso:</p>
+            <div>
+                <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                    Cargar documento
+                </button>
+            </div>
+            <div className='mt-4 text-black rounded border-1 border-indigo-200/50 p-2 w-[350px] h-[350px]'>
+                <h3>Descripcion del proceso:</h3>
+                <textarea
+                    //onChange={(e) => setText(e.target.value)}
+                    autoFocus
+                    placeholder="Describe brevemente el proceso"
+                    className=" mt-[15px] w-full h-[300px] rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"/>
+            </div>
+          </div>
+          <div className='mt-10 border-l-4 p-3 max-w-[300px]'>
+            <Listbox value={selectedStatus} onChange={setSelectedStatus}>
+              {({ open }) => (
+                <>
+                  <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
+                  <div className="relative mt-2">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                      <span className="flex items-center">
+                        <span className="ml-3 block truncate">{selectedStatus.column}</span>
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </span>
+                    </Listbox.Button>
+
+                    <Transition
+                      show={open}
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0">
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        {status.map((state) => (
+                          <Listbox.Option
+                            key={state.id}
+                            className={({ active }) =>
+                              classNames(
+                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                              )
+                            }
+                            value={state}>
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  <span
+                                    className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
+                                    {state.column}
+                                  </span>
+                                </div>
+
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? 'text-white' : 'text-indigo-600',
+                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                    )}>
+                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </>
+              )}
+            </Listbox>
+            <Listbox value={selectedUser1} onChange={setSelectedUser1} className="mt-4">
+              {({ open }) => (
+                <>
+                  <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Responsable</Listbox.Label>
+                  <div className="relative mt-2">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                      <span className="flex items-center">
+                        <span className="ml-3 block truncate">{selectedUser1 ? selectedUser1.column : "Seleccione un usuario"}</span>
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </span>
+                    </Listbox.Button>
+
+                    <Transition
+                      show={open}
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0">
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        {userOptions.map((user) => (
+                          <Listbox.Option
+                            key={user.id}
+                            className={({ active }) =>
+                              classNames(
+                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                              )
+                            }
+                            value={user}>
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  <span
+                                    className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
+                                    {user.column}
+                                  </span>
+                                </div>
+
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? 'text-white' : 'text-indigo-600',
+                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                    )}>
+                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </>
+              )}
+            </Listbox>
+            <Listbox value={selectedUser2} onChange={setSelectedUser2} className="mt-4">
+              {({ open }) => (
+                <>
+                  <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Revisor</Listbox.Label>
+                  <div className="relative mt-2">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                      <span className="flex items-center">
+                        <span className="ml-3 block truncate">{selectedUser2 ? selectedUser2.column : "Seleccione un usuario"}</span>
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </span>
+                    </Listbox.Button>
+
+                    <Transition
+                      show={open}
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0">
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        {userOptions.map((user) => (
+                          <Listbox.Option
+                            key={user.id}
+                            className={({ active }) =>
+                              classNames(
+                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                              )
+                            }
+                            value={user}>
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  <span
+                                    className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
+                                    {user.column}
+                                  </span>
+                                </div>
+
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? 'text-white' : 'text-indigo-600',
+                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                    )}>
+                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </>
+              )}
+            </Listbox>
+            <Listbox value={selectedUser3} onChange={setSelectedUser3} className="mt-4">
+              {({ open }) => (
+                <>
+                  <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Aprobador</Listbox.Label>
+                  <div className="relative mt-2">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                      <span className="flex items-center">
+                        <span className="ml-3 block truncate">{selectedUser3 ? selectedUser3.column : "Seleccione un usuario"}</span>
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </span>
+                    </Listbox.Button>
+
+                    <Transition
+                      show={open}
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0">
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        {userOptions.map((user) => (
+                          <Listbox.Option
+                            key={user.id}
+                            className={({ active }) =>
+                              classNames(
+                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                'relative cursor-default select-none py-2 pl-3 pr-9'
+                              )
+                            }
+                            value={user}>
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  <span
+                                    className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
+                                    {user.column}
+                                  </span>
+                                </div>
+
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? 'text-white' : 'text-indigo-600',
+                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                    )}>
+                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </>
+              )}
+            </Listbox>
+          </div>
+        </div>
+        <div className="mt-4 flex justify-end">
+          <button onClick={handleAddProcess} className="bg-[#2C1C47] p-2 rounded text-white">
+            Añadir proceso
+          </button>
+        </div>
+        {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />}
+      </div>
+    </div>
+  );
+};
+
+export default AddProcessForm;

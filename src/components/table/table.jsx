@@ -6,10 +6,12 @@ import {
     getPaginationRowModel,
     useReactTable,
 } from "@tanstack/react-table";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
-import AddButton from "./addButton";
 import Search from "./search";
+import { Button } from '../form/button';
+import { colors } from '../types/enums/colors';
+import AddProcessForm from "../forms/addProcess";
 
 const TanStackTable = () => {
     const columnHelper = createColumnHelper();
@@ -55,19 +57,21 @@ const TanStackTable = () => {
 
     const [data, setData] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
-
+    const effectMounted = useRef(false);
+    let fetchedData
     useEffect(() => {
+        if (effectMounted.current === false) {
         api.post('/user/process/fetchTab')
             .then((response) => {
                 console.log("response en front", response.data.data);
-                const fetchedData = response.data.data.map(item => ({
+                 fetchedData = response.data.data.map(item => ({
                     id: item.id,
                     process: item.process, 
                     department: item.departmentName,
                     editor: item.editor,
                     revisor: item.revisor,
                     aprobator: item.aprobator,
-                    status: item.status,
+                    status: convertStatusToColumn(item.status),
                     created: formatDate(item.created),
                     updated: formatDate(item.updated),
                 }));
@@ -76,7 +80,24 @@ const TanStackTable = () => {
             .catch((error) => {
                 console.error("Error al consultar procesos:", error);
             });
+        }
+        effectMounted.current = true;
     }, []);
+
+    const convertStatusToColumn = (status) => {
+        switch(status) {
+            case '1':
+                return 'Edicion';
+            case '2':
+                return 'Revision';
+            case '3':
+                return 'Aprobacion';
+            case '4':
+                return 'Aprobado';
+            default:
+                return 'Edicion';
+        }
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -100,6 +121,16 @@ const TanStackTable = () => {
         getPaginationRowModel: getPaginationRowModel(),
     });
 
+    const [showForm, setShowForm] = useState(false);
+
+    const handleButtonClick = () => {
+        setShowForm(!showForm);
+    };
+
+    const handleCloseForm = () => {
+        setShowForm(false);
+    };
+
     return (
         <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
@@ -117,10 +148,18 @@ const TanStackTable = () => {
                         placeholder="Buscar"
                     />
                 </div>
-                <AddButton />
+                <div className="grid grid-rows-1 mt-[10px]">
+            <Button
+                rounded
+                color={colors.ALTERNATIVE}
+                onClick={handleButtonClick}>
+                Añadir
+            </Button>
+            {showForm && <AddProcessForm onClose={handleCloseForm} />}
+        </div>
             </div>
-            <table className="border border-gray-700 w-full text-left">
-                <thead className="bg-[#FDD500] text-black">
+            <table className=" w-full text-left rounded-lg">
+                <thead className="bg-[#FDD500] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
@@ -164,7 +203,7 @@ const TanStackTable = () => {
                         table.previousPage();
                     }}
                     disabled={!table.getCanPreviousPage()}
-                    className="p-1 border border-purple-950 px-2 disabled:opacity-30 rounded">
+                    className="p-1 border border-purple-950 px-2  rounded">
                     {"<"}
                 </button>
                 <button
@@ -172,7 +211,7 @@ const TanStackTable = () => {
                         table.nextPage();
                     }}
                     disabled={!table.getCanNextPage()}
-                    className="p-1 border border-purple-950 px-2 disabled:opacity-30 rounded">
+                    className="p-1 border border-purple-950 px-2 rounded">
                     {">"}
                 </button>
 

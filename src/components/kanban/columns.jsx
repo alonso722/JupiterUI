@@ -20,12 +20,12 @@ export const Kanban = () => {
                 const parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
-            api.post('/user/process/fetch')
+            api.post('/user/process/fetchTab')
                 .then((response) => {
                     console.log("response en front",response.data.data);
                     const fetchedCards = response.data.data.map(item => ({
                         id: item.id.toString(),
-                        name: item.name,
+                        name: item.process,
                         column: convertStatusToColumn(item.status)
                     }));
                     setCards(fetchedCards); 
@@ -361,7 +361,7 @@ const AddCard = ({ column, setCards, permissions }) => {
                 <>
                     {adding ? (
                         <motion.form onSubmit={handleSubmit}>
-                            <textarea
+                            <input
                                 onChange={(e) => setText(e.target.value)}
                                 autoFocus
                                 placeholder="Añadir proceso..."
