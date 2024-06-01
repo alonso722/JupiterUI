@@ -2,6 +2,8 @@ import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import useApi from '@/hooks/useApi';
+import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
+import StatusSelect from '../misc/selects/statusSelect';
 
 const status = [
   { id: 1, column: 'Edicion' },
@@ -74,6 +76,7 @@ const AddProcessForm = ({ card, onClose }) => {
   const [selectedUser3, setSelectedUser3] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [processName, setProcessName] = useState('');
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
   const effectMounted = useRef(false);
   const api = useApi();
   const [users, setUsers] = useState([]);
@@ -90,7 +93,6 @@ const AddProcessForm = ({ card, onClose }) => {
           console.error("Error al consultar procesos:", error);
         });
       effectMounted.current = true;
-      console.log(selectedUser1, selectedUser2, selectedUser3);
     }
   }, []);
 
@@ -98,7 +100,16 @@ const AddProcessForm = ({ card, onClose }) => {
     id: user.id,
     column: user.userName
   }));
-
+  
+    const handleSelectionDepartment = (selected) => {
+      setSelectedDepartments(selected);
+      console.log("Selected departments in AddForm:", selected);
+    };
+    
+    const handleSelectionStatus = (selected) => {
+      setSelectedDepartments(selected);
+      console.log("Selected departments in AddForm:", selected);
+    };
   const handleAddProcess = () => {
     const convertColumnToStatus = (column) => {
       switch(column) {
@@ -134,6 +145,15 @@ const AddProcessForm = ({ card, onClose }) => {
         processDetails.aprobator.uuid = user3.userUuid;
   
         console.log("Detalles del proceso con UUIDs:", processDetails);
+        
+        api.post('/user/process/addTab', processDetails)
+        .then((response) => {
+          console.log("response en front", response.data);
+          const add = response.data;
+        })
+        .catch((error) => {
+          console.error("Error al consultar procesos:", error);
+        });
       } else {
         console.log("Error: No se encontró el UUID de algún usuario seleccionado.");
       }
@@ -142,8 +162,6 @@ const AddProcessForm = ({ card, onClose }) => {
     }
   };
   
-  
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[800px] h-[700px] relative">
@@ -162,6 +180,9 @@ const AddProcessForm = ({ card, onClose }) => {
             </h2>
             <p className="mb-4 text-black">Detalles del proceso:</p>
             <div>
+              <DepartmentsChecks onSelectionChange={handleSelectionDepartment} />
+            </div>
+            <div>
                 <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white'>
                     Cargar documento
                 </button>
@@ -176,65 +197,7 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           </div>
           <div className='mt-10 border-l-4 p-3 max-w-[300px]'>
-            <Listbox value={selectedStatus} onChange={setSelectedStatus}>
-              {({ open }) => (
-                <>
-                  <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
-                  <div className="relative mt-2">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
-                      <span className="flex items-center">
-                        <span className="ml-3 block truncate">{selectedStatus.column}</span>
-                      </span>
-                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                      </span>
-                    </Listbox.Button>
-
-                    <Transition
-                      show={open}
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0">
-                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {status.map((state) => (
-                          <Listbox.Option
-                            key={state.id}
-                            className={({ active }) =>
-                              classNames(
-                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                                'relative cursor-default select-none py-2 pl-3 pr-9'
-                              )
-                            }
-                            value={state}>
-                            {({ selected, active }) => (
-                              <>
-                                <div className="flex items-center">
-                                  <span
-                                    className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
-                                    {state.column}
-                                  </span>
-                                </div>
-
-                                {selected ? (
-                                  <span
-                                    className={classNames(
-                                      active ? 'text-white' : 'text-indigo-600',
-                                      'absolute inset-y-0 right-0 flex items-center pr-4'
-                                    )}>
-                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Transition>
-                  </div>
-                </>
-              )}
-            </Listbox>
+          <StatusSelect onSelectionChange={handleSelectionStatus} />
             <Listbox value={selectedUser1} onChange={setSelectedUser1} className="mt-4">
               {({ open }) => (
                 <>
@@ -258,7 +221,7 @@ const AddProcessForm = ({ card, onClose }) => {
                       <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                         {userOptions.map((user) => (
                           <Listbox.Option
-                            key={user.id}
+                            key={`user1-${user.id}`}
                             className={({ active }) =>
                               classNames(
                                 active ? 'bg-indigo-600 text-white' : 'text-gray-900',
@@ -317,7 +280,7 @@ const AddProcessForm = ({ card, onClose }) => {
                       <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                         {userOptions.map((user) => (
                           <Listbox.Option
-                            key={user.id}
+                            key={`user2-${user.id}`}
                             className={({ active }) =>
                               classNames(
                                 active ? 'bg-indigo-600 text-white' : 'text-gray-900',
@@ -376,7 +339,7 @@ const AddProcessForm = ({ card, onClose }) => {
                       <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
                         {userOptions.map((user) => (
                           <Listbox.Option
-                            key={user.id}
+                            key={`user3-${user.id}`}
                             className={({ active }) =>
                               classNames(
                                 active ? 'bg-indigo-600 text-white' : 'text-gray-900',
