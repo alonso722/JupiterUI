@@ -1,74 +1,108 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 
-const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange }) => {
+const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions, setSelectedOptions }) => {
   const [options, setOptions] = useState([]);
-  const [selectedOptions, setSelectedOptions] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  //const [selectedOptions, setSelectedOptions] = useState([]);
+  const [searchSearch, setSearch] = useState('');
   const effectMounted = useRef(false);
   const api = useApi();
 
-  useEffect(() => {
-    if (!effectMounted.current) {
-      api.get('/user/departments/list')
+  const fetchDepartments = (search) => {
+    if (search) {
+      api.post('/user/departments/search', { search })
         .then((response) => {
           console.log("Render de checks");
           console.log("Departments", response.data);
-          setOptions(response.data.data.map(option => ({ ...option, checked: false })));
+          setOptions(response.data.data.map(option => ({ ...option, })));
         })
         .catch((error) => {
           console.error("Error al consultar departamentos:", error);
         });
+    } else {
+      setOptions([]);
+    }
+  };
+
+  useEffect(() => {
+    if (!effectMounted.current) {
+      fetchDepartments('');
       effectMounted.current = true;
     }
   }, []);
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
+  useEffect(() => {
+    if (effectMounted.current) {
+      fetchDepartments(searchSearch);
+    }
+  }, [searchSearch]);
 
-  const handleCheckboxClick = (index) => {
-    const updatedOptions = [...options];
-    updatedOptions[index].checked = !updatedOptions[index].checked;
-    setOptions(updatedOptions);
-    if (typeof handleCheckboxChange === 'function') {
-      handleCheckboxChange(updatedOptions[index].id);
+  const handleAddOption = (option) => {
+    const index = selectedOptions.findIndex(selected => selected.id === option.id);
+    if (index === -1) {
+      setSelectedOptions([...selectedOptions, option]);
+    } else {
+      const updatedOptions = [...selectedOptions];
+      updatedOptions.splice(index, 1);
+      setSelectedOptions(updatedOptions);
     }
   };
 
-  const handleCloseDepartments = () => {
-    const selected = options.filter(option => option.checked);
-    setSelectedOptions(selected);
-    console.log("Opciones seleccionadas:", selected);
-    if (typeof onSelectionChange === 'function') {
-      onSelectionChange(selected);
-    }
-    toggleDropdown();
+  const handleRemoveOption = (option) => {
+    const updatedOptions = selectedOptions.filter(selected => selected.id !== option.id);
+    setSelectedOptions(updatedOptions);
   };
+
+  const handleInputChange = (e) => {
+    setSearch(e.target.value);
+  };
+
+  // Efecto secundario para imprimir en la consola el arreglo de opciones seleccionadas cada vez que cambia
+  useEffect(() => {
+    console.log("departamentos en AddForm:", selectedOptions);
+  }, [selectedOptions]);
 
   return (
     <div className='text-black my-[10px]'>
-      <p>Seleccione departamentos:</p>
       <div className="relative">
-        <button onClick={dropdownOpen ? handleCloseDepartments : toggleDropdown} className="outline outline-1 outline-gray-300 text-black px-2 py-2 rounded">
-          Departamentos {dropdownOpen ? "▲" : "▼"}
-        </button>
-        {dropdownOpen && (
-          <div className="absolute top-full left-0 bg-white border border-gray-300 py-2 px-4 shadow">
-            {options.map((option, index) => (
-              <div key={`option${index}${option.id}`} className="flex items-center">
-                <input
-                  type="checkbox"
-                  id={`option${index}${option.id}`}
-                  checked={option.checked}
-                  onChange={() => handleCheckboxClick(index)}
-                  className="mr-2"
-                />
-                <label htmlFor={`option${index}${option.id}`} className="text-black">{option.department}</label>
-              </div>
-            ))}
-          </div>
-        )}
+        <input 
+          type="text" 
+          className="outline outline-1 outline-gray-300 text-black px-2 py-2 rounded" 
+          placeholder="Buscar departamentos"
+          value={searchSearch}
+          onChange={handleInputChange}
+        />
+      </div>
+      {searchSearch && (
+        <div className="mt-2 max-h-[150px] overflow-y-auto">
+          {options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
+            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
+              <span>{option.department}</span>
+              <button 
+                className="bg-blue-500 text-white px-2 py-1 rounded"
+                onClick={() => handleAddOption(option)}>
+                +
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className='border mt-3 p-2'>
+        <h3 className='text-black'>
+          <b>Departamentos seleccionados:</b>
+        </h3>
+        <div>
+          {selectedOptions.map((option, index) => (
+            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 overflow-y-auto">
+              <span>{option.department}</span>
+              <button 
+                className="bg-red-500 text-white px-2 py-1 rounded"
+                onClick={() => handleRemoveOption(option)}>
+                -
+              </button>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
