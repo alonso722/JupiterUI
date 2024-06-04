@@ -21,22 +21,25 @@ const DocumentUploadModal = ({ isOpen, onClose }) => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('title', title);
-    formData.append('description', description);
+    // formData.append('title', title);
+    // formData.append('description', description);
 
     try {
       console.log("se envia archivo!", file.name);
-      const response = await api.post('http://localhost:8030/api/v1/file?f='+file.name, formData);
-      console.log(response.data.data.md5)
-      // if (response.ok) {
-      //   const result = await response.json();
-      //   console.log('Archivo cargado exitosamente:', result);
-      //   // Aquí puedes manejar la respuesta del servidor
-      //   onClose();
-      // } else {
-      //   console.error('Error al cargar el archivo:', response.statusText);
-      //   alert('Error al cargar el archivo');
-      // }
+      console.log("/user/file/store", formData, file.name, file)
+      const response = await api.post('/user/file/store', formData);
+      let filems = response.data.data;
+      console.log("response ec file,", filems)
+      let path = response.data.path;
+      if (response) {
+        console.log('Archivo cargado exitosamente:', path);
+        // const apiResponse = await api.post("/user/file/bind", { path });
+        // console.log(apiResponse);
+        onClose();
+      } else {
+        console.error('Error al cargar el archivo:', response.statusText);
+        alert('Error al cargar el archivo');
+      }
     } catch (error) {
       console.error('Error en la solicitud:', error);
       alert('Error en la solicitud');
