@@ -1,6 +1,7 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import useApi from '@/hooks/useApi';
 
 const status = [
   { id: 1, column: 'Edicion' },
@@ -13,105 +14,131 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-const DocumentUploadModal = ({ isOpen, onClose }) => {
+const DocumentDownload = ({ isOpen, onClose }) => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
-  };
-
-  const handleSubmit = () => {
-    // Logic to handle the document submission
-    console.log({ file, title, description });
-    onClose(); // Close the modal after submission
-  };
+  const api = useApi();
 
   if (!isOpen) return null;
 
-  return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
-        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
-        <h2 className="text-2xl mb-4">Cargar documento</h2>
-        <input type="file" onChange={handleFileChange} className="mb-4" />
-        {file && (
-          <div className="mb-4 text-black">
-            <p>Archivo seleccionado: {file.name}</p>
-            <p>Tamaño: {file.size < 1024 ? file.size + " bytes" : file.size < 1048576 ? (file.size / 1024).toFixed(2) + " KB" : (file.size / 1048576).toFixed(2) + " MB"}</p>
-          </div>
-        )}
-        <input
-          type="text"
-          placeholder="Título del documento"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded"
-        />
-        <textarea
-          placeholder="Descripción del documento"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded"
-        />
-        <button onClick={handleSubmit} className="bg-[#2C1C47] p-2 rounded text-white">
-          Cargar
-        </button>
-      </div>
-    </div>
-  );
+  return <></>;
 };
 
 const Details = ({ card, onClose }) => {
   const [selected, setSelected] = useState(status[0]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [departmentNameF, setDeptName] = useState({});
+  const [document, setDocument] = useState({});
+  const [roles, setRoles] = useState({});
+  const effectMounted = useRef(false);
+  const api = useApi();
 
   useEffect(() => {
-    const initialStatus = status.find(state => state.column === card.column) || status[0];
-    setSelected(initialStatus);
-  }, [card.column]);
+    if (effectMounted.current === false) {
+      const fetchDocument = async () => {
+        try {
+          const initialStatus = status.find(state => state.column === card.column) || status[0];
+          console.log("Roles para datos<<<<<,", card);
+          const responseDep = await api.post('/user/departments/getName', card);
+          const departmentName = responseDep.data.data;
+          console.log("Nameeeeee", departmentName)
+          setDeptName(departmentName);
+
+          const responseDoc = await api.post('/user/document/fetch', card);
+          const fetchDocument = responseDoc.data.data[0];
+          setDocument(fetchDocument);
+          setSelected(initialStatus);
+
+          const responseRole = await api.post('/user/role/fetch', fetchDocument);
+          const rolesData = responseRole.data.data;
+          setRoles(rolesData);
+
+        } catch (error) {
+          console.error("Error al consultar procesos:", error);
+        }
+      };
+
+      fetchDocument();
+      effectMounted.current = true;
+    }
+  }, [card.column, api]);
+
+  const getFileIcon = (filename) => {
+    if (!filename) {
+      return '/icons/question.png';
+    }
+    const extension = filename.split('.').pop().toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return '/icons/pdf.png';
+      case 'doc':
+      case 'docx':
+        return '/icons/doc.png';
+      case 'xls':
+      case 'xlsx':
+        return '/icons/excel.png';
+      default:
+        return '/icons/question.png'; // Icono default
+    }
+  };
+
+  const handleDownload = (path) => {
+    console.log("path de descarga!!!!", path);
+    if (path) {
+      window.open('http://localhost:8030/api/v1/file?f=' + path, '_blank');
+    } else {
+      console.error("URL del documento no está disponible");
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[1500px] h-[700px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
         <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
         <div className='flex'>
-          <div className='w-[800px]'>
+          <div className='w-[50%] '>
+          <p className='text-black'>
+            {departmentNameF && `${departmentNameF}`}
+          </p>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
-            <p className="mb-4 text-black">Detalles del proceso.</p>
-            <div>
-                <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                    Cargar documento
-                </button>
-            </div>
-            <div className='mt-4 text-black rounded border-1 border-indigo-200/50 p-2 w-[750px] h-[350px]'>
-                <h3>Descripcion del proceso</h3>
-            </div>
-            <div className='mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[750px]'>
-                <input
-                    type="text"
-                    placeholder="Agrega un comentario"
-                    className="w-full border-none focus:outline-none"
-                />
+            <p className="mb-4 text-black">Detalles del proceso</p>
+            <p className="mt-[15px] text-black">Documento asignado al proceso:</p>
+            <div className='w-[50%] flex flex-col items-center justify-center'>
+              <p className="mt-[15px] text-black">{document.title}</p>
+              <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+              <p className="mt-[px] mb-4 text-black">{document.name}</p>
             </div>
             <div>
-                <button className='mt-4 bg-[#2C1C47] p-2 rounded text-white'>
-                    Enviar comentario
-                </button>
+              <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                Descargar documento
+              </button>
+            </div>
+            <div className='mt-4 text-black rounded border-1 border-indigo-200/50 p-2 w-[750px] h-[50px]'>
+              <h3>Descripcion del proceso</h3>
+            </div>
+            <div className='mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[90%]'>
+              <input
+                type="text"
+                placeholder="Agrega un comentario"
+                className="w-full border-none focus:outline-none"
+              />
+            </div>
+            <div>
+              <button className='mt-4 bg-[#2C1C47] p-2 rounded text-white'>
+                Enviar comentario
+              </button>
             </div>
           </div>
-          <div className='mt-10 border-l-4 p-3 max-w-[200px]'>
-            <Listbox value={selected} onChange={setSelected}>
+          <div className='mt-10 border-l-4 p-3 w-[500px] '>
+            <Listbox value={selected} onChange={setSelected} className="w-[100px]">
               {({ open }) => (
                 <>
                   <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
                   <div className="relative mt-2">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 w-[100px]">
                       <span className="flex items-center">
                         <span className="ml-3 block truncate">{selected.column}</span>
                       </span>
@@ -165,27 +192,23 @@ const Details = ({ card, onClose }) => {
                 </>
               )}
             </Listbox>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[500px]">
-                <p>
-                    Detalles del proceso:
-                </p>
-                <p className='mt-4'>
-                    Editado por:
-                </p>
-                <p>
-                   Revisado por:
-                </p>
-                <p>
-                    Aprobado por:
-                </p>
-                <p>
-                    Fecha de aprobacion
-                </p>
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 max-w-[500px]">
+              <p>Detalles del proceso:</p>
+              <p className='mt-4'>
+                {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
+              </p>
+              <p>
+                {roles.revisor && <>Revisado por: <strong>{roles.revisor.name}</strong></>}
+              </p>
+              <p>
+                {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
+              </p>
+              <p>Fecha de aprobación</p>
             </div>
           </div>
         </div>
       </div>
-      <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <DocumentDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 };

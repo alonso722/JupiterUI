@@ -27,10 +27,12 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
       const response = await api.post('/user/file/store', formData);
       let filems = response.data.data;
       let path = response.data.path;
+      let titleAsig = title;
+      filems.asignedTitle = title;
       console.log("response ec file,", filems);
       if (response) {
-        console.log('Archivo cargado exitosamente:', path);
-        onFileUpload({ ...filems, path, title });
+        console.log('Archivo cargado exitosamente:', path, title);
+        onFileUpload({ ...filems, path, titleAsig });
         onClose();
       } else {
         console.error('Error al cargar el archivo:', response.statusText);
@@ -63,8 +65,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
           placeholder="Título del documento"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"
-        />
+          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
         <textarea
           placeholder="Descripción del documento"
           value={description}
@@ -124,7 +125,8 @@ const AddProcessForm = ({ card, onClose }) => {
   
     if (fileInfo) {
       processDetails.filePath = fileInfo.path; 
-      processDetails.fileTitle = fileInfo.title;
+      processDetails.fileTitle = fileInfo.asignedTitle; // Asignando el título del documento
+      processDetails.fileName = fileInfo.name;
     }
   
     if (processDetails.processName) {
@@ -147,6 +149,7 @@ const AddProcessForm = ({ card, onClose }) => {
       console.log("Error: No se ha nombrado el proceso.");
     }
   };
+  
   
 
   const getFileIcon = (extension) => {

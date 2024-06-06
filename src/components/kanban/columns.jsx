@@ -18,28 +18,25 @@ export const Kanban = () => {
             let parsedPermissions;
             const storedPermissions = localStorage.getItem('permissions');
             const token = localStorage.getItem('token');
-            console.log("token antes de enviar",token)
             if (storedPermissions) {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
             const userType = parsedPermissions;
             userType.token = token;
-            console.log("Antes del fetch",userType)
             api.post('/user/process/fetchTab', {userType})
                 .then((response) => {
-                    console.log("response en front de cols",response.data.data);
                     const fetchedCards = response.data.data.map(item => ({
                         id: item.id.toString(),
                         name: item.process,
-                        column: convertStatusToColumn(item.status)
+                        column: convertStatusToColumn(item.status),
+                        department: item.departmentName
                     }));
                     setCards(fetchedCards); 
                 })
                 .catch((error) => {
                     console.error("Error al consultar procesos:", error);
                 });
-
             effectMounted.current = true;
         }
     }, []);
@@ -125,7 +122,7 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
 
 const Column = ({ name, headingColor, column, cards, setCards, onCardClick, permissions }) => {
     const [active, setActive] = useState(false);
-    const api = useApi(); // Inicializar el hook de API
+    const api = useApi(); 
 
     const handleDragStart = (e, card) => {
         e.dataTransfer.setData("cardId", card.id);
@@ -139,12 +136,10 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 
         const indicators = getIndicators();
         const { element } = getNearestIndicator(e, indicators);
-
         const before = element.dataset.before || "-1";
 
         if (before !== cardId) {
             let copy = [...cards];
-
             let cardToTransfer = copy.find((c) => c.id === cardId);
             if (!cardToTransfer) return;
             const oldColumn = cardToTransfer.column; 
@@ -239,7 +234,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
     const filteredCards = cards.filter((c) => c.column === column);
 
     return (
-        <div className="w-56 shrink-0">
+        <div className="w-56 shrink-0 overflow-y-auto scrollbar-hide">
             <div className="mb-3 flex items-center justify-between">
                 <h3 className={`font-medium ${headingColor}`}>{name}</h3>
                 <span className="rounded text-sm text-[#2C1C47]">
@@ -260,6 +255,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 {/* <AddCard column={column} setCards={setCards} permissions={permissions} /> */}
             </div>
         </div>
+        
     );
 };
 
