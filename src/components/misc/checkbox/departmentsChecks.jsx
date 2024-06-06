@@ -74,7 +74,7 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
         />
       </div>
       {searchSearch && (
-        <div className="mt-2 max-h-[150px] overflow-y-auto">
+        <div className="mt-2 max-h-[100px] overflow-y-auto">
           {options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
               <span>{option.department}</span>
@@ -87,13 +87,13 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
           ))}
         </div>
       )}
-      <div className='border mt-3 p-2'>
+      <div className='border mt-3 p-2 max-h-[170px] overflow-y-auto'>
         <h3 className='text-black'>
           <b>Departamentos seleccionados:</b>
         </h3>
-        <div>
+        <div className='max-h-[200px]'>
           {selectedOptions.map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 overflow-y-auto">
+            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 ">
               <span>{option.department}</span>
               <button 
                 className="bg-red-500 text-white px-2 py-1 rounded"

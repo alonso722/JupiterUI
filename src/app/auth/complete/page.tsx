@@ -23,30 +23,52 @@ export default function CompleteAuth({
     const [failed, setFailed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const effectMounted = useRef(false);
-
+    const api= useApi();
     const router = useRouter();
 
     useEffect(() => {
         if(effectMounted.current === false ){
-        const controller = new AbortController();
-        setIsLoading(true);
-        if (token) {
-            setAuth({
-                loggedIn: true,
-                token: token,
-                refresh_token: null,
-                verified: null,    
-            });
-            router.push('/dashboard/home');
-            toast.success('Autenticación completada.');
-        } else {
-            setFailed(true);
+            let storedToken = localStorage.getItem('token');
+            const controller = new AbortController();
+            setIsLoading(true);
+            if (token) {
+                setAuth({
+                    loggedIn: true,
+                    token: token,
+                    refresh_token: null,
+                    verified: null,    
+                });
+                api.post('/user/auth/state', { token: storedToken })
+                .then((response) => {
+                    const permissions = response.data.permissions[0];
+                    setAuth((prevState: any) => ({
+                        ...prevState,
+                        token: storedToken
+                    }));
+                    localStorage.setItem('permissions', JSON.stringify(permissions));
+                    console.log("Permisos en complete", permissions.Type);
+                    
+                    if (permissions.Type === 5) {
+                        router.push('/dashboard/home');
+                    } else {
+                        router.push('/dashboard/table');
+                    }
+                    toast.success('Autenticación completada.');
+                })
+                .catch((error) => {
+                    console.error("Error al enviar el token:", error);
+                    toast.error('Error al enviar el token');
+                    setFailed(true);
+                })
+                .finally(() => {
+                    setIsLoading(false);
+                });
+            } else {
+             setFailed(true);
+            }
+            effectMounted.current = true;
         }
-        return()=>{
-            effectMounted.current=true;
-        }
-    }
-    }, [setAuth, router]);
+    }, [setAuth, router, token, api]);
 
     return (
         <>

@@ -122,6 +122,7 @@ const TanStackTable = () => {
     });
 
     const [showForm, setShowForm] = useState(false);
+    const [refreshTable, setRefreshTable] = useState(false);
 
     const handleButtonClick = () => {
         setShowForm(!showForm);
@@ -129,7 +130,12 @@ const TanStackTable = () => {
 
     const handleCloseForm = () => {
         setShowForm(false);
-    };
+        setRefreshTable(true);
+      };
+
+      if (refreshTable) {
+        return <TanStackTable />;
+      }
 
     return (
         <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">

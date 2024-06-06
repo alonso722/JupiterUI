@@ -1,6 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
@@ -16,30 +16,36 @@ export default function Page({ }) {
     const [authStateValue, setAuth] = useRecoilState(authState);
     const router = useRouter();
     const api= useApi();
+    const [permissions, setPermissions] = useState([]);
     const effectMounted = useRef(false);
 
     useEffect(() => {    
+        let parsedPermissions;
         if (effectMounted.current === false) {        
             const storedToken = localStorage.getItem('token');
             const storedPermissions = localStorage.getItem('permissions'); 
-    
+            if (storedPermissions) {
+                parsedPermissions = JSON.parse(storedPermissions);
+                setPermissions(parsedPermissions);
+            }
+            console.log("permisos parseados",parsedPermissions)
             if (!authStateValue.loggedIn) {
                 toast.error('Sin autenticación');
                 router.push('/auth/login');
             } else {
-                api.post('/user/auth/state', { token: storedToken })
-                    .then((response) => {
-                        const permissions = response.data.permissions[0];
-                        setAuth((prevState: any) => ({
-                            ...prevState,
-                            token: storedToken
-                        }));
-                        localStorage.setItem('permissions', JSON.stringify(permissions));
-                    })
-                    .catch((error) => {
-                        console.error("Error al enviar el token:", error);
-                        toast.error('Error al enviar el token');
-                    });
+                // api.post('/user/auth/state', { token: storedToken })
+                //     .then((response) => {
+                //         const permissions = response.data.permissions[0];
+                //         setAuth((prevState: any) => ({
+                //             ...prevState,
+                //             token: storedToken
+                //         }));
+                //         localStorage.setItem('permissions', JSON.stringify(permissions));
+                //     })
+                //     .catch((error) => {
+                //         console.error("Error al enviar el token:", error);
+                //         toast.error('Error al enviar el token');
+                //     });
             }
             effectMounted.current = true;
         }

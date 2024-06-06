@@ -15,14 +15,20 @@ export const Kanban = () => {
 
     useEffect(() => {
         if (effectMounted.current === false) { 
+            let parsedPermissions;
             const storedPermissions = localStorage.getItem('permissions');
+            const token = localStorage.getItem('token');
+            console.log("token antes de enviar",token)
             if (storedPermissions) {
-                const parsedPermissions = JSON.parse(storedPermissions);
+                parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
-            api.post('/user/process/fetchTab')
+            const userType = parsedPermissions;
+            userType.token = token;
+            console.log("Antes del fetch",userType)
+            api.post('/user/process/fetchTab', {userType})
                 .then((response) => {
-                    console.log("response en front",response.data.data);
+                    console.log("response en front de cols",response.data.data);
                     const fetchedCards = response.data.data.map(item => ({
                         id: item.id.toString(),
                         name: item.process,
@@ -251,7 +257,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                     return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
-                <AddCard column={column} setCards={setCards} permissions={permissions} />
+                {/* <AddCard column={column} setCards={setCards} permissions={permissions} /> */}
             </div>
         </div>
     );
@@ -322,77 +328,77 @@ const DelBarrel = ({ setCards }) => {
     );
 };
 
-const AddCard = ({ column, setCards, permissions }) => {
-    const [text, setText] = useState("");
-    const [adding, setAdding] = useState(false);
-    const api = useApi();
+// const AddCard = ({ column, setCards, permissions }) => {
+//     const [text, setText] = useState("");
+//     const [adding, setAdding] = useState(false);
+//     const api = useApi();
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+//     const handleSubmit = (e) => {
+//         e.preventDefault();
 
-        if (!text.trim().length) return;
+//         if (!text.trim().length) return;
 
-        const tempId = Date.now().toString();  
+//         const tempId = Date.now().toString();  
 
-        const newCard = {
-            column,
-            name: text.trim(),
-            id: tempId,  
-        };
+//         const newCard = {
+//             column,
+//             name: text.trim(),
+//             id: tempId,  
+//         };
 
-        setCards((prevCards) => [...prevCards, newCard]); 
+//         setCards((prevCards) => [...prevCards, newCard]); 
         
-        api.post('/user/process/add', newCard)
-            .then((response) => {
+//         api.post('/user/process/add', newCard)
+//             .then((response) => {
 
-            })
-            .catch((error) => {
-                console.error("Error al añadir:", error);
-            });
+//             })
+//             .catch((error) => {
+//                 console.error("Error al añadir:", error);
+//             });
 
-        //setCards((pv) => [...pv, newCard]);
+//         //setCards((pv) => [...pv, newCard]);
 
-        setAdding(false);
-    };
+//         setAdding(false);
+//     };
 
-    return (
-        <>
-            {permissions.Create === 1 && ( 
-                <>
-                    {adding ? (
-                        <motion.form onSubmit={handleSubmit}>
-                            <input
-                                onChange={(e) => setText(e.target.value)}
-                                autoFocus
-                                placeholder="Añadir proceso..."
-                                className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"/>
-                            <div className="mt-1 flex items=center justify-end gap-1.5">
-                                <button
-                                    onClick={() => setAdding(false)}
-                                    className="px-3 py-1 text-xs text-[#2C1C47] transition-colors">
-                                    Cancelar
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
-                                    <span>Añadir</span>
-                                    <FiPlus />
-                                </button>
-                            </div>
-                        </motion.form>
-                    ) : (
-                        <motion.button
-                            layout
-                            onClick={() => setAdding(true)}
-                            className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]">
-                            <span>Añadir proceso</span>
-                            <FiPlus />
-                        </motion.button>
-                    )}
-                </>
-            )}
-        </>
-    );
-};
+//     return (
+//         <>
+//             {permissions.Create === 1 && ( 
+//                 <>
+//                     {adding ? (
+//                         <motion.form onSubmit={handleSubmit}>
+//                             <input
+//                                 onChange={(e) => setText(e.target.value)}
+//                                 autoFocus
+//                                 placeholder="Añadir proceso..."
+//                                 className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"/>
+//                             <div className="mt-1 flex items=center justify-end gap-1.5">
+//                                 <button
+//                                     onClick={() => setAdding(false)}
+//                                     className="px-3 py-1 text-xs text-[#2C1C47] transition-colors">
+//                                     Cancelar
+//                                 </button>
+//                                 <button
+//                                     type="submit"
+//                                     className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
+//                                     <span>Añadir</span>
+//                                     <FiPlus />
+//                                 </button>
+//                             </div>
+//                         </motion.form>
+//                     ) : (
+//                         <motion.button
+//                             layout
+//                             onClick={() => setAdding(true)}
+//                             className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]">
+//                             <span>Añadir proceso</span>
+//                             <FiPlus />
+//                         </motion.button>
+//                     )}
+//                 </>
+//             )}
+//         </>
+//     );
+// };
 
 export default Kanban;
