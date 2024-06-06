@@ -233,29 +233,30 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 
     const filteredCards = cards.filter((c) => c.column === column);
 
+
     return (
-        <div className="w-56 shrink-0 overflow-y-auto scrollbar-hide">
-            <div className="mb-3 flex items-center justify-between">
-                <h3 className={`font-medium ${headingColor}`}>{name}</h3>
-                <span className="rounded text-sm text-[#2C1C47]">
-                    {filteredCards.length}
-                </span>
+        <div className="w-56 shrink-0">
+            <div style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#FFF' }}>
+                <div className="mb-3 flex items-center justify-between">
+                    <h3 className={`font-medium ${headingColor}`}>{name}</h3>
+                    <span className="rounded text-sm text-[#2C1C47]">
+                        {filteredCards.length}
+                    </span>
+                </div>
             </div>
             <div
                 onDrop={handleDragEnd}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                className={`h-full w-full transition-colors ${
+                className={`h-[500px] overflow-auto scrollbar-hide transition-colors ${
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
                     return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
-                {/* <AddCard column={column} setCards={setCards} permissions={permissions} /> */}
             </div>
         </div>
-        
     );
 };
 
