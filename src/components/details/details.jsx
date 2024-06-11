@@ -31,7 +31,9 @@ const Details = ({ card, onClose }) => {
   const [departmentNameF, setDeptName] = useState({});
   const [document, setDocument] = useState({});
   const [roles, setRoles] = useState({});
-  const [logsPrnt, setLogs] = useState([]); // Ahora es un array
+  const [incident, setIncident] = useState('');  // Estado para el valor del input
+  const [logsPrnt, setLogs] = useState([]);
+  const [attendReq, setAttend] = useState(false); 
   const effectMounted = useRef(false);
   const api = useApi();
 
@@ -57,9 +59,9 @@ const Details = ({ card, onClose }) => {
           const prId = card.id;
           console.log("lida parra getLogs", prId);
           const processLogs = await api.post('/user/log/getLogs', { prId });
-          const prscdlogs = processLogs.data; // Ahora es un array
-          console.log("los logs gpt", prscdlogs);
-          setLogs(prscdlogs); // Guarda el array de logs
+          const prscdlogs = processLogs.data; 
+          console.log("los logs", prscdlogs);
+          setLogs(prscdlogs); 
         } catch (error) {
           console.error("Error al consultar procesos:", error);
         }
@@ -100,7 +102,7 @@ const Details = ({ card, onClose }) => {
       log.type = 22;
       log.id = card.id;
       try {
-        await api.post('/user/log/setDownload', log);
+        await api.post('/user/log/setLog', log);
       } catch (error) {
         console.error("Error al hacer el registro:", error);
       }
@@ -109,20 +111,60 @@ const Details = ({ card, onClose }) => {
     }
   };
 
+  const handleCheckboxChange = (event) => {
+    setAttend(event.target.checked);
+  };
+
+  const handleSubmit = async () => {
+    const confirmationStatus = attendReq ? 1 : 0;
+    const uuid = localStorage.getItem('uuid');
+    console.log(confirmationStatus, incident, uuid); 
+    
+    const log = {};
+    log.uuid = uuid;
+    log.type = 21;
+    log.id = card.id;
+    try {
+      await api.post('/user/log/setLog', log);
+    } catch (error) {
+      console.error("Error al hacer el registro:", error);
+    }
+
+    const incidentSnd ={};
+    incidentSnd.incident=incident;
+    incidentSnd.attend=confirmationStatus;
+    incidentSnd.uuid=uuid;
+    incidentSnd.process=card.id;
+    incidentSnd.type= 1;
+
+    console.log("Incidente a enviar:::::::;",incidentSnd)
+
+    try {
+      await api.post('/user/incident/create', incidentSnd);
+    } catch (error) {
+      console.error("Error al hacer el registro de incidente:", error);
+    }
+
+  };
+
+  const handleInputChange = (event) => {
+    setIncident(event.target.value); 
+  };
+
   function getEventTypeText(type) {
     switch (type) {
       case 21:
-        return "Se realizó un comentario";
+        return " un comentario";
       case 22:
-        return "Se realizó una descarga";
+        return " una descarga";
       case 23:
-        return "Se realizó una actualización del estado del proceso";
+        return " una actualización del estado del proceso";
       default:
         return "Evento desconocido";
     }
   }
-  
 
+  
   return (
     <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
@@ -130,7 +172,7 @@ const Details = ({ card, onClose }) => {
           &times;
         </button>
         <div className='flex'>
-          <div className='w-[50%] '>
+          <div className='w-[50%] ml-2'>
             <p className='text-black'>
               {departmentNameF && `${departmentNameF}`}
             </p>
@@ -153,16 +195,26 @@ const Details = ({ card, onClose }) => {
             <div className='mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[90%]'>
               <input
                 type="text"
-                placeholder="Agrega un comentario"
+                value={incident}
+                onChange={handleInputChange}
+                placeholder="Agrega un comentario o incidencia"
                 className="w-full border-none focus:outline-none" />
             </div>
-            <div>
-              <button className='mt-4 bg-[#2C1C47] p-2 rounded text-white'>
+            <div className="flex items-center mt-4">
+              <button onClick={handleSubmit} className='bg-[#2C1C47] p-2 rounded text-white'>
                 Enviar comentario
               </button>
+              <div className="ml-4 flex items-center">
+                <label htmlFor="confirmacion" className="text-black">¿Requiere confirmación de acción realizada?</label>
+                <input
+                  type="checkbox"
+                  id="confirmacion"
+                  onChange={handleCheckboxChange}
+                  className="ml-2"/>
+              </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 p-3 w-[500px] '>
+          <div className='mt-10 border-l-4 p-3 w-[500px]'>
             <Listbox value={selected} onChange={setSelected} className="w-[100px]">
               {({ open }) => (
                 <>
@@ -176,7 +228,6 @@ const Details = ({ card, onClose }) => {
                         <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                       </span>
                     </Listbox.Button>
-
                     <Transition
                       show={open}
                       as={Fragment}
@@ -235,16 +286,16 @@ const Details = ({ card, onClose }) => {
               </p>
               <p>Fecha de aprobación</p>
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 max-w-[500px]">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 max-w-[500px] h-[300px] overflow-auto">
               <h1><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
-                  <div key={index} className="mt-2">
-                    <p>
-                      <strong>Evento:</strong> {getEventTypeText(log.type)} ({log.type})
+                  <div key={index} className="mt-2 shadow-lg rounded border-2 border-indigo-200/40 p-2 mb-2">
+                    <p className='mb-2'>
+                      - <strong>{log.name}</strong> 
+                      , realizó <strong>{getEventTypeText(log.type)}</strong>.
+                      <strong>{new Date(log.created).toLocaleString()}</strong> 
                     </p>
-                    <p><strong>Nombre:</strong> {log.name}</p>
-                    <p><strong>Fecha de creación:</strong> {new Date(log.created).toLocaleString()}</p>
                   </div>
                 ))
               ) : (

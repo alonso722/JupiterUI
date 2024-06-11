@@ -141,6 +141,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
         const indicators = getIndicators();
         const { element } = getNearestIndicator(e, indicators);
         const before = element.dataset.before || "-1";
+        const uuid = localStorage.getItem('uuid');
 
         if (before !== cardId) {
             let copy = [...cards];
@@ -162,13 +163,22 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
             }
 
             setCards(copy);
-
+            let log = {};
+            log.id = cardId;
+            log.uuid = uuid;
+            log.type = 23;
+            console.log("log antes de el update",log)
             api.post('/user/process/update', {
                 id: cardId,
                 newColumn: column,
                 oldColumn: oldColumn,
             })
-            .then((response) => {
+            .then( async (response) => {
+                try {
+                    await api.post('/user/log/setLog', log);
+                  } catch (error) {
+                    console.error("Error al hacer el registro:", error);
+                  }
             })
             .catch((error) => {
                 console.error("Error al actualizar la columna en backend:", error);
