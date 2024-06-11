@@ -46,7 +46,6 @@ export default function CompleteAuth({
                         token: storedToken
                     }));
                     localStorage.setItem('permissions', JSON.stringify(permissions));
-                    console.log("Permisos en complete", permissions.Type);
                     
                     if (permissions.Type === 5) {
                         router.push('/dashboard/home');
@@ -85,7 +84,6 @@ export default function CompleteAuth({
                                     className="animate-spin"
                                     size={32}
                                 />
-                                <Spinner />
                             </div>
                         </>
                     ) : (

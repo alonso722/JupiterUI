@@ -12,8 +12,6 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
     if (search) {
       api.post('/user/departments/search', { search })
         .then((response) => {
-          console.log("Render de checks");
-          console.log("Departments", response.data);
           setOptions(response.data.data.map(option => ({ ...option, })));
         })
         .catch((error) => {
@@ -59,7 +57,6 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
 
   // Efecto secundario para imprimir en la consola el arreglo de opciones seleccionadas cada vez que cambia
   useEffect(() => {
-    console.log("departamentos en AddForm:", selectedOptions);
   }, [selectedOptions]);
 
   return (

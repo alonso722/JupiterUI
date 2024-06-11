@@ -31,8 +31,6 @@ const COMMENT_TOOL = {
       const saveComment = (blockId) => {
         return () => {
           const inputValue = document.getElementById("commentInput").value;
-          console.log("Comentario guardado:", inputValue);
-          console.log("BlockId del bloque:", blockId);
         };
       };
 
@@ -116,9 +114,7 @@ export default function TextEditor() {
       initializeEditor();
 
       saveDocumentRef.current = () => {
-        console.log('Clic:')
         editorInstance.save().then((outputData)=>{
-          console.log('Article data:', outputData)
           outputData.blocks.forEach(block => {
             block.blockId = blockId;
           });
@@ -136,11 +132,9 @@ export default function TextEditor() {
     }
   }, []);
 
-  console.log('TextEditor montado');
-
   return (
     <>
-      <div ref={editorRef} className="h-[700px] w-[70%] fixed left-[20%] top-[110px] outline-color-[#FDD500] rounded-lg px-8 py-5 outline outline-1 shadow-2xl shadow-violet-950" style={{ overflowY: 'auto', scrollbarWidth: 'thin' }}></div>
+      <div ref={editorRef} className="h-[700px] w-[70%] fixed left-[20%] top-[110px] outline-color-[#f1cf2b] rounded-lg px-8 py-5 outline outline-1 shadow-2xl shadow-violet-950" style={{ overflowY: 'auto', scrollbarWidth: 'thin' }}></div>
       <div className='left-[20%] top-[840px] fixed outline-2 outline-offset-2 '>
         <Button rounded type="submit" onClick={() => saveDocumentRef.current()} color={colors.ALTERNATIVE}>
           Guardar

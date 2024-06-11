@@ -1,5 +1,5 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
@@ -11,53 +11,40 @@ import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 import Kanban from '@/components/kanban/columns';
 
-export default function Page({ }) {
-
+export default function Page() {
     const [authStateValue, setAuth] = useRecoilState(authState);
     const router = useRouter();
-    const api= useApi();
+    const searchParams = useSearchParams();
+    const api = useApi();
     const [permissions, setPermissions] = useState([]);
     const effectMounted = useRef(false);
+    const process = searchParams.get('process');
+    const department = searchParams.get('department');
 
     useEffect(() => {    
         let parsedPermissions;
-        if (effectMounted.current === false) {        
+        if (effectMounted.current === false) {    
             const storedToken = localStorage.getItem('token');
             const storedPermissions = localStorage.getItem('permissions'); 
             if (storedPermissions) {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
-            console.log("permisos parseados",parsedPermissions)
+            console.log("permisos::::::::::::", parsedPermissions)
             if (!authStateValue.loggedIn) {
                 toast.error('Sin autenticación');
                 router.push('/auth/login');
-            } else {
-                // api.post('/user/auth/state', { token: storedToken })
-                //     .then((response) => {
-                //         const permissions = response.data.permissions[0];
-                //         setAuth((prevState: any) => ({
-                //             ...prevState,
-                //             token: storedToken
-                //         }));
-                //         localStorage.setItem('permissions', JSON.stringify(permissions));
-                //     })
-                //     .catch((error) => {
-                //         console.error("Error al enviar el token:", error);
-                //         toast.error('Error al enviar el token');
-                //     });
             }
             effectMounted.current = true;
         }
-    }, [authStateValue.loggedIn, router, setAuth]);
-    
+    }, [authStateValue.loggedIn, router, setAuth, searchParams, department, process]);
 
     return (
         <div>
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <Kanban/>
+                <Kanban departmentFilter={department} processFilter={process} />
             </div>
         </div>
     );

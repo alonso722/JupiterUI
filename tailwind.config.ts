@@ -26,7 +26,7 @@ export default {
                 poppins: ['var(--font-poppins)'],
             },
             colors: {
-                primary: '#FDD500',
+                primary: '#f1cf2b',
                 dark: '#122330',
                 elegant: '#333333',
                 light: '#fdffff',

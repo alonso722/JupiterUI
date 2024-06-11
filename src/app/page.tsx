@@ -25,7 +25,7 @@ import React, { useEffect, useState } from "react";
       <>
         <div>
           <LandingNav />
-          <div className="pl-[99px] pt-[200px] font-bold bg-[#FDD500]">
+          <div className="pl-[99px] pt-[200px] font-bold bg-[#f1cf2b]">
             <div>
               <p className="mb-0 pb-0 text-[64px] leading-normal">
                 Bienvenido

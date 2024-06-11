@@ -31,6 +31,7 @@ const Details = ({ card, onClose }) => {
   const [departmentNameF, setDeptName] = useState({});
   const [document, setDocument] = useState({});
   const [roles, setRoles] = useState({});
+  const [logsPrnt, setLogs] = useState([]); // Ahora es un array
   const effectMounted = useRef(false);
   const api = useApi();
 
@@ -39,10 +40,9 @@ const Details = ({ card, onClose }) => {
       const fetchDocument = async () => {
         try {
           const initialStatus = status.find(state => state.column === card.column) || status[0];
-          console.log("Roles para datos<<<<<,", card);
+
           const responseDep = await api.post('/user/departments/getName', card);
           const departmentName = responseDep.data.data;
-          console.log("Nameeeeee", departmentName)
           setDeptName(departmentName);
 
           const responseDoc = await api.post('/user/document/fetch', card);
@@ -54,9 +54,16 @@ const Details = ({ card, onClose }) => {
           const rolesData = responseRole.data.data;
           setRoles(rolesData);
 
+          const prId = card.id;
+          console.log("lida parra getLogs", prId);
+          const processLogs = await api.post('/user/log/getLogs', { prId });
+          const prscdlogs = processLogs.data; // Ahora es un array
+          console.log("los logs gpt", prscdlogs);
+          setLogs(prscdlogs); // Guarda el array de logs
         } catch (error) {
           console.error("Error al consultar procesos:", error);
         }
+        console.log("datos para pintar::::", logsPrnt);
       };
 
       fetchDocument();
@@ -79,35 +86,59 @@ const Details = ({ card, onClose }) => {
       case 'xlsx':
         return '/icons/excel.png';
       default:
-        return '/icons/question.png'; // Icono default
+        return '/icons/question.png';
     }
   };
 
-  const handleDownload = (path) => {
-    console.log("path de descarga!!!!", path);
+  const handleDownload = async (path) => {
     if (path) {
       window.open('http://localhost:8030/api/v1/file?f=' + path, '_blank');
+      const uuid = localStorage.getItem('uuid');
+
+      const log = {};
+      log.uuid = uuid;
+      log.type = 22;
+      log.id = card.id;
+      try {
+        await api.post('/user/log/setDownload', log);
+      } catch (error) {
+        console.error("Error al hacer el registro:", error);
+      }
     } else {
       console.error("URL del documento no está disponible");
     }
   };
 
+  function getEventTypeText(type) {
+    switch (type) {
+      case 21:
+        return "Se realizó un comentario";
+      case 22:
+        return "Se realizó una descarga";
+      case 23:
+        return "Se realizó una actualización del estado del proceso";
+      default:
+        return "Evento desconocido";
+    }
+  }
+  
+
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+    <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
         <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
         <div className='flex'>
           <div className='w-[50%] '>
-          <p className='text-black'>
-            {departmentNameF && `${departmentNameF}`}
-          </p>
+            <p className='text-black'>
+              {departmentNameF && `${departmentNameF}`}
+            </p>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
             <p className="mb-4 text-black">Detalles del proceso</p>
             <p className="mt-[15px] text-black">Documento asignado al proceso:</p>
-            <div className='w-[50%] flex flex-col items-center justify-center'>
-              <p className="mt-[15px] text-black">{document.title}</p>
+            <div className='w-[50%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
+              <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
               <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
               <p className="mt-[px] mb-4 text-black">{document.name}</p>
             </div>
@@ -123,8 +154,7 @@ const Details = ({ card, onClose }) => {
               <input
                 type="text"
                 placeholder="Agrega un comentario"
-                className="w-full border-none focus:outline-none"
-              />
+                className="w-full border-none focus:outline-none" />
             </div>
             <div>
               <button className='mt-4 bg-[#2C1C47] p-2 rounded text-white'>
@@ -204,6 +234,22 @@ const Details = ({ card, onClose }) => {
                 {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
               </p>
               <p>Fecha de aprobación</p>
+            </div>
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 max-w-[500px]">
+              <h1><strong>Registro de eventos:</strong></h1>
+              {logsPrnt.length > 0 ? (
+                logsPrnt.map((log, index) => (
+                  <div key={index} className="mt-2">
+                    <p>
+                      <strong>Evento:</strong> {getEventTypeText(log.type)} ({log.type})
+                    </p>
+                    <p><strong>Nombre:</strong> {log.name}</p>
+                    <p><strong>Fecha de creación:</strong> {new Date(log.created).toLocaleString()}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No hay registros de eventos disponibles.</p>
+              )}
             </div>
           </div>
         </div>

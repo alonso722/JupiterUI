@@ -22,16 +22,12 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
     const formData = new FormData();
     formData.append('file', file);
     try {
-      console.log("se envia archivo!", file.name);
-      console.log("/user/file/store", formData, file.name, file);
       const response = await api.post('/user/file/store', formData);
       let filems = response.data.data;
       let path = response.data.path;
       let titleAsig = title;
       filems.asignedTitle = title;
-      console.log("response ec file,", filems);
       if (response) {
-        console.log('Archivo cargado exitosamente:', path, title);
         onFileUpload({ ...filems, path, titleAsig });
         onClose();
       } else {
@@ -90,19 +86,16 @@ const AddProcessForm = ({ card, onClose }) => {
 
   const handleSelectionDepartment = (selectedDepartments) => {
     setSelectedDepartments(selectedDepartments);
-    console.log("Selected departments in AddForm:", selectedDepartments);
   };
 
   const handleFileUpload = (filems) => {
-    setFileInfo(filems); // Actualiza el estado con la información del archivo cargado
+    setFileInfo(filems); 
   };
 
   useEffect(() => {
-    console.log("Departamentos seleccionados:", selectedDepartments);
     if (effectMounted.current === false) {
       api.post('/user/process/fetchUsers')
         .then((response) => {
-          console.log("response en front", response.data);
           const usersData = response.data;
           setUsers(usersData);
         })
@@ -120,12 +113,12 @@ const AddProcessForm = ({ card, onClose }) => {
       editor: { name: "editor", uuid: "uet1" },
       revisor: { name: "revisor", uuid: "urt1" },
       aprobator: { name: "aprobator", uuid: "uapt1" },
-      state: 1, // Añadir estado
+      state: 1, 
     };
   
     if (fileInfo) {
       processDetails.filePath = fileInfo.path; 
-      processDetails.fileTitle = fileInfo.asignedTitle; // Asignando el título del documento
+      processDetails.fileTitle = fileInfo.asignedTitle; 
       processDetails.fileName = fileInfo.name;
     }
   
@@ -133,13 +126,10 @@ const AddProcessForm = ({ card, onClose }) => {
       processDetails.editor.uuid = "uet1";
       processDetails.revisor.uuid = "urt1";
       processDetails.aprobator.uuid = "uapt1";
-      console.log("Objeto para enviar al backkkkkkkkkkk", processDetails);
       api.post('/user/process/addTab', processDetails)
         .then((response) => {
-          console.log("response en front de insercion", response.data);
           if (response.data === 200) {
-            console.log("La inserción fue exitosa. Cerrando la ventana.");
-            onClose(); // Cerrar la ventana cuando la inserción sea exitosa
+            onClose();
           }
         })
         .catch((error) => {

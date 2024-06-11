@@ -21,7 +21,7 @@ export default function Page(data: { searchParams: { callback?: string } }) {
     return (
       <>
         <LandingNav />
-        <div className="grid grid-cols-1 md:grid-cols-2 bg-[#FDD500]">
+        <div className="grid grid-cols-1 md:grid-cols-2 bg-[#f1cf2b]">
           <div className="order-last p-16 md:order-first">
             <div className='items-center justify-center'>
               <h1 className="mb-12 text-[28px] font-semibold text-gray-800 items-center justify-center">

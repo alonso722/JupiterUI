@@ -9,24 +9,110 @@ import {
 import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import Search from "./search";
+import Actions from "./actions";
 import { Button } from '../form/button';
 import { colors } from '../types/enums/colors';
 import AddProcessForm from "../forms/addProcess";
+import { useRouter } from 'next/navigation';
 
 const TanStackTable = () => {
     const columnHelper = createColumnHelper();
-    const api= useApi();
+    const api = useApi();
+
+    const handleActionClick = (id, status) => {
+        // Implement your action click logic here
+    };
+
+    const [data, setData] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState("");
+    const [refreshTable, setRefreshTable] = useState(false);
+    const effectMounted = useRef(false);
+
+    const fetchData = () => {
+        api.post('/user/process/fetchTab')
+            .then((response) => {
+                const fetchedData = response.data.data.map(item => ({
+                    id: item.id,
+                    process: item.process,
+                    department: item.departmentName,
+                    editor: item.editor,
+                    revisor: item.revisor,
+                    aprobator: item.aprobator,
+                    status: convertStatusToColumn(item.status),
+                    created: formatDate(item.created),
+                    updated: formatDate(item.updated),
+                }));
+                setData(fetchedData.reverse());
+                setRefreshTable(false);
+            })
+            .catch((error) => {
+                console.error("Error al consultar procesos:", error);
+            });
+    };
+
+    useEffect(() => {
+        if (!effectMounted.current) {
+            fetchData();
+            effectMounted.current = true;
+        }
+    }, []);
+
+    useEffect(() => {
+        if (refreshTable) {
+            fetchData();
+        }
+    }, [refreshTable]);
+
+    const convertStatusToColumn = (status) => {
+        switch (status) {
+            case '1':
+                return 'Edicion';
+            case '2':
+                return 'Revision';
+            case '3':
+                return 'Aprobacion';
+            case '4':
+                return 'Aprobado';
+            default:
+                return 'Edicion';
+        }
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        const formattedDay = day < 10 ? '0' + day : day;
+        const formattedMonth = month < 10 ? '0' + month : month;
+
+        return `${formattedDay}/${formattedMonth}/${year}`;
+    };
+
+    const router = useRouter();
     const columns = [
-        columnHelper.accessor("id", {
-            cell: (info) => <span>{info?.getValue()}</span>,
-            header: "P.No.",
-        }),
+        // columnHelper.accessor("id", {
+        //     cell: (info) => <span>{info?.getValue()}</span>,
+        //     header: "P.No.",
+        // }),
         columnHelper.accessor("process", {
-            cell: (info) => <span>{info?.getValue()}</span>,
+            cell: (info) => (
+                <a
+                    className="underline cursor-pointer"
+                    onClick={() => router.push(`/dashboard/home?process=${info.getValue()}`)}>
+                    {info.getValue()}
+                </a>
+            ),
             header: "Proceso",
         }),
         columnHelper.accessor("department", {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => (
+                <a
+                    className="underline cursor-pointer"
+                    onClick={() => router.push(`/dashboard/home?department=${info.getValue()}`)}>
+                    {info.getValue()}
+                </a>
+            ),
             header: "Departamento",
         }),
         columnHelper.accessor("editor", {
@@ -53,62 +139,18 @@ const TanStackTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Actualización",
         }),
+        columnHelper.accessor("actions", {
+            cell: (info) => (
+                <Actions
+                    onActionClick={(id, status) => handleActionClick(id, status)}
+                    rowData={info.row.original} 
+                    onClose={() => {
+                        setRefreshTable(true);
+                    }} />
+            ),
+            header: "",
+        }),
     ];
-
-    const [data, setData] = useState([]);
-    const [globalFilter, setGlobalFilter] = useState("");
-    const effectMounted = useRef(false);
-    let fetchedData
-    useEffect(() => {
-        if (effectMounted.current === false) {
-        api.post('/user/process/fetchTab')
-            .then((response) => {
-                console.log("response en front", response.data.data);
-                 fetchedData = response.data.data.map(item => ({
-                    id: item.id,
-                    process: item.process, 
-                    department: item.departmentName,
-                    editor: item.editor,
-                    revisor: item.revisor,
-                    aprobator: item.aprobator,
-                    status: convertStatusToColumn(item.status),
-                    created: formatDate(item.created),
-                    updated: formatDate(item.updated),
-                }));
-                setData(fetchedData);
-            })
-            .catch((error) => {
-                console.error("Error al consultar procesos:", error);
-            });
-        }
-        effectMounted.current = true;
-    }, []);
-
-    const convertStatusToColumn = (status) => {
-        switch(status) {
-            case '1':
-                return 'Edicion';
-            case '2':
-                return 'Revision';
-            case '3':
-                return 'Aprobacion';
-            case '4':
-                return 'Aprobado';
-            default:
-                return 'Edicion';
-        }
-    };
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const formattedDay = day < 10 ? '0' + day : day;
-        const formattedMonth = month < 10 ? '0' + month : month;
-
-        return `${formattedDay}/${formattedMonth}/${year}`;
-    };
 
     const table = useReactTable({
         data,
@@ -122,7 +164,6 @@ const TanStackTable = () => {
     });
 
     const [showForm, setShowForm] = useState(false);
-    const [refreshTable, setRefreshTable] = useState(false);
 
     const handleButtonClick = () => {
         setShowForm(!showForm);
@@ -131,11 +172,11 @@ const TanStackTable = () => {
     const handleCloseForm = () => {
         setShowForm(false);
         setRefreshTable(true);
-      };
+    };
 
-      if (refreshTable) {
+    if (refreshTable) {
         return <TanStackTable />;
-      }
+    }
 
     return (
         <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
@@ -155,17 +196,17 @@ const TanStackTable = () => {
                     />
                 </div>
                 <div className="grid grid-rows-1 mt-[10px]">
-            <Button
-                rounded
-                color={colors.ALTERNATIVE}
-                onClick={handleButtonClick}>
-                Añadir
-            </Button>
-            {showForm && <AddProcessForm onClose={handleCloseForm} />}
-        </div>
+                    <Button
+                        rounded
+                        color={colors.ALTERNATIVE}
+                        onClick={handleButtonClick}>
+                        Añadir
+                    </Button>
+                    {showForm && <AddProcessForm onClose={handleCloseForm} />}
+                </div>
             </div>
-            <table className=" w-full text-left rounded-lg">
-                <thead className="bg-[#FDD500] text-black rounded">
+            <table className="w-full text-left rounded-lg">
+                <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
@@ -185,9 +226,8 @@ const TanStackTable = () => {
                             <tr
                                 key={row.id}
                                 className={`
-                                    ${i % 2 === 0 ? "bg-purple-950" : "bg-purple-900"}
-                                    `}
-                            >
+                                    ${i % 2 === 0 ? "bg-[#2b0c43]" : "bg-[#3c0764]"}
+                                    `}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id} className="px-3.5 py-2">
                                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -209,7 +249,7 @@ const TanStackTable = () => {
                         table.previousPage();
                     }}
                     disabled={!table.getCanPreviousPage()}
-                    className="p-1 border border-purple-950 px-2  rounded">
+                    className="p-1 border border-purple-950 px-2 rounded">
                     {"<"}
                 </button>
                 <button

@@ -4,8 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
+import { PiSpinnerGapBold } from 'react-icons/pi';
 import useApi from '@/hooks/useApi';
-
+import Spinner from '@/components/misc/spinner';
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 import TanStackTable from '@/components/table/table';
@@ -68,7 +69,15 @@ export default function Page({ }) {
     }, [authStateValue.loggedIn, router, setAuth, api]);
 
     if (loading) {
-        return <div>Loading...</div>;
+        return                         <>
+        <p className="mt-[100px] text-center">Por favor espere...</p>
+        <div className=" flex justify-center">
+            <PiSpinnerGapBold
+                className="animate-spin"
+                size={32}
+            />
+        </div>
+    </>;
     }
 
     return (

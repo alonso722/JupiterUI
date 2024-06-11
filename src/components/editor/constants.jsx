@@ -39,7 +39,6 @@ export const EDITOR_JS_TOOLS = {
         const text = "Este es un texto de ejemplo."; 
         const saveComment = () => {
           const inputValue = document.getElementById("commentInput").value;
-          console.log("Comentario guardado:", inputValue);
         };
         return (
           <div className="text-right">

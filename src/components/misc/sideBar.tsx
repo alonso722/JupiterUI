@@ -22,8 +22,8 @@ export default function Sidebar() {
     };
 
     return (
-        <div className="ml-[0px] mt-[100px] flex h-screen rounded" style={{ maxHeight: '823px' }}>
-            <div onMouseLeave={handleCloseSidebar} className={`max-h-[823px] w-${isExpanded ? '200' : '20'} bg-[#FDD500] transition-all duration-300 mt-100 flex flex-col rounded p-2`}>
+        <div className="ml-[0px] mt-[109px] flex h-screen rounded" style={{ maxHeight: '823px' }}>
+            <div onMouseLeave={handleCloseSidebar} className={`max-h-[823px] w-${isExpanded ? '200' : '20'} bg-[#f1cf2b] transition-all duration-300 mt-100 flex flex-col rounded p-2`}>
                 <button type="button" onClick={handleToggleExpand} className="flex items-center ml-[0px] justify-center h-10 w-10 bg-purple hover:bg-purple-950 focus:outline-none rounded">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"/>

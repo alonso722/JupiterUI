@@ -45,7 +45,6 @@ export default function LoginForm({
             setTimeout(() => setShowSuccessMessage(false), 2000);
             toast.success('Usuario y contraseña correctos');
             // localStorage
-            console.log("data en response",response.data.token)
             localStorage.setItem('token', response.data.token);
             router.push(`/auth/complete?token=${response.data}`);     
         })

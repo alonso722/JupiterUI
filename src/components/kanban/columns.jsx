@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Details from '../details/details';
 import useApi from '@/hooks/useApi';
 
-export const Kanban = () => {
+export const Kanban = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [permissions, setPermissions] = useState([]);
@@ -24,8 +24,10 @@ export const Kanban = () => {
             }
             const userType = parsedPermissions;
             userType.token = token;
-            api.post('/user/process/fetchTab', {userType})
+            api.post('/user/process/fetchTab', {userType, departmentFilter, processFilter})
                 .then((response) => {
+                    console.log("todo el data en response con uuid",response.data.userUUID)
+                    localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
                     const fetchedCards = response.data.data.map(item => ({
                         id: item.id.toString(),
                         name: item.process,
@@ -67,7 +69,8 @@ export const Kanban = () => {
     };
 
     return (
-        <div className="mt-[100px] ml-[50px] h-[624px] w-[1600px] text-neutral-50 rounded shadow-2xl shadow-violet-950">
+        <div 
+        className="mt-[110px] ml-[0px]  w-[100%] text-neutral-50 rounded shadow-2xl shadow-violet-950">
             <Board onCardClick={handleCardClick} cards={cards} setCards={setCards} permissions={permissions} />
             {isModalOpen && selectedCard && (
                 <Details card={selectedCard} onClose={handleCloseModal} />
@@ -78,7 +81,8 @@ export const Kanban = () => {
 
 const Board = ({ onCardClick, cards, setCards, permissions }) => {
     return (
-        <div className="flex h-full w-full gap-3 p-12 justify-between">
+        <div style={{  zIndex: -1, }}
+        className="flex h-full w-full gap-3 p-12 justify-between">
             <Column
                 name="Edición"
                 column="Edicion"
@@ -165,7 +169,6 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 oldColumn: oldColumn,
             })
             .then((response) => {
-                console.log("Columna actualizada en backend:", response.data);
             })
             .catch((error) => {
                 console.error("Error al actualizar la columna en backend:", error);
@@ -236,7 +239,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 
     return (
         <div className="w-56 shrink-0">
-            <div style={{ position: 'sticky', top: 0, zIndex: 1, backgroundColor: '#FFF' }}>
+            <div style={{ position: 'sticky', zIndex: -1, }}>
                 <div className="mb-3 flex items-center justify-between">
                     <h3 className={`font-medium ${headingColor}`}>{name}</h3>
                     <span className="rounded text-sm text-[#2C1C47]">
@@ -248,7 +251,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 onDrop={handleDragEnd}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                className={`h-[500px] overflow-auto scrollbar-hide transition-colors ${
+                className={`h-[670px] overflow-auto scrollbar-hide transition-colors ${
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
@@ -271,7 +274,8 @@ const Card = ({ name, id, column, handleDragStart, onCardClick }) => {
                 draggable="true"
                 onDragStart={(e) => handleDragStart(e, { name, id, column })}
                 onClick={() => onCardClick({ name, id, column })}
-                className="cursor-grab rounded border border-neutral-700 bg-[#2C1C47] p-3 active:cursor-grabbing">
+                style={{ zIndex: 1,  }}
+                className="mt-2 cursor-grab rounded border border-neutral-700 bg-[#2C1C47] p-3 active:cursor-grabbing shadow-md shadow-violet-950">
                 <p className="text-sm text-neutral-50">
                     {name}
                 </p>
@@ -285,7 +289,7 @@ const DropIndicator = ({ beforeId, column }) => {
         <div
             data-before={beforeId || "-1"}
             data-column={column}
-            className="my-0.5 h-0.5 w-full bg-violet-400 opacity-0">
+            className="my-0.5 h-0.5 w-full bg-violet-400 opacity-0 ">
         </div>
     );
 };
@@ -324,7 +328,7 @@ const DelBarrel = ({ setCards }) => {
         </div>
     );
 };
-
+export default Kanban;
 // const AddCard = ({ column, setCards, permissions }) => {
 //     const [text, setText] = useState("");
 //     const [adding, setAdding] = useState(false);
@@ -377,7 +381,7 @@ const DelBarrel = ({ setCards }) => {
 //                                 </button>
 //                                 <button
 //                                     type="submit"
-//                                     className="flex items-center gap-1.5 rounded bg-[#FDD500] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
+//                                     className="flex items-center gap-1.5 rounded bg-[#f1cf2b] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
 //                                     <span>Añadir</span>
 //                                     <FiPlus />
 //                                 </button>
@@ -398,4 +402,4 @@ const DelBarrel = ({ setCards }) => {
 //     );
 // };
 
-export default Kanban;
+

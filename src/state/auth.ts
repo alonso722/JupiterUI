@@ -36,7 +36,6 @@ export const tokenState = selector({
     key: 'token',
     get: ({ get }) => {
         const state = get(authState);
-        console.log("Estado actual de authState:", state);
         return state.token;
     },
 });
@@ -44,7 +43,6 @@ export const tokenState = selector({
 export const tokenData = selector({
     key: 'token_data',
     get: ({ get }) => {
-        console.log("entra a")
         const token = get(authState)?.token;
         if (typeof token === 'string' && token.length > 0) {
             const decodedValue = token;
@@ -59,7 +57,6 @@ export const tokenData = selector({
 export const emailSelector = selector({
     key: 'email',
     get: ({ get }) => {
-        console.log("entra b")
         const email = get(authState)?.email;
         return email;
     },
@@ -68,7 +65,6 @@ export const emailSelector = selector({
 export const verifiedSelector = selector({
     key: 'verified',
     get: ({ get }) => {
-        console.log("entra c")
         const verified = get(authState)?.verified;
         return verified;
     },
@@ -77,7 +73,6 @@ export const verifiedSelector = selector({
 export const refreshTokenState = selector({
     key: 'refresh_token',
     get: ({ get }) => {
-        console.log("entra f")
         const state = get(authState);
         return state.token;
     },
@@ -86,7 +81,6 @@ export const refreshTokenState = selector({
 export const loggedInState = selector({
     key: 'loggedIn',
     get: ({ get }) => {
-        console.log("entra e")
         const state = get(authState);
         return state.loggedIn;
     },
