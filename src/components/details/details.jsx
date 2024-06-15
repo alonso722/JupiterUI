@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import useApi from '@/hooks/useApi';
+import Incident from '../details/incident';
 
 const status = [
   { id: 1, column: 'Edicion' },
@@ -31,9 +32,11 @@ const Details = ({ card, onClose }) => {
   const [departmentNameF, setDeptName] = useState({});
   const [document, setDocument] = useState({});
   const [roles, setRoles] = useState({});
-  const [incident, setIncident] = useState('');  // Estado para el valor del input
+  const [incident, setIncident] = useState(''); 
   const [logsPrnt, setLogs] = useState([]);
   const [attendReq, setAttend] = useState(false); 
+  const [incidentStatus, setIncidentStatus] = useState({}); 
+  const [selectedIncident, setSelectedIncident] = useState(null);
   const effectMounted = useRef(false);
   const api = useApi();
 
@@ -57,15 +60,20 @@ const Details = ({ card, onClose }) => {
           setRoles(rolesData);
 
           const prId = card.id;
-          console.log("lida parra getLogs", prId);
           const processLogs = await api.post('/user/log/getLogs', { prId });
           const prscdlogs = processLogs.data; 
-          console.log("los logs", prscdlogs);
-          setLogs(prscdlogs); 
+          setLogs(prscdlogs);
+          const incidentStatuses = {};
+          for (const log of prscdlogs) {
+            if (log.type === 21) {
+              incidentStatuses[log.id] = await getIncidentStatus(log.id);
+            }
+          }
+          setIncidentStatus(incidentStatuses);
+
         } catch (error) {
           console.error("Error al consultar procesos:", error);
         }
-        console.log("datos para pintar::::", logsPrnt);
       };
 
       fetchDocument();
@@ -124,27 +132,27 @@ const Details = ({ card, onClose }) => {
     log.uuid = uuid;
     log.type = 21;
     log.id = card.id;
+    let logId= '';
     try {
-      await api.post('/user/log/setLog', log);
+      const response = await api.post('/user/log/setLog', log);
+      logId = response.data[0];
     } catch (error) {
       console.error("Error al hacer el registro:", error);
     }
-
-    const incidentSnd ={};
-    incidentSnd.incident=incident;
-    incidentSnd.attend=confirmationStatus;
-    incidentSnd.uuid=uuid;
-    incidentSnd.process=card.id;
-    incidentSnd.type= 1;
-
-    console.log("Incidente a enviar:::::::;",incidentSnd)
+    console.log("id del log ", logId);
+    const incidentSnd = {};
+    incidentSnd.incident = incident;
+    incidentSnd.attend = confirmationStatus;
+    incidentSnd.uuid = uuid;
+    incidentSnd.process = card.id;
+    incidentSnd.type = 1;
+    incidentSnd.id = logId;
 
     try {
       await api.post('/user/incident/create', incidentSnd);
     } catch (error) {
       console.error("Error al hacer el registro de incidente:", error);
     }
-
   };
 
   const handleInputChange = (event) => {
@@ -164,7 +172,31 @@ const Details = ({ card, onClose }) => {
     }
   }
 
-  
+  const getIncidentStatus = async (id) => {
+    try {
+      const response = await api.post('/user/incident/getStatus', {id});
+      switch (response.data) {
+        case 1 :
+          return 'Accion requerida';
+        case 0 :
+          return 'Sin acciones necesarias';
+        default:
+          return 'Sin acciones necesarias';
+      }
+    } catch (error) {
+      console.error("Error al hacer el registro:", error);
+    }
+  }
+
+  const handleLogClick = (log) => {
+    setSelectedIncident(log);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedIncident(null);
+  };
   return (
     <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
@@ -253,7 +285,6 @@ const Details = ({ card, onClose }) => {
                                     {state.column}
                                   </span>
                                 </div>
-
                                 {selected ? (
                                   <span
                                     className={classNames(
@@ -290,7 +321,11 @@ const Details = ({ card, onClose }) => {
               <h1><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
-                  <div key={index} className="mt-2 shadow-lg rounded border-2 border-indigo-200/40 p-2 mb-2">
+                  <div
+                    key={index}
+                    className={`mt-2 shadow-lg rounded border-2 border-indigo-200/40 p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
+                    onClick={log.type === 21 ? () => handleLogClick(log) : null}>
+                    {log.type === 21 && <p className="text-[#2C1C47] font-bold">{incidentStatus[log.id]}</p>}
                     <p className='mb-2'>
                       - <strong>{log.name}</strong> 
                       , realizó <strong>{getEventTypeText(log.type)}</strong>.
@@ -305,6 +340,9 @@ const Details = ({ card, onClose }) => {
           </div>
         </div>
       </div>
+        {isModalOpen && selectedIncident && (
+          <Incident incident={selectedIncident} onClose={handleCloseModal} />
+        )}
       <DocumentDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
