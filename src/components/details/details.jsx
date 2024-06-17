@@ -119,10 +119,10 @@ const Details = ({ card, onClose }) => {
     }
   };
 
-  const handleCheckboxChange = (event) => {
-    setAttend(event.target.checked);
+  const handleCheckboxChange = (value) => {
+    setAttend(value);
   };
-
+  
   const handleSubmit = async () => {
     const confirmationStatus = attendReq ? 1 : 0;
     const uuid = localStorage.getItem('uuid');
@@ -153,6 +153,8 @@ const Details = ({ card, onClose }) => {
     } catch (error) {
       console.error("Error al hacer el registro de incidente:", error);
     }
+    
+    fetchDocument();
   };
 
   const handleInputChange = (event) => {
@@ -176,6 +178,8 @@ const Details = ({ card, onClose }) => {
     try {
       const response = await api.post('/user/incident/getStatus', {id});
       switch (response.data) {
+        case 2 :
+          return 'Accion requerida';
         case 1 :
           return 'Accion requerida';
         case 0 :
@@ -209,7 +213,6 @@ const Details = ({ card, onClose }) => {
               {departmentNameF && `${departmentNameF}`}
             </p>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
-            <p className="mb-4 text-black">Detalles del proceso</p>
             <p className="mt-[15px] text-black">Documento asignado al proceso:</p>
             <div className='w-[50%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
               <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
@@ -221,28 +224,39 @@ const Details = ({ card, onClose }) => {
                 Descargar documento
               </button>
             </div>
-            <div className='mt-4 text-black rounded border-1 border-indigo-200/50 p-2 w-[750px] h-[50px]'>
-              <h3>Descripcion del proceso</h3>
-            </div>
-            <div className='mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[90%]'>
-              <input
+            <div className='mt-7 text-black rounded border-2 border-indigo-200/50 p-2 w-[90%]'>
+              <textarea
                 type="text"
                 value={incident}
                 onChange={handleInputChange}
                 placeholder="Agrega un comentario o incidencia"
-                className="w-full border-none focus:outline-none" />
+                className="w-full border-none focus:outline-none h-[120px] " />
             </div>
             <div className="flex items-center mt-4">
               <button onClick={handleSubmit} className='bg-[#2C1C47] p-2 rounded text-white'>
-                Enviar comentario
+                Enviar 
               </button>
-              <div className="ml-4 flex items-center">
-                <label htmlFor="confirmacion" className="text-black">¿Requiere confirmación de acción realizada?</label>
-                <input
-                  type="checkbox"
-                  id="confirmacion"
-                  onChange={handleCheckboxChange}
-                  className="ml-2"/>
+              <div className="ml-4 flex items-center space-x-4">
+                <div className="flex items-center">
+                  <label htmlFor="verificacion-lectura" className="text-black mr-2">Verificación de lectura</label>
+                  <input
+                    type="radio"
+                    id="verificacion-lectura"
+                    name="accion"
+                    value="1"
+                    onChange={() => handleCheckboxChange(1)}
+                    className="form-radio"/>
+                </div>
+                <div className="flex items-center">
+                  <label htmlFor="accion-necesaria" className="text-black mr-2">Acción necesaria</label>
+                  <input
+                    type="radio"
+                    id="accion-necesaria"
+                    name="accion"
+                    value="2"
+                    onChange={() => handleCheckboxChange(2)}
+                    className="form-radio"/>
+                </div>
               </div>
             </div>
           </div>
@@ -325,7 +339,7 @@ const Details = ({ card, onClose }) => {
                     key={index}
                     className={`mt-2 shadow-lg rounded border-2 border-indigo-200/40 p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
                     onClick={log.type === 21 ? () => handleLogClick(log) : null}>
-                    {log.type === 21 && <p className="text-[#2C1C47] font-bold">{incidentStatus[log.id]}</p>}
+                    {log.type === 21 && <p className="text-[#2C1C47] font-bold underline">{incidentStatus[log.id]}</p>}
                     <p className='mb-2'>
                       - <strong>{log.name}</strong> 
                       , realizó <strong>{getEventTypeText(log.type)}</strong>.

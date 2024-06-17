@@ -75,8 +75,82 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   );
 };
 
+const AnnexesUploadModal = ({ isOpen, onClose, onFileUpload }) => {
+  const [file, setFile] = useState(null);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const effectMounted = useRef(false);
+  const api = useApi();
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const handleSubmit = async () => {
+    if (!file) {
+      alert('Por favor, seleccione un archivo para cargar.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const response = await api.post('/user/file/store', formData);
+      let filems = response.data.data;
+      let path = response.data.path;
+      let titleAsig = title;
+      filems.asignedTitle = title;
+      if (response) {
+        onFileUpload({ ...filems, path, titleAsig });
+        onClose();
+      } else {
+        console.error('Error al cargar el archivo:', response.statusText);
+        alert('Error al cargar el archivo');
+      }
+    } catch (error) {
+      console.error('Error en la solicitud:', error);
+      alert('Error en la solicitud');
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
+        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
+          &times;
+        </button>
+        <h2 className="text-2xl mb-4 text-black">Cargar anexos</h2>
+        <input type="file" onChange={handleFileChange} className="mb-4" />
+        {file && (
+          <div className="mb-4 text-black">
+            <p>Archivo seleccionado: {file.name}</p>
+            <p>Tamaño: {file.size < 1024 ? file.size + " bytes" : file.size < 1048576 ? (file.size / 1024).toFixed(2) + " KB" : (file.size / 1048576).toFixed(2) + " MB"}</p>
+          </div>
+        )}
+        <input
+          type="text"
+          placeholder="Título del documento"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
+        <textarea
+          placeholder="Descripción del documento"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
+        <button onClick={handleSubmit} className="bg-[#2C1C47] p-2 rounded text-white">
+          Cargar
+        </button>
+      </div>
+    </div>
+  );
+};
+
 const AddProcessForm = ({ card, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModal2Open, setIsModal2Open] = useState(false);
   const [processName, setProcessName] = useState('');
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [fileInfo, setFileInfo] = useState(null); 
@@ -140,8 +214,6 @@ const AddProcessForm = ({ card, onClose }) => {
     }
   };
   
-  
-
   const getFileIcon = (extension) => {
     switch (extension.toLowerCase()) {
       case '.pdf':
@@ -153,7 +225,7 @@ const AddProcessForm = ({ card, onClose }) => {
       case '.xlsx':
         return '/icons/excel.png';
       default:
-        return '/icons/question.png'; // Icono default
+        return '/icons/question.png'; 
     }
   };
 
@@ -194,14 +266,20 @@ const AddProcessForm = ({ card, onClose }) => {
         )}
 
         <div className="mt-4 flex justify-end">
+          <div>
           <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px]'>
             Cargar documento
           </button>
-          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white mr-[20px]">
+          <button onClick={() => setIsModal2Open(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px] mt-6'>
+            Cargar anexos
+          </button>
+          </div>
+          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white mr-[20px] h-[50px] w-[250px]">
             Añadir proceso
           </button>
         </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
+        {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onFileUpload={handleFileUpload} />}
       </div>
     </div>
   );
