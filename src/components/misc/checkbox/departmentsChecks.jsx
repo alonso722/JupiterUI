@@ -55,12 +55,11 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
     setSearch(e.target.value);
   };
 
-  // Efecto secundario para imprimir en la consola el arreglo de opciones seleccionadas cada vez que cambia
   useEffect(() => {
   }, [selectedOptions]);
 
   return (
-    <div className='text-black my-[10px]'>
+    <div className='text-black my-[5px]'>
       <div className="relative">
         <input 
           type="text" 

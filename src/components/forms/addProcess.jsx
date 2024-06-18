@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
+import { toast } from 'react-toastify';
 
 const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   const [file, setFile] = useState(null);
@@ -15,7 +16,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
 
   const handleSubmit = async () => {
     if (!file) {
-      alert('Por favor, seleccione un archivo para cargar.');
+      toast.error('Por favor, seleccione un archivo para cargar.');
       return;
     }
 
@@ -48,7 +49,7 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
         <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
-        <h2 className="text-2xl mb-4">Cargar documento</h2>
+        <h2 className="text-2xl mb-4 text-black">Cargar documento</h2>
         <input type="file" onChange={handleFileChange} className="mb-4" />
         {file && (
           <div className="mb-4 text-black">
@@ -75,37 +76,47 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   );
 };
 
-const AnnexesUploadModal = ({ isOpen, onClose, onFileUpload }) => {
-  const [file, setFile] = useState(null);
+const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload }) => {
+  const [files, setFiles] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const effectMounted = useRef(false);
   const api = useApi();
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const newFiles = Array.from(e.target.files);
+    setFiles((prevFiles) => [...prevFiles, ...newFiles]);
+  };
+
+  const handleRemoveFile = (index) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async () => {
-    if (!file) {
-      alert('Por favor, seleccione un archivo para cargar.');
+    if (files.length === 0) {
+      toast.error('Por favor, seleccione al menos un archivo para cargar.');
       return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
     try {
-      const response = await api.post('/user/file/store', formData);
-      let filems = response.data.data;
-      let path = response.data.path;
-      let titleAsig = title;
-      filems.asignedTitle = title;
-      if (response) {
-        onFileUpload({ ...filems, path, titleAsig });
+      const uploadedFiles = [];
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await api.post('/user/file/store', formData);
+        let filems = response.data.data;
+        let path = response.data.path;
+        filems.asignedTitle = title;
+        uploadedFiles.push({ ...filems, path, title });
+      }
+
+      if (uploadedFiles.length > 0) {
+        onAnnexesUpload(uploadedFiles);
         onClose();
       } else {
-        console.error('Error al cargar el archivo:', response.statusText);
-        alert('Error al cargar el archivo');
+        console.error('Error al cargar los archivos');
+        alert('Error al cargar los archivos');
       }
     } catch (error) {
       console.error('Error en la solicitud:', error);
@@ -122,11 +133,18 @@ const AnnexesUploadModal = ({ isOpen, onClose, onFileUpload }) => {
           &times;
         </button>
         <h2 className="text-2xl mb-4 text-black">Cargar anexos</h2>
-        <input type="file" onChange={handleFileChange} className="mb-4" />
-        {file && (
+        <input type="file" multiple onChange={handleFileChange} className="mb-4" />
+        {files.length > 0 && (
           <div className="mb-4 text-black">
-            <p>Archivo seleccionado: {file.name}</p>
-            <p>Tamaño: {file.size < 1024 ? file.size + " bytes" : file.size < 1048576 ? (file.size / 1024).toFixed(2) + " KB" : (file.size / 1048576).toFixed(2) + " MB"}</p>
+            {files.map((file, index) => (
+              <div key={index} className="mb-2 flex justify-between items-center">
+                <div>
+                  <p>Archivo: {file.name}</p>
+                  <p>Tamaño: {file.size < 1024 ? file.size + " bytes" : file.size < 1048576 ? (file.size / 1024).toFixed(2) + " KB" : (file.size / 1048576).toFixed(2) + " MB"}</p>
+                </div>
+                <button onClick={() => handleRemoveFile(index)} className="ml-4 bg-red-500 text-white p-1 rounded">Eliminar</button>
+              </div>
+            ))}
           </div>
         )}
         <input
@@ -154,6 +172,7 @@ const AddProcessForm = ({ card, onClose }) => {
   const [processName, setProcessName] = useState('');
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [fileInfo, setFileInfo] = useState(null); 
+  const [annexesInfo, setAnnexesInfo] = useState(null); 
   const effectMounted = useRef(false);
   const api = useApi();
   const [users, setUsers] = useState([]);
@@ -164,6 +183,10 @@ const AddProcessForm = ({ card, onClose }) => {
 
   const handleFileUpload = (filems) => {
     setFileInfo(filems); 
+  };
+
+  const handleAnnexesUpload = (filems) => {
+    setAnnexesInfo(filems); 
   };
 
   useEffect(() => {
@@ -181,6 +204,10 @@ const AddProcessForm = ({ card, onClose }) => {
   }, []);
 
   const handleAddProcess = (selectedDepartments) => {
+    if (!processName) {
+      toast.error( "Por favor, nombre el proceso");
+      return;
+    }
     const processDetails = {
       processName,
       departments: selectedDepartments,
@@ -195,11 +222,16 @@ const AddProcessForm = ({ card, onClose }) => {
       processDetails.fileTitle = fileInfo.asignedTitle; 
       processDetails.fileName = fileInfo.name;
     }
+    console.log(annexesInfo)
+    if(annexesInfo){
+      processDetails.annexes = annexesInfo;
+    }
   
     if (processDetails.processName) {
       processDetails.editor.uuid = "uet1";
       processDetails.revisor.uuid = "urt1";
       processDetails.aprobator.uuid = "uapt1";
+      console.log("info completa!!!!!!!!1,", processDetails)
       api.post('/user/process/addTab', processDetails)
         .then((response) => {
           if (response.data === 200) {
@@ -229,9 +261,28 @@ const AddProcessForm = ({ card, onClose }) => {
     }
   };
 
+  const getAnnexesIcon = (extension) => {
+    if(extension.length > 1){
+      return '/icons/folder.png';
+    } else {
+      switch (extension[0].extension.toLowerCase()) {
+        case '.pdf':
+          return '/icons/pdf.png';
+        case '.doc':
+        case '.docx':
+          return '/icons/doc.png';
+        case '.xls':
+        case '.xlsx':
+          return '/icons/excel.png';
+        default:
+          return '/icons/question.png'; 
+      }
+    }
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[700px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[800px] relative">
         <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
@@ -252,34 +303,45 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           </div>
         </div>
-
-        {fileInfo && (
-          <div className="mb-4 text-black items-center justify-center">
-            <h2>Documento cargado:</h2>            
-            <img  src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[100px] h-[100px] ml-[20px]" />
-            <p
-              className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
-              title={fileInfo.name}>
-              {fileInfo.name}
-            </p>
-          </div>
-        )}
-
-        <div className="mt-4 flex justify-end">
+        <div className='flex  justify-center '>
+          {fileInfo && (
+            <div className="mb-4 text-black items-center justify-end">
+              <h2>Documento cargado:</h2>            
+              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[100px] h-[100px] ml-[20px] mr-[160px]" />
+              <p
+                className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
+                title={fileInfo.name}>
+                {fileInfo.name}
+              </p>
+            </div>
+          )}
+          {annexesInfo && (
+            <div className="mb-4 text-black flex flex-col items-center justify-center">
+              <h2>Anexos:</h2>
+              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[100px] h-[100px]"/>
+              <p
+                className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+                title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
+              </p>
+            </div>
+          )}
+        </div>
+        <div className="mt-1 flex justify-end">
           <div>
           <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px]'>
             Cargar documento
           </button>
-          <button onClick={() => setIsModal2Open(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px] mt-6'>
+          <button onClick={() => setIsModal2Open(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px] mt-6 w-[140px]'>
             Cargar anexos
           </button>
           </div>
-          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white mr-[20px] h-[50px] w-[250px]">
+          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white mr-[20px] h-[50px] w-[250px] mt-[80px]">
             Añadir proceso
           </button>
         </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
-        {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onFileUpload={handleFileUpload} />}
+        {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onAnnexesUpload={handleAnnexesUpload} />}
       </div>
     </div>
   );

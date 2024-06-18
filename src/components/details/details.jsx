@@ -31,6 +31,7 @@ const Details = ({ card, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [departmentNameF, setDeptName] = useState({});
   const [document, setDocument] = useState({});
+  const [documentsANX, setAnnexe] = useState({});
   const [roles, setRoles] = useState({});
   const [incident, setIncident] = useState(''); 
   const [logsPrnt, setLogs] = useState([]);
@@ -45,7 +46,7 @@ const Details = ({ card, onClose }) => {
       const fetchDocument = async () => {
         try {
           const initialStatus = status.find(state => state.column === card.column) || status[0];
-
+          console.log("card antes de obtener departamentos", card)
           const responseDep = await api.post('/user/departments/getName', card);
           const departmentName = responseDep.data.data;
           setDeptName(departmentName);
@@ -76,7 +77,26 @@ const Details = ({ card, onClose }) => {
         }
       };
 
+      const fetchAnnexes = async () => {
+        try {
+          const responseDep = await api.post('/user/departments/getId', card);
+          const departmentId = responseDep.data.departmentId;
+          const ids ={};
+          ids.prId= card.id;
+          ids.deptId= departmentId;
+          console.log(departmentId)
+          const responseAnx = await api.post('/user/annexe/fetch', ids);
+          const fetchAnnexe = responseAnx.data.data;
+          console.log("response de anexos",fetchAnnexe)
+          setAnnexe(fetchAnnexe);
+
+        } catch (error) {
+          console.error("Error al consultar procesos:", error);
+        }
+      };
+
       fetchDocument();
+      fetchAnnexes();
       effectMounted.current = true;
     }
   }, [card.column, api]);
@@ -98,6 +118,32 @@ const Details = ({ card, onClose }) => {
       default:
         return '/icons/question.png';
     }
+  };
+
+  const getFileAnxIcon = (file) => {
+    if(file.length > 1){
+      return '/icons/folder.png';
+    } else{
+    const fileName = file[0].name;
+    const lastDotIndex = fileName.lastIndexOf('.');
+    if (lastDotIndex !== -1) {
+      const extension = fileName.substring(lastDotIndex).toLowerCase();
+      switch (extension) {
+        case '.pdf':
+          return '/icons/pdf.png';
+        case '.doc':
+        case '.docx':
+          return '/icons/doc.png';
+        case '.xls':
+        case '.xlsx':
+          return '/icons/excel.png';
+        default:
+          return '/icons/question.png';
+      }
+    } else {
+      return '/icons/question.png';
+    }
+  }
   };
 
   const handleDownload = async (path) => {
@@ -153,7 +199,7 @@ const Details = ({ card, onClose }) => {
     } catch (error) {
       console.error("Error al hacer el registro de incidente:", error);
     }
-    
+    fetchAnnexes();
     fetchDocument();
   };
 
@@ -213,11 +259,24 @@ const Details = ({ card, onClose }) => {
               {departmentNameF && `${departmentNameF}`}
             </p>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
-            <p className="mt-[15px] text-black">Documento asignado al proceso:</p>
-            <div className='w-[50%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
-              <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
-              <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
-              <p className="mt-[px] mb-4 text-black">{document.name}</p>
+            <p className="mt-[15px] text-black mb-1">Documentos asignado al proceso:</p>
+            <div className='flex'>
+              <div className='w-[40%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 mr-4'>
+                <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
+                <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                <p className="mt-[px] mb-4 text-black">{document.name}</p>
+              </div>
+              <div className='w-[40%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
+                {documentsANX.length > 0 ? (
+                  <>
+                    <p className="mt-[15px] text-black"><strong>{documentsANX[0].title}</strong></p>
+                    <img src={getFileAnxIcon(documentsANX)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                    <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "" : documentsANX[0].name}</p>
+                  </>
+                ) : (
+                  <p className="mt-[15px] text-black">No hay anexos para el proceso.</p>
+                )}
+              </div>
             </div>
             <div>
               <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
@@ -340,11 +399,11 @@ const Details = ({ card, onClose }) => {
                     className={`mt-2 shadow-lg rounded border-2 border-indigo-200/40 p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
                     onClick={log.type === 21 ? () => handleLogClick(log) : null}>
                     {log.type === 21 && <p className="text-[#2C1C47] font-bold underline">{incidentStatus[log.id]}</p>}
-                    <p className='mb-2'>
-                      - <strong>{log.name}</strong> 
+                    <li className='mb-2'>
+                      <strong>{log.name}</strong> 
                       , realizó <strong>{getEventTypeText(log.type)}</strong>.
                       <strong>{new Date(log.created).toLocaleString()}</strong> 
-                    </p>
+                    </li>
                   </div>
                 ))
               ) : (
