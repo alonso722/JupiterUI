@@ -3,6 +3,7 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import useApi from '@/hooks/useApi';
 import Incident from '../details/incident';
+import Annexes from '../details/annexe';
 
 const status = [
   { id: 1, column: 'Edicion' },
@@ -40,13 +41,24 @@ const Details = ({ card, onClose }) => {
   const [selectedIncident, setSelectedIncident] = useState(null);
   const effectMounted = useRef(false);
   const api = useApi();
+  const [isModalAnxOpen, setModalAnxOpen] = useState(false);
+  const [selectedCardId, setSelectedCardId] = useState(null);
+
+  const openModalAnx = (id) => {
+    setSelectedCardId(id);
+    setModalAnxOpen(true);
+  };
+
+  const closeModalAnx = () => {
+    setSelectedCardId(null);
+    setModalAnxOpen(false);
+  };
 
   useEffect(() => {
     if (effectMounted.current === false) {
       const fetchDocument = async () => {
         try {
           const initialStatus = status.find(state => state.column === card.column) || status[0];
-          console.log("card antes de obtener departamentos", card)
           const responseDep = await api.post('/user/departments/getName', card);
           const departmentName = responseDep.data.data;
           setDeptName(departmentName);
@@ -84,12 +96,9 @@ const Details = ({ card, onClose }) => {
           const ids ={};
           ids.prId= card.id;
           ids.deptId= departmentId;
-          console.log(departmentId)
           const responseAnx = await api.post('/user/annexe/fetch', ids);
           const fetchAnnexe = responseAnx.data.data;
-          console.log("response de anexos",fetchAnnexe)
           setAnnexe(fetchAnnexe);
-
         } catch (error) {
           console.error("Error al consultar procesos:", error);
         }
@@ -165,6 +174,25 @@ const Details = ({ card, onClose }) => {
     }
   };
 
+  const handleAnxDownload = async (path) => {
+    if (path) {
+      window.open('http://localhost:8030/api/v1/file?f=' + path, '_blank');
+      const uuid = localStorage.getItem('uuid');
+
+      const log = {};
+      log.uuid = uuid;
+      log.type = 24;
+      log.id = card.id;
+      try {
+        await api.post('/user/log/setLog', log);
+      } catch (error) {
+        console.error("Error al hacer el registro:", error);
+      }
+    } else {
+      console.error("URL del documento no está disponible");
+    }
+  };
+
   const handleCheckboxChange = (value) => {
     setAttend(value);
   };
@@ -172,7 +200,6 @@ const Details = ({ card, onClose }) => {
   const handleSubmit = async () => {
     const confirmationStatus = attendReq ? 1 : 0;
     const uuid = localStorage.getItem('uuid');
-    console.log(confirmationStatus, incident, uuid); 
     
     const log = {};
     log.uuid = uuid;
@@ -185,7 +212,6 @@ const Details = ({ card, onClose }) => {
     } catch (error) {
       console.error("Error al hacer el registro:", error);
     }
-    console.log("id del log ", logId);
     const incidentSnd = {};
     incidentSnd.incident = incident;
     incidentSnd.attend = confirmationStatus;
@@ -215,6 +241,8 @@ const Details = ({ card, onClose }) => {
         return " una descarga";
       case 23:
         return " una actualización del estado del proceso";
+      case 24:
+        return " una descarga del anexo";  
       default:
         return "Evento desconocido";
     }
@@ -260,28 +288,41 @@ const Details = ({ card, onClose }) => {
             </p>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
             <p className="mt-[15px] text-black mb-1">Documentos asignado al proceso:</p>
-            <div className='flex'>
-              <div className='w-[40%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 mr-4'>
-                <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
-                <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
-                <p className="mt-[px] mb-4 text-black">{document.name}</p>
+            <div className='flex '>
+              <div className=' flex flex-col items-center justify-center mr-9'>
+                <div className='w-[250px] px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
+                  <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
+                  <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                  <p className="mt-[px] mb-4 text-black">{document.name}</p>
+                </div>
+                <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                  Descargar documento
+                </button>
               </div>
-              <div className='w-[40%] flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
-                {documentsANX.length > 0 ? (
-                  <>
-                    <p className="mt-[15px] text-black"><strong>{documentsANX[0].title}</strong></p>
-                    <img src={getFileAnxIcon(documentsANX)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
-                    <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "" : documentsANX[0].name}</p>
-                  </>
+              <div className='flex flex-col items-center justify-center'>
+              <div className={`w-[250px] px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
+                   onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
+                  {documentsANX.length > 0 ? (
+                    <>
+                      <p 
+                        className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
+                        <strong>{documentsANX[0].title}</strong>
+                      </p>
+                      <img src={getFileAnxIcon(documentsANX)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                      <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "" : documentsANX[0].name}</p>
+                    </>
+                  ) : (
+                    <p className="mt-[15px] text-black">No hay anexos para el proceso.</p>
+                  )}
+                </div>
+                {documentsANX.length > 1 ? (
+                  <></>
                 ) : (
-                  <p className="mt-[15px] text-black">No hay anexos para el proceso.</p>
+                  <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                    Descargar anexo
+                  </button>
                 )}
               </div>
-            </div>
-            <div>
-              <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                Descargar documento
-              </button>
             </div>
             <div className='mt-7 text-black rounded border-2 border-indigo-200/50 p-2 w-[90%]'>
               <textarea
@@ -417,6 +458,7 @@ const Details = ({ card, onClose }) => {
           <Incident incident={selectedIncident} onClose={handleCloseModal} />
         )}
       <DocumentDownload isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {isModalAnxOpen && <Annexes onClose={closeModalAnx} cardId={card.id} />}
     </div>
   );
 };

@@ -8,18 +8,15 @@ const Incident = ({ incident, onClose }) => {
 
   useEffect(() => {
     if (!effectMounted.current) {
-      console.log("incidente en la accion", incident);
       const id = incident.id;
       const fetchIncident = async () => {
         try {
           const response = await api.post('/user/incident/getDetails', { id });
           setDetails(response.data);
-          console.log("data para resolver incidencia",response.data)
           const fetchId = response.data.id
           if(response.data.incidentType == 1 && response.data.status ==1){
           try {
             const response = await api.post('/user/incident/updateStatus', { fetchId });
-            console.log(response);
             if (response.data === 200) {
               onClose(); 
             }
@@ -48,10 +45,8 @@ const Incident = ({ incident, onClose }) => {
   }
 
   const handleAttend = async (id) => {
-    console.log("en funcion de endpoint", id);
     try {
       const response = await api.post('/user/incident/updateStatus', { id });
-      console.log(response);
       if (response.data === 200) {
         onClose(); 
       }

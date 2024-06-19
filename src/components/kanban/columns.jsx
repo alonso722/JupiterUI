@@ -26,7 +26,6 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
             userType.token = token;
             api.post('/user/process/fetchTab', {userType, departmentFilter, processFilter})
                 .then((response) => {
-                    console.log("todo el data en response con uuid",response.data.userUUID)
                     localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
                     const fetchedCards = response.data.data.map(item => ({
                         id: item.id.toString(),
@@ -167,7 +166,6 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
             log.id = cardId;
             log.uuid = uuid;
             log.type = 23;
-            console.log("log antes de el update",log)
             api.post('/user/process/update', {
                 id: cardId,
                 newColumn: column,

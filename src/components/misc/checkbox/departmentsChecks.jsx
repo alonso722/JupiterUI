@@ -70,12 +70,12 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
         />
       </div>
       {searchSearch && (
-        <div className="mt-2 max-h-[100px] overflow-y-auto">
+        <div className="flex mt-2 max-h-[100px] overflow-x-auto">
           {options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
+            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
               <span>{option.department}</span>
               <button 
-                className="bg-blue-500 text-white px-2 py-1 rounded"
+                className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
                 onClick={() => handleAddOption(option)}>
                 +
               </button>
@@ -83,16 +83,16 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
           ))}
         </div>
       )}
-      <div className='border mt-3 p-2 max-h-[170px] overflow-y-auto'>
+      <div className='border mt-3 p-2 max-h-[170px] '>
         <h3 className='text-black'>
           <b>Departamentos seleccionados:</b>
         </h3>
-        <div className='max-h-[200px]'>
+        <div className='max-h-[200px] flex overflow-x-auto'>
           {selectedOptions.map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 ">
-              <span>{option.department}</span>
+              <span className='min-w-[50px]'>{option.department}</span>
               <button 
-                className="bg-red-500 text-white px-2 py-1 rounded"
+                className="bg-red-500 text-white px-2 py-1 rounded ml-2"
                 onClick={() => handleRemoveOption(option)}>
                 -
               </button>

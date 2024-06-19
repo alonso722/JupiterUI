@@ -18,38 +18,28 @@ class NoteTool {
         this.container = document.createElement('div');
         this.container.classList.add('note-tool-container');
 
-        // Botón para mostrar o editar la nota según su estado actual
         const toggleNoteButton = document.createElement('button');
         toggleNoteButton.innerText = this.editable ? 'Guardar' : 'Mostrar Nota';
         toggleNoteButton.classList.add('toggle-note-button');
 
-        // Evento para cambiar entre visualización y edición de la nota
         toggleNoteButton.addEventListener('click', () => {
             if (this.editable) {
-                // Guardar el contenido editado
                 this.data.content = this.container.querySelector('.note-content').innerText;
-                // Cambiar a modo de visualización
+
                 this.editable = false;
             } else {
-                // Cambiar a modo de edición
                 this.editable = true;
             }
-            // Actualizar el texto del botón
             toggleNoteButton.innerText = this.editable ? 'Guardar' : 'Mostrar Nota';
-            // Renderizar la nota
             this.render();
         });
 
-        // Eliminar el contenido actual del contenedor
         this.container.innerHTML = '';
-
-        // Crear el contenido editable de la nota
         const noteContent = document.createElement('div');
         noteContent.classList.add('note-content');
-        noteContent.innerHTML = this.editable ? (this.data.content || '') : (this.data.content ? this.data.content : '[* Escribe la nota aquí]'); // Puede haber contenido previo
-        noteContent.contentEditable = this.editable; // Establecer la edición basada en el modo actual
+        noteContent.innerHTML = this.editable ? (this.data.content || '') : (this.data.content ? this.data.content : '[* Escribe la nota aquí]'); 
+        noteContent.contentEditable = this.editable; 
 
-        // Agregar el contenido editable al contenedor
         this.container.appendChild(noteContent);
         this.container.appendChild(toggleNoteButton);
 
@@ -71,7 +61,6 @@ class NoteTool {
     }
 
     renderSettings() {
-        // Opcional: Si tu herramienta necesita configuración adicional, puedes definirlo aquí
         return '';
     }
 

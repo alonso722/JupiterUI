@@ -222,7 +222,6 @@ const AddProcessForm = ({ card, onClose }) => {
       processDetails.fileTitle = fileInfo.asignedTitle; 
       processDetails.fileName = fileInfo.name;
     }
-    console.log(annexesInfo)
     if(annexesInfo){
       processDetails.annexes = annexesInfo;
     }
@@ -231,7 +230,6 @@ const AddProcessForm = ({ card, onClose }) => {
       processDetails.editor.uuid = "uet1";
       processDetails.revisor.uuid = "urt1";
       processDetails.aprobator.uuid = "uapt1";
-      console.log("info completa!!!!!!!!1,", processDetails)
       api.post('/user/process/addTab', processDetails)
         .then((response) => {
           if (response.data === 200) {
@@ -242,7 +240,6 @@ const AddProcessForm = ({ card, onClose }) => {
           console.error("Error al consultar procesos:", error);
         });
     } else {
-      console.log("Error: No se ha nombrado el proceso.");
     }
   };
   
@@ -282,7 +279,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[800px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[700px] relative">
         <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
@@ -298,7 +295,7 @@ const AddProcessForm = ({ card, onClose }) => {
               />
             </h2>
             <p className="mb-4 text-black">Detalles del proceso:</p>
-            <div className='max-h-[350px] h-[350px]'>
+            <div className='max-h-[350px] h-[250px]'>
               <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} />
             </div>
           </div>
@@ -327,16 +324,16 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           )}
         </div>
-        <div className="mt-1 flex justify-end">
-          <div>
-          <button onClick={() => setIsModalOpen(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px]'>
+        <div className="mt-9 flex justify-end">
+          <div className='flex'>
+          <button onClick={() => setIsModalOpen(true)} className='underline text-black p-2 mt-6 rounded'>
             Cargar documento
           </button>
-          <button onClick={() => setIsModal2Open(true)} className='bg-[#2C1C47] p-2 rounded text-white mr-[160px] mt-6 w-[140px]'>
+          <button onClick={() => setIsModal2Open(true)} className='underline text-black p-2 rounded mt-6'>
             Cargar anexos
           </button>
           </div>
-          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white mr-[20px] h-[50px] w-[250px] mt-[80px]">
+          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
             Añadir proceso
           </button>
         </div>

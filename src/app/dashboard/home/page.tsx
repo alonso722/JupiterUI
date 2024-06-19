@@ -30,7 +30,6 @@ export default function Page() {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
-            console.log("permisos::::::::::::", parsedPermissions)
             if (!authStateValue.loggedIn) {
                 toast.error('Sin autenticación');
                 router.push('/auth/login');

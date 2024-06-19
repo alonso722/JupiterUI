@@ -13,7 +13,7 @@ import CheckList from '@editorjs/checklist';
 import Delimiter from '@editorjs/delimiter';
 import InlineCode from '@editorjs/inline-code';
 import SimpleImage from '@editorjs/simple-image';
-import Comment from 'editorjs-comment'; // Importa el componente de comentario
+import Comment from 'editorjs-comment';
 
 export const EDITOR_JS_TOOLS = {
   embed: Embed,
