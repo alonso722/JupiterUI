@@ -5,7 +5,9 @@ import {
     getFilteredRowModel,
     getPaginationRowModel,
     useReactTable,
+    getSortedRowModel,
 } from "@tanstack/react-table";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import Search from "./search";
@@ -20,7 +22,7 @@ const TanStackTable = () => {
     const api = useApi();
 
     const handleActionClick = (id, status) => {
-        // Implement your action click logic here
+
     };
 
     const [data, setData] = useState([]);
@@ -66,15 +68,15 @@ const TanStackTable = () => {
     const convertStatusToColumn = (status) => {
         switch (status) {
             case '1':
-                return 'Edicion';
+                return 'Edición';
             case '2':
-                return 'Revision';
+                return 'Revisión';
             case '3':
-                return 'Aprobacion';
+                return 'Aprobación';
             case '4':
                 return 'Aprobado';
             default:
-                return 'Edicion';
+                return 'Edición';
         }
     };
 
@@ -148,7 +150,8 @@ const TanStackTable = () => {
                         setRefreshTable(true);
                     }} />
             ),
-            header: "",
+            header: "", 
+            enableSorting: false, 
         }),
     ];
 
@@ -161,6 +164,7 @@ const TanStackTable = () => {
         getFilteredRowModel: getFilteredRowModel(),
         getCoreRowModel: getCoreRowModel(),
         getPaginationRowModel: getPaginationRowModel(),
+        getSortedRowModel: getSortedRowModel(),
     });
 
     const [showForm, setShowForm] = useState(false);
@@ -211,9 +215,21 @@ const TanStackTable = () => {
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (
                                 <th key={header.id} className="capitalize px-3.5 py-2">
-                                    {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
+                                    {header.isPlaceholder ? null : (
+                                        <div
+                                            className={header.column.getCanSort() ? 'cursor-pointer select-none flex items-center' : ''}
+                                            onClick={header.column.getToggleSortingHandler()}>
+                                            {flexRender(
+                                                header.column.columnDef.header,
+                                                header.getContext()
+                                            )}
+                                            {{
+                                                asc: <i className="fas fa-angle-up ml-1"></i>,
+                                                desc: <i className="fas fa-angle-down ml-1"></i>,
+                                            }[header.column.getIsSorted()] ?? (
+                                                header.column.getCanSort() && <i className="fas fa-angle-down ml-1"></i>
+                                            )}
+                                        </div>
                                     )}
                                 </th>
                             ))}

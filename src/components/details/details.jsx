@@ -6,9 +6,9 @@ import Incident from '../details/incident';
 import Annexes from '../details/annexe';
 
 const status = [
-  { id: 1, column: 'Edicion' },
-  { id: 2, column: 'Revision' },
-  { id: 3, column: 'Aprobacion' },
+  { id: 1, column: 'Edición' },
+  { id: 2, column: 'Revisión' },
+  { id: 3, column: 'Aprobación' },
   { id: 4, column: 'Aprobado' },
 ];
 
@@ -300,23 +300,23 @@ const Details = ({ card, onClose }) => {
                 </button>
               </div>
               <div className='flex flex-col items-center justify-center'>
-              <div className={`w-[250px] px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
+                <div className={`w-[250px] px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
                    onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
-                  {documentsANX.length > 0 ? (
-                    <>
-                      <p 
-                        className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
-                        <strong>{documentsANX[0].title}</strong>
-                      </p>
-                      <img src={getFileAnxIcon(documentsANX)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
-                      <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "" : documentsANX[0].name}</p>
-                    </>
-                  ) : (
-                    <p className="mt-[15px] text-black">No hay anexos para el proceso.</p>
-                  )}
+                    {documentsANX.length > 0 ? (
+                      <>
+                        <p 
+                          className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
+                          <strong>{documentsANX[0].title}</strong>
+                        </p>
+                        <img src={getFileAnxIcon(documentsANX)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                        <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "\u00A0" : documentsANX[0].name}</p> 
+                      </>
+                    ) : (
+                      <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
+                    )}
                 </div>
                 {documentsANX.length > 1 ? (
-                  <></>
+                  <div style={{ height: '36px' }}>&nbsp;</div> 
                 ) : (
                   <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
                     Descargar anexo
@@ -360,7 +360,7 @@ const Details = ({ card, onClose }) => {
               </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 p-3 w-[500px]'>
+          <div className='mt-10 border-l-4 p-3 w-[400px]'>
             <Listbox value={selected} onChange={setSelected} className="w-[100px]">
               {({ open }) => (
                 <>
@@ -418,7 +418,7 @@ const Details = ({ card, onClose }) => {
                 </>
               )}
             </Listbox>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 max-w-[500px]">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[630px]  max-w-[630px]">
               <p>Detalles del proceso:</p>
               <p className='mt-4'>
                 {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
@@ -431,7 +431,7 @@ const Details = ({ card, onClose }) => {
               </p>
               <p>Fecha de aprobación</p>
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 max-w-[500px] h-[300px] overflow-auto">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[630px] max-w-[630px] h-[300px] overflow-auto">
               <h1><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (

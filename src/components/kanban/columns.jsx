@@ -45,15 +45,15 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     const convertStatusToColumn = (status) => {
         switch(status) {
             case '1':
-                return 'Edicion';
+                return 'Edición';
             case '2':
-                return 'Revision';
+                return 'Revisión';
             case '3':
-                return 'Aprobacion';
+                return 'Aprobación';
             case '4':
                 return 'Aprobado';
             default:
-                return 'Edicion';
+                return 'Edición';
         }
     };
 
@@ -69,7 +69,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
 
     return (
         <div 
-        className="mt-[110px] ml-[0px]  w-[100%] text-neutral-50 rounded shadow-2xl shadow-violet-950">
+        className="mt-[110px] ml-[0px]  w-[100%] text-neutral-50 rounded ">
             <Board onCardClick={handleCardClick} cards={cards} setCards={setCards} permissions={permissions} />
             {isModalOpen && selectedCard && (
                 <Details card={selectedCard} onClose={handleCloseModal} />
@@ -84,7 +84,7 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
         className="flex h-full w-full gap-3 p-12 justify-between">
             <Column
                 name="Edición"
-                column="Edicion"
+                column="Edición"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
@@ -93,7 +93,7 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
             />
             <Column
                 name="Revisión"
-                column="Revision"
+                column="Revisión"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
@@ -102,7 +102,7 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
             />
             <Column
                 name="Aprobación"
-                column="Aprobacion"
+                column="Aprobación"
                 headingColor="text-[#2C1C47]"
                 cards={cards}
                 setCards={setCards}
