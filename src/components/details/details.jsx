@@ -4,6 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import useApi from '@/hooks/useApi';
 import Incident from '../details/incident';
 import Annexes from '../details/annexe';
+import DocViewer from '../misc/docViewer/docViewer';
 
 const status = [
   { id: 1, column: 'Edición' },
@@ -43,6 +44,17 @@ const Details = ({ card, onClose }) => {
   const api = useApi();
   const [isModalAnxOpen, setModalAnxOpen] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState(null);
+  const [urlToView, setFileUrl] = useState(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
+  const openViewer = (path) => {
+    setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
+    setIsViewerOpen(true);
+  };
+
+  const closeViewer = () => {
+    setIsViewerOpen(false);
+  };
 
   const openModalAnx = (id) => {
     setSelectedCardId(id);
@@ -225,8 +237,6 @@ const Details = ({ card, onClose }) => {
     } catch (error) {
       console.error("Error al hacer el registro de incidente:", error);
     }
-    fetchAnnexes();
-    fetchDocument();
   };
 
   const handleInputChange = (event) => {
@@ -275,6 +285,13 @@ const Details = ({ card, onClose }) => {
     setIsModalOpen(false);
     setSelectedIncident(null);
   };
+
+  const handleView = (path) => {
+    console.log(path)
+    setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
+    setIsModalOpen(true);
+  };
+
   return (
     <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
@@ -282,42 +299,49 @@ const Details = ({ card, onClose }) => {
           &times;
         </button>
         <div className='flex'>
-          <div className='w-[50%] ml-2'>
+          <div className='min-w-[55%] max-w-[70%] ml-2 '>
             <p className='text-black'>
               {departmentNameF && `${departmentNameF}`}
             </p>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
-            <p className="mt-[15px] text-black mb-1">Documentos asignado al proceso:</p>
-            <div className='flex '>
-              <div className=' flex flex-col items-center justify-center mr-9'>
-                <div className='w-[250px] px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
+            <p className="mt-[15px] text-black mb-2">Documentos asignado al proceso:</p>
+            <div className='flex max-w-[95%]'>
+              <div className='flex flex-col items-center w-[40%] mr-[10%]'>
+                <div className='w-full px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
                   <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
-                  <img src={getFileIcon(document.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                  <img
+                    onClick={() => openViewer(document.path)}
+                    src={getFileIcon(document.name)}
+                    alt="File Icon"
+                    className="w-[50%] h-[100%] mt-[10px] cursor-pointer"
+                  />
                   <p className="mt-[px] mb-4 text-black">{document.name}</p>
                 </div>
                 <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
                   Descargar documento
                 </button>
               </div>
-              <div className='flex flex-col items-center justify-center'>
-                <div className={`w-[250px] px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
-                   onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
-                    {documentsANX.length > 0 ? (
-                      <>
-                        <p 
-                          className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
-                          <strong>{documentsANX[0].title}</strong>
-                        </p>
-                        <img src={getFileAnxIcon(documentsANX)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
-                        <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "\u00A0" : documentsANX[0].name}</p> 
-                      </>
-                    ) : (
-                      <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
-                    )}
+              <div className='flex flex-col items-center w-[40%]'>
+                <div className={`w-full px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
+                  onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
+                  {documentsANX.length > 0 ? (
+                    <>
+                      <p className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
+                        <strong>{documentsANX[0].title}</strong>
+                      </p>
+                      <img
+                        onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
+                        src={getFileAnxIcon(documentsANX)}
+                        alt="File Icon"
+                        className={`w-[50%] h-[100%] mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}
+                      />
+                      <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "cursor-pointer \u00A0" : documentsANX[0].name}</p> 
+                    </>
+                  ) : (
+                    <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
+                  )}
                 </div>
-                {documentsANX.length > 1 ? (
-                  <div style={{ height: '36px' }}>&nbsp;</div> 
-                ) : (
+                {documentsANX.length === 1 && (
                   <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
                     Descargar anexo
                   </button>
@@ -360,13 +384,13 @@ const Details = ({ card, onClose }) => {
               </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 p-3 w-[400px]'>
-            <Listbox value={selected} onChange={setSelected} className="w-[100px]">
+          <div className='mt-10 border-l-4 p-3 max-w-[50%]'>
+            <Listbox value={selected} onChange={setSelected} className=" max-w-[100px]">
               {({ open }) => (
                 <>
                   <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
                   <div className="relative mt-2">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 w-[100px]">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
                       <span className="flex items-center">
                         <span className="ml-3 block truncate">{selected.column}</span>
                       </span>
@@ -418,7 +442,7 @@ const Details = ({ card, onClose }) => {
                 </>
               )}
             </Listbox>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[630px]  max-w-[630px]">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%]  max-w-[630px]">
               <p>Detalles del proceso:</p>
               <p className='mt-4'>
                 {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
@@ -431,7 +455,7 @@ const Details = ({ card, onClose }) => {
               </p>
               <p>Fecha de aprobación</p>
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[630px] max-w-[630px] h-[300px] overflow-auto">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[300px] overflow-auto">
               <h1><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
@@ -454,6 +478,12 @@ const Details = ({ card, onClose }) => {
           </div>
         </div>
       </div>
+        {isViewerOpen && (
+          <DocViewer
+            url={urlToView}
+            onClose={closeViewer}
+          />
+        )}
         {isModalOpen && selectedIncident && (
           <Incident incident={selectedIncident} onClose={handleCloseModal} />
         )}

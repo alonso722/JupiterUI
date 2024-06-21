@@ -1,10 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
+import DocViewer from '../misc/docViewer/docViewer';
 
 const Annexes = ({ onClose, cardId }) => {
   const effectMounted = useRef(false);
   const [annexe, setAnnexe] = useState([]);
   const api = useApi();
+  const [urlToView, setFileUrl] = useState(null);
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
+  const openViewer = (path) => {
+    setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
+    setIsViewerOpen(true);
+  };
+
+  const closeViewer = () => {
+    setIsViewerOpen(false);
+  };
 
   useEffect(() => {
     if (effectMounted.current === false) {
@@ -74,7 +86,11 @@ const Annexes = ({ onClose, cardId }) => {
             annexe.map((anx, index) => (
                 <div className='flex flex-col items-center justify-center mr-5'>
                     <div key={index} className="mb-4 rounded border-2 border-indigo-200/50  flex flex-col items-center justify-center px-4">
-                        <img src={getFileIcon(anx.name)} alt="File Icon" className="w-[100px] h-[100px] mt-[10px]" />
+                    <img
+                      onClick={() => openViewer(anx.path)}
+                      src={getFileIcon(anx.name)}
+                      alt="File Icon"
+                      className="w-[100px] h-[100px] mt-[10px] cursor-pointer"/>
                         <p className="mt-[px] mb-4 text-black">{anx.name}</p>
                     </div>
                     <button onClick={() => handleAnxDownload(anx.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
@@ -87,6 +103,12 @@ const Annexes = ({ onClose, cardId }) => {
           )}
         </div>
       </div>
+      {isViewerOpen && (
+          <DocViewer
+            url={urlToView}
+            onClose={closeViewer}
+          />
+        )}
     </div>
   );
 };
