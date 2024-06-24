@@ -14,7 +14,7 @@ import Search from "@/components/table/search";
 import Actions from "@/components/table/actions";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
-import AddProcessForm from "@/components/forms/addProcess"; 
+import AddDepartmentForm from "@/components/forms/addDepartment"; 
 import { useRouter } from 'next/navigation';
 
 const DepartmentsTable = () => {
@@ -31,20 +31,19 @@ const DepartmentsTable = () => {
     const effectMounted = useRef(false);
 
     const fetchData = () => {
-        api.post('/user/process/fetchTab')
+        api.get('/user/departments/fetch')
             .then((response) => {
+                console.log(response.data.data)
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,
-                    process: item.process,
-                    department: item.departmentName,
-                    editor: item.editor,
-                    revisor: item.revisor,
-                    aprobator: item.aprobator,
-                    status: convertStatusToColumn(item.status),
-                    created: formatDate(item.created),
-                    updated: formatDate(item.updated),
+                    department: item.department,
+                    manager: item.manager || '-', 
+                    parent: item.parent || '-',   
+                    left: item.left || '-',       
+                    right: item.right || '-',     
                 }));
-                setData(fetchedData.reverse());
+                
+                setData(fetchedData);
                 setRefreshTable(false);
             })
             .catch((error) => {
@@ -65,86 +64,36 @@ const DepartmentsTable = () => {
         }
     }, [refreshTable]);
 
-    const convertStatusToColumn = (status) => {
-        switch (status) {
-            case '1':
-                return 'Edición';
-            case '2':
-                return 'Revisión';
-            case '3':
-                return 'Aprobación';
-            case '4':
-                return 'Aprobado';
-            default:
-                return 'Edición';
-        }
-    };
-
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const day = date.getDate();
-        const month = date.getMonth() + 1;
-        const year = date.getFullYear();
-        const formattedDay = day < 10 ? '0' + day : day;
-        const formattedMonth = month < 10 ? '0' + month : month;
-
-        return `${formattedDay}/${formattedMonth}/${year}`;
-    };
-
     const router = useRouter();
     const columns = [
         // columnHelper.accessor("id", {
         //     cell: (info) => <span>{info?.getValue()}</span>,
         //     header: "P.No.",
         // }),
-        columnHelper.accessor("process", {
-            cell: (info) => (
-                <a
-                    className="underline cursor-pointer"
-                    onClick={() => router.push(`/dashboard/home?process=${info.getValue()}`)}>
-                    {info.getValue()}
-                </a>
-            ),
-            header: "Proceso",
-        }),
         columnHelper.accessor("department", {
-            cell: (info) => (
-                <a
-                    className="underline cursor-pointer"
-                    onClick={() => router.push(`/dashboard/home?department=${info.getValue()}`)}>
-                    {info.getValue()}
-                </a>
-            ),
+            cell: (info) => <span>{info?.getValue()}</span>,
             header: "Departamento",
         }),
-        columnHelper.accessor("editor", {
+        columnHelper.accessor("manager", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Editor",
+            header: "Gerente",
         }),
-        columnHelper.accessor("revisor", {
+        columnHelper.accessor("parent", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Revisor",
+            header: "Departamento o area superior",
         }),
-        columnHelper.accessor("aprobator", {
+        columnHelper.accessor("left", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Aprobador",
+            header: "Departamento a mismo nivel",
         }),
-        columnHelper.accessor("status", {
+        columnHelper.accessor("right", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Estado",
-        }),
-        columnHelper.accessor("created", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Creación",
-        }),
-        columnHelper.accessor("updated", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Actualización",
+            header: "Departamento a mismo nivel",
         }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
-                    onActionClick={(id, status) => handleActionClick(id, status)}
+                    onActionClick={(id) => handleActionClick(id)}
                     rowData={info.row.original} 
                     onClose={() => {
                         setRefreshTable(true);
@@ -185,19 +134,13 @@ const DepartmentsTable = () => {
     return (
         <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
-                <div className="w-full flex items-center gap-1">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        height="1em"
-                        viewBox="0 0 512 512">
-                        <path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z" />
-                    </svg>
+                <div className="w-full flex items-center gap-1 text-black">
+                <i className="fa fa-search ml-1"></i>
                     <Search
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
-                        placeholder="Buscar"
-                    />
+                        placeholder="Buscar"/>
                 </div>
                 <div className="grid grid-rows-1 mt-[10px]">
                     <Button
@@ -206,7 +149,7 @@ const DepartmentsTable = () => {
                         onClick={handleButtonClick}>
                         Añadir
                     </Button>
-                    {showForm && <AddProcessForm onClose={handleCloseForm} />}
+                    {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-full text-left rounded-lg">

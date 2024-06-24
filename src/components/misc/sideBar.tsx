@@ -1,16 +1,15 @@
 import { useState, useEffect } from 'react';
 
 interface Permissions {
-    Type: number; // Ajusta el tipo de acuerdo a la estructura real de tus permisos
-    // Otros campos si los tienes
+    Type: number; 
 }
 
 export default function Sidebar() {
-    const [permissions, setPermissions] = useState<Permissions | null>(null); // Usa el tipo de Permissions aquí
+    const [permissions, setPermissions] = useState<Permissions | null>(null); 
     const [isExpanded, setIsExpanded] = useState(false);
-    const storedPermissions = localStorage.getItem('permissions');
-    
+
     useEffect(() => {
+        const storedPermissions = localStorage.getItem('permissions');
         if (storedPermissions) {
             try {
                 const parsedPermissions = JSON.parse(storedPermissions);
@@ -20,7 +19,7 @@ export default function Sidebar() {
                 setPermissions(null); 
             }
         }
-    }, [storedPermissions]);
+    }, []);
 
     const handleToggleExpand = () => {
         setIsExpanded(!isExpanded);
@@ -45,7 +44,6 @@ export default function Sidebar() {
     };
 
     if (permissions === null) {
-        // Manejar el caso donde permissions no pudo ser parseado correctamente
         return <div>Error: No se pudieron cargar los permisos.</div>;
     }
 

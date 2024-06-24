@@ -3,6 +3,7 @@ import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import Link from 'next/link';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function TopNewMenuClientDashboard() {
     return (
@@ -39,43 +40,15 @@ export default function TopNewMenuClientDashboard() {
                     >
                         Inicio
                     </Link>
-                    <Link
-                        href="/"
-                        className="text-muted mr-[38px] text-base font-normal leading-4"
-                    >
-                        Productos
-                    </Link>
-                    <div className="mr-[36px]">
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="18"
-                            height="21"
-                            viewBox="0 0 18 21"
-                            fill=""
-                        >
-                            <path
-                                d="M7 19H11C11 20.1 10.1 21 9 21C7.9 21 7 20.1 7 19ZM18 17V18H0V17L2 15V9C2 5.9 4 3.2 7 2.3V2C7 0.9 7.9 0 9 0C10.1 0 11 0.9 11 2V2.3C14 3.2 16 5.9 16 9V15L18 17ZM14 9C14 6.2 11.8 4 9 4C6.2 4 4 6.2 4 9V16H14V9Z"
-                                fill="#B5B5BD"
-                            />
-                        </svg>
+                    <div className="mr-[36px] text-black">
+                        <i className=" text-black fas fa-bell ml-1"></i>
                     </div>
                     <div className="font-semibold text-[14px] text-darkJupiter">
                         <div>
                             <Menu as="div" className="relative inline-block text-left">
                                 <div>
-                                    <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            width="28"
-                                            height="29"
-                                            viewBox="0 0 28 29"
-                                            fill="none"
-                                        >
-                                            <path
-                                                d="M14 24.94C10.5 24.94 7.406 23.084 5.6 20.3C5.642 17.4 11.2 15.805 14 15.805C16.8 15.805 22.358 17.4 22.4 20.3C20.594 23.084 17.5 24.94 14 24.94ZM14 4.35C15.1139 4.35 16.1822 4.8083 16.9698 5.62409C17.7575 6.43987 18.2 7.54631 18.2 8.7C18.2 9.85369 17.7575 10.9601 16.9698 11.7759C16.1822 12.5917 15.1139 13.05 14 13.05C12.8861 13.05 11.8178 12.5917 11.0302 11.7759C10.2425 10.9601 9.8 9.85369 9.8 8.7C9.8 7.54631 10.2425 6.43987 11.0302 5.62409C11.8178 4.8083 12.8861 4.35 14 4.35ZM14 0C12.1615 0 10.341 0.375054 8.64243 1.10375C6.94387 1.83244 5.40053 2.9005 4.1005 4.24695C1.475 6.96623 0 10.6544 0 14.5C0 18.3456 1.475 22.0338 4.1005 24.753C5.40053 26.0995 6.94387 27.1676 8.64243 27.8963C10.341 28.6249 12.1615 29 14 29C17.713 29 21.274 27.4723 23.8995 24.753C26.525 22.0338 28 18.3456 28 14.5C28 6.4815 21.7 0 14 0Z"
-                                                fill="black"
-                                            />
-                                        </svg>
+                                    <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50">
+                                        <i className="text-black fa fa-user ml-1" style={{ fontSize: '20px', width: '20px', height: '20px' }}></i>
                                     </Menu.Button>
                                 </div>
 

@@ -1,5 +1,8 @@
+'use client';
 import React, { useEffect, useState } from 'react';
-import FileViewer from 'react-file-viewer';
+import dynamic from 'next/dynamic';
+
+const FileViewer = dynamic(() => import('react-file-viewer'), { ssr: false });
 
 const DocViewer = ({ url, onClose }) => {
   const [fileContent, setFileContent] = useState(null);
@@ -32,7 +35,6 @@ const DocViewer = ({ url, onClose }) => {
           throw new Error('Unsupported file type');
         }
 
-        // Ejecutar FileReader solo en el cliente (no en SSR)
         if (typeof window !== 'undefined') {
           const reader = new FileReader();
           reader.onload = () => {
@@ -49,29 +51,23 @@ const DocViewer = ({ url, onClose }) => {
   }, [url]);
 
   const handleZoomIn = () => {
-    setZoomLevel(prevZoom => prevZoom + 0.1); 
+    setZoomLevel(prevZoom => prevZoom + 0.1);
   };
 
   const handleZoomOut = () => {
-    setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 0.1)); 
+    setZoomLevel(prevZoom => Math.max(prevZoom - 0.1, 0.1));
   };
 
-  // Renderizar el componente en SSR
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[50%] h-[90%] relative flex flex-col text-black">
-        <button
-          onClick={onClose}
-          className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
+        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
         <div className="flex justify-center items-center flex-grow overflow-auto mt-9">
           <div
             className="w-full h-full"
-            style={{
-              transform: `scale(${zoomLevel})`,
-              transformOrigin: 'top left',
-            }}>
+            style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top left' }}>
             {fileContent && fileType && (
               <FileViewer
                 fileType={fileType}

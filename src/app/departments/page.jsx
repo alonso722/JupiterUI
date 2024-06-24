@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
-import axios from 'axios';
 import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
@@ -47,7 +46,7 @@ export default function Page() {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                {/* <DepartmentsTable /> */}
+                <DepartmentsTable />
             </div>
         </div>
     );

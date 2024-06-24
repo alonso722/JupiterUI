@@ -286,13 +286,12 @@ const AddProcessForm = ({ card, onClose }) => {
         <div className='flex'>
           <div className='w-[400px]'>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">
-              <input
+            <input
                 type="text"
                 placeholder="Nombre del proceso"
                 value={processName}
                 onChange={(e) => setProcessName(e.target.value)}
-                className="w-full border-none focus:outline-none"
-              />
+                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
             </h2>
             <p className="mb-4 text-black">Detalles del proceso:</p>
             <div className='max-h-[350px] h-[250px]'>
