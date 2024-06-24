@@ -28,6 +28,10 @@ export default function Page() {
             const storedPermissions = localStorage.getItem('permissions'); 
             if (storedPermissions) {
                 parsedPermissions = JSON.parse(storedPermissions);
+                console.log(parsedPermissions)
+                if (parsedPermissions.Type === 5) {
+                    router.push('/dashboard/home');
+                }
                 setPermissions(parsedPermissions);
             }
             if (!authStateValue.loggedIn) {
@@ -43,7 +47,7 @@ export default function Page() {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <DepartmentsTable />
+                {/* <DepartmentsTable /> */}
             </div>
         </div>
     );

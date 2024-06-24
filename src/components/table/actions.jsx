@@ -1,7 +1,6 @@
 import { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import { classNames } from '@react-pdf-viewer/core';
 import Details from '../details/details';
 import useApi from '@/hooks/useApi';
 
@@ -82,7 +81,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                 <div className="py-1">
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <div className="flex pl-[20px] my-[25px]">
+                                            <div className={`flex pl-[20px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                 <Image
                                                     className="mr-[30px]"
                                                     src="/svg/icons/settings.svg"
@@ -91,12 +90,8 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                     height={18} />
                                                 <button
                                                     type="submit"
-                                                    className={classNames({
-                                                        'bg-gray-100': active,
-                                                        'text-gray-900': active,
-                                                        'text-gray-700': !active,
-                                                    })}
-                                                    onClick={handleEditClick} >
+                                                    className="bg-transparent"
+                                                    onClick={handleEditClick}>
                                                     Editar
                                                 </button>
                                             </div>
@@ -104,7 +99,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                     </Menu.Item>
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <div className="flex pl-[20px] my-[25px]">
+                                            <div className={`flex pl-[20px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                 <Image
                                                     className="mr-[30px]"
                                                     src="/svg/icons/trash.svg"
@@ -113,11 +108,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                     height={18} />
                                                 <button
                                                     type="submit"
-                                                    className={classNames({
-                                                        'bg-gray-100': active,
-                                                        'text-gray-900': active,
-                                                        'text-gray-700': !active,
-                                                    })}
+                                                    className="bg-transparent"
                                                     onClick={handleDeleteClick}>
                                                     Eliminar
                                                 </button>
