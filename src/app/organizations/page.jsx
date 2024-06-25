@@ -8,7 +8,7 @@ import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
-import DepartmentsTable from '@/components/departmentsTable/dTable';
+import OrganizationsTable from '@/components/organizationsTable/oTable';
 
 export default function Page() {
     const [authStateValue, setAuth] = useRecoilState(authState);
@@ -46,7 +46,7 @@ export default function Page() {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <DepartmentsTable />
+                <OrganizationsTable />
             </div>
         </div>
     );

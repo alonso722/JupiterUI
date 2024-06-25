@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 interface Permissions {
     Type: number; 
 }
@@ -39,6 +39,10 @@ export default function Sidebar() {
         window.location.href = '/dashboard/table'; 
     };
 
+    const handleOrganizationsClick = () => {
+        window.location.href = '/organizations'; 
+    };
+
     const handleDepartmentsClick = () => {
         window.location.href = '/departments'; 
     };
@@ -58,22 +62,21 @@ export default function Sidebar() {
                 {!isExpanded && (
                     <div className="flex flex-col mt-2">
                         <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 hover:bg-purple-950 rounded" onClick={handleKanbanClick}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
+                            <i className=" fa fa-columns ml-1"></i>
                         </button>
                         {permissions.Type !== 5 && (
                             <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleTableClick}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                                <i className=" fas fa-table ml-1"></i>
+                            </button>
+                        )}
+                        {permissions.Type !== 5 && (
+                            <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleOrganizationsClick}>
+                                <i className=" fa fa-address-book ml-1"></i>
                             </button>
                         )}
                         {permissions.Type !== 5 && (
                             <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleDepartmentsClick}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                                <i className=" fa fa-users ml-1"></i>
                             </button>
                         )}
                     </div>
@@ -81,24 +84,24 @@ export default function Sidebar() {
                 {isExpanded && (
                     <div className="mt-2 ml-2 min-w-[200px] max-w-[200px]">
                         <div className='flex mt-[8px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleKanbanClick}>
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
+                            <i className=" fa fa-columns ml-1"></i>
                             <p className="text-black-600 ml-[10px]">Dashboard-Kanban</p>
                         </div>
                         {permissions.Type !== 5 && (
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleTableClick}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                                <i className=" fas fa-table ml-1"></i>
                                 <p className="text-black-600 ml-[10px]">Dashboard-Table</p>
                             </div>
                         )}
                         {permissions.Type !== 5 && (
+                            <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleOrganizationsClick}>
+                                <i className=" fa fa-address-book ml-1"></i>
+                                <p className="text-black-600 ml-[10px]">Organizaciones</p>
+                            </div>
+                        )}
+                        {permissions.Type !== 5 && (
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleDepartmentsClick}>
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"/>
-                                </svg>
+                                <i className=" fa fa-users ml-1"></i>
                                 <p className="text-black-600 ml-[10px]">Departamentos</p>
                             </div>
                         )}

@@ -1,4 +1,4 @@
-import { MenuItem, MenuItemNew } from '../types/menu';
+import { MenuItem } from '../types/menu';
 import paymentMethods from '../../../public/svg/icons/cardPay.svg';
 import home from '../../../public/svg/icons/Home.svg';
 import shopping from '../../../public/svg/icons/shopping.svg';

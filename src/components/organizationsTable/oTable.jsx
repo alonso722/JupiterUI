@@ -11,13 +11,13 @@ import '@fortawesome/fontawesome-free/css/all.min.css';
 import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import Search from "@/components/table/search";
-import Actions from "@/components/table/actions";
+import Actions from "./actions";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
 import AddDepartmentForm from "@/components/forms/addDepartment"; 
 import { useRouter } from 'next/navigation';
 
-const DepartmentsTable = () => {
+const OrganizationsTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
 
@@ -31,9 +31,8 @@ const DepartmentsTable = () => {
     const effectMounted = useRef(false);
 
     const fetchData = () => {
-        api.get('/user/departments/fetch')
+        api.get('/user/organization/fetch')
             .then((response) => {
-                console.log(response.data.data)
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,
                     department: item.department,
@@ -74,10 +73,10 @@ const DepartmentsTable = () => {
             cell: (info) => <span>{info?.getValue()}</span>,
             header: "Departamento",
         }),
-        columnHelper.accessor("manager", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Gerente",
-        }),
+        // columnHelper.accessor("manager", {
+        //     cell: (info) => <span>{info.getValue()}</span>,
+        //     header: "Gerente",
+        // }),
         columnHelper.accessor("parent", {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento o area superior",
@@ -128,7 +127,7 @@ const DepartmentsTable = () => {
     };
 
     if (refreshTable) {
-        return <DepartmentsTable />;
+        return <OrganizationsTable />;
     }
 
     return (
@@ -255,4 +254,4 @@ const DepartmentsTable = () => {
     );
 };
 
-export default DepartmentsTable;
+export default OrganizationsTable;

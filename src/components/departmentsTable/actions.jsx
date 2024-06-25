@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import Details from '../details/details';
+import AddDepartmentForm from '../forms/addDepartment';
 import useApi from '@/hooks/useApi';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
@@ -16,6 +16,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleEditClick = () => {
+        console.log('Edit clicked, rowData:', rowData);  
         onActionClick(rowData.id, rowData.status, rowData.process);
         handleCardClick({ name: rowData.process, id: rowData.id, column: rowData.status });
     };
@@ -25,12 +26,12 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleConfirmDelete = () => {
-        api.post('/user/process/delete', { process: rowData.id })
+        api.post('/user/departments/del', { department: rowData.id })
             .then((response) => {
                 onClose(); 
             })
             .catch((error) => {
-                console.error("Error borrando proceso:", error);
+                console.error("Error al borrar departamento:", error);
             });
            
         setIsDeleteModalOpen(false); 
@@ -47,6 +48,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleCloseModal = () => {
+        onClose();
         setIsModalOpen(false);
     };
 
@@ -75,8 +77,8 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                             enterFrom="transform opacity-0 scale-95"
                             enterTo="transform opacity-100 scale-100"
                             leave="transition ease-in duration-75"
-                            leaveFrom="transform opacity-100 scale-100"
-                            leaveTo="transform opacity-0 scale-95">
+                            leaveFrom="opacity-100 scale-100"
+                            leaveTo="opacity-0 scale-95">
                             <Menu.Items className="absolute right-0 z-10 mt-1 w-[154px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div className="py-1">
                                     <Menu.Item>
@@ -122,12 +124,12 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                 </div>
             </div>
             {isModalOpen && selectedCard && (
-                <Details card={selectedCard} onClose={handleCloseModal} />
+                <AddDepartmentForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
             )}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
-                        <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar este proceso?</h1>
+                        <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar?</h1>
                         <div className="flex justify-between w-full px-8">
                             <button className="bg-red-600 p-3 rounded-lg flex-grow mx-4" onClick={handleConfirmDelete}>Confirmar</button>
                             <button className="bg-gray-400 p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>
