@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import AddDepartmentForm from '../forms/addDepartment';
+import AddOrganizationForm from '../forms/addOrganization';
 import useApi from '@/hooks/useApi';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
@@ -16,9 +16,9 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleEditClick = () => {
-        console.log('Edit clicked, rowData:', rowData);  
-        onActionClick(rowData.id, rowData.status, rowData.process);
-        handleCardClick({ name: rowData.process, id: rowData.id, column: rowData.status });
+        console.log('Edit clicked, orgaaa:', rowData);  
+        onActionClick(rowData.id);
+        handleCardClick({id: rowData.id});
     };
 
     const handleDeleteClick = () => {
@@ -26,7 +26,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleConfirmDelete = () => {
-        api.post('/user/departments/del', { department: rowData.id })
+        api.post('/user/organization/del', { organization: rowData.id })
             .then((response) => {
                 onClose(); 
             })
@@ -124,7 +124,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                 </div>
             </div>
             {isModalOpen && selectedCard && (
-                <AddDepartmentForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
+                <AddOrganizationForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
             )}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">

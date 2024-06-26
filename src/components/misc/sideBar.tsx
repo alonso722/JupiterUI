@@ -82,7 +82,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 {isExpanded && (
-                    <div className="mt-2 ml-2 min-w-[200px] max-w-[200px]">
+                    <div className="mt-[12px] ml-[10px] min-w-[200px] max-w-[200px]">
                         <div className='flex mt-[8px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleKanbanClick}>
                             <i className=" fa fa-columns ml-1"></i>
                             <p className="text-black-600 ml-[10px]">Dashboard-Kanban</p>

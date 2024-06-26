@@ -14,7 +14,7 @@ import Search from "@/components/table/search";
 import Actions from "./actions";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
-import AddDepartmentForm from "@/components/forms/addDepartment"; 
+import AddOrganizationForm from "@/components/forms/addOrganization"; 
 import { useRouter } from 'next/navigation';
 
 const OrganizationsTable = () => {
@@ -35,11 +35,7 @@ const OrganizationsTable = () => {
             .then((response) => {
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,
-                    department: item.department,
-                    manager: item.manager || '-', 
-                    parent: item.parent || '-',   
-                    left: item.left || '-',       
-                    right: item.right || '-',     
+                    organization: item.organization,    
                 }));
                 
                 setData(fetchedData);
@@ -69,26 +65,14 @@ const OrganizationsTable = () => {
         //     cell: (info) => <span>{info?.getValue()}</span>,
         //     header: "P.No.",
         // }),
-        columnHelper.accessor("department", {
+        columnHelper.accessor("organization", {
             cell: (info) => <span>{info?.getValue()}</span>,
-            header: "Departamento",
+            header: "Organización",
         }),
         // columnHelper.accessor("manager", {
         //     cell: (info) => <span>{info.getValue()}</span>,
         //     header: "Gerente",
         // }),
-        columnHelper.accessor("parent", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento o area superior",
-        }),
-        columnHelper.accessor("left", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento a mismo nivel",
-        }),
-        columnHelper.accessor("right", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento a mismo nivel",
-        }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
@@ -131,7 +115,7 @@ const OrganizationsTable = () => {
     }
 
     return (
-        <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
+        <div className="mt-[100px] ml-[50px] w-[550px] py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
                 <div className="w-full flex items-center gap-1 text-black">
                 <i className="fa fa-search ml-1"></i>
@@ -148,7 +132,7 @@ const OrganizationsTable = () => {
                         onClick={handleButtonClick}>
                         Añadir
                     </Button>
-                    {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
+                    {showForm && <AddOrganizationForm onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-full text-left rounded-lg">

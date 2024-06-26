@@ -23,11 +23,11 @@ export default function CompleteAuth({
     const [failed, setFailed] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const effectMounted = useRef(false);
-    const api= useApi();
+    const api = useApi();
     const router = useRouter();
 
     useEffect(() => {
-        if(effectMounted.current === false ){
+        if (effectMounted.current === false) {
             let storedToken = localStorage.getItem('token');
             const controller = new AbortController();
             setIsLoading(true);
@@ -36,34 +36,40 @@ export default function CompleteAuth({
                     loggedIn: true,
                     token: token,
                     refresh_token: null,
-                    verified: null,    
+                    verified: null,
                 });
                 api.post('/user/auth/state', { token: storedToken })
-                .then((response) => {
-                    const permissions = response.data.permissions[0];
-                    setAuth((prevState: any) => ({
-                        ...prevState,
-                        token: storedToken
-                    }));
-                    localStorage.setItem('permissions', JSON.stringify(permissions));
-                    
-                    if (permissions.Type === 5) {
-                        router.push('/dashboard/home');
-                    } else {
-                        router.push('/dashboard/table');
-                    }
-                    toast.success('Autenticación completada.');
-                })
-                .catch((error) => {
-                    console.error("Error al enviar el token:", error);
-                    toast.error('Error al enviar el token');
-                    setFailed(true);
-                })
-                .finally(() => {
-                    setIsLoading(false);
-                });
+                    .then((response) => {
+                        const permissions = response.data.permissions[0];
+                        console.log(permissions)
+                        setAuth((prevState: any) => ({
+                            ...prevState,
+                            token: storedToken
+                        }));
+                        localStorage.setItem('permissions', JSON.stringify(permissions));
+                        
+                        if (permissions.ISO === 0) {
+                            router.push('/auth/login');
+                            toast.error('No tienes acceso a este servicio');
+                        } else if (permissions.Type === 5) {
+                            router.push('/dashboard/home');
+                            toast.success('Autenticación completada.');
+                        } else {
+                            router.push('/dashboard/table');
+                            toast.success('Autenticación completada.');
+                        }
+                        
+                    })
+                    .catch((error) => {
+                        console.error("Error al enviar el token:", error);
+                        toast.error('Error al enviar el token');
+                        setFailed(true);
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
+                    });
             } else {
-             setFailed(true);
+                setFailed(true);
             }
             effectMounted.current = true;
         }
