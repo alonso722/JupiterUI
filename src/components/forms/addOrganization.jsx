@@ -11,7 +11,8 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
   useEffect(() => {
     if (effectMounted.current === false) {
       if (rowData) {
-        setDepartmentName(rowData.department);
+        console.log("Addddddddddd",rowData)
+        setDepartmentName(rowData.organization);
         setData(rowData)
       }
     }

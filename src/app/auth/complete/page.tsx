@@ -81,15 +81,15 @@ export default function CompleteAuth({
                 <div>
                     <h1 className="mb-6 text-center">
                         Completando autenticación
+                        <PiSpinnerGapBold
+                            className="animate-spin"
+                            size={32}
+                        />
                     </h1>
                     {isLoading ? (
                         <>
                             <p className="text-center">Por favor espere...</p>
                             <div className="flex justify-center">
-                                <PiSpinnerGapBold
-                                    className="animate-spin"
-                                    size={32}
-                                />
                             </div>
                         </>
                     ) : (
