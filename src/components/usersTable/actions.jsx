@@ -26,7 +26,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleConfirmDelete = () => {
-        api.post('/user/organization/del', { organization: rowData.id })
+        api.post('/user/users/del', { uuid: rowData.uuid })
             .then((response) => {
                 onClose(); 
             })

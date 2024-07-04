@@ -69,7 +69,7 @@ const AddUserForm = ({ user, onClose }) => {
   }, []);
   useEffect(() => {
     if (user && departments.length > 0) {
-      console.log("Addddddddddd", user.rowData.department, user.rowData.role);
+      console.log("Addddddddddd", user.rowData);
       const department = departments.find(dept => dept.department === user.rowData.department);
       setSelectedDepartments(department ? [department] : []);
   
@@ -91,6 +91,30 @@ const AddUserForm = ({ user, onClose }) => {
       }
       setSelectedRole(user.rowData.role);
       setData(user);
+
+      const fetchData = () => {
+        const uuid = user.rowData.uuid;
+        api.post('/user/users/fetchEdit', { uuid })
+          .then((response) => {
+            console.log(response)
+            const fetchedData = {
+              uuid: user.rowData.uuid,
+              name: response.data.name,
+              last: response.data.last,
+              mail: response.data.mail,
+              pass: response.data.pass,
+            };
+            setData(fetchedData);
+            setUserName(fetchedData.name);
+            setUserLast(fetchedData.last);
+            setUserMail(fetchedData.mail);
+            setUserPass(fetchedData.pass);
+          })
+          .catch((error) => {
+            console.error("Error al consultar departamento:", error);
+          });
+      };
+      fetchData();
     }
   }, [user, departments]);
   
@@ -143,6 +167,53 @@ const AddUserForm = ({ user, onClose }) => {
     });
   };
 
+  
+  const handleEditUser = () => {
+    if (!userName) {
+      toast.error("Por favor, nombre al usuario");
+      return;
+    }
+
+    const userRole = roles.find(role => role.id === selectedRole);
+    let roleName = userRole ? userRole.name : '';
+    const roleInitial = roleName === 'Aprobador' ? 'ap' : roleName.charAt(0);
+    const uuid =user.rowData.uuid;
+
+    switch (roleName) {
+      case 'Revisor':
+        roleName = 2;
+      case 'Editor':
+        roleName = 3;
+      case 'Aprobador':
+        roleName = 4;
+      case 'Consultor':
+        roleName = 5;
+      default:
+        roleName = 5;
+    }
+
+    const userDetails = {
+      userName,
+      userLast,
+      userMail,
+      userPass,
+      department: selectedDepartments[0].department,
+      role: roleName,
+      uuid,
+    };
+
+    console.log(userDetails);
+    api.post('/user/users/edit', userDetails)
+    .then((response) => {
+      console.log(response.data)
+      if (response.data.code === 200) {
+        onClose();
+      }
+    })
+    .catch((error) => {
+      console.error("Error al consultar procesos:", error);
+    });
+  };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[520px] relative">
@@ -311,9 +382,17 @@ const AddUserForm = ({ user, onClose }) => {
             />
           </p>
         </div>
-        <button onClick={handleAddUser} className="bg-[#2C1C47] p-2 rounded text-white ml-[175px] mr-[20px] h-[50px] w-[250px] mt-[30px]">
-          Añadir usuario
-        </button>
+        <div className="mt-4 flex justify-end">
+          {user ?(
+            <button onClick={handleEditUser} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+              Editar departamento
+            </button>
+          ) : (
+            <button onClick={handleAddUser} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+              Añadir departamento
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
