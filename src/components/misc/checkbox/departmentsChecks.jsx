@@ -5,10 +5,22 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
   const [options, setOptions] = useState([]);
   //const [selectedOptions, setSelectedOptions] = useState([]);
   const [searchSearch, setSearch] = useState('');
+  const [permissions, setPermissions] = useState([]);
   const effectMounted = useRef(false);
   const api = useApi();
 
   const fetchDepartments = (search) => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions'); 
+    if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+        console.log(parsedPermissions)
+        if (parsedPermissions.Type === 5) {
+            router.push('/dashboard/home');
+        }
+        setPermissions(parsedPermissions);
+    }
+    console.log(parsedPermissions.Organization)
     if (search) {
       api.post('/user/departments/search', { search })
         .then((response) => {

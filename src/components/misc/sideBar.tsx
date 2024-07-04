@@ -47,6 +47,10 @@ export default function Sidebar() {
         window.location.href = '/departments'; 
     };
 
+    const handleUsersClick = () => {
+        window.location.href = '/user'; 
+    };
+
     if (permissions === null) {
         return <div>Error: No se pudieron cargar los permisos.</div>;
     }
@@ -79,6 +83,11 @@ export default function Sidebar() {
                                 <i className=" fa fa-users ml-1"></i>
                             </button>
                         )}
+                        {permissions.Type !== 5 && (
+                            <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleUsersClick}>
+                                <i className="fa fa-user ml-1"></i>
+                            </button>
+                        )}
                     </div>
                 )}
                 {isExpanded && (
@@ -103,6 +112,12 @@ export default function Sidebar() {
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleDepartmentsClick}>
                                 <i className=" fa fa-users ml-1"></i>
                                 <p className="text-black-600 ml-[10px]">Departamentos</p>
+                            </div>
+                        )}
+                        {permissions.Type !== 5 && (
+                            <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleUsersClick}>
+                                <i className=" fa fa-users ml-1"></i>
+                                <p className="text-black-600 ml-[10px]">Usuarios</p>
                             </div>
                         )}
                     </div>

@@ -28,10 +28,20 @@ const TanStackTable = () => {
     const [data, setData] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
+    const [permissions, setPermissions] = useState([]);
     const effectMounted = useRef(false);
 
     const fetchData = () => {
-        api.post('/user/process/fetchTab')
+        let parsedPermissions;
+        const storedPermissions = localStorage.getItem('permissions'); 
+        if (storedPermissions) {
+            parsedPermissions = JSON.parse(storedPermissions);
+            console.log(parsedPermissions)
+            setPermissions(parsedPermissions);
+        }
+        console.log(parsedPermissions.Organization)
+        const orga = parsedPermissions.Organization;
+        api.post('/user/process/fetchTab', {orga})
             .then((response) => {
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,

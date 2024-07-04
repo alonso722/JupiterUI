@@ -14,46 +14,71 @@ import Search from "@/components/table/search";
 import Actions from "./actions";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
-import AddDepartmentForm from "@/components/forms/addDepartment"; 
+import AddUserForm from "@/components/forms/addUser"; 
 import { useRouter } from 'next/navigation';
+import { contains } from "class-validator";
 
-const DepartmentsTable = () => {
+const UsersTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
+    const [permissions, setPermissions] = useState([]);
+    const handleActionClick = (id, status) => {
+
+    };
+
     const [data, setData] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
     const effectMounted = useRef(false);
 
-    const handleActionClick = (id, status) => {
-
-    };
     const fetchData = () => {
         let parsedPermissions;
         const storedPermissions = localStorage.getItem('permissions'); 
         if (storedPermissions) {
             parsedPermissions = JSON.parse(storedPermissions);
             console.log(parsedPermissions)
+            setPermissions(parsedPermissions);
         }
-        console.log(parsedPermissions.Organization)
         const organization= parsedPermissions.Organization;
-        api.post('/user/departments/fetch',{organization})
-            .then((response) => {
-                const fetchedData = response.data.data.map(item => ({
-                    id: item.id,
-                    department: item.department,
-                    manager: item.manager || '-', 
-                    parent: item.parent || '-',   
-                    left: item.left || '-',       
-                    right: item.right || '-',     
-                }));
-                
-                setData(fetchedData);
-                setRefreshTable(false);
-            })
-            .catch((error) => {
-                console.error("Error al consultar departamentos:", error);
+        api.post('/user/users/fetch', {organization})
+        .then((response) => {
+            console.log("USerssss",response.data.data)
+            const fetchedData = response.data.data.map(item => {
+                let role;
+                switch (item.role_id) {
+                    case 2:
+                        role = 'Editor';
+                        break;
+                    case 3:
+                        role = 'Revisor';
+                        break;
+                    case 4:
+                        role = 'Aprobador';
+                        break;
+                    case 5:
+                        role = 'Consultor';
+                        break;
+                    case 6:
+                        role = 'Administrador';
+                        break;                    
+                    default:
+                        role = 'Desconocido';
+                }
+    
+                return {
+                    uuid: item.uuid,
+                    name: item.name,
+                    department: item.department_name,   
+                    role: role,
+                };
             });
+            
+            setData(fetchedData);
+            setRefreshTable(false);
+        })
+        .catch((error) => {
+            console.error("Error al consultar usuarios:", error);
+        });    
     };
 
     useEffect(() => {
@@ -71,29 +96,17 @@ const DepartmentsTable = () => {
 
     const router = useRouter();
     const columns = [
-        // columnHelper.accessor("id", {
-        //     cell: (info) => <span>{info?.getValue()}</span>,
-        //     header: "P.No.",
-        // }),
-        columnHelper.accessor("department", {
+        columnHelper.accessor("name", {
             cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Usuario",
+        }),
+        columnHelper.accessor("department", {
+            cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento",
         }),
-        // columnHelper.accessor("manager", {
-        //     cell: (info) => <span>{info.getValue()}</span>,
-        //     header: "Gerente",
-        // }),
-        columnHelper.accessor("parent", {
+        columnHelper.accessor("role", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento o area superior",
-        }),
-        columnHelper.accessor("left", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento a mismo nivel",
-        }),
-        columnHelper.accessor("right", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento a mismo nivel",
+            header: "Rol",
         }),
         columnHelper.accessor("actions", {
             cell: (info) => (
@@ -133,11 +146,11 @@ const DepartmentsTable = () => {
     };
 
     if (refreshTable) {
-        return <DepartmentsTable />;
+        return <UsersTable />;
     }
 
     return (
-        <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
+        <div className="mt-[100px] ml-[50px] w-[1700px] py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
                 <div className="w-full flex items-center gap-1 text-black">
                 <i className="fa fa-search ml-1"></i>
@@ -154,7 +167,7 @@ const DepartmentsTable = () => {
                         onClick={handleButtonClick}>
                         Añadir
                     </Button>
-                    {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
+                    {showForm && <AddUserForm onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-full text-left rounded-lg">
@@ -260,4 +273,4 @@ const DepartmentsTable = () => {
     );
 };
 
-export default DepartmentsTable;
+export default UsersTable;

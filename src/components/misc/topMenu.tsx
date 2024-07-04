@@ -48,7 +48,7 @@ export default function TopNewMenuClientDashboard() {
                             <Menu as="div" className="relative inline-block text-left">
                                 <div>
                                     <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50">
-                                        <i className="text-black fa fa-user ml-1" style={{ fontSize: '20px', width: '20px', height: '20px' }}></i>
+                                        <i className="text-black fa fa-user-circle ml-1" style={{ fontSize: '20px', width: '20px', height: '20px' }}></i>
                                     </Menu.Button>
                                 </div>
 

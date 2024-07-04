@@ -23,8 +23,9 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
                 setPermissions(parsedPermissions);
             }
             const userType = parsedPermissions;
+            const orga = parsedPermissions.Organization;
             userType.token = token;
-            api.post('/user/process/fetchTab', {userType, departmentFilter, processFilter})
+            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter})
                 .then((response) => {
                     localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
                     const fetchedCards = response.data.data.map(item => ({
