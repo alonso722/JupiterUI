@@ -41,7 +41,6 @@ export default function CompleteAuth({
                 api.post('/user/auth/state', { token: storedToken })
                     .then((response) => {
                         const permissions = response.data.permissions[0];
-                        console.log(permissions)
                         setAuth((prevState: any) => ({
                             ...prevState,
                             token: storedToken

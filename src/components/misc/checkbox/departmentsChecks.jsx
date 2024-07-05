@@ -14,13 +14,11 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
     const storedPermissions = localStorage.getItem('permissions'); 
     if (storedPermissions) {
         parsedPermissions = JSON.parse(storedPermissions);
-        console.log(parsedPermissions)
         if (parsedPermissions.Type === 5) {
             router.push('/dashboard/home');
         }
         setPermissions(parsedPermissions);
     }
-    console.log(parsedPermissions.Organization)
     if (search) {
       api.post('/user/departments/search', { search })
         .then((response) => {

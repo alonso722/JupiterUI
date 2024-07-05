@@ -287,7 +287,6 @@ const Details = ({ card, onClose }) => {
   };
 
   const handleView = (path) => {
-    console.log(path)
     setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
     setIsModalOpen(true);
   };

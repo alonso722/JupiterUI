@@ -37,7 +37,6 @@ const AddUserForm = ({ user, onClose }) => {
     const storedPermissions = localStorage.getItem('permissions'); 
     if (storedPermissions) {
       parsedPermissions = JSON.parse(storedPermissions);
-      console.log(parsedPermissions);
     }
     const organization = parsedPermissions.Organization;
     try {
@@ -69,7 +68,6 @@ const AddUserForm = ({ user, onClose }) => {
   }, []);
   useEffect(() => {
     if (user && departments.length > 0) {
-      console.log("Addddddddddd", user.rowData);
       const department = departments.find(dept => dept.department === user.rowData.department);
       setSelectedDepartments(department ? [department] : []);
   
@@ -96,7 +94,6 @@ const AddUserForm = ({ user, onClose }) => {
         const uuid = user.rowData.uuid;
         api.post('/user/users/fetchEdit', { uuid })
           .then((response) => {
-            console.log(response)
             const fetchedData = {
               uuid: user.rowData.uuid,
               name: response.data.name,
@@ -154,10 +151,8 @@ const AddUserForm = ({ user, onClose }) => {
       uuid,
     };
 
-    console.log(userDetails);
     api.post('/user/users/add', userDetails)
     .then((response) => {
-      console.log(response.data)
       if (response.data.code === 200) {
         onClose();
       }
@@ -202,10 +197,8 @@ const AddUserForm = ({ user, onClose }) => {
       uuid,
     };
 
-    console.log(userDetails);
     api.post('/user/users/edit', userDetails)
     .then((response) => {
-      console.log(response.data)
       if (response.data.code === 200) {
         onClose();
       }

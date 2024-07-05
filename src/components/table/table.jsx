@@ -36,10 +36,8 @@ const TanStackTable = () => {
         const storedPermissions = localStorage.getItem('permissions'); 
         if (storedPermissions) {
             parsedPermissions = JSON.parse(storedPermissions);
-            console.log(parsedPermissions)
             setPermissions(parsedPermissions);
         }
-        console.log(parsedPermissions.Organization)
         const orga = parsedPermissions.Organization;
         api.post('/user/process/fetchTab', {orga})
             .then((response) => {

@@ -36,13 +36,11 @@ const UsersTable = () => {
         const storedPermissions = localStorage.getItem('permissions'); 
         if (storedPermissions) {
             parsedPermissions = JSON.parse(storedPermissions);
-            console.log(parsedPermissions)
             setPermissions(parsedPermissions);
         }
         const organization= parsedPermissions.Organization;
         api.post('/user/users/fetch', {organization})
         .then((response) => {
-            console.log("USerssss",response.data.data)
             const fetchedData = response.data.data.map(item => {
                 let role;
                 switch (item.role_id) {

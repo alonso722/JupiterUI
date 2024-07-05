@@ -27,7 +27,6 @@ export default function Page() {
             const storedPermissions = localStorage.getItem('permissions'); 
             if (storedPermissions) {
                 parsedPermissions = JSON.parse(storedPermissions);
-                console.log(parsedPermissions)
                 if (parsedPermissions.Type === 5) {
                     router.push('/dashboard/home');
                 }

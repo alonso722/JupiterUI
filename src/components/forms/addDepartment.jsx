@@ -14,6 +14,7 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
   const [selected, setSelected] = useState('');
   const [subDepartments, setSubDepartments] = useState([]);
   const [selectedSubDepartment, setSelectedSubDepartment] = useState('');
+  const [permissions, setPermissions] = useState([]);
 
   const departments = [
     { id: 41, name: 'Direccion general' },
@@ -22,6 +23,12 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
 
   useEffect(() => {
     if (effectMounted.current === false) {
+      let parsedPermissions;
+      const storedPermissions = localStorage.getItem('permissions'); 
+      if (storedPermissions) {
+          parsedPermissions = JSON.parse(storedPermissions);
+          setPermissions(parsedPermissions);
+      }
       if (rowData) {
         const fetchData = () => {
           const id = rowData.id;
@@ -52,7 +59,9 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
   }, [rowData]);
 
   const departmentsFilter = (selected, parent) => {
-    const id = selected.id;
+    let id= {};
+    id.id = selected.id;
+    id.orga = permissions.Organization;
     api.post('/user/departments/filter', { id })
       .then((response) => {
         setSubDepartments(response.data.data);
@@ -80,6 +89,7 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
       name: departmentName,
       parent: selectedSubDepartment.department,
       parentType: selected.name,
+      organization: permissions.Organization
     };
 
     if (departmentDetails) {

@@ -73,7 +73,7 @@ export default function Sidebar() {
                                 <i className=" fas fa-table ml-1"></i>
                             </button>
                         )}
-                        {permissions.Type !== 5 && (
+                        {permissions.Type == 6 && (
                             <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleOrganizationsClick}>
                                 <i className=" fa fa-address-book ml-1"></i>
                             </button>
@@ -102,7 +102,7 @@ export default function Sidebar() {
                                 <p className="text-black-600 ml-[10px]">Dashboard-Table</p>
                             </div>
                         )}
-                        {permissions.Type !== 5 && (
+                        {permissions.Type == 6 && (
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleOrganizationsClick}>
                                 <i className=" fa fa-address-book ml-1"></i>
                                 <p className="text-black-600 ml-[10px]">Organizaciones</p>

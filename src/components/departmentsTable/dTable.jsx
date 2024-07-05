@@ -33,9 +33,7 @@ const DepartmentsTable = () => {
         const storedPermissions = localStorage.getItem('permissions'); 
         if (storedPermissions) {
             parsedPermissions = JSON.parse(storedPermissions);
-            console.log(parsedPermissions)
         }
-        console.log(parsedPermissions.Organization)
         const organization= parsedPermissions.Organization;
         api.post('/user/departments/fetch',{organization})
             .then((response) => {

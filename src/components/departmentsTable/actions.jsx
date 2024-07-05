@@ -16,7 +16,6 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleEditClick = () => {
-        console.log('Edit clicked, rowData:', rowData);  
         onActionClick(rowData.id, rowData.status, rowData.process);
         handleCardClick({ name: rowData.process, id: rowData.id, column: rowData.status });
     };
