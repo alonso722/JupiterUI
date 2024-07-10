@@ -56,7 +56,7 @@ const UsersTable = () => {
                     case 5:
                         role = 'Consultor';
                         break;
-                    case 6:
+                    case 1:
                         role = 'Administrador';
                         break;                    
                     default:

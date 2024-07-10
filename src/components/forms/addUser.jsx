@@ -21,7 +21,8 @@ const AddUserForm = ({ user, onClose }) => {
   const [users, setUsers] = useState([]);
   const [data, setData] = useState({});
 
-  const roles = [
+  const roles = [    
+    { id: 1, name: 'Administrador' },
     { id: 2, name: 'Editor' },
     { id: 3, name: 'Revisor' },
     { id: 4, name: 'Aprobador' },
@@ -70,12 +71,16 @@ const AddUserForm = ({ user, onClose }) => {
     if (user && departments.length > 0) {
       const department = departments.find(dept => dept.department === user.rowData.department);
       setSelectedDepartments(department ? [department] : []);
-  
+
+      console.log(user.rowData)
       switch (user.rowData.role) {
-        case 'Revisor':
-          user.rowData.role = 2;
+        case 'Administrador':
+          user.rowData.role = 1;
           break;
         case 'Editor':
+          user.rowData.role = 2;
+          break;
+        case 'Revisor':
           user.rowData.role = 3;
           break;
         case 'Aprobador':
@@ -176,7 +181,7 @@ const AddUserForm = ({ user, onClose }) => {
 
     switch (roleName) {
       case 'Revisor':
-        roleName = 2;
+        roleName = 3;
       case 'Editor':
         roleName = 3;
       case 'Aprobador':
@@ -378,11 +383,11 @@ const AddUserForm = ({ user, onClose }) => {
         <div className="mt-4 flex justify-end">
           {user ?(
             <button onClick={handleEditUser} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
-              Editar departamento
+              Editar usuario
             </button>
           ) : (
             <button onClick={handleAddUser} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
-              Añadir departamento
+              Añadir usuario
             </button>
           )}
         </div>

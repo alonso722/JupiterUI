@@ -46,6 +46,7 @@ const Details = ({ card, onClose }) => {
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [urlToView, setFileUrl] = useState(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   const openViewer = (path) => {
     setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
@@ -120,7 +121,7 @@ const Details = ({ card, onClose }) => {
       fetchAnnexes();
       effectMounted.current = true;
     }
-  }, [card.column, api]);
+  }, [card.column, api, refresh]);
 
   const getFileIcon = (filename) => {
     if (!filename) {
@@ -226,14 +227,16 @@ const Details = ({ card, onClose }) => {
     }
     const incidentSnd = {};
     incidentSnd.incident = incident;
+    console.log(confirmationStatus)
     incidentSnd.attend = confirmationStatus;
     incidentSnd.uuid = uuid;
     incidentSnd.process = card.id;
-    incidentSnd.type = 1;
+    incidentSnd.type = attendReq;
     incidentSnd.id = logId;
-
+    console.log("a enviar",incidentSnd)
     try {
       await api.post('/user/incident/create', incidentSnd);
+      setRefresh(!refresh);
     } catch (error) {
       console.error("Error al hacer el registro de incidente:", error);
     }

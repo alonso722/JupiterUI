@@ -90,7 +90,7 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
             </button>
           ) : (
             <button onClick={handleAddDepartment} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
-              Añadir organizacion
+              Añadir organización
             </button>
           )}
         </div>

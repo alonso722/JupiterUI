@@ -94,12 +94,12 @@ export default function Sidebar() {
                     <div className="mt-[12px] ml-[10px] min-w-[200px] max-w-[200px]">
                         <div className='flex mt-[8px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleKanbanClick}>
                             <i className=" fa fa-columns ml-1"></i>
-                            <p className="text-black-600 ml-[10px]">Dashboard-Kanban</p>
+                            <p className="text-black-600 ml-[10px]">Kanban</p>
                         </div>
                         {permissions.Type !== 5 && (
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleTableClick}>
                                 <i className=" fas fa-table ml-1"></i>
-                                <p className="text-black-600 ml-[10px]">Dashboard-Table</p>
+                                <p className="text-black-600 ml-[10px]">Table</p>
                             </div>
                         )}
                         {permissions.Type == 6 && (

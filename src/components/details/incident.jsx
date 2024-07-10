@@ -18,7 +18,7 @@ const Incident = ({ incident, onClose }) => {
           try {
             const response = await api.post('/user/incident/updateStatus', { fetchId });
             if (response.data === 200) {
-              onClose(); 
+              //onClose(); 
             }
           } catch (error) {
             console.error("Error al hacer el registro:", error);
@@ -48,7 +48,7 @@ const Incident = ({ incident, onClose }) => {
     try {
       const response = await api.post('/user/incident/updateStatus', { id });
       if (response.data === 200) {
-        onClose(); 
+        //onClose(); 
       }
     } catch (error) {
       console.error("Error al hacer el registro:", error);
