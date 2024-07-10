@@ -227,13 +227,11 @@ const Details = ({ card, onClose }) => {
     }
     const incidentSnd = {};
     incidentSnd.incident = incident;
-    console.log(confirmationStatus)
     incidentSnd.attend = confirmationStatus;
     incidentSnd.uuid = uuid;
     incidentSnd.process = card.id;
     incidentSnd.type = attendReq;
     incidentSnd.id = logId;
-    console.log("a enviar",incidentSnd)
     try {
       await api.post('/user/incident/create', incidentSnd);
       setRefresh(!refresh);

@@ -20,16 +20,22 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
         setPermissions(parsedPermissions);
     }
     if (search) {
-      api.post('/user/departments/search', { search })
-        .then((response) => {
-          setOptions(response.data.data.map(option => ({ ...option, })));
-        })
-        .catch((error) => {
-          console.error("Error al consultar departamentos:", error);
-        });
-    } else {
+      let organization = parsedPermissions.Organization;
+      if (organization) {
+          api.post('/user/departments/search', { search, organization })
+              .then((response) => {
+                  setOptions(response.data.data.map(option => ({ ...option })));
+              })
+              .catch((error) => {
+                  console.error("Error al consultar departamentos:", error);
+              });
+      } else {
+          console.warn("El valor de organization es inválido o no está definido.");
+          setOptions([]);
+      }
+  } else {
       setOptions([]);
-    }
+  }  
   };
 
   useEffect(() => {
