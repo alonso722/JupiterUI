@@ -1,26 +1,25 @@
-'use client';
 import axios from 'axios';
 import { useMemo } from 'react';
-const baseURL = 'http://127.0.0.1:8070/';
+import dotenv from 'dotenv';
+dotenv.config();
 
-function useApi() {
-    //axios.defaults.withCredentials = true;
+const useApi = () => {
+    const baseURL = process.env.NEXT_PUBLIC_BASE_URL;
 
     const axiosConfig = {
         baseURL: baseURL,
-        //withCredentials: true,
+        // Otras configuraciones de axios
     };
 
     const axiosInstance = axios.create(axiosConfig);
-    return useMemo(() => {
-        return {
-            get: axiosInstance.get,
-            post: axiosInstance.post,
-            delete: axiosInstance.delete,
-            patch: axiosInstance.patch,
-            put: axiosInstance.put,
-        };
-    }, []);
-}
+
+    return useMemo(() => ({
+        get: axiosInstance.get,
+        post: axiosInstance.post,
+        delete: axiosInstance.delete,
+        patch: axiosInstance.patch,
+        put: axiosInstance.put,
+    }), [axiosInstance]);
+};
 
 export default useApi;
