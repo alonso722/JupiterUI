@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 import DocViewer from '../misc/docViewer/docViewer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const Annexes = ({ onClose, cardId }) => {
   const effectMounted = useRef(false);
@@ -10,7 +12,7 @@ const Annexes = ({ onClose, cardId }) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   const openViewer = (path) => {
-    setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
+    setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
     setIsViewerOpen(true);
   };
 
@@ -57,7 +59,7 @@ const Annexes = ({ onClose, cardId }) => {
 
   const handleAnxDownload = async (path) => {
     if (path) {
-      window.open('http://localhost:8030/api/v1/file?f=' + path, '_blank');
+      window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
       const uuid = localStorage.getItem('uuid');
 
       const log = {};
