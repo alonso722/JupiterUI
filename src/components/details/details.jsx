@@ -5,6 +5,8 @@ import useApi from '@/hooks/useApi';
 import Incident from '../details/incident';
 import Annexes from '../details/annexe';
 import DocViewer from '../misc/docViewer/docViewer';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const status = [
   { id: 1, column: 'Edición' },
@@ -49,7 +51,7 @@ const Details = ({ card, onClose }) => {
   const [refresh, setRefresh] = useState(false);
 
   const openViewer = (path) => {
-    setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
+    setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
     setIsViewerOpen(true);
   };
 
@@ -170,7 +172,7 @@ const Details = ({ card, onClose }) => {
 
   const handleDownload = async (path) => {
     if (path) {
-      window.open('http://localhost:8030/api/v1/file?f=' + path, '_blank');
+      window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
       const uuid = localStorage.getItem('uuid');
 
       const log = {};
@@ -189,7 +191,7 @@ const Details = ({ card, onClose }) => {
 
   const handleAnxDownload = async (path) => {
     if (path) {
-      window.open('http://localhost:8030/api/v1/file?f=' + path, '_blank');
+      window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
       const uuid = localStorage.getItem('uuid');
 
       const log = {};
@@ -288,7 +290,7 @@ const Details = ({ card, onClose }) => {
   };
 
   const handleView = (path) => {
-    setFileUrl('http://localhost:8030/api/v1/file?f=' + path);
+    setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
     setIsModalOpen(true);
   };
 
