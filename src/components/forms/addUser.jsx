@@ -21,6 +21,13 @@ const AddUserForm = ({ user, onClose }) => {
   const [users, setUsers] = useState([]);
   const [data, setData] = useState({});
 
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+  };
+
   const roles = [    
     { id: 1, name: 'Administrador' },
     { id: 2, name: 'Editor' },
@@ -123,7 +130,7 @@ const AddUserForm = ({ user, onClose }) => {
 
   const handleAddUser = () => {
     if (!userName) {
-      toast.error("Por favor, nombre al usuario");
+      showToast('error',"Por favor, nombre al usuario");
       return;
     }
 
@@ -155,6 +162,13 @@ const AddUserForm = ({ user, onClose }) => {
       uuid,
     };
 
+    const showToast = (type, message) => {
+      toast[type](message, {
+          position: 'top-center',
+          autoClose: 2000,
+      });
+    };
+
     api.post('/user/users/add', userDetails)
     .then((response) => {
       if (response.data.code === 200) {
@@ -169,7 +183,7 @@ const AddUserForm = ({ user, onClose }) => {
   
   const handleEditUser = () => {
     if (!userName) {
-      toast.error("Por favor, nombre al usuario");
+      showToast('error',"Por favor, nombre al usuario");
       return;
     }
 

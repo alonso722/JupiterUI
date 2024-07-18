@@ -7,6 +7,12 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
   const effectMounted = useRef(false);
   const [data, setData] = useState({});
   const api = useApi();
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+  };
 
   useEffect(() => {
     if (effectMounted.current === false) {
@@ -20,7 +26,7 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
 
   const handleAddDepartment = () => {
     if (!departmentName) {
-      toast.error("Por favor, nombre el departamento");
+      showToast('error',"Por favor, nombre el departamento");
       return;
     }
 
@@ -43,7 +49,7 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
 
   const handleEditDepartment = () => {
     if (!departmentName) {
-      toast.error("Por favor, nombre el departamento");
+      showToast('error',"Por favor, nombre el departamento");
       return;
     }
 

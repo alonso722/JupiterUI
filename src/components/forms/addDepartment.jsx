@@ -16,6 +16,13 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
   const [selectedSubDepartment, setSelectedSubDepartment] = useState('');
   const [permissions, setPermissions] = useState([]);
 
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+  };
+
   const departments = [
     { id: 41, name: 'Direccion general' },
     { id: 42, name: 'Direcciones' },
@@ -77,11 +84,11 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
 
   const handleAddDepartment = () => {
     if (!departmentName) {
-      toast.error("Por favor, nombre el departamento");
+      showToast('error',"Por favor, nombre el departamento");
       return;
     }
     if (!selected || !selectedSubDepartment) {
-      toast.error("Seleccione en las opciones");
+      showToast('error',"Seleccione en las opciones");
       return;
     }
 
@@ -107,7 +114,7 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
 
   const handleEditDepartment = () => {
     if (!departmentName) {
-      toast.error("Por favor, nombre el departamento");
+      showToast('error',"Por favor, nombre el departamento");
       return;
     }
 

@@ -26,6 +26,13 @@ export default function CompleteAuth({
     const api = useApi();
     const router = useRouter();
 
+    const showToast = (type: 'success' | 'error', message: string) => {
+        toast[type](message, {
+            position: 'top-center',
+            autoClose: 2000,
+        });
+    };
+
     useEffect(() => {
         if (effectMounted.current === false) {
             let storedToken = localStorage.getItem('token');
@@ -49,19 +56,19 @@ export default function CompleteAuth({
                         
                         if (permissions.ISO === 0) {
                             router.push('/auth/login');
-                            toast.error('No tienes acceso a este servicio');
+                            showToast('error','No tienes acceso a este servicio');
                         } else if (permissions.Type === 5) {
                             router.push('/dashboard/home');
-                            toast.success('Autenticación completada.');
+                            showToast('success','Autenticación completada.');
                         } else {
                             router.push('/dashboard/table');
-                            toast.success('Autenticación completada.');
+                            showToast('success','Autenticación completada.');
                         }
                         
                     })
                     .catch((error) => {
                         console.error("Error al enviar el token:", error);
-                        toast.error('Error al enviar el token');
+                        showToast('error','Error al enviar el token');
                         setFailed(true);
                     })
                     .finally(() => {

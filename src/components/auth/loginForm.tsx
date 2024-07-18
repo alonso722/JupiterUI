@@ -2,6 +2,7 @@ import { validateSync } from 'class-validator';
 import { useRouter } from 'next/navigation'; 
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Importa los estilos de react-toastify
 import { Input } from '../form/input';
 import { CredentialsValidation } from '@/validation/credentialsValidation';
 import { Button } from '../form/button';
@@ -34,6 +35,13 @@ export default function LoginForm({
         password: '',
     });
 
+    const showToast = (type: 'success' | 'error', message: string) => {
+        toast[type](message, {
+            position: 'top-center',
+            autoClose: 2000,
+        });
+    };
+
     const submitForm = useCallback(() => {
         setIsLoading(true);
         api.post('/user/auth/login', { 
@@ -43,17 +51,21 @@ export default function LoginForm({
         .then((response) => {
             setShowSuccessMessage(true);
             setTimeout(() => setShowSuccessMessage(false), 2000);
-            toast.success('Usuario y contraseña correctos');
+            showToast('success', 'Usuario y contraseña correctos');
             // localStorage
             localStorage.setItem('token', response.data.token);
             router.push(`/auth/complete?token=${response.data}`);     
         })
         .catch((error) => {
             console.error("Error al realizar la solicitud:", error); 
-            setErrorMessage(error.response || "Error desconocido");
+            const errorMessage = error.response && error.response.data && error.response.data.error
+                ? error.response.data.error
+                : "Error en los datos";
+    
+            setErrorMessage(errorMessage);
             setShowErrorMessage(true); 
             setTimeout(() => setShowErrorMessage(false), 2000); 
-            toast.error(error.response || "Error en los datos");
+            showToast('error', errorMessage);
         })
         .finally(() => {
             setIsLoading(false);
@@ -76,6 +88,7 @@ export default function LoginForm({
         },
         [email, password, submitForm]
     );
+
     const onPwdKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             validate();

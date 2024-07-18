@@ -21,6 +21,13 @@ export default function Page() {
     const process = searchParams.get('process');
     const department = searchParams.get('department');
 
+    const showToast = (type: 'success' | 'error', message: string) => {
+        toast[type](message, {
+            position: 'top-center',
+            autoClose: 2000,
+        });
+    };
+
     useEffect(() => {    
         let parsedPermissions;
         if (effectMounted.current === false) {    
@@ -31,7 +38,7 @@ export default function Page() {
                 setPermissions(parsedPermissions);
             }
             if (!authStateValue.loggedIn) {
-                toast.error('Sin autenticación');
+                showToast('error','Sin autenticación');
                 router.push('/auth/login');
             }
             effectMounted.current = true;

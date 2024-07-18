@@ -20,13 +20,20 @@ export default function Page({ }) {
     const [permissions, setPermissions] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const showToast = (type: 'success' | 'error', message: string) => {
+        toast[type](message, {
+            position: 'top-center',
+            autoClose: 2000,
+        });
+    };
+
     useEffect(() => {
         if (effectMounted.current === false) {
             const storedToken = localStorage.getItem('token');
             const storedPermissions = localStorage.getItem('permissions');
 
             if (!authStateValue.loggedIn) {
-                toast.error('Sin autenticación');
+                showToast('error','Sin autenticación');
                 router.push('/auth/login');
                 return;
             }
@@ -41,7 +48,7 @@ export default function Page({ }) {
                 }
             }
 
-            setAuth(prevState => ({
+            setAuth((prevState: any) => ({
                 ...prevState,
                 token: storedToken
             }));
@@ -60,7 +67,7 @@ export default function Page({ }) {
                 })
                 .catch((error) => {
                     console.error("Error al enviar el token:", error);
-                    toast.error('Error al enviar el token');
+                    showToast('error','Error al enviar el token');
                     setLoading(false);
                 });
 

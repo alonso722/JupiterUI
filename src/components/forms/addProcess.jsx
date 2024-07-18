@@ -10,13 +10,20 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   const effectMounted = useRef(false);
   const api = useApi();
 
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+  };
+
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
   };
 
   const handleSubmit = async () => {
     if (!file) {
-      toast.error('Por favor, seleccione un archivo para cargar.');
+      showToast('error','Por favor, seleccione un archivo para cargar.');
       return;
     }
 
@@ -83,6 +90,13 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload }) => {
   const effectMounted = useRef(false);
   const api = useApi();
 
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+  };
+
   const handleFileChange = (e) => {
     const newFiles = Array.from(e.target.files);
     setFiles((prevFiles) => [...prevFiles, ...newFiles]);
@@ -94,7 +108,7 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload }) => {
 
   const handleSubmit = async () => {
     if (files.length === 0) {
-      toast.error('Por favor, seleccione al menos un archivo para cargar.');
+      showToast('error','Por favor, seleccione al menos un archivo para cargar.');
       return;
     }
 
@@ -177,6 +191,13 @@ const AddProcessForm = ({ card, onClose }) => {
   const api = useApi();
   const [users, setUsers] = useState([]);
 
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+  };
+
   const handleSelectionDepartment = (selectedDepartments) => {
     setSelectedDepartments(selectedDepartments);
   };
@@ -205,7 +226,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   const handleAddProcess = (selectedDepartments) => {
     if (!processName) {
-      toast.error( "Por favor, nombre el proceso");
+      showToast('error', "Por favor, nombre el proceso");
       return;
     }
     const processDetails = {

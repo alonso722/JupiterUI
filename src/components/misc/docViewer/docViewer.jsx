@@ -1,6 +1,7 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { toast } from 'react-toastify';
 
 const FileViewer = dynamic(() => import('react-file-viewer'), { ssr: false });
 
@@ -8,6 +9,14 @@ const DocViewer = ({ url, onClose }) => {
   const [fileContent, setFileContent] = useState(null);
   const [fileType, setFileType] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [error, setError] = useState(null); 
+
+  const showToast = (type, message) => {
+    toast[type](message, {
+      position: 'top-center',
+      autoClose: 2000,
+    });
+  };
 
   useEffect(() => {
     const fetchFileContent = async () => {
@@ -42,8 +51,12 @@ const DocViewer = ({ url, onClose }) => {
           };
           reader.readAsDataURL(blob);
         }
+
+        setError(null);
       } catch (error) {
         console.error('Error fetching file:', error);
+        setError(error.message); 
+        showToast('error','Error al visualizar documento'); 
       }
     };
 
@@ -64,6 +77,11 @@ const DocViewer = ({ url, onClose }) => {
         <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
           &times;
         </button>
+        {error && (
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white p-2 rounded">
+            {"Error al visualizar documento"}
+          </div>
+        )}
         <div className="flex justify-center items-center flex-grow overflow-auto mt-9">
           <div
             className="w-full h-full"
