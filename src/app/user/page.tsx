@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
@@ -10,7 +10,9 @@ import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 import UsersTable from '@/components/usersTable/uTable';
 
-export default function Page() {
+const SuspenseFallback = () => <div>Loading...</div>;
+
+const PageContent = () => {
     const [authStateValue, setAuth] = useRecoilState(authState);
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -55,5 +57,13 @@ export default function Page() {
                 <UsersTable />
             </div>
         </div>
+    );
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<SuspenseFallback />}>
+            <PageContent />
+        </Suspense>
     );
 }

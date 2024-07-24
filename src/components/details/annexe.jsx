@@ -84,25 +84,25 @@ const Annexes = ({ onClose, cardId }) => {
         </button>
         <h2 className="text-2xl font-bold mb-4 text-black">Anexos al proceso</h2>
         <div className='flex'>
-          {annexe.length > 0 ? (
-            annexe.map((anx, index) => (
-                <div className='flex flex-col items-center justify-center mr-5'>
-                    <div key={index} className="mb-4 rounded border-2 border-indigo-200/50  flex flex-col items-center justify-center px-4">
-                    <img
-                      onClick={() => openViewer(anx.path)}
-                      src={getFileIcon(anx.name)}
-                      alt="File Icon"
-                      className="w-[100px] h-[100px] mt-[10px] cursor-pointer"/>
-                        <p className="mt-[px] mb-4 text-black">{anx.name}</p>
-                    </div>
-                    <button onClick={() => handleAnxDownload(anx.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                        Descargar anexo
-                    </button>
-                </div>
-            ))
-          ) : (
-            <p>No hay anexos para el proceso.</p>
-          )}
+        {annexe.length > 0 ? (
+          annexe.map((anx) => (
+            <div key={anx.id} className='flex flex-col items-center justify-center mr-5'>
+              <div className="mb-4 rounded border-2 border-indigo-200/50 flex flex-col items-center justify-center px-4">
+                <img
+                  onClick={() => openViewer(anx.path)}
+                  src={getFileIcon(anx.name)}
+                  alt="File Icon"
+                  className="w-[100px] h-[100px] mt-[10px] cursor-pointer"/>
+                <p className="mt-[px] mb-4 text-black">{anx.name}</p>
+              </div>
+              <button onClick={() => handleAnxDownload(anx.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                Descargar anexo
+              </button>
+            </div>
+          ))
+        ) : (
+          <p>No hay anexos para el proceso.</p>
+        )}
         </div>
       </div>
       {isViewerOpen && (
