@@ -3,7 +3,8 @@ import React, { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { toast } from 'react-toastify';
 
-const FileViewer = dynamic(() => import('react-file-viewer'), { ssr: false });
+// Comentado para que no se use react-file-viewer
+// const FileViewer = dynamic(() => import('react-file-viewer'), { ssr: false });
 
 const DocViewer = ({ url, onClose }) => {
   const [fileContent, setFileContent] = useState(null);
@@ -44,15 +45,16 @@ const DocViewer = ({ url, onClose }) => {
           throw new Error('Unsupported file type');
         }
 
+        // Cambiado para abrir el archivo en una nueva ventana
         if (typeof window !== 'undefined') {
-          const reader = new FileReader();
-          reader.onload = () => {
-            setFileContent(reader.result);
-          };
-          reader.readAsDataURL(blob);
+          const fileUrl = URL.createObjectURL(blob);
+          window.open(fileUrl, '_blank');
+          URL.revokeObjectURL(fileUrl);
         }
 
         setError(null);
+        // Cerrando el componente al abrir el archivo
+        if (onClose) onClose();
       } catch (error) {
         console.error('Error fetching file:', error);
         setError(error.message); 
@@ -86,14 +88,15 @@ const DocViewer = ({ url, onClose }) => {
           <div
             className="w-full h-full"
             style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'top left' }}>
-            {fileContent && fileType && (
+            {/* Comentado para no usar FileViewer */}
+            {/* {fileContent && fileType && (
               <FileViewer
                 fileType={fileType}
                 filePath={fileContent}
                 onError={e => console.error('Error al mostrar el archivo:', e)}
                 className="w-full h-full"
               />
-            )}
+            )} */}
           </div>
         </div>
         <div className="flex justify-center items-center mt-4 space-x-4">

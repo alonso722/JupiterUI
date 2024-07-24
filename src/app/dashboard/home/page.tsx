@@ -11,7 +11,6 @@ import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 import Kanban from '@/components/kanban/columns';
 
-// Define a Suspense fallback UI
 const SuspenseFallback = () => <div>Loading...</div>;
 
 const PageContent = () => {
