@@ -1,6 +1,6 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
@@ -11,7 +11,10 @@ import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu';
 import Kanban from '@/components/kanban/columns';
 
-export default function Page() {
+// Define a Suspense fallback UI
+const SuspenseFallback = () => <div>Loading...</div>;
+
+const PageContent = () => {
     const [authStateValue, setAuth] = useRecoilState(authState);
     const router = useRouter();
     const searchParams = useSearchParams();
@@ -38,7 +41,7 @@ export default function Page() {
                 setPermissions(parsedPermissions);
             }
             if (!authStateValue.loggedIn) {
-                showToast('error','Sin autenticación');
+                showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
             }
             effectMounted.current = true;
@@ -53,5 +56,13 @@ export default function Page() {
                 <Kanban departmentFilter={department} processFilter={process} />
             </div>
         </div>
+    );
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<SuspenseFallback />}>
+            <PageContent />
+        </Suspense>
     );
 }

@@ -50,7 +50,7 @@
     "lucide-react": "^0.378.0",
     "mongoose": "^8.3.3",
     "next": "14.2.1",
-    "pdfjs-dist": "^4.3.136",
+    "pdfjs-dist": "^3.4.120",
     "react": "^18",
     "react-doc-viewer": "^0.1.13",
     "react-dom": "^18",
