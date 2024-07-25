@@ -8,7 +8,7 @@ const useApi = () => {
 
     const axiosConfig = {
         baseURL: baseURL,
-        // Otras configuraciones de axios
+        crossdomain: true,
     };
 
     const axiosInstance = axios.create(axiosConfig);
