@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 
-const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions, setSelectedOptions }) => {
+const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions, setSelectedOptions, selectedOrgId }) => {
   const [options, setOptions] = useState([]);
-  //const [selectedOptions, setSelectedOptions] = useState([]);
   const [searchSearch, setSearch] = useState('');
   const [permissions, setPermissions] = useState([]);
   const effectMounted = useRef(false);
@@ -15,12 +14,15 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
     if (storedPermissions) {
         parsedPermissions = JSON.parse(storedPermissions);
         if (parsedPermissions.Type === 5) {
-            router.push('/dashboard/home');
+            router.push('/dashboard/home'); 
         }
         setPermissions(parsedPermissions);
     }
     if (search) {
       let organization = parsedPermissions.Organization;
+      if(!organization){
+        organization=selectedOrgId;
+      }
       if (organization) {
           api.post('/user/departments/search', { search, organization })
               .then((response) => {
@@ -33,23 +35,21 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
           console.warn("El valor de organization es inválido o no está definido.");
           setOptions([]);
       }
-  } else {
-      setOptions([]);
-  }  
+    }
   };
 
   useEffect(() => {
     if (!effectMounted.current) {
-      fetchDepartments('');
+      fetchDepartments('', selectedOrgId);
       effectMounted.current = true;
     }
-  }, []);
+  }, [selectedOrgId]);
 
   useEffect(() => {
     if (effectMounted.current) {
-      fetchDepartments(searchSearch);
+      fetchDepartments(searchSearch, selectedOrgId);
     }
-  }, [searchSearch]);
+  }, [searchSearch, selectedOrgId]);
 
   const handleAddOption = (option) => {
     const index = selectedOptions.findIndex(selected => selected.id === option.id);
@@ -72,7 +72,7 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
   };
 
   useEffect(() => {
-  }, [selectedOptions]);
+  }, [selectedOrgId]);
 
   return (
     <div className='text-black my-[5px]'>
@@ -86,18 +86,23 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
         />
       </div>
       {searchSearch && (
-        <div className="flex mt-2 max-h-[100px] overflow-x-auto">
-          {options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
-              <span>{option.department}</span>
-              <button 
-                className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
-                onClick={() => handleAddOption(option)}>
-                +
-              </button>
-            </div>
-          ))}
-        </div>
+<div className="flex mt-2 max-h-[100px] overflow-x-auto">
+  {options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
+    <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
+      <span 
+        className='max-w-[300px] w-auto truncate' 
+        title={option.department} >
+        {option.department}
+      </span>
+      <button 
+        className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
+        onClick={() => handleAddOption(option)}>
+        +
+      </button>
+    </div>
+  ))}
+</div>
+
       )}
       <div className='border mt-3 p-2 max-h-[170px] '>
         <h3 className='text-black'>
