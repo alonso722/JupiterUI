@@ -10,6 +10,7 @@ import PasswordInput from '../form/passwordInput';
 import { CLink } from '../link';
 import { colors } from '../types/enums/colors';
 import useApi from '@/hooks/useApi';
+import Image from 'next/image';
 
 interface LoginFormValues {
     email: string | null;
@@ -97,51 +98,68 @@ export default function LoginForm({
 
     return (
         <>
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    validate(); 
-                }}>
-                <div className="mb-7 grid grid-rows-1">
-                    <label htmlFor="" className="justify-center mb-2 flex w-full">
-                        Correo electrónico
-                    </label>
-                    <Input
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        error={errors.email}
-                        placeholder="Dirección de correo electrónico."/>
-                </div>
-                <div className=" mb-3 grid grid-rows-1">
-                    <label htmlFor="" className="justify-center mb-2 flex w-full">
-                        Contraseña
-                    </label>
-                    <PasswordInput
-                        password={password}
-                        setPassword={setPassword}
-                        onKeyDown={onPwdKeyDown}
-                        error={errors.password}
-                        placeholder="Contraseña"/>
-                </div>
-                <div>
-                    <CLink
-                        href="/auth/forgot-password"
-                        className="mb-4 mt-2 flex text-[11px] text-[#2C1C47] no-underline">
-                        ¿Olvidó su contraseña?
-                    </CLink>
-                </div>
-                <div className="grid grid-rows-1">
-                    <Button
-                        rounded
-                        isLoading={isLoading}
-                        type="submit" 
-                        onClick={validate}
-                        color={colors.ALTERNATIVE}>
-                        Entrar
-                    </Button>
-                </div>
-            </form>
+            <div className="flex items-center justify-center min-h-screen">
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        validate(); 
+                    }}
+                    className='w-[450px] bg-white rounded-md p-4 flex flex-col items-center'>
+                    <Image
+                        src="/logos/Lg_JIso.svg"
+                        alt="Logo"
+                        width={217}
+                        height={48}
+                        className='mt-[30px]'
+                    />
+                    <p className='text-black mb-4'>
+                        Inicia sesión para acceder    
+                    </p>                    
+                    <div className="mb-7 w-full flex flex-col items-center">
+                        <label htmlFor="email" className="mb-2 w-full ml-[40px] text-[#425466]">
+                            Correo electrónico
+                        </label>
+                        <Input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            error={errors.email}
+                            placeholder="Dirección de correo electrónico."
+                            className="w-full bg-[#EDF2F7] text-[#7A828A]"
+                        />
+                    </div>
+                    <div className=" w-full flex flex-col items-center">
+                        <label htmlFor="password" className="mb-2 text-[#425466] w-full ml-[40px]">
+                            Contraseña
+                        </label>
+                        <PasswordInput
+                            password={password}
+                            setPassword={setPassword}
+                            onKeyDown={onPwdKeyDown}
+                            error={errors.password}
+                            placeholder="Contraseña"
+                        />
+                    </div>
+                    <div className="w-full flex">
+                        <CLink
+                            href="/auth/forgot-password"
+                            className="mb-4 text-[11px] text-[#777E90] no-underline">
+                            ¿Olvidó su contraseña?
+                        </CLink>
+                    </div>
+                    <div className="w-full flex justify-center">
+                        <Button
+                            rounded
+                            isLoading={isLoading}
+                            type="submit" 
+                            onClick={validate}
+                            color={colors.ALTERNATIVE}
+                            className="w-full">
+                            Entrar
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </>
     );
 }
