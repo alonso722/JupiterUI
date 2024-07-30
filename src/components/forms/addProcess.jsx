@@ -165,7 +165,7 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload }) => {
         )}
         <input
           type="text"
-          placeholder="Título del documento"
+          placeholder="Título de la carpeta documento"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>

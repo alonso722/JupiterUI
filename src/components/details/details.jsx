@@ -6,6 +6,7 @@ import Incident from '../details/incident';
 import Annexes from '../details/annexe';
 import DocViewer from '../misc/docViewer/docViewer';
 import dotenv from 'dotenv';
+import { toast } from 'react-toastify';
 dotenv.config();
 
 const status = [
@@ -48,7 +49,7 @@ const Details = ({ card, onClose }) => {
   const [selectedCardId, setSelectedCardId] = useState(null);
   const [urlToView, setFileUrl] = useState(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const [refresh, setRefresh] = useState(false);
+  const [renderKey, setRenderKey] = useState(Date.now());
 
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
@@ -68,6 +69,13 @@ const Details = ({ card, onClose }) => {
     setSelectedCardId(null);
     setModalAnxOpen(false);
   };
+
+  const showToast = (type, message) => {
+    toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+    });
+};
 
   useEffect(() => {
     if (effectMounted.current === false) {
@@ -123,7 +131,7 @@ const Details = ({ card, onClose }) => {
       fetchAnnexes();
       effectMounted.current = true;
     }
-  }, [card.column, api, refresh]);
+  }, [card.column, api, renderKey]);
 
   const getFileIcon = (filename) => {
     if (!filename) {
@@ -236,9 +244,12 @@ const Details = ({ card, onClose }) => {
     incidentSnd.id = logId;
     try {
       await api.post('/user/incident/create', incidentSnd);
-      setRefresh(!refresh);
+      setIncident('');
+      showToast('success','Se envió el comentario o incidencia.');
+      setRenderKey(Date.now());
     } catch (error) {
-      console.error("Error al hacer el registro de incidente:", error);
+      showToast('error','Error al enviar el comentario o incidencia.');
+      console.error("Error al hacer el registro:", error);
     }
   };
 
