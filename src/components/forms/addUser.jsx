@@ -29,7 +29,6 @@ const AddUserForm = ({ user, onClose }) => {
   };
 
   const roles = [    
-    { id: 1, name: 'Administrador' },
     { id: 2, name: 'Editor' },
     { id: 3, name: 'Revisor' },
     { id: 4, name: 'Aprobador' },

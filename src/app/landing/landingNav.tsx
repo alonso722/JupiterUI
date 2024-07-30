@@ -7,7 +7,7 @@ export default function LandingNav() {
             <div className="flex items-center justify-between h-[95px] px-8">
                 <div>
                     <Image
-                        src="/logos/Logo.svg"
+                        src="/logos/logo.svg"
                         alt="Logo"
                         width={180}
                         height={29}/>
