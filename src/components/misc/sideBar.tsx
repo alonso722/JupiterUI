@@ -78,12 +78,12 @@ export default function Sidebar() {
                                 <i className=" fa fa-address-book ml-1"></i>
                             </button>
                         )}
-                        {permissions.Type !== 5 && (
+                        {(permissions.Type === 1 || permissions.Type === 6) && (
                             <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleDepartmentsClick}>
-                                <i className=" fa fa-users ml-1"></i>
+                                <i className="fa fa-users ml-1"></i>
                             </button>
                         )}
-                        {permissions.Type !== 5 && (
+                        {(permissions.Type === 1 || permissions.Type === 6) && (
                             <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleUsersClick}>
                                 <i className="fa fa-user ml-1"></i>
                             </button>
@@ -108,15 +108,15 @@ export default function Sidebar() {
                                 <p className="text-black-600 ml-[10px]">Organizaciones</p>
                             </div>
                         )}
-                        {permissions.Type !== 5 && (
+                        {(permissions.Type === 1 || permissions.Type === 6) && (
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleDepartmentsClick}>
-                                <i className=" fa fa-users ml-1"></i>
+                                <i className="fa fa-users ml-1"></i>
                                 <p className="text-black-600 ml-[10px]">Departamentos</p>
                             </div>
                         )}
-                        {permissions.Type !== 5 && (
+                        {(permissions.Type === 1 || permissions.Type === 6) && (
                             <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleUsersClick}>
-                                <i className=" fa fa-users ml-1"></i>
+                                <i className="fa fa-user ml-1"></i>
                                 <p className="text-black-600 ml-[10px]">Usuarios</p>
                             </div>
                         )}
