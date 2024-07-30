@@ -11,6 +11,7 @@ import { CLink } from '../link';
 import { colors } from '../types/enums/colors';
 import useApi from '@/hooks/useApi';
 import Image from 'next/image';
+import AuthOptions from './authOptions';
 
 interface LoginFormValues {
     email: string | null;
@@ -104,7 +105,7 @@ export default function LoginForm({
                         e.preventDefault();
                         validate(); 
                     }}
-                    className='w-[450px] bg-white rounded-md p-4 flex flex-col items-center'>
+                    className='h-[751px] w-[503px] bg-white rounded-md p-[40px] flex flex-col items-center'>
                     <Image
                         src="/logos/Lg_JIso.svg"
                         alt="Logo"
@@ -112,11 +113,11 @@ export default function LoginForm({
                         height={48}
                         className='mt-[30px]'
                     />
-                    <p className='text-black mb-4'>
+                    <p className='text-black mb-4 my-[16px] font-semibold'>
                         Inicia sesión para acceder    
                     </p>                    
-                    <div className="mb-7 w-full flex flex-col items-center">
-                        <label htmlFor="email" className="mb-2 w-full ml-[40px] text-[#425466]">
+                    <div className="mb-7 w-[376px] flex flex-col items-center ">
+                        <label htmlFor="email" className="mb-2 w-full text-[#425466]">
                             Correo electrónico
                         </label>
                         <Input
@@ -128,8 +129,8 @@ export default function LoginForm({
                             className="w-full bg-[#EDF2F7] text-[#7A828A]"
                         />
                     </div>
-                    <div className=" w-full flex flex-col items-center">
-                        <label htmlFor="password" className="mb-2 text-[#425466] w-full ml-[40px]">
+                    <div className="w-[376px] flex flex-col items-center">
+                        <label htmlFor="password" className="mb-2 text-[#425466] w-full">
                             Contraseña
                         </label>
                         <PasswordInput
@@ -140,23 +141,29 @@ export default function LoginForm({
                             placeholder="Contraseña"
                         />
                     </div>
-                    <div className="w-full flex">
+                    <div className="mr-[265px] flex mt-[8px]">
                         <CLink
                             href="/auth/forgot-password"
                             className="mb-4 text-[11px] text-[#777E90] no-underline">
                             ¿Olvidó su contraseña?
                         </CLink>
                     </div>
-                    <div className="w-full flex justify-center">
+                    <div className="w-[376px] mt-[16px] flex justify-center">
                         <Button
                             rounded
                             isLoading={isLoading}
                             type="submit" 
                             onClick={validate}
-                            color={colors.ALTERNATIVE}
-                            className="w-full">
+                            color={colors.PRIMARY}
+                            className="w-full outline-0">
                             Entrar
                         </Button>
+                    </div>
+                    <p className='my-[25px] text-[#777E90]'>o accede mediante otra cuenta</p>
+                    <AuthOptions/>
+                    <div className='flex font-semibold mt-[26px]'>
+                        <p className='text-[#777E90] mr-[5px]'>¿Aún no tienes una cuenta? </p>
+                        <p> Registrate gratis</p>
                     </div>
                 </form>
             </div>

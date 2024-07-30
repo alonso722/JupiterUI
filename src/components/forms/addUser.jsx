@@ -78,7 +78,6 @@ const AddUserForm = ({ user, onClose }) => {
     if (user && departments.length > 0) {
       const department = departments.find(dept => dept.department === user.rowData.department);
       setSelectedDepartments(department ? [department] : []);
-      console.log("User antes del send",user)
       switch (user.rowData.role) {
         case 'Administrador':
           user.rowData.role = 1;
