@@ -78,7 +78,6 @@ const AddUserForm = ({ user, onClose }) => {
     if (user && departments.length > 0) {
       const department = departments.find(dept => dept.department === user.rowData.department);
       setSelectedDepartments(department ? [department] : []);
-
       switch (user.rowData.role) {
         case 'Administrador':
           user.rowData.role = 1;
@@ -119,15 +118,13 @@ const AddUserForm = ({ user, onClose }) => {
             setUserPass(fetchedData.pass);
           })
           .catch((error) => {
-            console.error("Error al consultar departamento:", error);
+            console.error("Error al consultar usuario:", error);
           });
       };
       fetchData();
     }
   }, [user, departments]);
   
-  
-
   const handleAddUser = () => {
     if (!userName) {
       showToast('error',"Por favor, nombre al usuario");
@@ -140,16 +137,21 @@ const AddUserForm = ({ user, onClose }) => {
     const uuid = `u${userName.substring(0, 3)}${userLast.substring(0, 3)}${roleInitial}`;
 
     switch (roleName) {
-      case 'Revisor':
-        roleName = 2;
       case 'Editor':
+        roleName = 2;
+        break;
+      case 'Revisor':
         roleName = 3;
+        break;
       case 'Aprobador':
         roleName = 4;
+        break;
       case 'Consultor':
         roleName = 5;
+        break;
       default:
         roleName = 5;
+        break;
     }
 
     const userDetails = {
@@ -193,16 +195,21 @@ const AddUserForm = ({ user, onClose }) => {
     const uuid =user.rowData.uuid;
 
     switch (roleName) {
+      case 'Editor':
+        roleName = 2;
+        break;
       case 'Revisor':
         roleName = 3;
-      case 'Editor':
-        roleName = 3;
+        break;
       case 'Aprobador':
         roleName = 4;
+        break;
       case 'Consultor':
         roleName = 5;
+        break;
       default:
         roleName = 5;
+        break;
     }
 
     const userDetails = {

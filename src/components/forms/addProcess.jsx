@@ -1,7 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
+import { Listbox, Transition } from '@headlessui/react';
 import useApi from '@/hooks/useApi';
 import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
 import { toast } from 'react-toastify';
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
 const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   const [file, setFile] = useState(null);
@@ -189,7 +191,14 @@ const AddProcessForm = ({ card, onClose }) => {
   const [annexesInfo, setAnnexesInfo] = useState(null); 
   const effectMounted = useRef(false);
   const api = useApi();
+  const [organizationsS, setOrgas] = useState([]);
   const [users, setUsers] = useState([]);
+  const [permissions, setPermissions] = useState([]);
+  const [selectedOrgId, setSelectedOrgId] = useState(null);
+
+  function classNames(...classes) {
+    return classes.filter(Boolean).join(' ');
+  }
 
   const showToast = (type, message) => {
     toast[type](message, {
@@ -212,6 +221,28 @@ const AddProcessForm = ({ card, onClose }) => {
 
   useEffect(() => {
     if (effectMounted.current === false) {
+      let parsedPermissions;
+      const storedPermissions = localStorage.getItem('permissions'); 
+      if (storedPermissions) {
+          parsedPermissions = JSON.parse(storedPermissions);
+          if (parsedPermissions.Type === 5) {
+              router.push('/dashboard/home');
+          }
+          if (parsedPermissions.Type === 6) {
+            api.get('/user/organization/fetch')
+            .then((response) => {
+                const fetchedData = response.data.data.map(item => ({
+                    id: item.id,
+                    organization: item.organization,    
+                }));
+                setOrgas(fetchedData);
+            })
+            .catch((error) => {
+                console.error("Error al consultar procesos:", error);
+            });
+        }
+          setPermissions(parsedPermissions);
+      }
       api.post('/user/process/fetchUsers')
         .then((response) => {
           const usersData = response.data;
@@ -224,7 +255,7 @@ const AddProcessForm = ({ card, onClose }) => {
     }
   }, []);
 
-  const handleAddProcess = (selectedDepartments) => {
+  const handleAddProcess = () => {
     if (!processName) {
       showToast('error', "Por favor, nombre el proceso");
       return;
@@ -242,9 +273,15 @@ const AddProcessForm = ({ card, onClose }) => {
       processDetails.filePath = fileInfo.path; 
       processDetails.fileTitle = fileInfo.asignedTitle; 
       processDetails.fileName = fileInfo.name;
+    } else{
+      showToast('error', "Por favor, cargue un documento principal");
+      return;
     }
     if(annexesInfo){
       processDetails.annexes = annexesInfo;
+    }else{
+      showToast('error', "Por favor, cargue los anexos");
+      return;
     }
   
     if (processDetails.processName) {
@@ -260,10 +297,9 @@ const AddProcessForm = ({ card, onClose }) => {
         .catch((error) => {
           console.error("Error al consultar procesos:", error);
         });
-    } else {
     }
   };
-  
+
   const getFileIcon = (extension) => {
     switch (extension.toLowerCase()) {
       case '.pdf':
@@ -306,7 +342,7 @@ const AddProcessForm = ({ card, onClose }) => {
         </button>
         <div className='flex'>
           <div className='w-[400px]'>
-            <h2 className="text-2xl mt-[15px] mb-4 text-black">
+            <h2 className="text-2xl mt-[15px] mb-2 text-black">
             <input
                 type="text"
                 placeholder="Nombre del proceso"
@@ -314,17 +350,80 @@ const AddProcessForm = ({ card, onClose }) => {
                 onChange={(e) => setProcessName(e.target.value)}
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
             </h2>
-            <p className="mb-4 text-black">Detalles del proceso:</p>
+            <p className="mb-2 text-black">Detalles del proceso:</p>
+            {permissions.Type === 6 && (
+            <div className='mb-2 p-1 text-black'>
+              <Listbox value={selectedOrgId} onChange={setSelectedOrgId} className="max-w-[100px]">
+                {({ open }) => (
+                  <>
+                    <Listbox.Label className="block text-sm font-medium leading-6 text-black">Organización</Listbox.Label>
+                    <div className="relative mt-2">
+                      <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                        <span className="flex items-center">
+                          <span className="ml-3 block truncate">
+                            {organizationsS.find(org => org.id === selectedOrgId)?.organization || "Selecciona..."}
+                          </span>
+                        </span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0">
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {organizationsS.map((org) => (
+                            <Listbox.Option
+                              key={org.id}
+                              className={({ active }) =>
+                                classNames(
+                                  active ? 'bg-indigo-600 text-white' : 'text-black',
+                                  'relative cursor-default select-none py-2 pl-3 pr-9'
+                                )
+                              }
+                              value={org.id}>
+                              {({ selected, active }) => (
+                                <>
+                                  <div className="flex items-center">
+                                    <span
+                                      className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
+                                      {org.organization}
+                                    </span>
+                                  </div>
+                                  {selected ? (
+                                    <span
+                                      className={classNames(
+                                        active ? 'text-white' : 'text-indigo-600',
+                                        'absolute inset-y-0 right-0 flex items-center pr-4'
+                                      )}>
+                                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </Transition>
+                    </div>
+                  </>
+                )}
+              </Listbox>
+            </div>
+          )}
             <div className='max-h-[350px] h-[250px]'>
-              <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} />
+              <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} selectedOrgId={selectedOrgId} />
             </div>
           </div>
         </div>
-        <div className='flex  justify-center '>
+        <div className='flex  justify-center mt-4'>
           {fileInfo && (
             <div className="mb-4 text-black items-center justify-end">
               <h2>Documento cargado:</h2>            
-              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[100px] h-[100px] ml-[20px] mr-[160px]" />
+              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] ml-[20px] mr-[160px]" />
               <p
                 className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
                 title={fileInfo.name}>
@@ -335,7 +434,7 @@ const AddProcessForm = ({ card, onClose }) => {
           {annexesInfo && (
             <div className="mb-4 text-black flex flex-col items-center justify-center">
               <h2>Anexos:</h2>
-              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[100px] h-[100px]"/>
+              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px]"/>
               <p
                 className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
                 title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
@@ -344,16 +443,16 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           )}
         </div>
-        <div className="mt-9 flex justify-end">
+        <div className=" flex justify-end">
           <div className='flex'>
-          <button onClick={() => setIsModalOpen(true)} className='underline text-black p-2 mt-6 rounded'>
+          <button onClick={() => setIsModalOpen(true)} className='underline text-black p-2 mt-2 rounded'>
             Cargar documento
           </button>
-          <button onClick={() => setIsModal2Open(true)} className='underline text-black p-2 rounded mt-6'>
+          <button onClick={() => setIsModal2Open(true)} className='underline text-black p-2 rounded mt-2'>
             Cargar anexos
           </button>
           </div>
-          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[20px]">
             Añadir proceso
           </button>
         </div>

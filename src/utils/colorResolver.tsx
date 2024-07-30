@@ -6,7 +6,7 @@ export const getBgColor = (color: colors): string => {
             return 'bg-#f1cf2b text-white hover:bgdarkJupiter ';
         case colors.BLUE_JSUITE:
         case colors.PRIMARY:
-            return 'bg-primary text-white';
+            return 'bg-[#FDD500] text-[#425466]';
         case colors.ALTERNATIVE:
             return 'bg-[#2C1C47] text-white';
         case colors.DANGER:
@@ -32,7 +32,7 @@ export const getBgColor = (color: colors): string => {
         case colors.DARK_JUPITER:
             return 'bg-darkJupiter text-white';
         case colors.DARK_JUPITER_OUTLINE:
-            return 'bg-white text-darkJupiter border-darkJupiter ';
+            return 'bg-white text-[#2C1C47] border-darkJupiter ';
         case colors.TRANSPARENT:
             return 'bg-transparent text-[#D9D9D9]';
         case colors.WARNING_ORANGE:

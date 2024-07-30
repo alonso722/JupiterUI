@@ -39,7 +39,7 @@ export default function PasswordInput({
                 onKeyDown={onKeyDown}
                 error={error}
                 name={name}
-                className='p-2'
+                className='p-2 bg-[#EDF2F7] text-[#777E90]'
             />
         </>
     );

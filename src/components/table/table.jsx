@@ -208,12 +208,14 @@ const TanStackTable = () => {
                     />
                 </div>
                 <div className="grid grid-rows-1 mt-[10px]">
-                    <Button
-                        rounded
-                        color={colors.ALTERNATIVE}
-                        onClick={handleButtonClick}>
-                        Añadir
-                    </Button>
+                    {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
+                        <Button
+                            rounded
+                            color={colors.ALTERNATIVE}
+                            onClick={handleButtonClick}>
+                            Añadir
+                        </Button>
+                    ) : null}
                     {showForm && <AddProcessForm onClose={handleCloseForm} />}
                 </div>
             </div>
