@@ -35,9 +35,8 @@ export default function TopNewMenuClientDashboard() {
                         </svg>
                     </div>
                     <Link
-                        href="/user"
-                        className="text-azulJSuite mr-[38px] text-base font-bold leading-4"
-                    >
+                        href="/dashboard/home"
+                        className="text-[#F1CF2B] mr-[38px] text-base font-bold leading-4">
                         Inicio
                     </Link>
                     <div className="mr-[36px] text-black">

@@ -16,6 +16,7 @@ import { Button } from '../form/button';
 import { colors } from '../types/enums/colors';
 import AddProcessForm from "../forms/addProcess";
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; 
 
 const TanStackTable = () => {
     const columnHelper = createColumnHelper();
@@ -105,6 +106,18 @@ const TanStackTable = () => {
         //     cell: (info) => <span>{info?.getValue()}</span>,
         //     header: "P.No.",
         // }),
+        columnHelper.accessor("icon", {
+            cell: () => (
+                <Image 
+                    src="/icons/icon.svg" 
+                    alt="Icono"
+                    width={10} 
+                    height={10}
+                />
+            ),
+            header: "", 
+            enableSorting: false, 
+        }),
         columnHelper.accessor("process", {
             cell: (info) => (
                 <a
@@ -193,7 +206,7 @@ const TanStackTable = () => {
     return (
         <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
-                <div className="w-full flex items-center gap-1">
+                <div className="w-full flex items-center gap-1 ml-[30px]">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="1em"
@@ -207,19 +220,19 @@ const TanStackTable = () => {
                         placeholder="Buscar"
                     />
                 </div>
-                <div className="grid grid-rows-1 mt-[10px]">
+                <div className="mt-[10px] mb-[10px]">
                     {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
                         <Button
-                            rounded
-                            color={colors.ALTERNATIVE}
+                            className="w-[126px] mr-[130px]"
+                            color={colors.DARK_JUPITER_OUTLINE}
                             onClick={handleButtonClick}>
-                            Añadir
+                            Añadir +
                         </Button>
                     ) : null}
                     {showForm && <AddProcessForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className="w-full text-left rounded-lg">
+            <table className=" text-left text-black rounded-lg mr-[130px] ml-[30px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -252,7 +265,7 @@ const TanStackTable = () => {
                             <tr
                                 key={row.id}
                                 className={`
-                                    ${i % 2 === 0 ? "bg-[#2b0c43]" : "bg-[#3c0764]"}
+                                    ${i % 2 === 0 ? "" : ""}
                                     `}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id} className="px-3.5 py-2">
@@ -269,7 +282,7 @@ const TanStackTable = () => {
                 </tbody>
             </table>
             {/* paginacion */}
-            <div className="flex items-center justify-end mt-2 gap-2 text-black">
+            <div className="flex items-center justify-end mt-2 mr-[180px] gap-2 text-black">
                 <button
                     onClick={() => {
                         table.previousPage();

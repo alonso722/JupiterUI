@@ -50,6 +50,7 @@ const Details = ({ card, onClose }) => {
   const [urlToView, setFileUrl] = useState(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [renderKey, setRenderKey] = useState(Date.now());
+  const [view, setView] = useState('icons');
 
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
@@ -308,60 +309,133 @@ const Details = ({ card, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
-        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
+      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        &times;
+      </button>
         <div className='flex'>
           <div className='min-w-[55%] max-w-[70%] ml-2 '>
-            <p className='text-black'>
+            <p className='text-[#7A828A]'>
               {departmentNameF && `${departmentNameF}`}
             </p>
-            <h2 className="text-2xl mt-[15px] mb-4 text-black">{card.name}</h2>
-            <p className="mt-[15px] text-black mb-2">Documentos asignado al proceso:</p>
-            <div className='flex max-w-[95%]'>
-              <div className='flex flex-col items-center w-[40%] mr-[10%]'>
-                <div className='w-full px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2'>
-                  <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
-                  <img
-                    onClick={() => openViewer(document.path)}
-                    src={getFileIcon(document.name)}
-                    alt="File Icon"
-                    className="w-[50%] h-[100%] mt-[10px] cursor-pointer"
-                  />
-                  <p className="mt-[px] mb-4 text-black">{document.name}</p>
-                </div>
-                <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                  Descargar documento
-                </button>
-              </div>
-              <div className='flex flex-col items-center w-[40%]'>
-                <div className={`w-full px-4 flex flex-col items-center justify-center rounded border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
-                  onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
-                  {documentsANX.length > 0 ? (
-                    <>
-                      <p className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
-                        <strong>{documentsANX[0].title}</strong>
-                      </p>
-                      <img
-                        onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
-                        src={getFileAnxIcon(documentsANX)}
-                        alt="File Icon"
-                        className={`w-[50%] h-[100%] mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}
-                      />
-                      <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "cursor-pointer \u00A0" : documentsANX[0].name}</p> 
-                    </>
-                  ) : (
-                    <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
-                  )}
-                </div>
-                {documentsANX.length === 1 && (
-                  <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                    Descargar anexo
-                  </button>
-                )}
-              </div>
+            <div className='flex'>
+              <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>
+              <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
-            <div className='mt-7 text-black rounded border-2 border-indigo-200/50 p-2 w-[90%]'>
+            <div className='relative'>
+              <div className='justify-between flex space-x-2 mb-[50px]'>
+              <p className="mt-[15px] text-black mb-2">Documentos asignado al proceso</p>
+              <div className='pt-[15px] pr-[50px]'>
+                <button 
+                    onClick={() => setView('icons')} 
+                    className={`p-2 mr-2 rounded border-2 ${view === 'icons' ? 'bg-[#2C1C47]' : ''}`}>
+                    <img src='/icons/icons.svg' alt='Iconos' width={24} height={24} />
+                </button>
+                <button 
+                    onClick={() => setView('list')} 
+                    className={`p-2 rounded border-2 ${view === 'list' ? 'bg-[#2C1C47]' : ''}`}>
+                    <img src='/icons/list.svg' alt='Lista' width={24} height={24} />
+                </button>
+            </div>
+              </div>
+              {view === 'icons' ? (
+                <div className='flex max-w-[95%]'>
+                    <div className='flex flex-col items-center w-[40%] mr-[10%]'>
+                      <div className='w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2'>
+                        <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
+                        <img
+                          onClick={() => openViewer(document.path)}
+                          src={getFileIcon(document.name)}
+                          alt="File Icon"
+                          className="w-[50%] h-[100%] mt-[10px] cursor-pointer"/>
+                        <p className="mt-[px] mb-4 text-black">{document.name}</p>
+                      </div>
+                      <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                        Descargar documento
+                      </button>
+                    </div>
+                    <div className='flex flex-col items-center w-[40%]'>
+                      <div className={`w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
+                        onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
+                        {documentsANX.length > 0 ? (
+                        <>
+                          <p className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
+                            <strong>{documentsANX[0].title}</strong>
+                          </p>
+                          <img
+                            onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
+                            src={getFileAnxIcon(documentsANX)}
+                            alt="File Icon"
+                            className={`w-[50%] h-[100%] mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}/>
+                          <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "cursor-pointer \u00A0" : documentsANX[0].name}</p>
+                        </>
+                        ) : (
+                          <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
+                        )}
+                      </div>
+                      {documentsANX.length === 1 && (
+                        <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                          Descargar anexo
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  ) : (
+                  <div className='flex flex-col max-w-[95%]'>
+                      <div className='w-full px-4 flex flex-col border-b-2 border-indigo-200/50 mb-4'>
+                          <p className="text-lg font-bold mb-2">Documentos</p>
+                          <div className='flex flex-col'>
+                              <div className='flex items-center mb-2'>
+                                  <img 
+                                      src={getFileIcon(document.name)} 
+                                      alt="File Icon" 
+                                      className='w-[70px] h-[70px] mr-2' 
+                                  />
+                                  <div className='flex'>
+                                    <div className='flex mr-[58px] mt-[5px]'>
+                                      <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
+                                      <p className="text-black">{document.name}</p>
+                                    </div>
+                                    <button 
+                                      onClick={() => handleDownload(document.path)} 
+                                      className='bg-[#2C1C47] p-2 rounded text-white'>
+                                      Descargar documento
+                                    </button>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                      <div className='w-full px-4 flex flex-col border-b-2 border-indigo-200/50'>
+                          <p className="text-lg font-bold mb-2">Anexos</p>
+                          <div className='flex flex-col'>
+                              {documentsANX.length > 0 ? (
+                                  documentsANX.map((anx, index) => (
+                                      <div key={index} className='flex items-center mb-2'>
+                                          <img 
+                                              src={getFileAnxIcon([anx])} 
+                                              alt="File Icon" 
+                                              className='w-[18px] h-[18px] mr-2' 
+                                          />
+                                          <div className='flex-grow'>
+                                              <p className="text-black"><strong>{anx.title}</strong></p>
+                                              <p className="text-black">{anx.name}</p>
+                                          </div>
+                                          <button 
+                                              onClick={() => handleAnxDownload(anx.path)} 
+                                              className='bg-[#2C1C47] p-2 rounded text-white'
+                                          >
+                                              Descargar anexo
+                                          </button>
+                                      </div>
+                                  ))
+                              ) : (
+                                  <p className="text-black">No hay anexos para el proceso.</p>
+                              )}
+                          </div>
+                      </div>
+                  </div>
+                )}
+            </div>
+            <div className='mt-7 text-black rounded-lg border-2 border-[#B5B5BD] p-2 w-[90%]'>
               <textarea
                 type="text"
                 value={incident}
@@ -370,7 +444,7 @@ const Details = ({ card, onClose }) => {
                 className="w-full border-none focus:outline-none h-[120px] " />
             </div>
             <div className="flex items-center mt-4">
-              <button onClick={handleSubmit} className='bg-[#2C1C47] p-2 rounded text-white'>
+              <button onClick={handleSubmit} className='bg-[#B5B5BD] p-2 rounded text-[#7A828A]'>
                 Enviar 
               </button>
               <div className="ml-4 flex items-center space-x-4">
@@ -456,7 +530,7 @@ const Details = ({ card, onClose }) => {
               )}
             </Listbox>
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%]  max-w-[630px]">
-              <p>Detalles del proceso:</p>
+              <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
               <p className='mt-4'>
                 {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
               </p>
@@ -469,19 +543,19 @@ const Details = ({ card, onClose }) => {
               <p>Fecha de aprobación</p>
             </div>
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[300px] overflow-auto">
-              <h1><strong>Registro de eventos:</strong></h1>
+              <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
                   <div
-                    key={index}
-                    className={`mt-2 shadow-lg rounded border-2 border-indigo-200/40 p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
-                    onClick={log.type === 21 ? () => handleLogClick(log) : null}>
-                    {log.type === 21 && <p className="text-[#2C1C47] font-bold underline">{incidentStatus[log.id]}</p>}
-                    <li className='mb-2'>
-                      <strong>{log.name}</strong> 
-                      , realizó <strong>{getEventTypeText(log.type)}</strong>.
-                      <strong>{new Date(log.created).toLocaleString()}</strong> 
-                    </li>
+                      key={index}
+                      className={`mt-2 border-b-4 border-[#B5B5BD] mr-[20px] pr-[200px]  p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
+                      onClick={log.type === 21 ? () => handleLogClick(log) : null}>
+                      {log.type === 21 && <p className="">{incidentStatus[log.id]}</p>}
+                      <div className='mb-2'>
+                          <strong>{log.name}</strong> 
+                          , realizó <strong>{getEventTypeText(log.type)}</strong>.<br/>
+                          <p className='text-[12px]'><br/>{new Date(log.created).toLocaleString()}</p>
+                      </div>
                   </div>
                 ))
               ) : (
@@ -494,8 +568,7 @@ const Details = ({ card, onClose }) => {
         {isViewerOpen && (
           <DocViewer
             url={urlToView}
-            onClose={closeViewer}
-          />
+            onClose={closeViewer}/>
         )}
         {isModalOpen && selectedIncident && (
           <Incident incident={selectedIncident} onClose={handleCloseModal} />

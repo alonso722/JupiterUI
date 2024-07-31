@@ -55,9 +55,9 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
-        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
+      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        &times;
+      </button>
         <h2 className="text-2xl mb-4 text-black">Cargar documento</h2>
         <input type="file" onChange={handleFileChange} className="mb-4" />
         {file && (
@@ -145,9 +145,9 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
-        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 right-2 pb-1 w-[35px] text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
+      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        &times;
+      </button>
         <h2 className="text-2xl mb-4 text-black">Cargar anexos</h2>
         <input type="file" multiple onChange={handleFileChange} className="mb-4" />
         {files.length > 0 && (
@@ -336,21 +336,24 @@ const AddProcessForm = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[700px] relative">
-        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
-        <div className='flex'>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[900px] h-[550px] relative">
+      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        &times;
+      </button>
+      <div className='flex'>
+        <div className=''>
           <div className='w-[400px]'>
-            <h2 className="text-2xl mt-[15px] mb-2 text-black">
-            <input
-                type="text"
-                placeholder="Nombre del proceso"
-                value={processName}
-                onChange={(e) => setProcessName(e.target.value)}
-                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
-            </h2>
-            <p className="mb-2 text-black">Detalles del proceso:</p>
+            <div className='flex'> 
+            <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>            
+              <h2 className="text-2xl mt-[15px] mb-2 text-black">
+                <input
+                  type="text"
+                  placeholder="Nombre del proceso"
+                  value={processName}
+                  onChange={(e) => setProcessName(e.target.value)}
+                  className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
+              </h2>
+            </div>
             {permissions.Type === 6 && (
             <div className='mb-2 p-1 text-black'>
               <Listbox value={selectedOrgId} onChange={setSelectedOrgId} className="max-w-[100px]">
@@ -414,16 +417,29 @@ const AddProcessForm = ({ card, onClose }) => {
               </Listbox>
             </div>
           )}
-            <div className='max-h-[350px] h-[250px]'>
+            <div className='max-h-[300px] h-[200px]'>
               <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} selectedOrgId={selectedOrgId} />
             </div>
           </div>
+          <div className=" flex justify-end">
+            <div className='flex mt-[30px]'>
+              <button onClick={() => setIsModalOpen(true)} className='bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
+                Cargar documento
+              </button>
+              <button onClick={() => setIsModal2Open(true)} className='ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
+                Cargar anexos
+              </button>
+            </div>
+          </div>
+        <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[30px]">
+          Añadir proceso
+        </button>
         </div>
-        <div className='flex  justify-center mt-4'>
+        <div className='flex w-[400px] p-4 justify-center mt-4 rounded border-2'>
           {fileInfo && (
-            <div className="mb-4 text-black items-center justify-end">
+            <div className="text-black items-start justify-end">
               <h2>Documento cargado:</h2>            
-              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] ml-[20px] mr-[160px]" />
+              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] ml-[20px] mr-[0px]" />
               <p
                 className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
                 title={fileInfo.name}>
@@ -432,29 +448,17 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           )}
           {annexesInfo && (
-            <div className="mb-4 text-black flex flex-col items-center justify-center">
+            <div className="text-black items-start justify-end">
               <h2>Anexos:</h2>
-              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px]"/>
+              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] ml-[20px] mr-[160px]" />
               <p
-                className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+                className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
                 title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
                 {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
               </p>
             </div>
           )}
         </div>
-        <div className=" flex justify-end">
-          <div className='flex'>
-          <button onClick={() => setIsModalOpen(true)} className='underline text-black p-2 mt-2 rounded'>
-            Cargar documento
-          </button>
-          <button onClick={() => setIsModal2Open(true)} className='underline text-black p-2 rounded mt-2'>
-            Cargar anexos
-          </button>
-          </div>
-          <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[20px]">
-            Añadir proceso
-          </button>
         </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
         {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onAnnexesUpload={handleAnnexesUpload} />}

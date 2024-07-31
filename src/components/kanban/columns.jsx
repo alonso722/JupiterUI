@@ -71,7 +71,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
 
     return (
         <div 
-        className="mt-[110px] ml-[0px]  w-[100%] text-neutral-50 rounded ">
+        className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded ">
             <Board onCardClick={handleCardClick} cards={cards} setCards={setCards} permissions={permissions} />
             {isModalOpen && selectedCard && (
                 <Details  card={selectedCard} onClose={handleCloseModal} />
@@ -285,10 +285,13 @@ const Card = ({ name, id, column, handleDragStart, onCardClick, permissions }) =
                 draggable={canDrag}
                 onDragStart={(e) => handleDragStart(e, { name, id, column })}
                 onClick={() => onCardClick({ name, id, column })}
-                style={{ zIndex: 1,  }}
-                className="mt-2 cursor-grab rounded  bg-[#F1CF2B] p-3 active:cursor-grabbing shadow-xl">
-                <p className="text-sm text-black">
+                style={{ zIndex: 1 }}
+                className="mt-2 cursor-grab rounded bg-[#F1CF2B] p-3 active:cursor-grabbing shadow-xl flex items-center justify-between">
+                <p className="text-sm text-black truncate">
                     {name}
+                </p>
+                <p className="text-sm text-black">
+                    ...
                 </p>
             </motion.div>
         </>
