@@ -57,20 +57,30 @@ const Incident = ({ incident, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-[#2C1C47] bg-opacity-30 p-3">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[60%] relative pb-[60px]">
-        <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[640px] relative pb-[60px]">
+      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        &times;
+      </button>
         <div className='text-black'>
-          <div className='flex justify-between items-center mb-4'>
-            <h2 className={`mx-auto ${details.status ? 'text-red-500 ' : ''}`}>
-              {details.status ? 'No atendido' : 'Atendido'}
+          <div className='flex mx-[55px] border-b-2 border-[#B5B5BD] mt-6 mb-[20px] pb-[20px]'>
+            <p className='mr-[117px]'>Estado:</p>
+            <h2 className={` ${details.status ? 'text-red-500 ' : ''}`}>
+              <strong>{details.status ? 'No atendido' : 'Atendido'}</strong>
             </h2>
-          </div>          
-          <p>Acción a realizar: <strong>{getEventTypeText(details.incidentType)}</strong></p>
-          <p>Realizado por: {incident.name}</p>
-          <p className='mt-8'>Incidente:</p>
-          <p><strong>{details.content}</strong></p>
+          </div>
+          <div className='flex border-b-2 mx-[55px] border-[#B5B5BD] mb-[20px] pb-[20px]'>
+            <p className='mr-[50px]'>Acción a realizar:</p>
+            <p> <strong>{getEventTypeText(details.incidentType)}</strong></p>
+          </div>      
+          <div className=' flex border-b-2 mx-[55px] border-[#B5B5BD] mb-[20px] pb-[20px]'>
+            <p className='mr-[68px]'>Realizado por: </p>
+            <p><strong>{incident.name}</strong></p>
+          </div>  
+          <div className=' mx-[55px] flex mb-4'>
+            <p className='mr-[100px]'>Incidente:</p>
+            <p><strong>{details.content}</strong></p>
+          </div>  
+
         </div>
         {details.incidentType === 2 && (
           <button 

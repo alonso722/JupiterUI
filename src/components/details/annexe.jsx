@@ -79,9 +79,9 @@ const Annexes = ({ onClose, cardId }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-lg shadow-lg relative">
-      <button onClick={onClose} className="bg-red-600 rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold hover:text-gray-700">
-          &times;
-        </button>
+      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        &times;
+      </button>
         <h2 className="text-2xl font-bold mb-4 text-black">Anexos al proceso</h2>
         <div className='flex'>
         {annexe.length > 0 ? (

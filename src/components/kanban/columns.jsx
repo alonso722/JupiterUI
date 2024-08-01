@@ -4,6 +4,7 @@ import { FiTrash, FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Details from '../details/details';
 import useApi from '@/hooks/useApi';
+import { permission } from "process";
 
 export const Kanban = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,10 +71,10 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
 
     return (
         <div 
-        className="mt-[110px] ml-[0px]  w-[100%] text-neutral-50 rounded ">
+        className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded ">
             <Board onCardClick={handleCardClick} cards={cards} setCards={setCards} permissions={permissions} />
             {isModalOpen && selectedCard && (
-                <Details card={selectedCard} onClose={handleCloseModal} />
+                <Details  card={selectedCard} onClose={handleCloseModal} />
             )}
         </div>
     );
@@ -264,7 +265,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
-                    return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} />;
+                    return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} permissions={permissions} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
             </div>
@@ -273,20 +274,24 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 };
 
 
-const Card = ({ name, id, column, handleDragStart, onCardClick }) => {
+const Card = ({ name, id, column, handleDragStart, onCardClick, permissions }) => {
+    const canDrag = permissions.Type !== 5;
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
             <motion.div
                 layout
                 layoutId={id}
-                draggable="true"
+                draggable={canDrag}
                 onDragStart={(e) => handleDragStart(e, { name, id, column })}
                 onClick={() => onCardClick({ name, id, column })}
-                style={{ zIndex: 1,  }}
-                className="mt-2 cursor-grab rounded border border-neutral-700 bg-[#2C1C47] p-3 active:cursor-grabbing shadow-md shadow-violet-950">
-                <p className="text-sm text-neutral-50">
+                style={{ zIndex: 1 }}
+                className="mt-2 cursor-grab rounded bg-[#F1CF2B] p-3 active:cursor-grabbing shadow-xl flex items-center justify-between">
+                <p className="text-sm text-black truncate">
                     {name}
+                </p>
+                <p className="text-sm text-black">
+                    ...
                 </p>
             </motion.div>
         </>
@@ -303,112 +308,4 @@ const DropIndicator = ({ beforeId, column }) => {
     );
 };
 
-const DelBarrel = ({ setCards }) => {
-    const [active, setActive] = useState(false);
-
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        setActive(true);
-    };
-
-    const handleDragLeave = () => {
-        setActive(false);
-    };
-
-    const handleDragEnd = (e) => {
-        const cardId = e.dataTransfer.getData("cardId");
-
-        setCards((pv) => pv.filter((c) => c.id !== cardId));
-
-        setActive(false);
-    };
-
-    return (
-        <div
-            onDrop={handleDragEnd}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            className={`mt-10 grid h-56 w-56 shrink-0 place-content-center rounded border text-3xl ${
-                active
-                    ? "border-red-800 bg-red-800/20 text-red-500"
-                    : "border-neutral-500 bg-neutral-500/20 text-neutral-500"
-            }`}>
-            {active ? <FaFire className="animate-bounce" /> : <FiTrash />}
-        </div>
-    );
-};
 export default Kanban;
-// const AddCard = ({ column, setCards, permissions }) => {
-//     const [text, setText] = useState("");
-//     const [adding, setAdding] = useState(false);
-//     const api = useApi();
-
-//     const handleSubmit = (e) => {
-//         e.preventDefault();
-
-//         if (!text.trim().length) return;
-
-//         const tempId = Date.now().toString();  
-
-//         const newCard = {
-//             column,
-//             name: text.trim(),
-//             id: tempId,  
-//         };
-
-//         setCards((prevCards) => [...prevCards, newCard]); 
-        
-//         api.post('/user/process/add', newCard)
-//             .then((response) => {
-
-//             })
-//             .catch((error) => {
-//                 console.error("Error al añadir:", error);
-//             });
-
-//         //setCards((pv) => [...pv, newCard]);
-
-//         setAdding(false);
-//     };
-
-//     return (
-//         <>
-//             {permissions.Create === 1 && ( 
-//                 <>
-//                     {adding ? (
-//                         <motion.form onSubmit={handleSubmit}>
-//                             <input
-//                                 onChange={(e) => setText(e.target.value)}
-//                                 autoFocus
-//                                 placeholder="Añadir proceso..."
-//                                 className="w-full rounded border border-violet-400 bg-violet-800/10 p-3 text-sm text-[#2C1C47] placeholder-violet-300 focus:outline-0"/>
-//                             <div className="mt-1 flex items=center justify-end gap-1.5">
-//                                 <button
-//                                     onClick={() => setAdding(false)}
-//                                     className="px-3 py-1 text-xs text-[#2C1C47] transition-colors">
-//                                     Cancelar
-//                                 </button>
-//                                 <button
-//                                     type="submit"
-//                                     className="flex items-center gap-1.5 rounded bg-[#f1cf2b] px-3 py-1 text-xs text-[#2C1C47] transition-colors">
-//                                     <span>Añadir</span>
-//                                     <FiPlus />
-//                                 </button>
-//                             </div>
-//                         </motion.form>
-//                     ) : (
-//                         <motion.button
-//                             layout
-//                             onClick={() => setAdding(true)}
-//                             className="flex w-full items-center gap-1.5 px-3 py-1.5 text-xs text-[#2C1C47] transition-colors hover:text-[#2C1C47]">
-//                             <span>Añadir proceso</span>
-//                             <FiPlus />
-//                         </motion.button>
-//                     )}
-//                 </>
-//             )}
-//         </>
-//     );
-// };
-
-

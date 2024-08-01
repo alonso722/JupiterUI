@@ -16,6 +16,7 @@ import { Button } from "@/components/form/button";
 import { colors } from "@/components/types/enums/colors"; 
 import AddOrganizationForm from "@/components/forms/addOrganization"; 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; 
 
 const OrganizationsTable = () => {
     const columnHelper = createColumnHelper();
@@ -115,7 +116,7 @@ const OrganizationsTable = () => {
     }
 
     return (
-        <div className="mt-[100px] ml-[50px] w-[550px] py-5 px-10 text-white fill-gray-400">
+        <div className="mt-[100px] ml-[50px]  py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
                 <div className="w-full flex items-center gap-1 text-black">
                 <i className="fa fa-search ml-1"></i>
@@ -126,16 +127,16 @@ const OrganizationsTable = () => {
                         placeholder="Buscar"/>
                 </div>
                 <div className="grid grid-rows-1 mt-[10px]">
-                    <Button
-                        rounded
-                        color={colors.ALTERNATIVE}
+                <Button
+                    className="w-[126px]"
+                        color={colors.DARK_JUPITER_OUTLINE}
                         onClick={handleButtonClick}>
-                        Añadir
+                        Añadir +
                     </Button>
                     {showForm && <AddOrganizationForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className="w-full text-left rounded-lg">
+            {/* <table className="w-full text-left rounded-lg">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -183,7 +184,14 @@ const OrganizationsTable = () => {
                         </tr>
                     )}
                 </tbody>
-            </table>
+            </table> */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-[60px] mb-[100px]">
+                    {data.map((organization, index) => (
+                        <div key={index} className="border p-4 bg-[#f1cf2b] text-black rounded w-[290px]">
+                            {organization.organization}
+                        </div>
+                    ))}
+                </div>
             {/* paginacion */}
             <div className="flex items-center justify-end mt-2 gap-2 text-black">
                 <button

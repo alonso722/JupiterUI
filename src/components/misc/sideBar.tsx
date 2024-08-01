@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import '@fortawesome/fontawesome-free/css/all.min.css';
+import Image from 'next/image';
+
 interface Permissions {
-    Type: number; 
+    Type: number;
 }
 
 export default function Sidebar() {
     const [permissions, setPermissions] = useState<Permissions | null>(null); 
     const [isExpanded, setIsExpanded] = useState(false);
+    const [currentPath, setCurrentPath] = useState('');
 
     useEffect(() => {
         const storedPermissions = localStorage.getItem('permissions');
@@ -19,6 +21,8 @@ export default function Sidebar() {
                 setPermissions(null); 
             }
         }
+
+        setCurrentPath(window.location.pathname);
     }, []);
 
     const handleToggleExpand = () => {
@@ -31,25 +35,47 @@ export default function Sidebar() {
         }
     };
 
-    const handleKanbanClick = () => {
-        window.location.href = '/dashboard/home';
+    const handleNavigation = (path: string) => {
+        window.location.href = path;
     };
 
-    const handleTableClick = () => {
-        window.location.href = '/dashboard/table'; 
+    const getIconSize = (icon: string) => {
+        switch (icon) {
+            case 'menu.svg':
+            case 'menuB.svg':
+                return { width: 23, height: 14 };
+            case 'kanban.svg':
+            case 'kanbanS.svg':
+            case 'kanbanB.svg':
+                return { width: 18, height: 16 }; 
+            case 'table.svg':
+            case 'tableS.svg':
+            case 'tableB.svg':
+                return { width: 17, height: 14 }; 
+            case 'orgas.svg':
+            case 'orgasS.svg':
+            case 'orgasB.svg':
+                return { width: 20, height: 20 }; 
+            case 'departments.svg':
+            case 'departmentsS.svg':
+            case 'departmentsB.svg':
+                return { width: 20, height: 18 }; 
+            case 'users.svg':
+            case 'usersS.svg':
+            case 'usersB.svg':
+                return { width: 24, height: 15 }; 
+            default:
+                return { width: 24, height: 24 }; 
+        }
     };
 
-    const handleOrganizationsClick = () => {
-        window.location.href = '/organizations'; 
-    };
-
-    const handleDepartmentsClick = () => {
-        window.location.href = '/departments'; 
-    };
-
-    const handleUsersClick = () => {
-        window.location.href = '/user'; 
-    };
+    const navItems = [
+        { path: '/dashboard/home', icon: 'kanban.svg', label: 'Kanban', condition: true },
+        { path: '/dashboard/table', icon: 'table.svg', label: 'Table', condition: permissions?.Type !== 5 },
+        { path: '/organizations', icon: 'orgas.svg', label: 'Organizations', condition: permissions?.Type === 6 },
+        { path: '/departments', icon: 'departments.svg', label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/user', icon: 'users.svg', label: 'Users', condition: permissions?.Type === 1 || permissions?.Type === 6 }
+    ];
 
     if (permissions === null) {
         return <div>Error: No se pudieron cargar los permisos.</div>;
@@ -57,69 +83,36 @@ export default function Sidebar() {
 
     return (
         <div className="ml-[0px] mt-[109px] flex h-screen rounded" style={{ maxHeight: '823px' }}>
-            <div onMouseLeave={handleCloseSidebar} className={`max-h-[815px] w-${isExpanded ? '200' : '20'} transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 p-2`}>
-                <button type="button" onClick={handleToggleExpand} className="flex items-center ml-[0px] justify-center h-10 w-10 bg-purple hover:bg-purple-950 focus:outline-none rounded">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16m-7 6h7"/>
-                    </svg>
+            <div 
+                onMouseLeave={handleCloseSidebar} 
+                className={`max-h-[815px] transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'bg-[#2C1C47] text-white w-200' : 'w-20'}`}>
+                <button type="button" onClick={handleToggleExpand} className="flex ml-[25px]  mt-[35px] bg-purple focus:outline-none rounded">
+                    <Image src={`/icons/${isExpanded ? 'menuB.svg' : 'menu.svg'}`} alt="Menu" width={23} height={14} />
                 </button>
                 {!isExpanded && (
-                    <div className="flex flex-col mt-2">
-                        <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 hover:bg-purple-950 rounded" onClick={handleKanbanClick}>
-                            <i className=" fa fa-columns ml-1"></i>
-                        </button>
-                        {permissions.Type !== 5 && (
-                            <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleTableClick}>
-                                <i className=" fas fa-table ml-1"></i>
-                            </button>
-                        )}
-                        {permissions.Type == 6 && (
-                            <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleOrganizationsClick}>
-                                <i className=" fa fa-address-book ml-1"></i>
-                            </button>
-                        )}
-                        {(permissions.Type === 1 || permissions.Type === 6) && (
-                            <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleDepartmentsClick}>
-                                <i className="fa fa-users ml-1"></i>
-                            </button>
-                        )}
-                        {(permissions.Type === 1 || permissions.Type === 6) && (
-                            <button type="button" className="flex items-center ml-[0px] justify-center h-10 w-10 mt-2 hover:bg-purple-950 rounded" onClick={handleUsersClick}>
-                                <i className="fa fa-user ml-1"></i>
-                            </button>
-                        )}
+                    <div className="flex flex-col mt-[18px]">
+                        {navItems.map((item, index) => (
+                            item.condition && (
+                                <button key={index} type="button" className="flex py-[15px] items-center ml-[0px] justify-center hover:bg-[#442E69]" onClick={() => handleNavigation(item.path)}>
+                                    <Image src={`/icons/${currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon}`} alt={item.label} width={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon).width} height={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon).height} />
+                                </button>
+                            )
+                        ))}
                     </div>
                 )}
                 {isExpanded && (
-                    <div className="mt-[12px] ml-[10px] min-w-[200px] max-w-[200px]">
-                        <div className='flex mt-[8px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleKanbanClick}>
-                            <i className=" fa fa-columns ml-1"></i>
-                            <p className="text-black-600 ml-[10px]">Kanban</p>
-                        </div>
-                        {permissions.Type !== 5 && (
-                            <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleTableClick}>
-                                <i className=" fas fa-table ml-1"></i>
-                                <p className="text-black-600 ml-[10px]">Table</p>
-                            </div>
-                        )}
-                        {permissions.Type == 6 && (
-                            <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleOrganizationsClick}>
-                                <i className=" fa fa-address-book ml-1"></i>
-                                <p className="text-black-600 ml-[10px]">Organizaciones</p>
-                            </div>
-                        )}
-                        {(permissions.Type === 1 || permissions.Type === 6) && (
-                            <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleDepartmentsClick}>
-                                <i className="fa fa-users ml-1"></i>
-                                <p className="text-black-600 ml-[10px]">Departamentos</p>
-                            </div>
-                        )}
-                        {(permissions.Type === 1 || permissions.Type === 6) && (
-                            <div className='flex mt-[24px] hover:bg-purple-950 hover:text-white focus:outline-none mr-[10px] rounded' onClick={handleUsersClick}>
-                                <i className="fa fa-user ml-1"></i>
-                                <p className="text-black-600 ml-[10px]">Usuarios</p>
-                            </div>
-                        )}
+                    <div className=" ml-[0px] min-w-[200px] max-w-[200px] ">
+                        {navItems.map((item, index) => (
+                            item.condition && (
+                                <div 
+                                    key={index} 
+                                    className={`relative flex items-center pl-[30px] mt-[27px] hover:bg-purple-950 hover:text-white focus:outline-none rounded ${currentPath === item.path ? 'bg-[#442E69] py-[10px]' : ''}`}
+                                    onClick={() => handleNavigation(item.path)}>
+                                    <Image src={`/icons/${currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : isExpanded ? item.icon.replace('.svg', 'B.svg') : item.icon}`} alt={item.label} width={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : isExpanded ? item.icon.replace('.svg', 'B.svg') : item.icon).width} height={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : isExpanded ? item.icon.replace('.svg', 'B.svg') : item.icon).height} />
+                                    <p className={`ml-[10px] ${currentPath === item.path && isExpanded ? 'text-white' : ''}`}>{item.label}</p>
+                                </div>
+                            )
+                        ))}
                     </div>
                 )}
             </div>
