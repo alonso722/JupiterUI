@@ -232,7 +232,7 @@ const TanStackTable = () => {
                     {showForm && <AddProcessForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className=" text-left text-black rounded-lg mr-[130px] ml-[30px]">
+            <table className="text-left text-black rounded-lg mt-[10px] mr-[130px] ml-[30px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>

@@ -16,6 +16,7 @@ import { Button } from "@/components/form/button";
 import { colors } from "@/components/types/enums/colors"; 
 import AddDepartmentForm from "@/components/forms/addDepartment"; 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; 
 
 const DepartmentsTable = () => {
     const columnHelper = createColumnHelper();
@@ -73,6 +74,17 @@ const DepartmentsTable = () => {
         //     cell: (info) => <span>{info?.getValue()}</span>,
         //     header: "P.No.",
         // }),
+        columnHelper.accessor("icon", {
+            cell: () => (
+                <Image 
+                    src="/icons/icon.svg" 
+                    alt="Icono"
+                    width={10} 
+                    height={10}/>
+            ),
+            header: "", 
+            enableSorting: false, 
+        }),
         columnHelper.accessor("department", {
             cell: (info) => <span>{info?.getValue()}</span>,
             header: "Departamento",
@@ -135,27 +147,27 @@ const DepartmentsTable = () => {
     }
 
     return (
-        <div className="mt-[100px] ml-[50px] w-full py-5 px-10 text-white fill-gray-400">
+        <div className="mt-[100px] ml-[50px] py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
                 <div className="w-full flex items-center gap-1 text-black">
-                <i className="fa fa-search ml-1"></i>
+                <i className="fa fa-search ml-2"></i>
                     <Search
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                <div className="grid grid-rows-1 mt-[10px]">
+                <div className="mt-[10px]">
                     <Button
-                        rounded
-                        color={colors.ALTERNATIVE}
+                    className="w-[126px]"
+                        color={colors.DARK_JUPITER_OUTLINE}
                         onClick={handleButtonClick}>
-                        Añadir
+                        Añadir +
                     </Button>
                     {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className="w-full text-left rounded-lg">
+            <table className="text-left text-black rounded-lg mt-[10px] ml-[30px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -188,7 +200,7 @@ const DepartmentsTable = () => {
                             <tr
                                 key={row.id}
                                 className={`
-                                    ${i % 2 === 0 ? "bg-[#2b0c43]" : "bg-[#3c0764]"}
+                                    ${i % 2 === 0 ? "" : ""}
                                     `}>
                                 {row.getVisibleCells().map((cell) => (
                                     <td key={cell.id} className="px-3.5 py-2">
@@ -205,7 +217,7 @@ const DepartmentsTable = () => {
                 </tbody>
             </table>
             {/* paginacion */}
-            <div className="flex items-center justify-end mt-2 gap-2 text-black">
+            <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[150px]">
                 <button
                     onClick={() => {
                         table.previousPage();

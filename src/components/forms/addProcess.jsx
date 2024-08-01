@@ -336,7 +336,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[900px] h-[550px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[950px] h-[550px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -423,10 +423,12 @@ const AddProcessForm = ({ card, onClose }) => {
           </div>
           <div className=" flex justify-end">
             <div className='flex mt-[30px]'>
-              <button onClick={() => setIsModalOpen(true)} className='bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
+              <button onClick={() => setIsModalOpen(true)} className='flex bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
+              <img src='/icons/doc.svg' alt='Iconos' width={19} height={21} className='mr-[13px]'/>
                 Cargar documento
               </button>
-              <button onClick={() => setIsModal2Open(true)} className='ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
+              <button onClick={() => setIsModal2Open(true)} className='flex ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
+              <img src='/icons/clip.svg' alt='Iconos' width={16} height={22} className='mr-[13px]'/>
                 Cargar anexos
               </button>
             </div>
@@ -435,24 +437,24 @@ const AddProcessForm = ({ card, onClose }) => {
           Añadir proceso
         </button>
         </div>
-        <div className='flex w-[400px] p-4 justify-center mt-4 rounded border-2'>
+        <div className='flex w-[400px] p-4 justify-center mt-[70px] rounded border-2 ml-[60px]'>
           {fileInfo && (
-            <div className="text-black items-start justify-end">
-              <h2>Documento cargado:</h2>            
-              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] ml-[20px] mr-[0px]" />
+            <div className="text-black flex flex-col items-center">
+              <h2 className="mb-2">Documento cargado:</h2>            
+              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
               <p
-                className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
+                className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap'
                 title={fileInfo.name}>
                 {fileInfo.name}
               </p>
             </div>
           )}
           {annexesInfo && (
-            <div className="text-black items-start justify-end">
-              <h2>Anexos:</h2>
-              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] ml-[20px] mr-[160px]" />
+            <div className="text-black flex flex-col items-center ml-6">
+              <h2 className="mb-2">Anexos:</h2>
+              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
               <p
-                className='w-[150px] text-black text-center justify-center overflow-hidden text-ellipsis whitespace-nowrap'
+                className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
                 title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
                 {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
               </p>
