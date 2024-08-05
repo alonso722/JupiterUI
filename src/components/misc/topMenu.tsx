@@ -9,7 +9,7 @@ export default function TopNewMenuClientDashboard() {
     return (
         <>
             <div className="flex flex-row items-center justify-between fixed bg-white w-full bottom border-b-4">
-                <div className="justify-left flex w-full items-center pb-7 pl-12 pt-9">
+                <div className="justify-left flex w-full items-center pb-4 pl-12 pt-5">
                     <div className="">
                         <Image
                             src="/logos/Lg_JIso.svg"

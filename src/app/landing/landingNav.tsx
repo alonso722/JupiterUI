@@ -4,7 +4,7 @@ import Link from 'next/link';
 export default function LandingNav() {
     return (
         <>
-            <div className="flex items-center justify-between h-[95px] px-8">
+            <div className="flex items-center justify-between h-[75px] px-8">
                 <div>
                     <Image
                         src="/logos/logo.svg"

@@ -105,7 +105,7 @@ export default function LoginForm({
                         e.preventDefault();
                         validate(); 
                     }}
-                    className='h-[751px] w-[503px] bg-white rounded-md p-[40px] flex flex-col items-center'>
+                    className='h-[573px] w-[451px] bg-white rounded-md px-[40px] flex flex-col items-center'>
                     <Image
                         src="/logos/Lg_JIso.svg"
                         alt="Logo"
@@ -116,7 +116,7 @@ export default function LoginForm({
                     <p className='text-black mb-4 my-[16px] font-semibold'>
                         Inicia sesión para acceder    
                     </p>                    
-                    <div className="mb-7 w-[376px] flex flex-col items-center ">
+                    <div className="mb-3 w-[376px] flex flex-col items-center ">
                         <label htmlFor="email" className="mb-2 w-full text-[#425466]">
                             Correo electrónico
                         </label>
@@ -141,14 +141,14 @@ export default function LoginForm({
                             placeholder="Contraseña"
                         />
                     </div>
-                    <div className="mr-[265px] flex mt-[8px]">
+                    <div className="mr-[255px] flex mt-[8px] w-[120px]">
                         <CLink
                             href="/auth/forgot-password"
                             className="mb-4 text-[11px] text-[#777E90] no-underline">
                             ¿Olvidó su contraseña?
                         </CLink>
                     </div>
-                    <div className="w-[376px] mt-[16px] flex justify-center">
+                    <div className="w-[376px] mt-[10px] flex justify-center">
                         <Button
                             rounded
                             isLoading={isLoading}
@@ -159,7 +159,7 @@ export default function LoginForm({
                             Entrar
                         </Button>
                     </div>
-                    <p className='my-[25px] text-[#777E90]'>o accede mediante otra cuenta</p>
+                    <p className='my-[17px] text-[#777E90]'>o accede mediante otra cuenta</p>
                     <AuthOptions/>
                     <div className='flex font-semibold mt-[26px]'>
                         <p className='text-[#777E90] mr-[5px]'>¿Aún no tienes una cuenta? </p>
