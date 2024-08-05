@@ -117,7 +117,7 @@ const OrganizationsTable = () => {
 
     return (
         <div className="mt-[100px] ml-[50px]  py-5 px-10 text-white fill-gray-400">
-            <div className="flex justify-between mb-2">
+            <div className="flex justify-between mb-2 mr-[100px]">
                 <div className="w-full flex items-center gap-1 text-black">
                 <i className="fa fa-search ml-1"></i>
                     <Search
@@ -185,15 +185,15 @@ const OrganizationsTable = () => {
                     )}
                 </tbody>
             </table> */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-[60px] mb-[100px]">
-                    {data.map((organization, index) => (
-                        <div key={index} className="border p-4 bg-[#f1cf2b] text-black rounded w-[290px]">
-                            {organization.organization}
-                        </div>
-                    ))}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-[30px] mt-[60px] mb-[100px]">
+                {data.map((organization, index) => (
+                    <div key={index} className="border p-4 bg-[#f1cf2b] text-black rounded w-[290px]">
+                    {organization.organization}
+                    </div>
+                ))}
                 </div>
             {/* paginacion */}
-            <div className="flex items-center justify-end mt-2 gap-2 text-black">
+            <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[100px]">
                 <button
                     onClick={() => {
                         table.previousPage();

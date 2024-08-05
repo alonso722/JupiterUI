@@ -4,7 +4,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import useApi from '@/hooks/useApi';
 import Incident from '../details/incident';
 import Annexes from '../details/annexe';
-import DocViewer from '../misc/docViewer/docViewer';
+import DocsViewer from '../misc/docViewer/docViewer';
 import dotenv from 'dotenv';
 import { toast } from 'react-toastify';
 dotenv.config();
@@ -308,7 +308,7 @@ const Details = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[700px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[600px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -322,20 +322,20 @@ const Details = ({ card, onClose }) => {
               <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
             <div className='relative'>
-              <div className='justify-between flex space-x-2 mb-[50px]'>
-              <p className="mt-[15px] text-black mb-2">Documentos asignado al proceso</p>
-              <div className='pt-[15px] pr-[50px]'>
-                <button 
-                    onClick={() => setView('icons')} 
-                    className={`p-2 mr-2 rounded border-2 ${view === 'icons' ? 'bg-[#2C1C47]' : ''}`}>
-                    <img src='/icons/icons.svg' alt='Iconos' width={24} height={24} />
-                </button>
-                <button 
+              <div className='justify-between flex space-x-2 mb-[10px]'>
+                <p className="mt-[8px] text-black mb-2">Documentos asignado al proceso</p>
+                <div className=' pr-[50px]'>
+                  <button 
+                      onClick={() => setView('icons')} 
+                      className={`p-2 mr-2 rounded border-2 ${view === 'icons' ? 'bg-[#2C1C47]' : ''}`}>
+                      <img src='/icons/icons.svg' alt='Iconos' width={24} height={24} />
+                  </button>
+                  <button 
                     onClick={() => setView('list')} 
                     className={`p-2 rounded border-2 ${view === 'list' ? 'bg-[#2C1C47]' : ''}`}>
                     <img src='/icons/list.svg' alt='Lista' width={24} height={24} />
-                </button>
-            </div>
+                  </button>
+                </div>
               </div>
               {view === 'icons' ? (
                 <div className='flex max-w-[95%]'>
@@ -350,7 +350,7 @@ const Details = ({ card, onClose }) => {
                         <p className="mt-[px] mb-4 text-black">{document.name}</p>
                       </div>
                       <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                        Descargar documento
+                        Descargar
                       </button>
                     </div>
                     <div className='flex flex-col items-center w-[40%]'>
@@ -374,7 +374,7 @@ const Details = ({ card, onClose }) => {
                       </div>
                       {documentsANX.length === 1 && (
                         <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
-                          Descargar anexo
+                          Descargar
                         </button>
                       )}
                     </div>
@@ -441,7 +441,7 @@ const Details = ({ card, onClose }) => {
                 value={incident}
                 onChange={handleInputChange}
                 placeholder="Agrega un comentario o incidencia"
-                className="w-full border-none focus:outline-none h-[120px] " />
+                className="w-full border-none focus:outline-none h-[80%] " />
             </div>
             <div className="flex items-center mt-4">
               <button onClick={handleSubmit} className='bg-[#B5B5BD] p-2 rounded text-[#7A828A]'>
@@ -529,20 +529,21 @@ const Details = ({ card, onClose }) => {
                 </>
               )}
             </Listbox>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%]  max-w-[630px]">
-              <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
-              <p className='mt-4'>
-                {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
-              </p>
-              <p>
-                {roles.revisor && <>Revisado por: <strong>{roles.revisor.name}</strong></>}
-              </p>
-              <p>
-                {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
-              </p>
-              <p>Fecha de aprobación</p>
-            </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[300px] overflow-auto">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] overflow-x-auto whitespace-nowrap">
+  <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
+  <p className='mt-4'>
+    {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
+  </p>
+  <p>
+    {roles.revisor && <>Revisado por: <strong>{roles.revisor.name}</strong></>}
+  </p>
+  <p>
+    {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
+  </p>
+  <p>Fecha de aprobación</p>
+</div>
+
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[45%] overflow-auto">
               <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
@@ -566,7 +567,7 @@ const Details = ({ card, onClose }) => {
         </div>
       </div>
         {isViewerOpen && (
-          <DocViewer
+          <DocsViewer
             url={urlToView}
             onClose={closeViewer}/>
         )}

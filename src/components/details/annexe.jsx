@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
-import DocViewer from '../misc/docViewer/docViewer';
+import DocsViewer from '../misc/docViewer/docViewer';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -106,7 +106,7 @@ const Annexes = ({ onClose, cardId }) => {
         </div>
       </div>
       {isViewerOpen && (
-          <DocViewer
+          <DocsViewer
             url={urlToView}
             onClose={closeViewer}
           />

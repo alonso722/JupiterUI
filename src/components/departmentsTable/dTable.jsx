@@ -157,7 +157,7 @@ const DepartmentsTable = () => {
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                <div className="mt-[10px]">
+                <div className="mt-[10px] mr-[120px]">
                     <Button
                     className="w-[126px]"
                         color={colors.DARK_JUPITER_OUTLINE}
@@ -167,7 +167,7 @@ const DepartmentsTable = () => {
                     {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className="text-left text-black rounded-lg mt-[10px] ml-[30px]">
+            <table className="text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
