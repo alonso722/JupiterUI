@@ -108,12 +108,15 @@ const TanStackTable = () => {
         // }),
         columnHelper.accessor("icon", {
             cell: () => (
-                <Image 
-                    src="/icons/icon.svg" 
-                    alt="Icono"
-                    width={10} 
-                    height={10}
-                />
+                <div style={{ width: "10px", height: "10px" }}>
+                    <Image 
+                        src="/icons/icon.svg" 
+                        alt="Icono"
+                        width={10} 
+                        height={10} 
+                        className="h-full w-full"
+                    />
+                </div>
             ),
             header: "", 
             enableSorting: false, 
@@ -232,7 +235,7 @@ const TanStackTable = () => {
                     {showForm && <AddProcessForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className="text-left text-black rounded-lg mt-[10px] mr-[130px] ml-[30px]">
+            <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] mr-[130px] ml-[30px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -324,7 +327,7 @@ const TanStackTable = () => {
                         table.setPageSize(Number(e.target.value));
                     }}
                     className="p-2 bg-transparent">
-                    {[10, 20, 30, 50].map((pageSize) => (
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
                         <option key={pageSize} value={pageSize}>
                             Mostrar {pageSize}
                         </option>

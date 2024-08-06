@@ -97,11 +97,15 @@ const UsersTable = () => {
     const columns = [
         columnHelper.accessor("icon", {
             cell: () => (
-                <Image 
-                    src="/icons/icon.svg" 
-                    alt="Icono"
-                    width={10} 
-                    height={10}/>
+                <div style={{ width: "10px", height: "10px" }}>
+                    <Image 
+                        src="/icons/icon.svg" 
+                        alt="Icono"
+                        width={10} 
+                        height={10} 
+                        className="h-full w-full"
+                    />
+                </div>
             ),
             header: "", 
             enableSorting: false, 

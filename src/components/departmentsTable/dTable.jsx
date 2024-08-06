@@ -70,17 +70,17 @@ const DepartmentsTable = () => {
 
     const router = useRouter();
     const columns = [
-        // columnHelper.accessor("id", {
-        //     cell: (info) => <span>{info?.getValue()}</span>,
-        //     header: "P.No.",
-        // }),
         columnHelper.accessor("icon", {
             cell: () => (
-                <Image 
-                    src="/icons/icon.svg" 
-                    alt="Icono"
-                    width={10} 
-                    height={10}/>
+                <div style={{ width: "10px", height: "10px" }}>
+                    <Image 
+                        src="/icons/icon.svg" 
+                        alt="Icono"
+                        width={10} 
+                        height={10} 
+                        className="h-full w-full"
+                    />
+                </div>
             ),
             header: "", 
             enableSorting: false, 
@@ -89,13 +89,9 @@ const DepartmentsTable = () => {
             cell: (info) => <span>{info?.getValue()}</span>,
             header: "Departamento",
         }),
-        // columnHelper.accessor("manager", {
-        //     cell: (info) => <span>{info.getValue()}</span>,
-        //     header: "Gerente",
-        // }),
         columnHelper.accessor("parent", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento o area superior",
+            header: "Departamento o área superior",
         }),
         columnHelper.accessor("left", {
             cell: (info) => <span>{info.getValue()}</span>,
@@ -167,7 +163,7 @@ const DepartmentsTable = () => {
                     {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
                 </div>
             </div>
-            <table className="text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">
+            <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -258,8 +254,8 @@ const DepartmentsTable = () => {
                     onChange={(e) => {
                         table.setPageSize(Number(e.target.value));
                     }}
-                    className="p-2 bg-transparent">
-                    {[10, 20, 30, 50].map((pageSize) => (
+                    className="border p-1 rounded bg-transparent">
+                    {[10, 20, 30, 40, 50].map((pageSize) => (
                         <option key={pageSize} value={pageSize}>
                             Mostrar {pageSize}
                         </option>
