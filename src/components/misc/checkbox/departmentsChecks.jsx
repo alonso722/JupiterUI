@@ -111,7 +111,9 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
         <div className='max-h-[200px] flex overflow-x-auto'>
           {selectedOptions.map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 ">
-              <span className='min-w-[50px]'>{option.department}</span>
+<span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
+  {option.department}
+</span>
               <button 
                 className="bg-red-500 text-white px-2 py-1 rounded ml-2"
                 onClick={() => handleRemoveOption(option)}>

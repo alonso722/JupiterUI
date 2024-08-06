@@ -83,7 +83,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
 const Board = ({ onCardClick, cards, setCards, permissions }) => {
     return (
         <div style={{  zIndex: -1, }}
-        className="flex h-full w-full gap-3 p-12 justify-between">
+        className="flex h-full w-full gap-3 pt-12 justify-between">
             <Column
                 name="Edición"
                 column="Edición"
@@ -248,7 +248,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 
 
     return (
-        <div className="w-56 shrink-0">
+        <div className="w-[200px] shrink-0">
             <div style={{ position: 'sticky', zIndex: -1, }}>
                 <div className="mb-3 flex items-center justify-between">
                     <h3 className={`font-medium ${headingColor}`}>{name}</h3>

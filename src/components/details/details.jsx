@@ -90,6 +90,7 @@ const Details = ({ card, onClose }) => {
           const responseDoc = await api.post('/user/document/fetch', card);
           const fetchDocument = responseDoc.data.data[0];
           setDocument(fetchDocument);
+          console.log(fetchDocument.name.length)
           setSelected(initialStatus);
 
           const responseRole = await api.post('/user/role/fetch', fetchDocument);
@@ -347,7 +348,11 @@ const Details = ({ card, onClose }) => {
                           src={getFileIcon(document.name)}
                           alt="File Icon"
                           className="w-[50%] h-[100%] mt-[10px] cursor-pointer"/>
-                        <p className="mt-[px] mb-4 text-black">{document.name}</p>
+                          <p className="mt-[15px] mb-2 text-black text-center">
+                              {document?.name && document.name.length > 25 
+                                ? `${document.name.slice(0, 25)}...` 
+                                : document?.name || "Nombre no disponible"}
+                          </p>
                       </div>
                       <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
                         Descargar
@@ -366,7 +371,13 @@ const Details = ({ card, onClose }) => {
                             src={getFileAnxIcon(documentsANX)}
                             alt="File Icon"
                             className={`w-[50%] h-[100%] mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}/>
-                          <p className="mt-[px] mb-4 text-black">{documentsANX.length > 1 ? "cursor-pointer \u00A0" : documentsANX[0].name}</p>
+                            <p className="mt-[15px] mb-2 text-black text-center">
+                              {documentsANX.length > 1 
+                                ? "cursor-pointer \u00A0"
+                                : (documentsANX[0]?.name && documentsANX[0].name.length > 25 
+                                    ? `${documentsANX[0].name.slice(0, 25)}...`
+                                    : documentsANX[0]?.name || "Nombre no disponible")}
+                            </p>
                         </>
                         ) : (
                           <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
@@ -398,7 +409,7 @@ const Details = ({ card, onClose }) => {
                                     <button 
                                       onClick={() => handleDownload(document.path)} 
                                       className='bg-[#2C1C47] p-2 rounded text-white'>
-                                      Descargar documento
+                                      Descargar
                                     </button>
                                   </div>
                               </div>
@@ -421,9 +432,8 @@ const Details = ({ card, onClose }) => {
                                           </div>
                                           <button 
                                               onClick={() => handleAnxDownload(anx.path)} 
-                                              className='bg-[#2C1C47] p-2 rounded text-white'
-                                          >
-                                              Descargar anexo
+                                              className='bg-[#2C1C47] p-2 rounded text-white'>
+                                              Descargar
                                           </button>
                                       </div>
                                   ))
@@ -530,20 +540,19 @@ const Details = ({ card, onClose }) => {
               )}
             </Listbox>
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] overflow-x-auto whitespace-nowrap">
-  <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
-  <p className='mt-4'>
-    {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
-  </p>
-  <p>
-    {roles.revisor && <>Revisado por: <strong>{roles.revisor.name}</strong></>}
-  </p>
-  <p>
-    {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
-  </p>
-  <p>Fecha de aprobación</p>
-</div>
-
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[45%] overflow-auto">
+              <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
+              <p className='mt-4'>
+                {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
+              </p>
+              <p>
+                {roles.revisor && <>Revisado por: <strong>{roles.revisor.name}</strong></>}
+              </p>
+              <p>
+                {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
+              </p>
+              <p>Fecha de aprobación</p>
+            </div>
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[200px] overflow-auto">
               <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
