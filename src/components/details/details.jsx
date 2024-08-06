@@ -90,7 +90,6 @@ const Details = ({ card, onClose }) => {
           const responseDoc = await api.post('/user/document/fetch', card);
           const fetchDocument = responseDoc.data.data[0];
           setDocument(fetchDocument);
-          console.log(fetchDocument.name.length)
           setSelected(initialStatus);
 
           const responseRole = await api.post('/user/role/fetch', fetchDocument);

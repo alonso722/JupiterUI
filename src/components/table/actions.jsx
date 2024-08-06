@@ -16,7 +16,6 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
         const storedPermissions = localStorage.getItem('permissions'); 
         if (storedPermissions) {
             const parsedPermissions = JSON.parse(storedPermissions);
-            console.log(parsedPermissions)
             setPermissions(parsedPermissions);
         }
     }, []); 
