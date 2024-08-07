@@ -461,9 +461,11 @@ const Details = ({ card, onClose }) => {
                 className="w-full border-none focus:outline-none h-[80%] " />
             </div>
             <div className="flex items-center mt-4">
-              <button onClick={handleSubmit} className='bg-[#B5B5BD] p-2 rounded text-[#7A828A]'>
-                Enviar 
-              </button>
+            <button 
+              onClick={handleSubmit} 
+              className='bg-[#B5B5BD] p-2 rounded text-[#7A828A] active:bg-[#2C1C47]'>
+              Enviar 
+            </button>
               <div className="ml-4 flex items-center space-x-4">
                 <div className="flex items-center">
                   <label htmlFor="verificacion-lectura" className="text-black mr-2">Verificación de lectura</label>
