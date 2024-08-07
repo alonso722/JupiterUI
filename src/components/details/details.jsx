@@ -51,7 +51,7 @@ const Details = ({ card, onClose }) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [renderKey, setRenderKey] = useState(Date.now());
   const [view, setView] = useState('icons');
-
+  const [permissions, setPermissions] = useState([]);
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
     setIsViewerOpen(true);
@@ -81,6 +81,13 @@ const Details = ({ card, onClose }) => {
   useEffect(() => {
     if (effectMounted.current === false) {
       const fetchDocument = async () => {
+        let parsedPermissions;
+        const storedPermissions = localStorage.getItem('permissions'); 
+        if (storedPermissions) {
+            parsedPermissions = JSON.parse(storedPermissions);
+            setPermissions(parsedPermissions);
+        }
+
         try {
           const initialStatus = status.find(state => state.column === card.column) || status[0];
           const responseDep = await api.post('/user/departments/getName', card);
@@ -338,111 +345,112 @@ const Details = ({ card, onClose }) => {
                 </div>
               </div>
               {view === 'icons' ? (
-                <div className='flex max-w-[95%]'>
-                    <div className='flex flex-col items-center w-[40%] mr-[10%]'>
-                      <div className='w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2'>
-                        <p className="mt-[15px] text-black"><strong>{document.title}</strong></p>
-                        <img
-                          onClick={() => openViewer(document.path)}
-                          src={getFileIcon(document.name)}
-                          alt="File Icon"
-                          className="w-[50%] h-[100%] mt-[10px] cursor-pointer"/>
-                          <p className="mt-[15px] mb-2 text-black text-center">
-                              {document?.name && document.name.length > 25 
-                                ? `${document.name.slice(0, 25)}...` 
-                                : document?.name || "Nombre no disponible"}
-                          </p>
-                      </div>
-                      <button onClick={() => handleDownload(document.path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                <div className='flex flex-wrap justify-center items-center max-w-[95%]'>
+                  <div className='flex flex-col items-center w-full sm:w-[40%] sm:mr-[10%] mb-4'>
+                    <div className='w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2'>
+                      <p className="mt-[15px] text-black text-center"><strong>{document.title}</strong></p>
+                      <img
+                        onClick={() => openViewer(document.path)}
+                        src={getFileIcon(document.name)}
+                        alt="File Icon"
+                        className="w-[50%] h-auto mt-[10px] cursor-pointer"/>
+                      <p className="mt-[5px] mb-2 text-black text-center">
+                        {document?.name && document.name.length > 23
+                          ? `${document.name.slice(0, 23)}...` 
+                          : document?.name || "Nombre no disponible"}
+                      </p>
+                    </div>
+                    {permissions.Type !== 5 && (
+                      <button
+                        onClick={() => handleDownload(document.path)}
+                        className="bg-[#2C1C47] p-1 rounded text-white">
                         Descargar
                       </button>
-                    </div>
-                    <div className='flex flex-col items-center w-[40%]'>
-                      <div className={`w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
-                        onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
-                        {documentsANX.length > 0 ? (
+                    )}
+                  </div>
+
+                  <div className='flex flex-col items-center w-full sm:w-[40%] mb-4'>
+                    <div className={`w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
+                      onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
+                      {documentsANX.length > 0 ? (
                         <>
-                          <p className={`mt-[15px] text-black ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
+                          <p className={`mt-[15px] text-black text-center ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
                             <strong>{documentsANX[0].title}</strong>
                           </p>
                           <img
                             onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
                             src={getFileAnxIcon(documentsANX)}
                             alt="File Icon"
-                            className={`w-[50%] h-[100%] mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}/>
-                            <p className="mt-[15px] mb-2 text-black text-center">
-                              {documentsANX.length > 1 
-                                ? "cursor-pointer \u00A0"
-                                : (documentsANX[0]?.name && documentsANX[0].name.length > 25 
-                                    ? `${documentsANX[0].name.slice(0, 25)}...`
-                                    : documentsANX[0]?.name || "Nombre no disponible")}
-                            </p>
+                            className={`w-[50%] h-auto mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}/>
+                          <p className="mt-[5px] mb-2 text-black text-center">
+                            {documentsANX.length > 1 
+                              ? "cursor-pointer \u00A0"
+                              : (documentsANX[0]?.name && documentsANX[0].name.length > 23 
+                                  ? `${documentsANX[0].name.slice(0, 23)}...`
+                                  : documentsANX[0]?.name || "Nombre no disponible")}
+                          </p>
                         </>
-                        ) : (
-                          <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
-                        )}
-                      </div>
-                      {documentsANX.length === 1 && (
-                        <button onClick={() => handleAnxDownload(documentsANX[0].path)} className='bg-[#2C1C47] p-2 rounded text-white'>
+                      ) : (
+                        <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
+                      )}
+                    </div>
+                    {documentsANX.length === 1 && permissions.Type !== 5 && (
+                      <button
+                        onClick={() => handleAnxDownload(documentsANX[0].path)}
+                        className="bg-[#2C1C47] p-1 rounded text-white">
+                        Descargar
+                      </button>
+                    )}
+                  </div>
+                </div>
+                ) : (
+                <div className='flex flex-col max-w-[95%]'>
+                  <div className='w-full  flex flex-col border-b-2 border-indigo-200/50 mb-4'>
+                    <div className='flex flex-col'>
+                      <div className='flex items-center mb-2'>
+                        <img 
+                          src={getFileIcon(document.name)} 
+                          alt="File Icon" 
+                          className='w-[50px] h-[50px]' />
+                        <div className='flex-grow'>
+                          <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
+                          <p className="text-black">{document.name}</p>
+                        </div>
+                        <button 
+                          onClick={() => handleDownload(document.path)} 
+                          className='bg-[#2C1C47] p-2 rounded text-white'>
                           Descargar
                         </button>
+                      </div>
+                    </div>
+                  </div>
+                  <div className='w-full  flex flex-col border-b-2 border-indigo-200/50'>
+                    <div className='flex flex-col'>
+                      {documentsANX.length > 0 ? (
+                        documentsANX.map((anx, index) => (
+                          <div key={index} className='flex items-center mb-2'>
+                            <img 
+                              src={getFileAnxIcon([anx])} 
+                              alt="File Icon" 
+                              className='w-[50px] h-[50px] mr-2'/>
+                            <div className='flex-grow'>
+                              <p className="text-black"><strong>{anx.title}</strong></p>
+                              <p className="text-black">{anx.name}</p>
+                            </div>
+                            <button 
+                              onClick={() => handleAnxDownload(anx.path)} 
+                              className='bg-[#2C1C47] p-2 rounded text-white'>
+                              Descargar
+                            </button>
+                          </div>
+                        ))
+                        ) : (
+                        <p className="text-black">No hay anexos para el proceso.</p>
                       )}
                     </div>
                   </div>
-                  ) : (
-                  <div className='flex flex-col max-w-[95%]'>
-                      <div className='w-full px-4 flex flex-col border-b-2 border-indigo-200/50 mb-4'>
-                          <p className="text-lg font-bold mb-2">Documentos</p>
-                          <div className='flex flex-col'>
-                              <div className='flex items-center mb-2'>
-                                  <img 
-                                      src={getFileIcon(document.name)} 
-                                      alt="File Icon" 
-                                      className='w-[70px] h-[70px] mr-2' 
-                                  />
-                                  <div className='flex'>
-                                    <div className='flex mr-[58px] mt-[5px]'>
-                                      <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
-                                      <p className="text-black">{document.name}</p>
-                                    </div>
-                                    <button 
-                                      onClick={() => handleDownload(document.path)} 
-                                      className='bg-[#2C1C47] p-2 rounded text-white'>
-                                      Descargar
-                                    </button>
-                                  </div>
-                              </div>
-                          </div>
-                      </div>
-                      <div className='w-full px-4 flex flex-col border-b-2 border-indigo-200/50'>
-                          <p className="text-lg font-bold mb-2">Anexos</p>
-                          <div className='flex flex-col'>
-                              {documentsANX.length > 0 ? (
-                                  documentsANX.map((anx, index) => (
-                                      <div key={index} className='flex items-center mb-2'>
-                                          <img 
-                                              src={getFileAnxIcon([anx])} 
-                                              alt="File Icon" 
-                                              className='w-[18px] h-[18px] mr-2' 
-                                          />
-                                          <div className='flex-grow'>
-                                              <p className="text-black"><strong>{anx.title}</strong></p>
-                                              <p className="text-black">{anx.name}</p>
-                                          </div>
-                                          <button 
-                                              onClick={() => handleAnxDownload(anx.path)} 
-                                              className='bg-[#2C1C47] p-2 rounded text-white'>
-                                              Descargar
-                                          </button>
-                                      </div>
-                                  ))
-                              ) : (
-                                  <p className="text-black">No hay anexos para el proceso.</p>
-                              )}
-                          </div>
-                      </div>
-                  </div>
-                )}
+                </div>
+              )}
             </div>
             <div className='mt-7 text-black rounded-lg border-2 border-[#B5B5BD] p-2 w-[90%]'>
               <textarea
@@ -467,7 +475,7 @@ const Details = ({ card, onClose }) => {
                     onChange={() => handleCheckboxChange(1)}
                     className="form-radio"/>
                 </div>
-                <div className="flex items-center">
+                <div className="flex items-center pr-4">
                   <label htmlFor="accion-necesaria" className="text-black mr-2">Acción necesaria</label>
                   <input
                     type="radio"
@@ -480,7 +488,7 @@ const Details = ({ card, onClose }) => {
               </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 p-3 max-w-[50%]'>
+          <div className='mt-10 border-l-4 p-3 max-w-[50%] pr-5'>
             <Listbox value={selected} onChange={setSelected} className=" max-w-[100px]">
               {({ open }) => (
                 <>
@@ -557,10 +565,10 @@ const Details = ({ card, onClose }) => {
                 logsPrnt.map((log, index) => (
                   <div
                       key={index}
-                      className={`mt-2 border-b-4 border-[#B5B5BD] mr-[20px] pr-[200px]  p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
+                      className={`mt-2 border-b-4 border-[#B5B5BD] mr-[20px] pr-[0px]  p-2 mb-2 ${log.type === 21 ? 'cursor-pointer' : ''}`}
                       onClick={log.type === 21 ? () => handleLogClick(log) : null}>
                       {log.type === 21 && <p className="">{incidentStatus[log.id]}</p>}
-                      <div className='mb-2'>
+                      <div className='mb-2 '>
                           <strong>{log.name}</strong> 
                           , realizó <strong>{getEventTypeText(log.type)}</strong>.<br/>
                           <p className='text-[12px]'><br/>{new Date(log.created).toLocaleString()}</p>

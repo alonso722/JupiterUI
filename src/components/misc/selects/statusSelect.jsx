@@ -1,6 +1,6 @@
 import React, { useState, Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'; // Ajuste para Heroicons v2
+import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid'; 
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -14,11 +14,11 @@ const StatusSelect = ({ onSelectionChange }) => {
     { id: 4, column: 'Aprobado' },
   ];
 
-  const [selectedStatus, setSelectedStatus] = useState(status[0]); // Inicializa con el primer elemento del array
+  const [selectedStatus, setSelectedStatus] = useState(status[0]); 
 
   const handleSelectionChange = (selected) => {
     setSelectedStatus(selected);
-    onSelectionChange(selected.id, 'status'); // Aquí enviamos el ID y el tipo de componente ('status')
+    onSelectionChange(selected.id, 'status'); 
   };
 
   return (

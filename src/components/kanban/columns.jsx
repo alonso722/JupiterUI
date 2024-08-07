@@ -250,7 +250,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
     return (
         <div className="w-[200px] shrink-0">
             <div style={{ position: 'sticky', zIndex: -1, }}>
-                <div className="mb-3 flex items-center justify-between">
+                <div className="mb-3 flex items-center justify-between border-b-4">
                     <h3 className={`font-medium ${headingColor}`}>{name}</h3>
                     <span className="rounded text-sm text-[#2C1C47]">
                         {filteredCards.length}

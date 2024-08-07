@@ -91,40 +91,40 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                 {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <div className={`flex pl-[20px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
-                                                <Image
-                                                    className="mr-[30px]"
-                                                    src="/icons/pencil.svg"
-                                                    alt="Logo de Paypal"
-                                                    width={17}
-                                                    height={18} />
-                                                <button
-                                                    type="submit"
-                                                    className="bg-transparent"
-                                                    onClick={handleEditClick}>
-                                                    Editar
-                                                </button>
-                                            </div>
+                                            <button
+                                            type="submit"
+                                            className="bg-transparent"
+                                            onClick={handleEditClick}>
+                                                <div className={`flex pl-[20px] pr-[56px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                    <Image
+                                                        className="mr-[30px]"
+                                                        src="/icons/pencil.svg"
+                                                        alt="Logo de Paypal"
+                                                        width={17}
+                                                        height={18} />                                                    
+                                                        Editar 
+                                                </div>
+                                            </button>
                                         )}
                                     </Menu.Item>
                                 ) : null}
                                 {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <div className={`flex pl-[20px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                        <button
+                                        type="submit"
+                                        className="bg-transparent"
+                                        onClick={handleDeleteClick}>
+                                            <div className={`flex pl-[20px] pr-[36px] my-[15px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                 <Image
                                                     className="mr-[30px]"
                                                     src="/icons/trash.svg"
                                                     alt="Logo de Paypal"
                                                     width={17}
                                                     height={18} />
-                                                <button
-                                                    type="submit"
-                                                    className="bg-transparent"
-                                                    onClick={handleDeleteClick}>
                                                     Eliminar
-                                                </button>
                                             </div>
+                                        </button>
                                         )}
                                     </Menu.Item>
                                 ) : null}

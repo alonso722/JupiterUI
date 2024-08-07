@@ -82,38 +82,38 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                 <div className="py-1">
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <div className={`flex pl-[20px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
-                                                <Image
-                                                    className="mr-[30px]"
-                                                    src="/icons/pencil.svg"
-                                                    alt="Logo de Paypal"
-                                                    width={17}
-                                                    height={18} />
-                                                <button
+                                            <button
                                                     type="submit"
                                                     className="bg-transparent"
                                                     onClick={handleEditClick}>
-                                                    Editar
-                                                </button>
-                                            </div>
+                                                <div className={`flex pl-[20px] pr-[56px] pr-[56px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                    <Image
+                                                        className="mr-[30px]"
+                                                        src="/icons/pencil.svg"
+                                                        alt="Logo de Paypal"
+                                                        width={17}
+                                                        height={18} />                                                    
+                                                        Editar                                                    
+                                                </div>
+                                            </button>
                                         )}
                                     </Menu.Item>
                                     <Menu.Item>
                                         {({ active }) => (
-                                            <div className={`flex pl-[20px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
-                                                <Image
-                                                    className="mr-[30px]"
-                                                    src="/icons/trash.svg"
-                                                    alt="Logo de Paypal"
-                                                    width={17}
-                                                    height={18} />
-                                                <button
-                                                    type="submit"
-                                                    className="bg-transparent"
-                                                    onClick={handleDeleteClick}>
-                                                    Eliminar
-                                                </button>
-                                            </div>
+                                            <button
+                                                type="submit"
+                                                className="bg-transparent"
+                                                onClick={handleDeleteClick}>
+                                                <div className={`flex pl-[20px] pr-[56px] pr-[36px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                    <Image
+                                                        className="mr-[30px]"
+                                                        src="/icons/trash.svg"
+                                                        alt="Logo de Paypal"
+                                                        width={17}
+                                                        height={18} />                                                    
+                                                        Eliminar                                            
+                                                </div>
+                                            </button>
                                         )}
                                     </Menu.Item>
                                 </div>

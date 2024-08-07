@@ -1,12 +1,12 @@
-'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import "@cyntler/react-doc-viewer/dist/index.css";
 
 const DocsViewer = ({ url, onClose }) => {
   const [fileContent, setFileContent] = useState(null);
-  const [error, setError] = useState(null); 
+  const [error, setError] = useState(null);
+  const effectMounted = useRef(false);
 
   const showToast = (type, message) => {
     toast[type](message, {
@@ -16,6 +16,7 @@ const DocsViewer = ({ url, onClose }) => {
   };
 
   useEffect(() => {
+    if (!effectMounted.current) {
     const fetchFileContent = async () => {
       try {
         const response = await fetch(url);
@@ -24,26 +25,31 @@ const DocsViewer = ({ url, onClose }) => {
         }
         const blob = await response.blob();
         const fileUrl = URL.createObjectURL(blob);
-        
-        // Crear el objeto de archivo compatible con DocViewer
+
+        if (blob.type !== "application/pdf") {
+          setError('Visualización solo disponible para PDFs');
+          showToast('error', 'Visualización solo disponible para PDFs');
+          return; 
+        }
+
         const fileData = {
-          uri: fileUrl, // URL temporal creada a partir del blob
-          fileType: blob.type, // Tipo MIME del archivo
+          uri: fileUrl,
+          fileType: blob.type,
         };
         setFileContent([fileData]);
-
         setError(null);
 
-        // Limpiar el objeto URL temporal cuando se cierre el componente
         return () => URL.revokeObjectURL(fileUrl);
       } catch (error) {
         console.error('Error fetching file:', error);
-        setError(error.message); 
-        showToast('error','Error al visualizar documento'); 
+        setError(error.message);
+        showToast('error', 'Error al visualizar documento');
       }
     };
 
     fetchFileContent();
+    effectMounted.current = true;
+  }
   }, [url]);
 
   return (
@@ -54,7 +60,7 @@ const DocsViewer = ({ url, onClose }) => {
         </button>
         {error && (
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-red-500 text-white p-2 rounded">
-            {"Error al visualizar documento"}
+            {error}
           </div>
         )}
         <div className="flex justify-center items-center flex-grow overflow-auto mt-9">
