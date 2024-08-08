@@ -101,6 +101,7 @@ const Details = ({ card, onClose }) => {
 
           const responseRole = await api.post('/user/role/fetch', fetchDocument);
           const rolesData = responseRole.data.data;
+          console.log(rolesData)
           setRoles(rolesData);
 
           const prId = card.id;

@@ -62,14 +62,6 @@ const AddUserForm = ({ user, onClose }) => {
   useEffect(() => {
     if (effectMounted.current === false) {
       fetchData();
-      api.post('/user/process/fetchUsers')
-        .then((response) => {
-          const usersData = response.data;
-          setUsers(usersData);
-        })
-        .catch((error) => {
-          console.error("Error al consultar procesos:", error);
-        });
       effectMounted.current = true;
     }
   }, []);

@@ -243,60 +243,63 @@ const AddProcessForm = ({ card, onClose }) => {
         }
           setPermissions(parsedPermissions);
       }
-      api.post('/user/process/fetchUsers')
-        .then((response) => {
-          const usersData = response.data;
-          setUsers(usersData);
-        })
-        .catch((error) => {
-          console.error("Error al consultar procesos:", error);
-        });
       effectMounted.current = true;
     }
   }, []);
 
-  const handleAddProcess = () => {
+  const handleAddProcess = async () => {
     if (!processName) {
       showToast('error', "Por favor, nombre el proceso");
       return;
     }
-    const processDetails = {
-      processName,
-      departments: selectedDepartments,
-      editor: { name: "editor", uuid: "uet1" },
-      revisor: { name: "revisor", uuid: "urt1" },
-      aprobator: { name: "aprobator", uuid: "uapt1" },
-      state: 1, 
-    };
   
-    if (fileInfo) {
-      processDetails.filePath = fileInfo.path; 
-      processDetails.fileTitle = fileInfo.asignedTitle; 
-      processDetails.fileName = fileInfo.name;
-    } else{
-      showToast('error', "Por favor, cargue un documento principal");
-      return;
-    }
-    if(annexesInfo){
-      processDetails.annexes = annexesInfo;
-    }else{
-      showToast('error', "Por favor, cargue los anexos");
-      return;
-    }
+    try {
+      const response = await api.post('/user/process/fetchUsers', { selectedDepartments });
+      const usersData = response.data;
+      setUsers(usersData);
+      const editor = permissions.Organization === 1 
+        ? usersData.filter(user => user.role === 2) 
+        : { userName: "editor", uuid: "uet1" };
+      
+      const processDetails = {
+        processName,
+        departments: selectedDepartments,
+        editor: editor,
+        revisor: { userName: "revisor", uuid: "urt1" },
+        aprobator: { userName: "aprobator", uuid: "uapt1" },
+        state: 1,
+        processUsers: usersData,
+      };
+      
   
-    if (processDetails.processName) {
-      processDetails.editor.uuid = "uet1";
-      processDetails.revisor.uuid = "urt1";
-      processDetails.aprobator.uuid = "uapt1";
-      api.post('/user/process/addTab', processDetails)
-        .then((response) => {
-          if (response.data === 200) {
-            onClose();
-          }
-        })
-        .catch((error) => {
-          console.error("Error al consultar procesos:", error);
-        });
+      if (fileInfo) {
+        processDetails.filePath = fileInfo.path;
+        processDetails.fileTitle = fileInfo.asignedTitle;
+        processDetails.fileName = fileInfo.name;
+      } else {
+        showToast('error', "Por favor, cargue un documento principal");
+        return;
+      }
+      if (annexesInfo) {
+        processDetails.annexes = annexesInfo;
+      } else {
+        showToast('error', "Por favor, cargue los anexos");
+        return;
+      }
+  
+      if (processDetails.processName) {
+        api.post('/user/process/addTab', processDetails)
+          .then((response) => {
+            if (response.data === 200) {
+              onClose();
+            }
+          })
+          .catch((error) => {
+            console.error("Error al consultar procesos:", error);
+          });
+      }
+    } catch (error) {
+      console.error("Error al consultar procesos:", error);
     }
   };
 
