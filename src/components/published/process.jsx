@@ -1,0 +1,130 @@
+import React, { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import Details from '../details/details';
+import useApi from '@/hooks/useApi';
+
+export const Published = ({ departmentFilter, processFilter }) => {
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedCard, setSelectedCard] = useState(null);
+    const [permissions, setPermissions] = useState([]);
+    const [cards, setCards] = useState([]);
+    const effectMounted = useRef(false);
+    const api = useApi();
+
+    useEffect(() => {
+        if (effectMounted.current === false) { 
+            let parsedPermissions;
+            const storedPermissions = localStorage.getItem('permissions');
+            const token = localStorage.getItem('token');
+            if (storedPermissions) {
+                parsedPermissions = JSON.parse(storedPermissions);
+                setPermissions(parsedPermissions);
+            }
+            const userType = parsedPermissions;
+            const orga = parsedPermissions.Organization;
+            userType.token = token;
+            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter})
+                .then((response) => {
+                    localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
+                    console.log(response.data.data);
+                    const fetchedCards = response.data.data.map(item => ({
+                        id: item.id.toString(),
+                        name: item.process,
+                        column: convertStatusToColumn(item.status),
+                        department: item.departmentName,
+                        date: item.updated
+                    }));
+                    setCards(fetchedCards); 
+                })
+                .catch((error) => {
+                    console.error("Error al consultar procesos:", error);
+                });
+            effectMounted.current = true;
+        }
+    }, []);
+
+    const convertStatusToColumn = (status) => {
+        switch(status) {
+            case '1':
+                return 'Edición';
+            case '2':
+                return 'Revisión';
+            case '3':
+                return 'Aprobación';
+            case '4':
+                return 'Aprobado';
+            default:
+                return 'Edición';
+        }
+    };
+
+    const handleCardClick = (card) => {
+        setSelectedCard(card);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedCard(null);
+    };
+
+    return (
+        <div className="mt-[110px] ml-[100px] mr-[250px] w-[100%] text-neutral-50 rounded">
+            <Board 
+                onCardClick={handleCardClick} 
+                cards={cards} 
+                setCards={setCards} 
+                permissions={permissions} 
+            />
+            {isModalOpen && selectedCard && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <Details card={selectedCard} onClose={handleCloseModal} />
+                </div>
+            )}
+        </div>
+    );
+};
+
+const Board = ({ onCardClick, cards, setCards, permissions }) => {
+    const approvedCards = cards.filter(card => card.column === 'Aprobado');
+
+    return (
+        <div className="flex h-full w-full gap-3 pt-12 flex-wrap justify-center">
+            {approvedCards.map((card) => (
+                <Card
+                    key={card.id}
+                    {...card}
+                    onCardClick={onCardClick}
+                    permissions={permissions}
+                />
+            ))}
+        </div>
+    );
+};
+
+const Card = ({ name, department, date, id, handleDragStart, onCardClick, permissions }) => {
+    return (
+        <motion.div
+            layout
+            layoutId={id}
+            onClick={() => onCardClick({ name, department, date, id })}
+            className="mt-2 cursor-pointer rounded bg-[#F1CF2B] p-1 shadow-xl w-[300px] h-[300px]">
+            <div className="bg-white rounded p-3 mb-3 justify-between">
+                <p className="text-sm text-black text-[10px]">
+                    {department}
+                </p>
+                <p className="text-sm text-black text-center ">
+                    {name}
+                </p>
+            </div>
+            <div className="bg-white text-black rounded p-3 justify-between">
+                <p>Descripción:</p>
+                <p className="text-sm text-black text-right text-[9px]">
+                    Actualizado: {new Date(date).toLocaleDateString()}
+                </p>
+            </div>
+        </motion.div>
+    );
+};
+
+export default Published;

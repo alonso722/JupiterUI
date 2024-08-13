@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
-import TopNavbar from '@/components/misc/topMenu';
+import TopNavbar from '@/components/misc/topMenu.jsx';
 import UsersTable from '@/components/usersTable/uTable';
 
 const SuspenseFallback = () => <div>Loading...</div>;
@@ -37,7 +37,7 @@ const PageContent = () => {
             if (storedPermissions) {
                 parsedPermissions = JSON.parse(storedPermissions);
                 if (parsedPermissions.Type === 5) {
-                    router.push('/dashboard/home');
+                    router.push('/dashboard/consultor');
                 }
                 setPermissions(parsedPermissions);
             }

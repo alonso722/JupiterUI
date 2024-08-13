@@ -8,7 +8,7 @@ import { PiSpinnerGapBold } from 'react-icons/pi';
 import useApi from '@/hooks/useApi';
 import Spinner from '@/components/misc/spinner';
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
-import TopNavbar from '@/components/misc/topMenu';
+import TopNavbar from '@/components/misc/topMenu.jsx';
 import TanStackTable from '@/components/table/table';
 
 export default function Page({ }) {
@@ -43,7 +43,7 @@ export default function Page({ }) {
                 setPermissions(parsedPermissions);
 
                 if (parsedPermissions.Type === 5) {
-                    router.push('/dashboard/home');
+                    router.push('/dashboard/consultor');
                     return;
                 }
             }
@@ -60,7 +60,7 @@ export default function Page({ }) {
                     setPermissions(permissions);
 
                     if (permissions.Type === 5) {
-                        router.push('/dashboard/home');
+                        router.push('/dashboard/consultor');
                     } else {
                         setLoading(false);
                     }

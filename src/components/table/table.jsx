@@ -224,7 +224,7 @@ const TanStackTable = () => {
                     />
                 </div>
                 <div className="mt-[10px] mb-[10px]">
-                    {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
+                    {permissions.Type === 1 || permissions.Type === 6 ? (
                         <Button
                             className="w-[126px] mr-[130px]"
                             color={colors.DARK_JUPITER_OUTLINE}

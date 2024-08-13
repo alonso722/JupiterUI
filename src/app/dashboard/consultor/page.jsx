@@ -1,14 +1,15 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState, Suspense  } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu.jsx';
-import DepartmentsTable from '@/components/departmentsTable/dTable';
+import Published from '@/components/published/process.jsx';
 
 const SuspenseFallback = () => <div>Loading...</div>;
 
@@ -22,7 +23,7 @@ const PageContent = () => {
     const process = searchParams.get('process');
     const department = searchParams.get('department');
 
-    const showToast = (type: 'success' | 'error', message: string) => {
+    const showToast = (type, message) => {
         toast[type](message, {
             position: 'top-center',
             autoClose: 2000,
@@ -36,13 +37,10 @@ const PageContent = () => {
             const storedPermissions = localStorage.getItem('permissions'); 
             if (storedPermissions) {
                 parsedPermissions = JSON.parse(storedPermissions);
-                if (parsedPermissions.Type === 5) {
-                    router.push('/dashboard/consultor');
-                }
                 setPermissions(parsedPermissions);
             }
             if (!authStateValue.loggedIn) {
-                showToast('error','Sin autenticación');
+                showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
             }
             effectMounted.current = true;
@@ -54,7 +52,7 @@ const PageContent = () => {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <DepartmentsTable />
+                <Published/>
             </div>
         </div>
     );

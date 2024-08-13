@@ -2,6 +2,7 @@ import React, { useState, useEffect, Fragment, useRef } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import useApi from '@/hooks/useApi';
 import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
+import UsersChecks from '../misc/checkbox/usersChecks';
 import { toast } from 'react-toastify';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 
@@ -193,8 +194,12 @@ const AddProcessForm = ({ card, onClose }) => {
   const api = useApi();
   const [organizationsS, setOrgas] = useState([]);
   const [users, setUsers] = useState([]);
+  const [list, setUList] = useState([]);
   const [permissions, setPermissions] = useState([]);
   const [selectedOrgId, setSelectedOrgId] = useState(null);
+  const [selectedEditor, setSelectedEditor] = useState({});
+  const [selectedRevisor, setSelectedRevisor] = useState([]);
+  const [selectedAprobator, setSelectedAprobator] = useState([]);
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -205,10 +210,6 @@ const AddProcessForm = ({ card, onClose }) => {
         position: 'top-center',
         autoClose: 2000,
     });
-  };
-
-  const handleSelectionDepartment = (selectedDepartments) => {
-    setSelectedDepartments(selectedDepartments);
   };
 
   const handleFileUpload = (filems) => {
@@ -226,7 +227,7 @@ const AddProcessForm = ({ card, onClose }) => {
       if (storedPermissions) {
           parsedPermissions = JSON.parse(storedPermissions);
           if (parsedPermissions.Type === 5) {
-              router.push('/dashboard/home');
+              router.push('/dashboard/consultor');
           }
           if (parsedPermissions.Type === 6) {
             api.get('/user/organization/fetch')
@@ -241,7 +242,16 @@ const AddProcessForm = ({ card, onClose }) => {
                 console.error("Error al consultar procesos:", error);
             });
         }
-          setPermissions(parsedPermissions);
+        api.post('/user/process/fetchUsersList', {orga:parsedPermissions})
+        .then((response) => {
+          const fetchedData = response.data;
+          setUList(fetchedData);
+        })
+        .catch((error) => {
+          console.error("Error al consultar procesos:", error);
+        });
+
+        setPermissions(parsedPermissions);
       }
       effectMounted.current = true;
     }
@@ -249,6 +259,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   const handleAddProcess = async () => {
     if (!processName) {
+      console.log(selectedEditor, selectedRevisor, selectedAprobator)
       showToast('error', "Por favor, nombre el proceso");
       return;
     }
@@ -257,16 +268,16 @@ const AddProcessForm = ({ card, onClose }) => {
       const response = await api.post('/user/process/fetchUsers', { selectedDepartments });
       const usersData = response.data;
       setUsers(usersData);
-      const editor = permissions.Organization === 1 
+      const editor = permissions.Organization === 1//xdfghjk 
         ? usersData.filter(user => user.role === 2) 
         : { userName: "editor", uuid: "uet1" };
       
       const processDetails = {
         processName,
         departments: selectedDepartments,
-        editor: editor,
-        revisor: { userName: "revisor", uuid: "urt1" },
-        aprobator: { userName: "aprobator", uuid: "uapt1" },
+        editor: selectedEditor,
+        revisor: selectedRevisor,
+        aprobator: selectedAprobator,
         state: 1,
         processUsers: usersData,
       };
@@ -276,18 +287,13 @@ const AddProcessForm = ({ card, onClose }) => {
         processDetails.filePath = fileInfo.path;
         processDetails.fileTitle = fileInfo.asignedTitle;
         processDetails.fileName = fileInfo.name;
-      } else {
-        showToast('error', "Por favor, cargue un documento principal");
-        return;
       }
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
-      } else {
-        showToast('error', "Por favor, cargue los anexos");
-        return;
       }
   
       if (processDetails.processName) {
+        console.log(processDetails)
         api.post('/user/process/addTab', processDetails)
           .then((response) => {
             if (response.data === 200) {
@@ -339,7 +345,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[950px] h-[550px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[600px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -440,31 +446,104 @@ const AddProcessForm = ({ card, onClose }) => {
           Añadir proceso
         </button>
         </div>
-        <div className='flex w-[400px] p-4 justify-center mt-[70px] rounded border-2 ml-[60px]'>
-          {fileInfo && (
-            <div className="text-black flex flex-col items-center">
-              <h2 className="mb-2">Documento cargado:</h2>            
-              <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-              <p
-                className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap'
-                title={fileInfo.name}>
-                {fileInfo.name}
-              </p>
+        <div className=' ml-3 rounded border-2 mt-[20px] h-[520px]'>
+          <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
+            {fileInfo && (
+              <div className="text-black flex flex-col items-center">
+                <h2 className="mb-2">Documento cargado:</h2>            
+                <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap'
+                  title={fileInfo.name}>
+                  {fileInfo.name}
+                </p>
+              </div>
+            )}
+            {annexesInfo && (
+              <div className="text-black flex flex-col items-center ml-6">
+                <h2 className="mb-2">Anexos:</h2>
+                <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                <p
+                  className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
+                  title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                  {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
+                </p>
+              </div>
+            )}
             </div>
-          )}
-          {annexesInfo && (
-            <div className="text-black flex flex-col items-center ml-6">
-              <h2 className="mb-2">Anexos:</h2>
-              <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-              <p
-                className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
-                title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
-                {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
-              </p>
+            <div className='mb-2 px-5 text-black'>
+            <Listbox value={selectedEditor} onChange={(value) => {
+              setSelectedEditor(value);
+              console.log("Editor seleccionado:", value); 
+            }} className="max-w-[100px]">
+              {({ open }) => (
+                <>
+                  <Listbox.Label className="block text-sm font-medium leading-6 text-black">Editor</Listbox.Label>
+                  <div className="relative mt-2">
+                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                      <span className="flex items-center">
+                        <span className="ml-3 block truncate">
+                          {selectedEditor?.userName || "Selecciona..."}
+                        </span>
+                      </span>
+                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                      </span>
+                    </Listbox.Button>
+                    <Transition
+                      show={open}
+                      as={Fragment}
+                      leave="transition ease-in duration-100"
+                      leaveFrom="opacity-100"
+                      leaveTo="opacity-0">
+                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                        {list.map((user) => (
+                          <Listbox.Option
+                            key={user.userUuid}
+                            value={user}
+                            className={({ active }) =>
+                              classNames(
+                                active ? 'bg-indigo-600 text-white' : 'text-black',
+                                'relative cursor-default select-none py-2 pl-3 pr-9')}>
+                            {({ selected, active }) => (
+                              <>
+                                <div className="flex items-center">
+                                  <span
+                                    className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
+                                    {user.userName}
+                                  </span>
+                                </div>
+                                {selected ? (
+                                  <span
+                                    className={classNames(
+                                      active ? 'text-white' : 'text-indigo-600',
+                                      'absolute inset-y-0 right-0 flex items-center pr-4'
+                                    )}>
+                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                  </span>
+                                ) : null}
+                              </>
+                            )}
+                          </Listbox.Option>
+                        ))}
+                      </Listbox.Options>
+                    </Transition>
+                  </div>
+                </>
+              )}
+            </Listbox>
             </div>
-          )}
+            <div className='flex justify-between mt-3'>
+              <div className='ml-5 max-h-[300px] h-[200px] max-w-[200px] '>
+                <p className="block text-sm font-medium leading-6 text-black">Revisor</p>
+                <UsersChecks selectedOptions={selectedRevisor} setSelectedOptions={setSelectedRevisor} selectedOrgId={selectedOrgId} />
+              </div>
+              <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
+              <p className="block text-sm font-medium leading-6 text-black">Aprobador</p>
+                <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
+              </div>
+            </div>
         </div>
-        </div>
+      </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
         {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onAnnexesUpload={handleAnnexesUpload} />}
       </div>

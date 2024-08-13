@@ -58,7 +58,7 @@ export default function CompleteAuth({
                             router.push('/auth/login');
                             showToast('error','No tienes acceso a este servicio');
                         } else if (permissions.Type === 5) {
-                            router.push('/dashboard/home');
+                            router.push('/dashboard/consultor');
                             showToast('success','Autenticación completada.');
                         } else {
                             router.push('/dashboard/table');

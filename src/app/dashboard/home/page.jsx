@@ -8,7 +8,7 @@ import axios from 'axios';
 import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
-import TopNavbar from '@/components/misc/topMenu';
+import TopNavbar from '@/components/misc/topMenu.jsx';
 import Kanban from '@/components/kanban/columns';
 
 const SuspenseFallback = () => <div>Loading...</div>;
@@ -23,7 +23,7 @@ const PageContent = () => {
     const process = searchParams.get('process');
     const department = searchParams.get('department');
 
-    const showToast = (type: 'success' | 'error', message: string) => {
+    const showToast = (type, message) => {
         toast[type](message, {
             position: 'top-center',
             autoClose: 2000,

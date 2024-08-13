@@ -14,7 +14,7 @@ export default function Sidebar() {
         const storedPermissions = localStorage.getItem('permissions');
         if (storedPermissions) {
             try {
-                const parsedPermissions = JSON.parse(storedPermissions);
+                const parsedPermissions: Permissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             } catch (error) {
                 console.error('Error parsing permissions:', error);
@@ -36,6 +36,9 @@ export default function Sidebar() {
     };
 
     const handleNavigation = (path: string) => {
+        if (path === '/dashboard/home' && permissions?.Type === 5) {
+            path = '/dashboard/consultor';
+        }
         window.location.href = path;
     };
 

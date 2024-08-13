@@ -99,9 +99,9 @@ const Details = ({ card, onClose }) => {
           setDocument(fetchDocument);
           setSelected(initialStatus);
 
-          const responseRole = await api.post('/user/role/fetch', fetchDocument);
-          const rolesData = responseRole.data.data;
-          console.log(rolesData)
+          const responseRole = await api.post('/user/process/getRoles', card);
+          const rolesData = responseRole.data;
+          console.log("namessssssssssssssssss",rolesData)
           setRoles(rolesData);
 
           const prId = card.id;
@@ -349,16 +349,23 @@ const Details = ({ card, onClose }) => {
                 <div className='flex flex-wrap justify-center items-center max-w-[95%]'>
                   <div className='flex flex-col items-center w-full sm:w-[40%] sm:mr-[10%] mb-4'>
                     <div className='w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2'>
-                      <p className="mt-[15px] text-black text-center"><strong>{document.title}</strong></p>
+                      {document ? (
+                        <p className="mt-[15px] text-black text-center">
+                          <strong>{document.title || "Sin documento"}</strong>
+                        </p>
+                      ) : (
+                        <p className="mt-[15px] text-black text-center">
+                          <strong>Sin documento</strong>
+                        </p>
+                      )}
                       <img
-                        onClick={() => openViewer(document.path)}
-                        src={getFileIcon(document.name)}
+                        onClick={() => document && openViewer(document.path)}
+                        src={document ? getFileIcon(document.name) : getFileIcon('default')}
                         alt="File Icon"
-                        className="w-[50%] h-auto mt-[10px] cursor-pointer"/>
+                        className="w-[50%] h-auto mt-[10px] cursor-pointer"
+                      />
                       <p className="mt-[5px] mb-2 text-black text-center">
-                        {document?.name && document.name.length > 23
-                          ? `${document.name.slice(0, 23)}...` 
-                          : document?.name || "Nombre no disponible"}
+                        {document ? document.name : "Sin nombre"}
                       </p>
                     </div>
                     {permissions.Type !== 5 && (
@@ -552,13 +559,13 @@ const Details = ({ card, onClose }) => {
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] overflow-x-auto whitespace-nowrap">
               <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
               <p className='mt-4'>
-                {roles.editor && <>Editado por: <strong>{roles.editor.name}</strong></>}
+                {roles.editor && <>Editado por: <strong>{roles.editor}</strong></>}
               </p>
               <p>
-                {roles.revisor && <>Revisado por: <strong>{roles.revisor.name}</strong></>}
+                {roles.revisor && <>Revisado por: <strong>{roles.revisor.join(', ')}</strong></>}
               </p>
               <p>
-                {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.name}</strong></>}
+                {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.join(', ')}</strong></>}
               </p>
               <p>Fecha de aprobación</p>
             </div>

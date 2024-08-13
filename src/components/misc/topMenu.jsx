@@ -1,11 +1,46 @@
 'use client';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { useEffect, useRef, useState, Suspense } from 'react';
+import { toast } from 'react-toastify';
+import { useRecoilState } from 'recoil';
+import { authState } from '@/state/auth';
 
 export default function TopNewMenuClientDashboard() {
+    const [permissions, setPermissions] = useState([]);
+    const searchParams = useSearchParams();
+    const effectMounted = useRef(false);
+    const [authStateValue, setAuth] = useRecoilState(authState);
+    const router = useRouter();
+    const department = searchParams.get('department');
+
+    const showToast = (type, message) => {
+        toast[type](message, {
+            position: 'top-center',
+            autoClose: 2000,
+        });
+    };
+
+    useEffect(() => {    
+        let parsedPermissions;
+        if (effectMounted.current === false) {    
+            const storedToken = localStorage.getItem('token');
+            const storedPermissions = localStorage.getItem('permissions'); 
+            if (storedPermissions) {
+                parsedPermissions = JSON.parse(storedPermissions);
+                setPermissions(parsedPermissions);
+            }
+            if (!authStateValue.loggedIn) {
+                showToast('error', 'Sin autenticación');
+                router.push('/auth/login');
+            }
+            effectMounted.current = true;
+        }
+    }, [authStateValue.loggedIn, router, setAuth, searchParams, department, process]);
     return (
         <>
             <div className="flex flex-row items-center justify-between fixed bg-white w-full bottom border-b-4">
@@ -33,7 +68,7 @@ export default function TopNewMenuClientDashboard() {
                         </svg>
                     </div>
                     <Link
-                        href="/dashboard/home"
+                        href={permissions?.Type === 5 ? "/dashboard/consultor" : "/dashboard/home"}
                         className="text-[#F1CF2B] mr-[38px] text-base font-bold leading-4">
                         Inicio
                     </Link>
