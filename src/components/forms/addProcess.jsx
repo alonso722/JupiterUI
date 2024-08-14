@@ -504,7 +504,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[600px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[650px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -598,7 +598,7 @@ const AddProcessForm = ({ card, onClose }) => {
           )}
           </div>
           {privileges === 1 || privileges === 2 ? (
-            <div className="flex justify-end">
+            <div className="flex ml-[10px]">
               <div className='flex mt-[30px]'>
                 <button onClick={() => setIsModalOpen(true)} className='flex bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
                   <img src='/icons/doc.svg' alt='Iconos' width={19} height={21} className='mr-[13px]'/>
@@ -618,7 +618,7 @@ const AddProcessForm = ({ card, onClose }) => {
           </button>
         </div>
         {card && workflowInfo ? (
-          <div className=' ml-3 rounded border-2 mt-[20px] h-[520px]'>
+          <div className=' ml-3 rounded border-2 mt-[20px] h-[550px]'>
             <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
               {fileInfo && (
                 <div className="text-black flex flex-col items-center">
@@ -668,7 +668,7 @@ const AddProcessForm = ({ card, onClose }) => {
               </div>
             </div>
           ) : (
-            <div className=' ml-3 rounded border-2 mt-[20px] h-[520px]'>
+            <div className=' ml-3 rounded border-2 mt-[20px] h-[550px]'>
               <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
                 {fileInfo && (
                   <div className="text-black flex flex-col items-center">

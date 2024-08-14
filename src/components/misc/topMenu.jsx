@@ -9,14 +9,17 @@ import { useEffect, useRef, useState, Suspense } from 'react';
 import { toast } from 'react-toastify';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
+import useApi from '@/hooks/useApi';
 
 export default function TopNewMenuClientDashboard() {
     const [permissions, setPermissions] = useState([]);
+    const [name, setName] = useState('');
     const searchParams = useSearchParams();
     const effectMounted = useRef(false);
     const [authStateValue, setAuth] = useRecoilState(authState);
     const router = useRouter();
     const department = searchParams.get('department');
+    const api = useApi();
 
     const showToast = (type, message) => {
         toast[type](message, {
@@ -34,6 +37,16 @@ export default function TopNewMenuClientDashboard() {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
+            const uuid = parsedPermissions.uuid;
+            const response = api.post('/user/users/getNameById', {uuid})
+            .then((response) => {
+                console.log(response.data)
+                const uName = response.data;
+                setName(uName)
+              })
+              .catch((error) => {
+                console.error("Error al consultar nombre:", error);
+              });
             if (!authStateValue.loggedIn) {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
@@ -41,20 +54,21 @@ export default function TopNewMenuClientDashboard() {
             effectMounted.current = true;
         }
     }, [authStateValue.loggedIn, router, setAuth, searchParams, department, process]);
+
     return (
         <>
-            <div className="flex flex-row items-center justify-between fixed bg-white w-full bottom border-b-4">
-                <div className="justify-left flex w-full items-center pb-4 pl-12 pt-5">
-                    <div className="">
-                        <Image
-                            src="/logos/Lg_JIso.svg"
-                            alt="Logo"
-                            width={180}
-                            height={29}
-                        />
-                    </div>
+            <div className="flex items-center justify-between fixed bg-white w-full border-b-4">
+                <div className="flex items-center pb-4 pl-12 pt-5">
+                    <Image
+                        src="/logos/Lg_JIso.svg"
+                        alt="Logo"
+                        width={180}
+                        height={29}/>
                 </div>
-                <div className="mr-[37px] flex h-11 w-[346px] flex-row items-center">
+                <div className="flex-1 flex justify-center">
+                    <p className="text-black text-center "><b>{name}</b></p>
+                </div>
+                <div className="flex h-11 w-[346px] items-center justify-end pr-8">
                     <div className="mr-[47px]">
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -73,89 +87,87 @@ export default function TopNewMenuClientDashboard() {
                         Inicio
                     </Link>
                     <div className="mr-[36px] text-black">
-                        <i className=" text-black fas fa-bell ml-1"></i>
+                        <i className="text-black fas fa-bell ml-1"></i>
                     </div>
                     <div className="font-semibold text-[14px] text-darkJupiter">
-                        <div>
-                            <Menu as="div" className="relative inline-block text-left">
-                                <div>
-                                    <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50">
-                                        <i className="text-black fa fa-user-circle ml-1" style={{ fontSize: '20px', width: '20px', height: '20px' }}></i>
-                                    </Menu.Button>
-                                </div>
+                        <Menu as="div" className="relative inline-block text-left">
+                            <div>
+                                <Menu.Button className="inline-flex justify-center rounded-full bg-white text-sm font-semibold text-gray-900 shadow-sm hover:bg-gray-50">
+                                    <i className="text-black fa fa-user-circle ml-1" style={{ fontSize: '20px', width: '20px', height: '20px' }}></i>
+                                </Menu.Button>
+                            </div>
 
-                                <Transition
-                                    as={Fragment}
-                                    enter="transition ease-out duration-100"
-                                    enterFrom="transform opacity-0 scale-95"
-                                    enterTo="transform opacity-100 scale-100"
-                                    leave="transition ease-in duration-75"
-                                    leaveFrom="transform opacity-100 scale-100"
-                                    leaveTo="transform opacity-0 scale-95">
-                                    <Menu.Items className="absolute right-0 z-10 mt-2 w-[224px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                                        <div className="py-1">
-                                            {/* <Menu.Item>
-                                                {({ active }) => (
-                                                    <a href="/user/account" className={`flex justify-center items-center mb-[13px] mt-[10px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                        <Image
-                                                            className='mr-[10px]'
-                                                            src="/svg/icons/accountSett.svg"
-                                                            alt="Logo de Paypal"
-                                                            width={21}
-                                                            height={18}
-                                                        />
-                                                        Cuenta
-                                                    </a>
-                                                )}
-                                            </Menu.Item>
+                            <Transition
+                                as={Fragment}
+                                enter="transition ease-out duration-100"
+                                enterFrom="transform opacity-0 scale-95"
+                                enterTo="transform opacity-100 scale-100"
+                                leave="transition ease-in duration-75"
+                                leaveFrom="transform opacity-100 scale-100"
+                                leaveTo="transform opacity-0 scale-95">
+                                <Menu.Items className="absolute right-0 z-10 mt-2 w-[224px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1">
+                                        {/* <Menu.Item>
+                                            {({ active }) => (
+                                                <a href="/user/account" className={`flex justify-center items-center mb-[13px] mt-[10px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                    <Image
+                                                        className='mr-[10px]'
+                                                        src="/svg/icons/accountSett.svg"
+                                                        alt="Logo de Paypal"
+                                                        width={21}
+                                                        height={18}
+                                                    />
+                                                    Cuenta
+                                                </a>
+                                            )}
+                                        </Menu.Item>
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <a href="/user/settings" className={`flex justify-center items-center my-[13px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                    <Image
+                                                        className='mr-[10px]'
+                                                        src="/svg/icons/settings.svg"
+                                                        alt="Logo de Paypal"
+                                                        width={17}
+                                                        height={18}/>
+                                                    Configuración
+                                                </a>
+                                            )}
+                                        </Menu.Item> */}
+                                        <Menu.Item>
+                                            {({ active }) => (
+                                                <a href="/user/help" className={`flex rounded mx-2 justify-center items-center my-[13px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                    <Image
+                                                        className='mr-[10px]'
+                                                        src="/svg/icons/help.svg"
+                                                        alt="Ayuda"
+                                                        width={17}
+                                                        height={17}
+                                                    />
+                                                    Ayuda
+                                                </a>
+                                            )}
+                                        </Menu.Item>
+                                        <form method="POST" action="#">
                                             <Menu.Item>
                                                 {({ active }) => (
-                                                    <a href="/user/settings" className={`flex justify-center items-center my-[13px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                    <button type="submit" className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
                                                         <Image
                                                             className='mr-[10px]'
-                                                            src="/svg/icons/settings.svg"
-                                                            alt="Logo de Paypal"
-                                                            width={17}
-                                                            height={18}/>
-                                                        Configuración
-                                                    </a>
-                                                )}
-                                            </Menu.Item> */}
-                                            <Menu.Item>
-                                                {({ active }) => (
-                                                    <a href="/user/help" className={`flex rounded mx-2 justify-center items-center my-[13px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                        <Image
-                                                            className='mr-[10px]'
-                                                            src="/svg/icons/help.svg"
-                                                            alt="Logo de Paypal"
-                                                            width={17}
+                                                            src="/svg/icons/logOut.svg"
+                                                            alt="Salir"
+                                                            width={15}
                                                             height={17}
                                                         />
-                                                        Ayuda
-                                                    </a>
+                                                        <Link href='/dashboard/logout'>Salir</Link>
+                                                    </button>
                                                 )}
                                             </Menu.Item>
-                                            <form method="POST" action="#">
-                                                <Menu.Item>
-                                                    {({ active }) => (
-                                                        <button type="submit" className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                            <Image
-                                                                className='mr-[10px]'
-                                                                src="/svg/icons/logOut.svg"
-                                                                alt="Logo de Paypal"
-                                                                width={15}
-                                                                height={17}
-                                                            />
-                                                            <Link href='/dashboard/logout'>Salir</Link>
-                                                        </button>
-                                                    )}
-                                                </Menu.Item>
-                                            </form>
-                                        </div>
-                                    </Menu.Items>
-                                </Transition>
-                            </Menu>
-                        </div>
+                                        </form>
+                                    </div>
+                                </Menu.Items>
+                            </Transition>
+                        </Menu>
                     </div>
                 </div>
             </div>
