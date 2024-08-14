@@ -10,6 +10,7 @@ const Annexes = ({ onClose, cardId }) => {
   const api = useApi();
   const [urlToView, setFileUrl] = useState(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [permissions, setPermissions] = useState([]);
 
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
@@ -60,7 +61,14 @@ const Annexes = ({ onClose, cardId }) => {
   const handleAnxDownload = async (path) => {
     if (path) {
       window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
-      const uuid = localStorage.getItem('uuid');
+      //const uuid = localStorage.getItem('uuid');
+      let parsedPermissions;
+      const storedPermissions = localStorage.getItem('permissions'); 
+      if (storedPermissions) {
+          parsedPermissions = JSON.parse(storedPermissions);
+          setPermissions(parsedPermissions);
+      }
+      const uuid = parsedPermissions.uuid;
 
       const log = {};
       log.uuid = uuid;

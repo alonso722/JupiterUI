@@ -40,6 +40,7 @@ const TanStackTable = () => {
             parsedPermissions = JSON.parse(storedPermissions);
             setPermissions(parsedPermissions);
         }
+        const userType = parsedPermissions;
         
         let parsedAccess;
         const storedAccess = localStorage.getItem('workflows');
@@ -50,11 +51,12 @@ const TanStackTable = () => {
         let cooWorkflows = [
             ...parsedAccess.revisorOf,
             ...parsedAccess.aprobatorOf,
-            ...parsedAccess.editorOf
+            ...parsedAccess.editorOf,
+            ...parsedAccess.consultorOf
         ];
         
         const orga = parsedPermissions.Organization;
-        api.post('/user/process/fetchTab', {orga, cooWorkflows})
+        api.post('/user/process/fetchTab', {orga, userType, cooWorkflows})
             .then((response) => {
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,

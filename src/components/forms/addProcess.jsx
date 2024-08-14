@@ -187,6 +187,8 @@ const AddProcessForm = ({ card, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModal2Open, setIsModal2Open] = useState(false);
   const [processName, setProcessName] = useState('');
+  const [depName, setDepName] = useState('');
+  const [privileges, setPrivileges] = useState('');
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [fileInfo, setFileInfo] = useState(null); 
   const [annexesInfo, setAnnexesInfo] = useState(null); 
@@ -200,6 +202,7 @@ const AddProcessForm = ({ card, onClose }) => {
   const [selectedEditor, setSelectedEditor] = useState({});
   const [selectedRevisor, setSelectedRevisor] = useState([]);
   const [selectedAprobator, setSelectedAprobator] = useState([]);
+  const [selectedConsultor, setSelectedConsultor] = useState([]);
   const [workflowInfo, setInfo] = useState([]);
   const [workflows, setAccess] = useState([]);
 
@@ -227,6 +230,30 @@ const AddProcessForm = ({ card, onClose }) => {
       let parsedPermissions;
       const storedPermissions = localStorage.getItem('permissions'); 
       parsedPermissions = JSON.parse(storedPermissions);
+
+      let par;
+      const storedA = localStorage.getItem('workflows'); 
+      try {
+          par = JSON.parse(storedA);
+      } catch (e) {
+          console.error("Error al analizar el valor de localStorage:", e);
+          par = null;
+      }
+      
+      if (parsedPermissions.Type === 1 || parsedPermissions.Type === 6) {
+          setPrivileges(1);
+      } else if (par && typeof par === 'object' && par !== null) {
+      
+          if (par.editorOf && par.editorOf.includes(card.id)) {
+              setPrivileges(2);
+          } else if (par.revisorOf && par.revisorOf.includes(card.id)) {
+              setPrivileges(3);
+          } else if (par.aprobatorOf && par.aprobatorOf.includes(card.id)) {
+              setPrivileges(4);
+          } else {
+              setPrivileges(0);
+          }
+      } 
       
       if (parsedPermissions.Type === 6) {
         api.get('/user/organization/fetch')
@@ -250,11 +277,9 @@ const AddProcessForm = ({ card, onClose }) => {
       }
   
       if (card?.id) {
-        console.log("selectedddddd", card.id);
         const id = card.id;
         api.post('/user/process/fetchEdit', { id })
           .then((info) => {
-            console.log(info)
             setInfo(info.data); 
           })
           .catch((error) => {
@@ -277,18 +302,20 @@ const AddProcessForm = ({ card, onClose }) => {
   }, []);
   
   useEffect(() => {
+    
     if (workflowInfo && workflowInfo.t08_workflow_name) {
         setProcessName(workflowInfo.t08_workflow_name);
         setSelectedEditor(workflowInfo.t08_workflow_editor[0]);
         setSelectedRevisor(workflowInfo.t08_workflow_revisor);
         setSelectedAprobator(workflowInfo.t08_workflow_aprobator);
-        console.log("workflowInfo ha sido actualizado:", workflowInfo);
+        setDepName(workflowInfo.dName);
+        setFileInfo(workflowInfo.file)
+        setAnnexesInfo(workflowInfo.anx)
     }
-  }, [workflowInfo]);
+  }, [workflowInfo, ]);
   
   const handleAddProcess = async () => {
     if (!processName) {
-      console.log(selectedEditor, selectedRevisor, selectedAprobator)
       showToast('error', "Por favor, nombre el proceso");
       return;
     }
@@ -304,9 +331,39 @@ const AddProcessForm = ({ card, onClose }) => {
         editor: selectedEditor,
         revisor: selectedRevisor,
         aprobator: selectedAprobator,
+        consultor: selectedConsultor,
         state: 1,
-        processUsers: usersData,
-      };
+    };
+
+    const ensureArray = (value) => {
+      return Array.isArray(value) ? value : [];
+  };
+  
+  const hasDuplicates = (array1, array2) => {
+      return array1.some(item1 => array2.some(item2 => item1.userUuid === item2.userUuid));
+  };
+  
+  const hasDuplicateRoles = () => {
+    const editorArray = ensureArray([processDetails.editor]);
+    const revisorArray = ensureArray(processDetails.revisor);
+    const aprobatorArray = ensureArray(processDetails.aprobator);
+    const consultorArray = ensureArray(processDetails.consultor);
+
+    return (
+        hasDuplicates(editorArray, revisorArray) ||
+        hasDuplicates(editorArray, aprobatorArray) ||
+        hasDuplicates(editorArray, consultorArray) ||  
+        hasDuplicates(revisorArray, aprobatorArray) ||
+        hasDuplicates(revisorArray, consultorArray) || 
+        hasDuplicates(aprobatorArray, consultorArray)   
+    );
+};
+
+  
+  if (hasDuplicateRoles()) {
+      showToast('error', "Los usuarios no pueden tener más de dos roles por proceso.");
+      return;
+  }
       
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
@@ -318,12 +375,11 @@ const AddProcessForm = ({ card, onClose }) => {
       }
   
       if (processDetails.processName) {
-        console.log(processDetails)
+
         api.post('/user/process/addTab', processDetails)
           .then((response) => {
-            console.log(response)
             if (response.status === 200) {
-              //onClose();
+              onClose();
             }
           })
           .catch((error) => {
@@ -340,17 +396,52 @@ const AddProcessForm = ({ card, onClose }) => {
       showToast('error', "Por favor, nombre el proceso");
       return;
     }
-
-    console.log(selectedEditor, selectedRevisor, selectedAprobator)
   
     try {
+      const formatUser = (user) => ({
+        userUuid: user.uuid,
+        userName: Array.isArray(user.name) ? user.name.join(', ') : user.name,
+      });
+  
       const processDetails = {
         processId: card.id,
         processName,
-        editor: selectedEditor,
-        revisor: selectedRevisor,
-        aprobator: selectedAprobator,
+        editor: formatUser(selectedEditor),
+        revisor: selectedRevisor.map(formatUser),
+        aprobator: selectedAprobator.map(formatUser),
+        consultor: selectedConsultor.map(formatUser),
       };
+
+
+      const ensureArray = (value) => {
+        return Array.isArray(value) ? value : [];
+    };
+    
+    const hasDuplicates = (array1, array2) => {
+        return array1.some(item1 => array2.some(item2 => item1.userUuid === item2.userUuid));
+    };
+    
+    const hasDuplicateRoles = () => {
+      const editorArray = ensureArray([processDetails.editor]);
+      const revisorArray = ensureArray(processDetails.revisor);
+      const aprobatorArray = ensureArray(processDetails.aprobator);
+      const consultorArray = ensureArray(processDetails.consultor);
+  
+      return (
+          hasDuplicates(editorArray, revisorArray) ||
+          hasDuplicates(editorArray, aprobatorArray) ||
+          hasDuplicates(editorArray, consultorArray) || 
+          hasDuplicates(revisorArray, aprobatorArray) ||
+          hasDuplicates(revisorArray, consultorArray) ||
+          hasDuplicates(aprobatorArray, consultorArray)   
+      );
+  };
+  
+    
+    if (hasDuplicateRoles()) {
+        showToast('error', "Los usuarios no pueden tener más de dos roles por proceso.");
+        return;
+    }
       
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
@@ -360,14 +451,12 @@ const AddProcessForm = ({ card, onClose }) => {
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
       }
-      console.log(processDetails)
       if (processDetails.processName) {
-        
         api.post('/user/process/editTab', processDetails)
           .then((response) => {
-            console.log(response)
+
             if (response.status === 200) {
-              //onClose();
+              onClose();
             }
           })
           .catch((error) => {
@@ -422,8 +511,11 @@ const AddProcessForm = ({ card, onClose }) => {
       <div className='flex'>
         <div className=''>
           <div className='w-[400px]'>
+          <p className='text-black'>
+            {workflowInfo ? workflowInfo.dName : ''}
+          </p>
             <div className='flex'> 
-            <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>            
+            <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'></div>            
             <h2 className="text-2xl mt-[15px] mb-2 text-black">
               <input
                 type="text"
@@ -505,22 +597,23 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           )}
           </div>
-          <div className=" flex justify-end">
-            <div className='flex mt-[30px]'>
-              <button onClick={() => setIsModalOpen(true)} className='flex bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
-              <img src='/icons/doc.svg' alt='Iconos' width={19} height={21} className='mr-[13px]'/>
-                Cargar documento
-              </button>
-              <button onClick={() => setIsModal2Open(true)} className='flex ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
-              <img src='/icons/clip.svg' alt='Iconos' width={16} height={22} className='mr-[13px]'/>
-                Cargar anexos
-              </button>
+          {privileges === 1 || privileges === 2 ? (
+            <div className="flex justify-end">
+              <div className='flex mt-[30px]'>
+                <button onClick={() => setIsModalOpen(true)} className='flex bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
+                  <img src='/icons/doc.svg' alt='Iconos' width={19} height={21} className='mr-[13px]'/>
+                  Cargar documento
+                </button>
+                <button onClick={() => setIsModal2Open(true)} className='flex ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
+                  <img src='/icons/clip.svg' alt='Iconos' width={16} height={22} className='mr-[13px]'/>
+                  Cargar anexos
+                </button>
+              </div>
             </div>
-          </div>
+          ) : null}
           <button
             onClick={() => card ? handleEditProcess(selectedDepartments) : handleAddProcess(selectedDepartments)}
-            className="bg-[#2C1C47] py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[30px]"
-          >
+            className="bg-[#2C1C47] py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[30px]">
             {card ? 'Editar proceso' : 'Añadir proceso'}
           </button>
         </div>
@@ -599,7 +692,6 @@ const AddProcessForm = ({ card, onClose }) => {
               <div className='mb-2 px-5 text-black'>
                 <Listbox value={selectedEditor} onChange={(value) => {
                   setSelectedEditor(value);
-                  console.log("Editor seleccionado:", value); 
                 }} className="max-w-[100px]">
                   {({ open }) => (
                     <>
@@ -667,7 +759,12 @@ const AddProcessForm = ({ card, onClose }) => {
                   <p className="block text-sm font-medium leading-6 text-black">Aprobador</p>
                   <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
                 </div>
-              </div>
+
+              </div>                
+              <div className='max-h-[300px] h-[200px] max-w-[200px] ml-5'>
+                  <p className="block text-sm font-medium leading-6 text-black">Consultores</p>
+                  <UsersChecks selectedOptions={selectedConsultor} setSelectedOptions={setSelectedConsultor} selectedOrgId={selectedOrgId} />
+                </div>
             </div>
           )}
       </div>

@@ -8,6 +8,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
     const [selectedCard, setSelectedCard] = useState(null);
     const [permissions, setPermissions] = useState([]);
     const [cards, setCards] = useState([]);
+    const [workflows, setAccess] = useState([]);
     const effectMounted = useRef(false);
     const api = useApi();
 
@@ -20,13 +21,27 @@ export const Published = ({ departmentFilter, processFilter }) => {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
+
             const userType = parsedPermissions;
+        
+            let parsedAccess;
+            const storedAccess = localStorage.getItem('workflows');
+            if (storedAccess) {
+                parsedAccess = JSON.parse(storedAccess);
+                setAccess(parsedAccess);
+            }
+            let cooWorkflows = [
+                ...parsedAccess.revisorOf,
+                ...parsedAccess.aprobatorOf,
+                ...parsedAccess.editorOf,
+                ...parsedAccess.consultorOf
+            ];
+
             const orga = parsedPermissions.Organization;
             userType.token = token;
-            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter})
+            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter, cooWorkflows})
                 .then((response) => {
                     localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
-                    console.log(response.data.data);
                     const fetchedCards = response.data.data.map(item => ({
                         id: item.id.toString(),
                         name: item.process,

@@ -34,10 +34,9 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
             let cooWorkflows = [
                 ...parsedAccess.revisorOf,
                 ...parsedAccess.aprobatorOf,
-                ...parsedAccess.editorOf
+                ...parsedAccess.editorOf,
+                ...parsedAccess.consultorOf
             ];
-            
-            console.log(cooWorkflows);
             const userType = parsedPermissions;
             const orga = parsedPermissions.Organization;
             userType.token = token;
@@ -157,7 +156,8 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
         const indicators = getIndicators();
         const { element } = getNearestIndicator(e, indicators);
         const before = element.dataset.before || "-1";
-        const uuid = localStorage.getItem('uuid');
+        //const uuid = localStorage.getItem('uuid');
+        const uuid = permissions.uuid;
 
         if (before !== cardId) {
             let copy = [...cards];

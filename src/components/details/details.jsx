@@ -101,7 +101,6 @@ const Details = ({ card, onClose }) => {
 
           const responseRole = await api.post('/user/process/getRoles', card);
           const rolesData = responseRole.data[0];
-          console.log("namessssssssssssssssss",rolesData)
           setRoles(rolesData);
 
           const prId = card.id;
@@ -190,7 +189,7 @@ const Details = ({ card, onClose }) => {
   const handleDownload = async (path) => {
     if (path) {
       window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
-      const uuid = localStorage.getItem('uuid');
+      const uuid = permissions.uuid;
 
       const log = {};
       log.uuid = uuid;
@@ -209,7 +208,7 @@ const Details = ({ card, onClose }) => {
   const handleAnxDownload = async (path) => {
     if (path) {
       window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
-      const uuid = localStorage.getItem('uuid');
+      const uuid = permissions.uuid;
 
       const log = {};
       log.uuid = uuid;
@@ -231,7 +230,9 @@ const Details = ({ card, onClose }) => {
   
   const handleSubmit = async () => {
     const confirmationStatus = attendReq ? 1 : 0;
-    const uuid = localStorage.getItem('uuid');
+    //const uuid = localStorage.getItem('uuid');
+    //const perms = JSON.parse(permissions);ys
+    const uuid = permissions.uuid;
     
     const log = {};
     log.uuid = uuid;
