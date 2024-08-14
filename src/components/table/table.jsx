@@ -30,6 +30,7 @@ const TanStackTable = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
     const [permissions, setPermissions] = useState([]);
+    const [workflows, setAccess] = useState([]);
     const effectMounted = useRef(false);
 
     const fetchData = () => {
@@ -39,8 +40,21 @@ const TanStackTable = () => {
             parsedPermissions = JSON.parse(storedPermissions);
             setPermissions(parsedPermissions);
         }
+        
+        let parsedAccess;
+        const storedAccess = localStorage.getItem('workflows');
+        if (storedAccess) {
+            parsedAccess = JSON.parse(storedAccess);
+            setAccess(parsedAccess);
+        }
+        let cooWorkflows = [
+            ...parsedAccess.revisorOf,
+            ...parsedAccess.aprobatorOf,
+            ...parsedAccess.editorOf
+        ];
+        
         const orga = parsedPermissions.Organization;
-        api.post('/user/process/fetchTab', {orga})
+        api.post('/user/process/fetchTab', {orga, cooWorkflows})
             .then((response) => {
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,
@@ -146,11 +160,11 @@ const TanStackTable = () => {
             header: "Editor",
         }),
         columnHelper.accessor("revisor", {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => <span>{info.getValue().join(', ')}</span>,
             header: "Revisor",
         }),
         columnHelper.accessor("aprobator", {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => <span>{info.getValue().join(', ')}</span>,
             header: "Aprobador",
         }),
         columnHelper.accessor("status", {

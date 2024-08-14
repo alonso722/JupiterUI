@@ -10,6 +10,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [permissions, setPermissions] = useState([]);
+    const [workflows, setAccess] = useState([]);
     const [cards, setCards] = useState([]);
     const effectMounted = useRef(false);
     const api= useApi();
@@ -23,10 +24,24 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
+
+            let parsedAccess;
+            const storedAccess = localStorage.getItem('workflows');
+            if (storedAccess) {
+                parsedAccess = JSON.parse(storedAccess);
+                setAccess(parsedAccess);
+            }
+            let cooWorkflows = [
+                ...parsedAccess.revisorOf,
+                ...parsedAccess.aprobatorOf,
+                ...parsedAccess.editorOf
+            ];
+            
+            console.log(cooWorkflows);
             const userType = parsedPermissions;
             const orga = parsedPermissions.Organization;
             userType.token = token;
-            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter})
+            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter, cooWorkflows})
                 .then((response) => {
                     localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
                     const fetchedCards = response.data.data.map(item => ({

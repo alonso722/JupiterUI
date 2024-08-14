@@ -46,18 +46,27 @@ export default function CompleteAuth({
                     verified: null,
                 });
                 api.post('/user/auth/state', { token: storedToken })
-                    .then((response) => {
+                    .then(async (response) => {
                         const permissions = response.data.permissions[0];
                         setAuth((prevState: any) => ({
                             ...prevState,
                             token: storedToken
                         }));
                         localStorage.setItem('permissions', JSON.stringify(permissions));
+                        let workflows : any = {};
+                        try {
+                            const response = await api.post('/user/auth/workflows', permissions);
+                            workflows = response.data;
+                            localStorage.setItem('workflows', JSON.stringify(workflows));
+
+                        } catch (error) {
+                            console.error('Error al obtener datos:', error);
+                        }
                         
                         if (permissions.ISO === 0) {
                             router.push('/auth/login');
                             showToast('error','No tienes acceso a este servicio');
-                        } else if (permissions.Type === 5) {
+                        } else if (workflows.coordinator === 0) {
                             router.push('/dashboard/consultor');
                             showToast('success','Autenticación completada.');
                         } else {

@@ -200,6 +200,8 @@ const AddProcessForm = ({ card, onClose }) => {
   const [selectedEditor, setSelectedEditor] = useState({});
   const [selectedRevisor, setSelectedRevisor] = useState([]);
   const [selectedAprobator, setSelectedAprobator] = useState([]);
+  const [workflowInfo, setInfo] = useState([]);
+  const [workflows, setAccess] = useState([]);
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -224,25 +226,43 @@ const AddProcessForm = ({ card, onClose }) => {
     if (effectMounted.current === false) {
       let parsedPermissions;
       const storedPermissions = localStorage.getItem('permissions'); 
-      if (storedPermissions) {
-          parsedPermissions = JSON.parse(storedPermissions);
-          if (parsedPermissions.Type === 5) {
-              router.push('/dashboard/consultor');
-          }
-          if (parsedPermissions.Type === 6) {
-            api.get('/user/organization/fetch')
-            .then((response) => {
-                const fetchedData = response.data.data.map(item => ({
-                    id: item.id,
-                    organization: item.organization,    
-                }));
-                setOrgas(fetchedData);
-            })
-            .catch((error) => {
-                console.error("Error al consultar procesos:", error);
-            });
-        }
-        api.post('/user/process/fetchUsersList', {orga:parsedPermissions})
+      parsedPermissions = JSON.parse(storedPermissions);
+      
+      if (parsedPermissions.Type === 6) {
+        api.get('/user/organization/fetch')
+          .then((response) => {
+            const fetchedData = response.data.data.map(item => ({
+              id: item.id,
+              organization: item.organization,    
+            }));
+            setOrgas(fetchedData);
+          })
+          .catch((error) => {
+            console.error("Error al consultar procesos:", error);
+          });
+      }
+  
+      let parsedAccess;
+      const storedAccess = localStorage.getItem('workflows');
+      if (storedAccess) {
+        parsedAccess = JSON.parse(storedAccess);
+        setAccess(parsedAccess);
+      }
+  
+      if (card?.id) {
+        console.log("selectedddddd", card.id);
+        const id = card.id;
+        api.post('/user/process/fetchEdit', { id })
+          .then((info) => {
+            console.log(info)
+            setInfo(info.data); 
+          })
+          .catch((error) => {
+            console.error("Error al consultar el proceso:", error);
+          });
+      }
+  
+      api.post('/user/process/fetchUsersList', { orga: parsedPermissions })
         .then((response) => {
           const fetchedData = response.data;
           setUList(fetchedData);
@@ -250,13 +270,22 @@ const AddProcessForm = ({ card, onClose }) => {
         .catch((error) => {
           console.error("Error al consultar procesos:", error);
         });
-
-        setPermissions(parsedPermissions);
-      }
+      
+      setPermissions(parsedPermissions);    
       effectMounted.current = true;
     }
   }, []);
-
+  
+  useEffect(() => {
+    if (workflowInfo && workflowInfo.t08_workflow_name) {
+        setProcessName(workflowInfo.t08_workflow_name);
+        setSelectedEditor(workflowInfo.t08_workflow_editor[0]);
+        setSelectedRevisor(workflowInfo.t08_workflow_revisor);
+        setSelectedAprobator(workflowInfo.t08_workflow_aprobator);
+        console.log("workflowInfo ha sido actualizado:", workflowInfo);
+    }
+  }, [workflowInfo]);
+  
   const handleAddProcess = async () => {
     if (!processName) {
       console.log(selectedEditor, selectedRevisor, selectedAprobator)
@@ -268,9 +297,6 @@ const AddProcessForm = ({ card, onClose }) => {
       const response = await api.post('/user/process/fetchUsers', { selectedDepartments });
       const usersData = response.data;
       setUsers(usersData);
-      const editor = permissions.Organization === 1//xdfghjk 
-        ? usersData.filter(user => user.role === 2) 
-        : { userName: "editor", uuid: "uet1" };
       
       const processDetails = {
         processName,
@@ -282,7 +308,6 @@ const AddProcessForm = ({ card, onClose }) => {
         processUsers: usersData,
       };
       
-  
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
         processDetails.fileTitle = fileInfo.asignedTitle;
@@ -296,8 +321,53 @@ const AddProcessForm = ({ card, onClose }) => {
         console.log(processDetails)
         api.post('/user/process/addTab', processDetails)
           .then((response) => {
-            if (response.data === 200) {
-              onClose();
+            console.log(response)
+            if (response.status === 200) {
+              //onClose();
+            }
+          })
+          .catch((error) => {
+            console.error("Error al consultar procesos:", error);
+          });
+      }
+    } catch (error) {
+      console.error("Error al consultar procesos:", error);
+    }
+  };
+
+  const handleEditProcess = async () => {
+    if (!processName) {
+      showToast('error', "Por favor, nombre el proceso");
+      return;
+    }
+
+    console.log(selectedEditor, selectedRevisor, selectedAprobator)
+  
+    try {
+      const processDetails = {
+        processId: card.id,
+        processName,
+        editor: selectedEditor,
+        revisor: selectedRevisor,
+        aprobator: selectedAprobator,
+      };
+      
+      if (fileInfo) {
+        processDetails.filePath = fileInfo.path;
+        processDetails.fileTitle = fileInfo.asignedTitle;
+        processDetails.fileName = fileInfo.name;
+      }
+      if (annexesInfo) {
+        processDetails.annexes = annexesInfo;
+      }
+      console.log(processDetails)
+      if (processDetails.processName) {
+        
+        api.post('/user/process/editTab', processDetails)
+          .then((response) => {
+            console.log(response)
+            if (response.status === 200) {
+              //onClose();
             }
           })
           .catch((error) => {
@@ -354,14 +424,17 @@ const AddProcessForm = ({ card, onClose }) => {
           <div className='w-[400px]'>
             <div className='flex'> 
             <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>            
-              <h2 className="text-2xl mt-[15px] mb-2 text-black">
-                <input
-                  type="text"
-                  placeholder="Nombre del proceso"
-                  value={processName}
-                  onChange={(e) => setProcessName(e.target.value)}
-                  className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
-              </h2>
+            <h2 className="text-2xl mt-[15px] mb-2 text-black">
+              <input
+                type="text"
+                placeholder="Nombre del proceso"
+                defaultValue={workflowInfo ? workflowInfo.t08_workflow_name : ""}
+                value={processName}
+                onChange={(e) => setProcessName(e.target.value)}
+                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
+                disabled={permissions.Type !== 1 && permissions.Type !== 6}
+              />
+            </h2>
             </div>
             {permissions.Type === 6 && (
             <div className='mb-2 p-1 text-black'>
@@ -426,9 +499,11 @@ const AddProcessForm = ({ card, onClose }) => {
               </Listbox>
             </div>
           )}
+          {!card && (
             <div className='max-h-[300px] h-[200px]'>
               <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} selectedOrgId={selectedOrgId} />
             </div>
+          )}
           </div>
           <div className=" flex justify-end">
             <div className='flex mt-[30px]'>
@@ -442,107 +517,159 @@ const AddProcessForm = ({ card, onClose }) => {
               </button>
             </div>
           </div>
-        <button onClick={() => handleAddProcess(selectedDepartments)} className="bg-[#2C1C47] py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[30px]">
-          Añadir proceso
-        </button>
+          <button
+            onClick={() => card ? handleEditProcess(selectedDepartments) : handleAddProcess(selectedDepartments)}
+            className="bg-[#2C1C47] py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[30px]"
+          >
+            {card ? 'Editar proceso' : 'Añadir proceso'}
+          </button>
         </div>
-        <div className=' ml-3 rounded border-2 mt-[20px] h-[520px]'>
-          <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
-            {fileInfo && (
-              <div className="text-black flex flex-col items-center">
-                <h2 className="mb-2">Documento cargado:</h2>            
-                <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap'
-                  title={fileInfo.name}>
-                  {fileInfo.name}
-                </p>
-              </div>
-            )}
-            {annexesInfo && (
-              <div className="text-black flex flex-col items-center ml-6">
-                <h2 className="mb-2">Anexos:</h2>
-                <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                <p
-                  className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap'
-                  title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
-                  {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
-                </p>
-              </div>
-            )}
-            </div>
-            <div className='mb-2 px-5 text-black'>
-            <Listbox value={selectedEditor} onChange={(value) => {
-              setSelectedEditor(value);
-              console.log("Editor seleccionado:", value); 
-            }} className="max-w-[100px]">
-              {({ open }) => (
-                <>
-                  <Listbox.Label className="block text-sm font-medium leading-6 text-black">Editor</Listbox.Label>
-                  <div className="relative mt-2">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
-                      <span className="flex items-center">
-                        <span className="ml-3 block truncate">
-                          {selectedEditor?.userName || "Selecciona..."}
-                        </span>
-                      </span>
-                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                      </span>
-                    </Listbox.Button>
-                    <Transition
-                      show={open}
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0">
-                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {list.map((user) => (
-                          <Listbox.Option
-                            key={user.userUuid}
-                            value={user}
-                            className={({ active }) =>
-                              classNames(
-                                active ? 'bg-indigo-600 text-white' : 'text-black',
-                                'relative cursor-default select-none py-2 pl-3 pr-9')}>
-                            {({ selected, active }) => (
-                              <>
-                                <div className="flex items-center">
-                                  <span
-                                    className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
-                                    {user.userName}
-                                  </span>
-                                </div>
-                                {selected ? (
-                                  <span
-                                    className={classNames(
-                                      active ? 'text-white' : 'text-indigo-600',
-                                      'absolute inset-y-0 right-0 flex items-center pr-4'
-                                    )}>
-                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Transition>
-                  </div>
-                </>
+        {card && workflowInfo ? (
+          <div className=' ml-3 rounded border-2 mt-[20px] h-[520px]'>
+            <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
+              {fileInfo && (
+                <div className="text-black flex flex-col items-center">
+                  <h2 className="mb-2">Documento cargado:</h2>            
+                  <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                  <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
+                    {fileInfo.name}
+                  </p>
+                </div>
               )}
-            </Listbox>
+              {annexesInfo && (
+                <div className="text-black flex flex-col items-center ml-6">
+                  <h2 className="mb-2">Anexos:</h2>
+                    <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                    <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                    {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
+                  </p>
+                </div>
+              )}
             </div>
-            <div className='flex justify-between mt-3'>
-              <div className='ml-5 max-h-[300px] h-[200px] max-w-[200px] '>
-                <p className="block text-sm font-medium leading-6 text-black">Revisor</p>
-                <UsersChecks selectedOptions={selectedRevisor} setSelectedOptions={setSelectedRevisor} selectedOrgId={selectedOrgId} />
-              </div>
-              <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
-              <p className="block text-sm font-medium leading-6 text-black">Aprobador</p>
-                <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
+            <div className='flex flex-col p-3'>
+              <h2 className='text-black text-lg font-semibold mb-2'>Información del Workflow:</h2>
+              <div className='text-black mb-3'>
+                <h3 className='text-md font-medium'>Editor:</h3>
+                {workflowInfo.t08_workflow_editor && workflowInfo.t08_workflow_editor.length > 0 ? (
+                  <p>{workflowInfo.t08_workflow_editor[0].name}</p>
+                  ) : (
+                  <p>No hay editor asignado</p>
+                )}
+                </div>
+                <div className='text-black mb-3'>
+                  <h3 className='text-md font-medium'>Revisor:</h3>
+                  {workflowInfo.t08_workflow_revisor && workflowInfo.t08_workflow_revisor.length > 0 ? (
+                    <p>{workflowInfo.t08_workflow_revisor.map(revisor => revisor.name).join(', ')}</p>
+                  ) : (
+                    <p>No hay revisor(es) asignado(s)</p>
+                  )}
+                </div>
+                <div className='text-black mb-3'>
+                  <h3 className='text-md font-medium'>Aprobador:</h3>
+                  {workflowInfo.t08_workflow_aprobator && workflowInfo.t08_workflow_aprobator.length > 0 ? (
+                    <p>{workflowInfo.t08_workflow_aprobator.map(aprobator => aprobator.name).join(', ')}</p>
+                  ) : (
+                  <p>No hay aprobador(es) asignado(s)</p>
+                  )}
+                </div>
               </div>
             </div>
-        </div>
+          ) : (
+            <div className=' ml-3 rounded border-2 mt-[20px] h-[520px]'>
+              <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
+                {fileInfo && (
+                  <div className="text-black flex flex-col items-center">
+                    <h2 className="mb-2">Documento cargado:</h2>            
+                    <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                    <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
+                      {fileInfo.name}
+                    </p>
+                  </div>
+                )}
+                {annexesInfo && (
+                  <div className="text-black flex flex-col items-center ml-6">
+                    <h2 className="mb-2">Anexos:</h2>
+                    <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                    <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                      {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
+                    </p>
+                  </div>
+                )}
+              </div>
+              <div className='mb-2 px-5 text-black'>
+                <Listbox value={selectedEditor} onChange={(value) => {
+                  setSelectedEditor(value);
+                  console.log("Editor seleccionado:", value); 
+                }} className="max-w-[100px]">
+                  {({ open }) => (
+                    <>
+                      <Listbox.Label className="block text-sm font-medium leading-6 text-black">Editor</Listbox.Label>
+                      <div className="relative mt-2">
+                        <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                          <span className="flex items-center">
+                            <span className="ml-3 block truncate">
+                              {selectedEditor?.userName || "Selecciona..."}
+                            </span>
+                          </span>
+                          <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                          </span>
+                        </Listbox.Button>
+                        <Transition
+                          show={open}
+                          as={Fragment}
+                          leave="transition ease-in duration-100"
+                          leaveFrom="opacity-100"
+                          leaveTo="opacity-0">
+                          <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                            {list.map((user) => (
+                              <Listbox.Option
+                                key={user.userUuid}
+                                value={user}
+                                className={({ active }) =>
+                                  classNames(
+                                    active ? 'bg-indigo-600 text-white' : 'text-black',
+                                    'relative cursor-default select-none py-2 pl-3 pr-9')}>
+                                {({ selected, active }) => (
+                                  <>
+                                    <div className="flex items-center">
+                                      <span
+                                        className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
+                                        {user.userName}
+                                      </span>
+                                    </div>
+                                    {selected ? (
+                                      <span
+                                        className={classNames(
+                                          active ? 'text-white' : 'text-indigo-600',
+                                          'absolute inset-y-0 right-0 flex items-center pr-4'
+                                        )}>
+                                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                      </span>
+                                    ) : null}
+                                  </>
+                                )}
+                              </Listbox.Option>
+                            ))}
+                          </Listbox.Options>
+                        </Transition>
+                      </div>
+                    </>
+                  )}
+                </Listbox>
+              </div>
+              <div className='flex justify-between mt-3'>
+                <div className='ml-5 max-h-[300px] h-[200px] max-w-[200px]'>
+                  <p className="block text-sm font-medium leading-6 text-black">Revisor</p>
+                  <UsersChecks selectedOptions={selectedRevisor} setSelectedOptions={setSelectedRevisor} selectedOrgId={selectedOrgId} />
+                </div>
+                <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
+                  <p className="block text-sm font-medium leading-6 text-black">Aprobador</p>
+                  <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
+                </div>
+              </div>
+            </div>
+          )}
       </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
         {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onAnnexesUpload={handleAnnexesUpload} />}

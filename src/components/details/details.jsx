@@ -100,7 +100,7 @@ const Details = ({ card, onClose }) => {
           setSelected(initialStatus);
 
           const responseRole = await api.post('/user/process/getRoles', card);
-          const rolesData = responseRole.data;
+          const rolesData = responseRole.data[0];
           console.log("namessssssssssssssssss",rolesData)
           setRoles(rolesData);
 
@@ -358,17 +358,19 @@ const Details = ({ card, onClose }) => {
                           <strong>Sin documento</strong>
                         </p>
                       )}
-                      <img
-                        onClick={() => document && openViewer(document.path)}
-                        src={document ? getFileIcon(document.name) : getFileIcon('default')}
-                        alt="File Icon"
-                        className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                      />
+                      {document?.name ? (
+                        <img
+                          onClick={() => document && openViewer(document.path)}
+                          src={getFileIcon(document.name)}
+                          alt="File Icon"
+                          className="w-[50%] h-auto mt-[10px] cursor-pointer"
+                        />
+                      ) : null}
                       <p className="mt-[5px] mb-2 text-black text-center">
-                        {document ? document.name : "Sin nombre"}
+                        {document ? document.name : ""}
                       </p>
                     </div>
-                    {permissions.Type !== 5 && (
+                    {permissions.Type !== 5 && document?.name && (
                       <button
                         onClick={() => handleDownload(document.path)}
                         className="bg-[#2C1C47] p-1 rounded text-white">

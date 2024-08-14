@@ -1,7 +1,7 @@
 import { Fragment, useState, useEffect } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import Details from '../details/details';
+import AddProcessForm from "../forms/addProcess";
 import useApi from '@/hooks/useApi';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
@@ -135,7 +135,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                 </div>
             </div>
             {isModalOpen && selectedCard && (
-                <Details card={selectedCard} onClose={handleCloseModal} />
+                <AddProcessForm card={selectedCard} onClose={handleCloseModal} />
             )}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
