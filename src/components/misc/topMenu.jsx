@@ -39,16 +39,16 @@ export default function TopNewMenuClientDashboard() {
                 setPermissions(parsedPermissions);
             }
             const uuid = parsedPermissions.uuid;
-            const response = api.post('/user/users/getNameById', {uuid})
-            .then((response) => {
-                const uName = response.data.name;
-                const uLast = response.data.last;
-                setName(uName);
-                setLast(uLast);
-              })
-              .catch((error) => {
-                console.error("Error al consultar nombre:", error);
-              });
+            // const response = api.post('/user/users/getNameById', {uuid})
+            // .then((response) => {
+            //     const uName = response.data.name;
+            //     const uLast = response.data.last;
+            //     setName(uName);
+            //     setLast(uLast);
+            //   })
+            //   .catch((error) => {
+            //     console.error("Error al consultar nombre:", error);
+            //   });
             if (!authStateValue.loggedIn) {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
@@ -67,9 +67,9 @@ export default function TopNewMenuClientDashboard() {
                         width={180}
                         height={29}/>
                 </div>
-                <div className="flex-1 flex justify-center">
+                {/* <div className="flex-1 flex justify-center">
                     <p className="text-black text-center "><b>{name} {last}</b></p>
-                </div>
+                </div> */}
                 <div className="flex h-11 w-[346px] items-center justify-end pr-8">
                     <div className="mr-[47px]">
                         <svg
