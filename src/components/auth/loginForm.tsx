@@ -2,7 +2,7 @@ import { validateSync } from 'class-validator';
 import { useRouter } from 'next/navigation'; 
 import { useCallback, useState } from 'react';
 import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Importa los estilos de react-toastify
+import 'react-toastify/dist/ReactToastify.css'; 
 import { Input } from '../form/input';
 import { CredentialsValidation } from '@/validation/credentialsValidation';
 import { Button } from '../form/button';
@@ -54,7 +54,6 @@ export default function LoginForm({
             setShowSuccessMessage(true);
             setTimeout(() => setShowSuccessMessage(false), 2000);
             showToast('success', 'Usuario y contraseña correctos');
-            // localStorage
             localStorage.setItem('token', response.data.token);
             router.push(`/auth/complete?token=${response.data}`);     
         })
