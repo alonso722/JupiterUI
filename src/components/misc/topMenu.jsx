@@ -14,6 +14,7 @@ import useApi from '@/hooks/useApi';
 export default function TopNewMenuClientDashboard() {
     const [permissions, setPermissions] = useState([]);
     const [name, setName] = useState('');
+    const [last, setLast] = useState('');
     const searchParams = useSearchParams();
     const effectMounted = useRef(false);
     const [authStateValue, setAuth] = useRecoilState(authState);
@@ -40,9 +41,10 @@ export default function TopNewMenuClientDashboard() {
             const uuid = parsedPermissions.uuid;
             const response = api.post('/user/users/getNameById', {uuid})
             .then((response) => {
-                console.log(response.data)
-                const uName = response.data;
-                setName(uName)
+                const uName = response.data.name;
+                const uLast = response.data.last;
+                setName(uName);
+                setLast(uLast);
               })
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);
@@ -66,7 +68,7 @@ export default function TopNewMenuClientDashboard() {
                         height={29}/>
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <p className="text-black text-center "><b>{name}</b></p>
+                    <p className="text-black text-center "><b>{name} {last}</b></p>
                 </div>
                 <div className="flex h-11 w-[346px] items-center justify-end pr-8">
                     <div className="mr-[47px]">
