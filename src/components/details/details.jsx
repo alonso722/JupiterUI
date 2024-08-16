@@ -565,11 +565,31 @@ const Details = ({ card, onClose }) => {
                 {roles.editor && <>Editado por: <strong>{roles.editor}</strong></>}
               </p>
               <p>
-                {roles.revisor && <>Revisado por: <strong>{roles.revisor.join(', ')}</strong></>}
-              </p>
-              <p>
-                {roles.aprobator && <>Aprobado por: <strong>{roles.aprobator.join(', ')}</strong></>}
-              </p>
+              {roles.revisor && (
+                <>
+                  Revisado por: <strong>
+                    {roles.revisor.map((revisor, index) => (
+                      <span key={index}>
+                        {revisor}{index < roles.revisor.length - 1 && ','}<br />
+                      </span>
+                    ))}
+                  </strong>
+                </>
+              )}
+            </p>
+            <p>
+              {roles.aprobator && (
+                <>
+                  Aprobado por: <strong>
+                    {roles.aprobator.map((aprobator, index) => (
+                      <span key={index}>
+                        {aprobator}{index < roles.aprobator.length - 1 && ','}<br />
+                      </span>
+                    ))}
+                  </strong>
+                </>
+              )}
+            </p>
               <p>Fecha de aprobación</p>
             </div>
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[200px] overflow-auto">

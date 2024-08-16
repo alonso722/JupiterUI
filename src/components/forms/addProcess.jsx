@@ -445,18 +445,19 @@ const AddProcessForm = ({ card, onClose }) => {
       
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
-        processDetails.fileTitle = fileInfo.asignedTitle;
-        processDetails.fileName = fileInfo.name;
+        processDetails.fileTitle = fileInfo.name;
+        processDetails.fileName = fileInfo.title;
       }
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
       }
       if (processDetails.processName) {
+        console.log(processDetails)
         api.post('/user/process/editTab', processDetails)
           .then((response) => {
 
             if (response.status === 200) {
-              onClose();
+              //onClose();
             }
           })
           .catch((error) => {
@@ -700,7 +701,7 @@ const AddProcessForm = ({ card, onClose }) => {
                         <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
                           <span className="flex items-center">
                             <span className="ml-3 block truncate">
-                              {selectedEditor?.userName || "Selecciona..."}
+                            {selectedEditor ? `${selectedEditor.userName} ${selectedEditor.last || ''}` : "Selecciona..."}
                             </span>
                           </span>
                           <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
@@ -727,7 +728,7 @@ const AddProcessForm = ({ card, onClose }) => {
                                     <div className="flex items-center">
                                       <span
                                         className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
-                                        {user.userName}
+                                        {user.userName} {user.last}
                                       </span>
                                     </div>
                                     {selected ? (

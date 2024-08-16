@@ -26,6 +26,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
       if (organization) {
         api.post('/user/process/fetchUsersList', { search, orga: parsedPermissions })
           .then((response) => {
+            console.log(response)
             setOptions(response.data.map(option => ({ ...option })));
           })
           .catch((error) => {
@@ -89,7 +90,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
               <span 
                 className='max-w-[300px] w-auto truncate' 
                 title={option.userName}>
-                {option.userName}
+                {option.userName} {option.last}
               </span>
               <button 
                 className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
@@ -108,7 +109,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
           {selectedOptions.map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
               <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
-                {option.userName}
+                {option.userName} {option.last}
               </span>
               <button 
                 className="bg-red-500 text-white px-2 py-1 rounded ml-2"
