@@ -26,7 +26,6 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
       if (organization) {
         api.post('/user/process/fetchUsersList', { search, orga: parsedPermissions })
           .then((response) => {
-            console.log(response)
             setOptions(response.data.map(option => ({ ...option })));
           })
           .catch((error) => {
@@ -47,8 +46,6 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
   }, [selectedOrgId]);
 
   useEffect(() => {
-    console.log("selectedOptions in UsersChecks:", selectedOptions);
-    
   }, [selectedOptions]);
 
   useEffect(() => {

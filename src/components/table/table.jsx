@@ -69,7 +69,6 @@ const TanStackTable = () => {
                     created: formatDate(item.created),
                     updated: formatDate(item.updated),
                 }));
-                console.log(fetchedData)
                 setData(fetchedData.reverse());
                 setRefreshTable(false);
             })
@@ -173,10 +172,13 @@ const TanStackTable = () => {
             cell: (info) => {
                 const revisors = info.getValue();
                 return (
-                    <span>
-                        {revisors && revisors.length > 0 ? revisors.map(revisor => 
-                            `${revisor.userName} ${revisor.last}`).join(', ') : 'No Revisor'}
-                    </span>
+                    <ul className="list-disc pl-5">
+                    {revisors && revisors.length > 0 ? revisors.map((revisor, index) => (
+                        <li key={index}>
+                        {`${revisor.userName} ${revisor.last}`}
+                        </li>
+                    )) : <li>No Revisor</li>}
+                    </ul>
                 );
             },
             header: "Revisor",
@@ -185,10 +187,13 @@ const TanStackTable = () => {
             cell: (info) => {
                 const aprobators = info.getValue();
                 return (
-                    <span>
-                        {aprobators && aprobators.length > 0 ? aprobators.map(aprobator => 
-                            `${aprobator.userName} ${aprobator.last}`).join(', ') : 'No Aprobador'}
-                    </span>
+                    <ul className="list-disc pl-5">
+                    {aprobators && aprobators.length > 0 ? aprobators.map((aprobator, index) => (
+                        <li key={index}>
+                        {`${aprobator.userName} ${aprobator.last}`}
+                        </li>
+                    )) : <li>No Aprobador</li>}
+                    </ul>
                 );
             },
             header: "Aprobador",

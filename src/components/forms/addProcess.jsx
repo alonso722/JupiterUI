@@ -5,28 +5,32 @@ import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
 import UsersChecks from '../misc/checkbox/usersChecks';
 import { toast } from 'react-toastify';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-
 const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const effectMounted = useRef(false);
   const api = useApi();
 
   const showToast = (type, message) => {
     toast[type](message, {
-        position: 'top-center',
-        autoClose: 2000,
+      position: 'top-center',
+      autoClose: 2000,
     });
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type !== 'application/pdf') {
+      showToast('error', 'Solo se permiten archivos PDF.');
+      setFile(null); 
+    } else {
+      setFile(selectedFile);
+    }
   };
 
   const handleSubmit = async () => {
     if (!file) {
-      showToast('error','Por favor, seleccione un archivo para cargar.');
+      showToast('error', 'Por favor, seleccione un archivo para cargar.');
       return;
     }
 
@@ -56,9 +60,9 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
-      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
-        &times;
-      </button>
+        <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+          &times;
+        </button>
         <h2 className="text-2xl mb-4 text-black">Cargar documento</h2>
         <input type="file" onChange={handleFileChange} className="mb-4" />
         {file && (
@@ -72,13 +76,13 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
           placeholder="Título del documento"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
-        <textarea
-          placeholder="Descripción del documento"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
-        <button onClick={handleSubmit} className="bg-[#2C1C47] p-2 rounded text-white">
+          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"
+        />
+        <button
+          onClick={handleSubmit}
+          className={`p-2 rounded text-white ${!file ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2C1C47] hover:bg-[#1B1130] cursor-pointer'}`}
+          disabled={!file} 
+        >
           Cargar
         </button>
       </div>
@@ -280,7 +284,6 @@ const AddProcessForm = ({ card, onClose }) => {
         const id = card.id;
         api.post('/user/process/fetchEdit', { id })
           .then((info) => {
-            console.log(info.data)
             setInfo(info.data); 
           })
           .catch((error) => {
@@ -306,7 +309,6 @@ const AddProcessForm = ({ card, onClose }) => {
     
     if (workflowInfo && workflowInfo.t08_workflow_name) {
         setProcessName(workflowInfo.t08_workflow_name);
-        console.log("4567890",workflowInfo.t08_workflow_editor[0])
         setSelectedEditor(workflowInfo.t08_workflow_editor[0]);
         setSelectedRevisor(workflowInfo.t08_workflow_revisor);
         setSelectedAprobator(workflowInfo.t08_workflow_aprobator);
@@ -377,16 +379,15 @@ const AddProcessForm = ({ card, onClose }) => {
       }
   
       if (processDetails.processName) {
-        console.log(processDetails)
-        // api.post('/user/process/addTab', processDetails)
-        //   .then((response) => {
-        //     if (response.status === 200) {
-        //       onClose();
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error al consultar procesos:", error);
-        //   });
+        api.post('/user/process/addTab', processDetails)
+          .then((response) => {
+            if (response.status === 200) {
+              onClose();
+            }
+          })
+          .catch((error) => {
+            console.error("Error al consultar procesos:", error);
+          });
       }
     } catch (error) {
       console.error("Error al consultar procesos:", error);
@@ -418,7 +419,6 @@ const AddProcessForm = ({ card, onClose }) => {
       const ensureArray = (value) => {
         return Array.isArray(value) ? value : [];
     };
-    console.log("ooooooooooooooo",processDetails)
     
     const hasDuplicates = (array1, array2) => {
         return array1.some(item1 => array2.some(item2 => item1.uuid === item2.uuid));
@@ -453,18 +453,17 @@ const AddProcessForm = ({ card, onClose }) => {
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
       }
-      console.log(processDetails)
       if (processDetails.processName) {
-        // api.post('/user/process/editTab', processDetails)
-        //   .then((response) => {
+        api.post('/user/process/editTab', processDetails)
+          .then((response) => {
 
-        //     if (response.status === 200) {
-        //       onClose();
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.error("Error al consultar procesos:", error);
-        //   });
+            if (response.status === 200) {
+              onClose();
+            }
+          })
+          .catch((error) => {
+            console.error("Error al consultar procesos:", error);
+          });
       }
     } catch (error) {
       console.error("Error al consultar procesos:", error);
@@ -507,7 +506,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[650px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[92%] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -621,7 +620,7 @@ const AddProcessForm = ({ card, onClose }) => {
           </button>
         </div>
         {permissions.Type !== 1 && permissions.Type !== 6 ? (
-          <div className='ml-3 rounded border-2 mt-[20px] h-[550px]'>
+          <div className='ml-3 rounded border-2 mt-[20px] h-[630px]'>
             <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
               {fileInfo && (
                 <div className="text-black flex flex-col items-center">
@@ -671,7 +670,7 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           </div>
         ) : (
-          <div className='ml-3 rounded border-2 mt-[20px] h-[550px]'>
+          <div className='ml-3 rounded border-2 mt-[20px] h-[630px]'>
             <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
               {fileInfo && (
                 <div className="text-black flex flex-col items-center">

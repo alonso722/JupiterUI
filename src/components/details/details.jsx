@@ -55,6 +55,8 @@ const Details = ({ card, onClose }) => {
   const [workflows, setAccess] = useState([]);
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState(null);
+  const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
     setIsViewerOpen(true);
@@ -100,11 +102,10 @@ const Details = ({ card, onClose }) => {
           const responseDoc = await api.post('/user/document/fetch', card);
           const fetchDocument = responseDoc.data.data[0];
           setDocument(fetchDocument);
-          setSelected(initialStatus);////////
+          setSelected(initialStatus);
 
           const responseRole = await api.post('/user/process/getRoles', card);
           const rolesData = responseRole.data[0];
-          console.log(rolesData)
           setRoles(rolesData);
 
           const prId = card.id;
@@ -278,14 +279,14 @@ const Details = ({ card, onClose }) => {
       case 22:
         return " una descarga";
       case 23:
-        return " una actualización del estado del proceso";
+        return `una actualización del estado del proceso a '${card.column}'`;
       case 24:
         return " una descarga del anexo";  
       default:
         return "Evento desconocido";
     }
   }
-
+  
   const getIncidentStatus = async (id) => {
     try {
       const response = await api.post('/user/incident/getStatus', {id});
@@ -318,7 +319,6 @@ const Details = ({ card, onClose }) => {
     setSelected(newStatus);
     setUpdateModalOpen(false);
 
-    // Llamar a handleStatusCheck si se selecciona el estado 3 o 4
     if (newStatus.id === 3 || newStatus.id === 4) {
       handleStatusCheck(newStatus);
     } else {
@@ -326,7 +326,6 @@ const Details = ({ card, onClose }) => {
       log.id = card.column;
       log.uuid = permissions.uuid;
       log.type = 23;
-      console.log(log, newStatus)
       api.post('/user/process/update', {
         id: card.id,
         newColumn: newStatus.column,
@@ -342,49 +341,163 @@ const Details = ({ card, onClose }) => {
         console.error("Error al actualizar la columna en backend:", error);
       });
       showToast('success','Se actualizo el estado del proceso.');
-      console.log('Estado actualizado:', newStatus);
     }
   };
 
+  const handleReject=()=>{
+    setRejectModalOpen(true);
+  }
+
+  const handleConfirmReject=()=>{
+    setRejectModalOpen(true);
+    let log = {};
+    log.id = card.id;
+    log.uuid = permissions.uuid;
+    log.type = 23;
+    api.post('/user/process/reject', {
+      id: card.id
+    })
+    .then( async (response) => {
+      try {
+        await api.post('/user/log/setLog', log);
+      } catch (error) {
+        console.error("Error al hacer el registro:", error);
+      }
+    })
+    .catch((error) => {
+      console.error("Error al actualizar la columna en backend:", error);
+    });
+    showToast('error','Se actualizo el estado del proceso, regresó a edición.');
+    onClose();
+  }
+
+
   const handleStatusCheck = (newStatus)=>{
-    console.log(newStatus)
+    const vobo = {};
+    vobo.uuid = permissions.uuid;
+    vobo.process = parseInt(card.id);
+    const state = newStatus.id;
+
+    let log = {};
+      log.id = card.id;
+      log.uuid = permissions.uuid;
+      log.type = 23;
+    if(state == 3){
+      api.post('/user/vobo/revisionA', vobo)
+      .then( async (response) => {
+        showToast('success','Se envió su visto bueno.');
+        const left = response.data;
+        if ( left == 0){
+          api.post('/user/process/update', {
+            id: card.id,
+            newColumn: newStatus.column,
+          })
+          .then( async (response) => {
+            try {
+              await api.post('/user/log/setLog', log);
+            } catch (error) {
+              console.error("Error al hacer el registro:", error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error al actualizar la columna en backend:", error);
+          });
+        } else {
+          showToast('warning','Esperando la revisión de los demás encargados...');
+          onClose();
+        }
+      })
+      .catch((error) => {
+        console.error("Error al actualizar la columna en backend:", error);
+      });
+
+    } else{
+      api.post('/user/vobo/aprobationA', vobo)
+      .then( async (response) => {
+        showToast('success','Se envió su visto bueno.');
+        const left = response.data;
+        if ( left == 0){
+          api.post('/user/process/update', {
+            id: card.id,
+            newColumn: newStatus.column,
+          })
+          .then( async (response) => {
+            try {
+              await api.post('/user/log/setLog', log);
+            } catch (error) {
+              console.error("Error al hacer el registro:", error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error al actualizar la columna en backend:", error);
+          });
+        } else {
+          showToast('warning','Esperando la revisión de los demás encargados...');
+          onClose();
+        }
+      })
+      .catch((error) => {
+        console.error("Error al actualizar la columna en backend:", error);
+      });
+
+    }
   }
 
   const handleCancelUpdate = () => {
     setUpdateModalOpen(false);
   };
 
-  const isListboxDisabled = () => {
-    if (effectMounted.current === false) {
-      const { id } = selected;
-      let parsedWorkflows;
-      const storedWorkflows = localStorage.getItem('workflows');
-      if (storedWorkflows) {
-          parsedWorkflows = JSON.parse(storedWorkflows);
-      }
-
-      // Condiciones para habilitar el Listbox
-      console.log(parsedWorkflows, card)
-      const isEditor = id === 1 && parsedWorkflows.editorOf.includes(card.id);
-      const isRevisor = id === 2 && parsedWorkflows.revisorOf.includes(card.id);
-      const isAprobator = id === 3 && parsedWorkflows.aprobatorOf.includes(card.id);
-      const isPermissionValid = permissions.Type === 1 || permissions.Type === 4;
-
-      return !(isEditor || isRevisor || isAprobator || isPermissionValid);
-      effectMounted.current = true;
-    }
+  const handleCancelReject = () => {
+    setRejectModalOpen(false);
   };
 
+  const isListboxDisabled = () => {
+    if (permissions.Type === 1 || permissions.Type === 6) {
+      return false;
+    }
+  
+    let parsedWorkflows;
+    const storedWorkflows = localStorage.getItem('workflows');
+    if (storedWorkflows) {
+      parsedWorkflows = JSON.parse(storedWorkflows);
+    }
+  
+    let isDisabled = true;
+  
+    if (parsedWorkflows && card) {
+      const cardId = Number(card.id);
+      if (card.column === "Edición") {
+        isDisabled = !parsedWorkflows.editorOf.includes(cardId);
+      } else if (card.column === "Revisión") {
+        isDisabled = !parsedWorkflows.revisorOf.includes(cardId);
+      } else if (card.column === "Aprobación") {
+        isDisabled = !parsedWorkflows.aprobatorOf.includes(cardId);
+      } else if (card.column === "Aprobado") {
+        isDisabled = true; 
+      } else {
+        isDisabled = false; 
+      }
+    } else {
+      console.log("Datos no definidos.");
+    }
+  
+    return isDisabled;
+  };
+  
+  
   const filteredStatus = status.filter((state) => {
     if (selected.id === 1) {
       return state.id === 1 || state.id === 2;
-    } else if (selected.id === 2 || selected.id === 3) {
+    } else if (selected.id === 2) {
       return state.id === 2 || state.id === 3;
+    } else if (selected.id === 3) {
+      return state.id === 3 || state.id === 4;
     } else if (selected.id === 4) {
       return state.id === 4;
     }
     return false;
   });
+  
 
   const modalMessage = selected.id === 2 || selected.id === 3
     ? "¿Estás seguro que deseas dar visto bueno al proceso?"
@@ -402,7 +515,7 @@ const Details = ({ card, onClose }) => {
 
   return (
     <div className="fixed mt-7 inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[600px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[80%] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -437,7 +550,11 @@ const Details = ({ card, onClose }) => {
                     <div className='w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2'>
                       {document ? (
                         <p className="mt-[15px] text-black text-center">
-                          <strong>{document.title || "Sin documento"}</strong>
+                          <strong title={document.title || "Sin documento"}>
+                            {document.title ? 
+                              (document.title.length > 13 ? `${document.title.substring(0, 13)}...` : document.title) 
+                              : "Sin documento"}
+                          </strong>
                         </p>
                       ) : (
                         <p className="mt-[15px] text-black text-center">
@@ -452,8 +569,12 @@ const Details = ({ card, onClose }) => {
                           className="w-[50%] h-auto mt-[10px] cursor-pointer"
                         />
                       ) : null}
-                      <p className="mt-[5px] mb-2 text-black text-center">
-                        {document ? document.name : ""}
+                      <p className="mt-[15px] text-black text-center">
+                        <strong title={document?.name || "Sin documento"}>
+                          {document?.name ? 
+                            (document.name.length > 13 ? `${document.name.substring(0, 13)}...` : document.name) 
+                            : ""} 
+                        </strong>
                       </p>
                     </div>
                     {permissions.Type !== 5 && document?.name && (
@@ -480,7 +601,7 @@ const Details = ({ card, onClose }) => {
                             className={`w-[50%] h-auto mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}/>
                           <p className="mt-[5px] mb-2 text-black text-center">
                             {documentsANX.length > 1 
-                              ? "cursor-pointer \u00A0"
+                              ? "\u00A0"
                               : (documentsANX[0]?.name && documentsANX[0].name.length > 23 
                                   ? `${documentsANX[0].name.slice(0, 23)}...`
                                   : documentsANX[0]?.name || "Nombre no disponible")}
@@ -506,8 +627,9 @@ const Details = ({ card, onClose }) => {
                       <div className='flex items-center mb-2'>
                         <img 
                           src={getFileIcon(document.name)} 
+                          onClick={() => document && openViewer(document.path)}
                           alt="File Icon" 
-                          className='w-[50px] h-[50px]' />
+                          className='w-[50px] h-[50px] cursor-pointer' />
                         <div className='flex-grow'>
                           <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
                           <p className="text-black">{document.name}</p>
@@ -527,8 +649,9 @@ const Details = ({ card, onClose }) => {
                           <div key={index} className='flex items-center mb-2'>
                             <img 
                               src={getFileAnxIcon([anx])} 
+                              onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
                               alt="File Icon" 
-                              className='w-[50px] h-[50px] mr-2'/>
+                              className='w-[50px] h-[50px] mr-2 cursor-pointer'/>
                             <div className='flex-grow'>
                               <p className="text-black"><strong>{anx.title}</strong></p>
                               <p className="text-black">{anx.name}</p>
@@ -587,76 +710,90 @@ const Details = ({ card, onClose }) => {
             </div>
           </div>
           <div className='mt-10 border-l-4 p-3 max-w-[50%] pr-5'>
-          <Listbox
-            value={selected}
-            onChange={handleStatusUpdate}
-            className="max-w-[100px]"
-            disabled={isListboxDisabled()}
-          >
-            {({ open }) => (
-              <>
-                <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
-                <div className="relative mt-2">
-                  <Listbox.Button
-                    className={`relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
-                      isListboxDisabled() ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
+            <div className='flex'>
+              <div className='w-[60%]'>
+              <Listbox
+                value={selected}
+                onChange={handleStatusUpdate}
+                className="max-w-[100px]"
+                disabled={isListboxDisabled()}
+              >
+                {({ open }) => (
+                  <>
+                    <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
+                    <div className="relative mt-2">
+                      <Listbox.Button
+                        className={`relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
+                          isListboxDisabled() ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <span className="flex items-center">
+                          <span className="ml-3 block truncate">{selected.column}</span>
+                        </span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                      >
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {filteredStatus.map((state) => (
+                            <Listbox.Option
+                              key={state.id}
+                              className={({ active }) =>
+                                classNames(
+                                  active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                                  'relative cursor-default select-none py-2 pl-3 pr-9'
+                                )
+                              }
+                              value={state}
+                            >
+                              {({ selected, active }) => (
+                                <>
+                                  <div className="flex items-center">
+                                    <span
+                                      className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}
+                                    >
+                                      {state.column}
+                                    </span>
+                                  </div>
+                                  {selected ? (
+                                    <span
+                                      className={classNames(
+                                        active ? 'text-white' : 'text-indigo-600',
+                                        'absolute inset-y-0 right-0 flex items-center pr-4'
+                                      )}
+                                    >
+                                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </Transition>
+                    </div>
+                  </>
+                )}
+              </Listbox>
+              </div>
+              <div className="flex items-center pl-7">
+                {!isListboxDisabled() && card.column !== "Edición" && (
+                  <button
+                    className="bg-red-500 text-white px-4 py-2 rounded"
+                    onClick={handleReject}
                   >
-                    <span className="flex items-center">
-                      <span className="ml-3 block truncate">{selected.column}</span>
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                      <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                    </span>
-                  </Listbox.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                  >
-                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {filteredStatus.map((state) => (
-                        <Listbox.Option
-                          key={state.id}
-                          className={({ active }) =>
-                            classNames(
-                              active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                              'relative cursor-default select-none py-2 pl-3 pr-9'
-                            )
-                          }
-                          value={state}
-                        >
-                          {({ selected, active }) => (
-                            <>
-                              <div className="flex items-center">
-                                <span
-                                  className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}
-                                >
-                                  {state.column}
-                                </span>
-                              </div>
-                              {selected ? (
-                                <span
-                                  className={classNames(
-                                    active ? 'text-white' : 'text-indigo-600',
-                                    'absolute inset-y-0 right-0 flex items-center pr-4'
-                                  )}
-                                >
-                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                </span>
-                              ) : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-              </>
-            )}
-          </Listbox>
+                    Rechazar
+                  </button>
+                )}
+              </div>
+            </div>
             {isUpdateModalOpen && (
               <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
@@ -678,39 +815,77 @@ const Details = ({ card, onClose }) => {
                 </div>
               </div>
             )}
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] overflow-x-auto whitespace-nowrap">
-              <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
-              <p className='mt-4'>
-              {roles.editor && (
-                <>Editado por: <strong>{roles.editor.name} {roles.editor.last}</strong></>
-              )}
-              </p>
-              <p>
-              {roles.revisor && (
-                <>
-                  Revisado por: <strong>
-                  {roles.revisor.map((revisor, index) => (
-                    <span key={index}>
-                      {revisor.name} {revisor.last}{index < roles.revisor.length - 1 && ','}<br />
-                    </span>
-                  ))}
-                  </strong>
-                </>
-              )}
-            </p>
-            <p>
-              {roles.aprobator && (
-                <>
-                  Aprobado por: <strong>
-                  {roles.aprobator.map((aprobator, index) => (
-                    <span key={index}>
-                      {aprobator.name} {aprobator.last}{index < roles.aprobator.length - 1 && ','}<br />
-                    </span>
-                  ))}
-                  </strong>
-                </>
-              )}
-            </p>
+            {isRejectModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
+                  <h1 className="mb-[20px] text-center text-black">Está seguro de que desea rechazar este proceso?</h1>
+                  <div className="flex justify-between w-full px-8">
+                    <button
+                      className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4"
+                      onClick={handleConfirmReject}
+                    >
+                      Confirmar
+                    </button>
+                    <button
+                      className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                      onClick={handleCancelReject}
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[650px] max-h-[40%] overflow-auto whitespace-nowrap">
+                <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
+                <p className='mt-2'>
+                {roles.editor && (
+                  <div>
+                    <p>Editado por:</p>
+                    <ul className="list-disc pl-5">
+                      <li>
+                        <strong>
+                          {roles.editor.name} {roles.editor.last}
+                        </strong>
+                      </li>
+                    </ul>
+                  </div>
+                )}
+                </p>
+                <div className='flex'>
+                  <p>
+                    {roles.revisor && (
+                      <>
+                        Revisado por:<br />
+                        <strong>
+                          <ul className="list-disc pl-5">
+                            {roles.revisor.map((revisor, index) => (
+                              <li key={index}>
+                                {revisor.name} {revisor.last}
+                              </li>
+                            ))}
+                          </ul>
+                        </strong>
+                      </>
+                    )}
+                  </p>
+                  <p className='border-l-4 ml-2 pl-2'>
+                    {roles.aprobator && (
+                      <>
+                        Aprobado por:<br />
+                        <strong>
+                          <ul className="list-disc pl-5">
+                            {roles.aprobator.map((aprobator, index) => (
+                              <li key={index}>
+                                {aprobator.name} {aprobator.last}
+                              </li>
+                            ))}
+                          </ul>
+                        </strong>
+                      </>
+                    )}
+                  </p>
+                </div>
               <p>Fecha de aprobación</p>
             </div>
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[200px] overflow-auto">
