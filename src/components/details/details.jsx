@@ -52,6 +52,9 @@ const Details = ({ card, onClose }) => {
   const [renderKey, setRenderKey] = useState(Date.now());
   const [view, setView] = useState('icons');
   const [permissions, setPermissions] = useState([]);
+  const [workflows, setAccess] = useState([]);
+  const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
+  const [newStatus, setNewStatus] = useState(null);
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
     setIsViewerOpen(true);
@@ -97,10 +100,11 @@ const Details = ({ card, onClose }) => {
           const responseDoc = await api.post('/user/document/fetch', card);
           const fetchDocument = responseDoc.data.data[0];
           setDocument(fetchDocument);
-          setSelected(initialStatus);
+          setSelected(initialStatus);////////
 
           const responseRole = await api.post('/user/process/getRoles', card);
           const rolesData = responseRole.data[0];
+          console.log(rolesData)
           setRoles(rolesData);
 
           const prId = card.id;
@@ -305,6 +309,87 @@ const Details = ({ card, onClose }) => {
     setIsModalOpen(true);
   };
 
+  const handleStatusUpdate = (newStatus) => {
+    setNewStatus(newStatus);
+    setUpdateModalOpen(true);
+  };
+
+  const handleConfirmUpdate = () => {
+    setSelected(newStatus);
+    setUpdateModalOpen(false);
+
+    // Llamar a handleStatusCheck si se selecciona el estado 3 o 4
+    if (newStatus.id === 3 || newStatus.id === 4) {
+      handleStatusCheck(newStatus);
+    } else {
+      let log = {};
+      log.id = card.column;
+      log.uuid = permissions.uuid;
+      log.type = 23;
+      console.log(log, newStatus)
+      api.post('/user/process/update', {
+        id: card.id,
+        newColumn: newStatus.column,
+      })
+      .then( async (response) => {
+        try {
+          await api.post('/user/log/setLog', log);
+        } catch (error) {
+          console.error("Error al hacer el registro:", error);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al actualizar la columna en backend:", error);
+      });
+      showToast('success','Se actualizo el estado del proceso.');
+      console.log('Estado actualizado:', newStatus);
+    }
+  };
+
+  const handleStatusCheck = (newStatus)=>{
+    console.log(newStatus)
+  }
+
+  const handleCancelUpdate = () => {
+    setUpdateModalOpen(false);
+  };
+
+  const isListboxDisabled = () => {
+    if (effectMounted.current === false) {
+      const { id } = selected;
+      let parsedWorkflows;
+      const storedWorkflows = localStorage.getItem('workflows');
+      if (storedWorkflows) {
+          parsedWorkflows = JSON.parse(storedWorkflows);
+      }
+
+      // Condiciones para habilitar el Listbox
+      console.log(parsedWorkflows, card)
+      const isEditor = id === 1 && parsedWorkflows.editorOf.includes(card.id);
+      const isRevisor = id === 2 && parsedWorkflows.revisorOf.includes(card.id);
+      const isAprobator = id === 3 && parsedWorkflows.aprobatorOf.includes(card.id);
+      const isPermissionValid = permissions.Type === 1 || permissions.Type === 4;
+
+      return !(isEditor || isRevisor || isAprobator || isPermissionValid);
+      effectMounted.current = true;
+    }
+  };
+
+  const filteredStatus = status.filter((state) => {
+    if (selected.id === 1) {
+      return state.id === 1 || state.id === 2;
+    } else if (selected.id === 2 || selected.id === 3) {
+      return state.id === 2 || state.id === 3;
+    } else if (selected.id === 4) {
+      return state.id === 4;
+    }
+    return false;
+  });
+
+  const modalMessage = selected.id === 2 || selected.id === 3
+    ? "¿Estás seguro que deseas dar visto bueno al proceso?"
+    : "¿Estás seguro de que deseas actualizar el estado del proceso?";
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedIncident(null);
@@ -316,7 +401,7 @@ const Details = ({ card, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
+    <div className="fixed mt-7 inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[600px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
@@ -502,77 +587,113 @@ const Details = ({ card, onClose }) => {
             </div>
           </div>
           <div className='mt-10 border-l-4 p-3 max-w-[50%] pr-5'>
-            <Listbox value={selected} onChange={setSelected} className=" max-w-[100px]">
-              {({ open }) => (
-                <>
-                  <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
-                  <div className="relative mt-2">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
-                      <span className="flex items-center">
-                        <span className="ml-3 block truncate">{selected.column}</span>
-                      </span>
-                      <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                        <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                      </span>
-                    </Listbox.Button>
-                    <Transition
-                      show={open}
-                      as={Fragment}
-                      leave="transition ease-in duration-100"
-                      leaveFrom="opacity-100"
-                      leaveTo="opacity-0">
-                      <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                        {status.map((state) => (
-                          <Listbox.Option
-                            key={state.id}
-                            className={({ active }) =>
-                              classNames(
-                                active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                                'relative cursor-default select-none py-2 pl-3 pr-9'
-                              )
-                            }
-                            value={state}>
-                            {({ selected, active }) => (
-                              <>
-                                <div className="flex items-center">
-                                  <span
-                                    className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
-                                    {state.column}
-                                  </span>
-                                </div>
-                                {selected ? (
-                                  <span
-                                    className={classNames(
-                                      active ? 'text-white' : 'text-indigo-600',
-                                      'absolute inset-y-0 right-0 flex items-center pr-4'
-                                    )}>
-                                    <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Transition>
+          <Listbox
+            value={selected}
+            onChange={handleStatusUpdate}
+            className="max-w-[100px]"
+            disabled={isListboxDisabled()}
+          >
+            {({ open }) => (
+              <>
+                <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
+                <div className="relative mt-2">
+                  <Listbox.Button
+                    className={`relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
+                      isListboxDisabled() ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    <span className="flex items-center">
+                      <span className="ml-3 block truncate">{selected.column}</span>
+                    </span>
+                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                      <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                    </span>
+                  </Listbox.Button>
+                  <Transition
+                    show={open}
+                    as={Fragment}
+                    leave="transition ease-in duration-100"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
+                  >
+                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                      {filteredStatus.map((state) => (
+                        <Listbox.Option
+                          key={state.id}
+                          className={({ active }) =>
+                            classNames(
+                              active ? 'bg-indigo-600 text-white' : 'text-gray-900',
+                              'relative cursor-default select-none py-2 pl-3 pr-9'
+                            )
+                          }
+                          value={state}
+                        >
+                          {({ selected, active }) => (
+                            <>
+                              <div className="flex items-center">
+                                <span
+                                  className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}
+                                >
+                                  {state.column}
+                                </span>
+                              </div>
+                              {selected ? (
+                                <span
+                                  className={classNames(
+                                    active ? 'text-white' : 'text-indigo-600',
+                                    'absolute inset-y-0 right-0 flex items-center pr-4'
+                                  )}
+                                >
+                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                </span>
+                              ) : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
+                    </Listbox.Options>
+                  </Transition>
+                </div>
+              </>
+            )}
+          </Listbox>
+            {isUpdateModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
+                  <h1 className="mb-[20px] text-center text-black">{modalMessage}</h1>
+                  <div className="flex justify-between w-full px-8">
+                    <button
+                      className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4"
+                      onClick={handleConfirmUpdate}
+                    >
+                      Confirmar
+                    </button>
+                    <button
+                      className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                      onClick={handleCancelUpdate}
+                    >
+                      Cancelar
+                    </button>
                   </div>
-                </>
-              )}
-            </Listbox>
+                </div>
+              </div>
+            )}
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] overflow-x-auto whitespace-nowrap">
               <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
               <p className='mt-4'>
-                {roles.editor && <>Editado por: <strong>{roles.editor}</strong></>}
+              {roles.editor && (
+                <>Editado por: <strong>{roles.editor.name} {roles.editor.last}</strong></>
+              )}
               </p>
               <p>
               {roles.revisor && (
                 <>
                   Revisado por: <strong>
-                    {roles.revisor.map((revisor, index) => (
-                      <span key={index}>
-                        {revisor}{index < roles.revisor.length - 1 && ','}<br />
-                      </span>
-                    ))}
+                  {roles.revisor.map((revisor, index) => (
+                    <span key={index}>
+                      {revisor.name} {revisor.last}{index < roles.revisor.length - 1 && ','}<br />
+                    </span>
+                  ))}
                   </strong>
                 </>
               )}
@@ -581,11 +702,11 @@ const Details = ({ card, onClose }) => {
               {roles.aprobator && (
                 <>
                   Aprobado por: <strong>
-                    {roles.aprobator.map((aprobator, index) => (
-                      <span key={index}>
-                        {aprobator}{index < roles.aprobator.length - 1 && ','}<br />
-                      </span>
-                    ))}
+                  {roles.aprobator.map((aprobator, index) => (
+                    <span key={index}>
+                      {aprobator.name} {aprobator.last}{index < roles.aprobator.length - 1 && ','}<br />
+                    </span>
+                  ))}
                   </strong>
                 </>
               )}

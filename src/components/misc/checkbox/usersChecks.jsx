@@ -47,13 +47,18 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
   }, [selectedOrgId]);
 
   useEffect(() => {
+    console.log("selectedOptions in UsersChecks:", selectedOptions);
+    
+  }, [selectedOptions]);
+
+  useEffect(() => {
     if (effectMounted.current) {
       fetchDepartments(searchSearch, selectedOrgId);
     }
   }, [searchSearch, selectedOrgId]);
 
   const handleAddOption = (option) => {
-    const index = selectedOptions.findIndex(selected => selected.userUuid === option.userUuid);
+    const index = selectedOptions.findIndex(selected => selected.uuid === option.uuid);
     if (index === -1) {
       setSelectedOptions([...selectedOptions, option]);
     } else {
@@ -64,7 +69,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
   };
 
   const handleRemoveOption = (option) => {
-    const updatedOptions = selectedOptions.filter(selected => selected.userUuid !== option.userUuid);
+    const updatedOptions = selectedOptions.filter(selected => selected.uuid !== option.uuid);
     setSelectedOptions(updatedOptions);
   };
 
@@ -85,12 +90,12 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
       </div>
       {searchSearch && (
         <div className="flex mt-2 max-h-[100px] overflow-x-auto">
-          {options.filter(option => !selectedOptions.some(selected => selected.userUuid === option.userUuid)).map((option, index) => (
+          {options.filter(option => !selectedOptions.some(selected => selected.uuid === option.uuid)).map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
               <span 
                 className='max-w-[300px] w-auto truncate' 
-                title={option.userName}>
-                {option.userName} {option.last}
+                title={option.name}>
+                {option.name} {option.last}
               </span>
               <button 
                 className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
@@ -101,25 +106,25 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
           ))}
         </div>
       )}
-      <div className='border mt-3 p-2 max-h-[170px]'>
-        <h3 className='text-black'>
-          <b>Usuarios seleccionados:</b>
-        </h3>
-        <div className='max-h-[200px] flex overflow-x-auto'>
-          {selectedOptions.map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
-              <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
-                {option.userName} {option.last}
-              </span>
-              <button 
-                className="bg-red-500 text-white px-2 py-1 rounded ml-2"
-                onClick={() => handleRemoveOption(option)}>
-                -
-              </button>
-            </div>
-          ))}
+        <div className='border mt-3 p-2 max-h-[170px]'>
+          <h3 className='text-black'>
+            <b>Usuarios seleccionados:</b>
+          </h3>
+          <div className='max-h-[200px] flex overflow-x-auto'>
+            {selectedOptions.map((option, index) => (
+              <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
+                <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
+                  {option.name && option.name.length > 0 ? `${option.name} ${option.last}` : `${option.name} ${option.last}`}
+                </span>
+                <button 
+                  className="bg-red-500 text-white px-2 py-1 rounded ml-2"
+                  onClick={() => handleRemoveOption(option)}>
+                  -
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
     </div>
   );
 };

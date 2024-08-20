@@ -69,6 +69,7 @@ const TanStackTable = () => {
                     created: formatDate(item.created),
                     updated: formatDate(item.updated),
                 }));
+                console.log(fetchedData)
                 setData(fetchedData.reverse());
                 setRefreshTable(false);
             })
@@ -158,17 +159,40 @@ const TanStackTable = () => {
             header: "Departamento",
         }),
         columnHelper.accessor("editor", {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => {
+                const editor = info.getValue();
+                return (
+                    <span>
+                        {editor ? `${editor.userName} ${editor.last}` : 'No Editor'}
+                    </span>
+                );
+            },
             header: "Editor",
         }),
         columnHelper.accessor("revisor", {
-            cell: (info) => <span>{info.getValue().join(', ')}</span>,
+            cell: (info) => {
+                const revisors = info.getValue();
+                return (
+                    <span>
+                        {revisors && revisors.length > 0 ? revisors.map(revisor => 
+                            `${revisor.userName} ${revisor.last}`).join(', ') : 'No Revisor'}
+                    </span>
+                );
+            },
             header: "Revisor",
         }),
         columnHelper.accessor("aprobator", {
-            cell: (info) => <span>{info.getValue().join(', ')}</span>,
+            cell: (info) => {
+                const aprobators = info.getValue();
+                return (
+                    <span>
+                        {aprobators && aprobators.length > 0 ? aprobators.map(aprobator => 
+                            `${aprobator.userName} ${aprobator.last}`).join(', ') : 'No Aprobador'}
+                    </span>
+                );
+            },
             header: "Aprobador",
-        }),
+        }),        
         columnHelper.accessor("status", {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Estado",
