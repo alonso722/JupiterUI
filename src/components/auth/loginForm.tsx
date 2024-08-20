@@ -158,8 +158,8 @@ export default function LoginForm({
                             Entrar
                         </Button>
                     </div>
-                    <p className='my-[17px] text-[#777E90]'>o accede mediante otra cuenta</p>
-                    <AuthOptions/>
+                    {/* <p className='my-[17px] text-[#777E90]'>o accede mediante otra cuenta</p>
+                    <AuthOptions/> */}
                     <div className='flex font-semibold mt-[26px]'>
                         <p className='text-[#777E90] mr-[5px]'>¿Aún no tienes una cuenta? </p>
                         <p> Registrate gratis</p>

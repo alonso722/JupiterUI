@@ -5,28 +5,32 @@ import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
 import UsersChecks from '../misc/checkbox/usersChecks';
 import { toast } from 'react-toastify';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
-
 const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const effectMounted = useRef(false);
   const api = useApi();
 
   const showToast = (type, message) => {
     toast[type](message, {
-        position: 'top-center',
-        autoClose: 2000,
+      position: 'top-center',
+      autoClose: 2000,
     });
   };
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    const selectedFile = e.target.files[0];
+    if (selectedFile && selectedFile.type !== 'application/pdf') {
+      showToast('error', 'Solo se permiten archivos PDF.');
+      setFile(null); 
+    } else {
+      setFile(selectedFile);
+    }
   };
 
   const handleSubmit = async () => {
     if (!file) {
-      showToast('error','Por favor, seleccione un archivo para cargar.');
+      showToast('error', 'Por favor, seleccione un archivo para cargar.');
       return;
     }
 
@@ -56,9 +60,9 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
-      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
-        &times;
-      </button>
+        <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+          &times;
+        </button>
         <h2 className="text-2xl mb-4 text-black">Cargar documento</h2>
         <input type="file" onChange={handleFileChange} className="mb-4" />
         {file && (
@@ -72,13 +76,13 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
           placeholder="Título del documento"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
-        <textarea
-          placeholder="Descripción del documento"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
-        <button onClick={handleSubmit} className="bg-[#2C1C47] p-2 rounded text-white">
+          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"
+        />
+        <button
+          onClick={handleSubmit}
+          className={`p-2 rounded text-white ${!file ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2C1C47] hover:bg-[#1B1130] cursor-pointer'}`}
+          disabled={!file} 
+        >
           Cargar
         </button>
       </div>
@@ -340,7 +344,7 @@ const AddProcessForm = ({ card, onClose }) => {
   };
   
   const hasDuplicates = (array1, array2) => {
-      return array1.some(item1 => array2.some(item2 => item1.userUuid === item2.userUuid));
+      return array1.some(item1 => array2.some(item2 => item1.uuid === item2.uuid));
   };
   
   const hasDuplicateRoles = () => {
@@ -375,7 +379,6 @@ const AddProcessForm = ({ card, onClose }) => {
       }
   
       if (processDetails.processName) {
-
         api.post('/user/process/addTab', processDetails)
           .then((response) => {
             if (response.status === 200) {
@@ -399,8 +402,8 @@ const AddProcessForm = ({ card, onClose }) => {
   
     try {
       const formatUser = (user) => ({
-        userUuid: user.uuid,
-        userName: Array.isArray(user.name) ? user.name.join(', ') : user.name,
+        uuid: user.uuid,
+        name: Array.isArray(user.name) ? user.name.join(', ') : user.name,
       });
   
       const processDetails = {
@@ -418,7 +421,7 @@ const AddProcessForm = ({ card, onClose }) => {
     };
     
     const hasDuplicates = (array1, array2) => {
-        return array1.some(item1 => array2.some(item2 => item1.userUuid === item2.userUuid));
+        return array1.some(item1 => array2.some(item2 => item1.uuid === item2.uuid));
     };
     
     const hasDuplicateRoles = () => {
@@ -436,7 +439,6 @@ const AddProcessForm = ({ card, onClose }) => {
           hasDuplicates(aprobatorArray, consultorArray)   
       );
   };
-  
     
     if (hasDuplicateRoles()) {
         showToast('error', "Los usuarios no pueden tener más de dos roles por proceso.");
@@ -445,8 +447,8 @@ const AddProcessForm = ({ card, onClose }) => {
       
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
-        processDetails.fileTitle = fileInfo.asignedTitle;
-        processDetails.fileName = fileInfo.name;
+        processDetails.fileTitle = fileInfo.name;
+        processDetails.fileName = fileInfo.asignedTitle;
       }
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
@@ -503,8 +505,8 @@ const AddProcessForm = ({ card, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[650px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[1000px] h-[92%] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -617,12 +619,12 @@ const AddProcessForm = ({ card, onClose }) => {
             {card ? 'Editar proceso' : 'Añadir proceso'}
           </button>
         </div>
-        {card && workflowInfo ? (
-          <div className=' ml-3 rounded border-2 mt-[20px] h-[550px]'>
+        {permissions.Type !== 1 && permissions.Type !== 6 ? (
+          <div className='ml-3 rounded border-2 mt-[20px] h-[630px]'>
             <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
               {fileInfo && (
                 <div className="text-black flex flex-col items-center">
-                  <h2 className="mb-2">Documento cargado:</h2>            
+                  <h2 className="mb-2">Documento cargado:</h2>
                   <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
                   <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
                     {fileInfo.name}
@@ -632,8 +634,8 @@ const AddProcessForm = ({ card, onClose }) => {
               {annexesInfo && (
                 <div className="text-black flex flex-col items-center ml-6">
                   <h2 className="mb-2">Anexos:</h2>
-                    <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                    <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                  <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                  <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
                     {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
                   </p>
                 </div>
@@ -645,128 +647,127 @@ const AddProcessForm = ({ card, onClose }) => {
                 <h3 className='text-md font-medium'>Editor:</h3>
                 {workflowInfo.t08_workflow_editor && workflowInfo.t08_workflow_editor.length > 0 ? (
                   <p>{workflowInfo.t08_workflow_editor[0].name}</p>
-                  ) : (
+                ) : (
                   <p>No hay editor asignado</p>
                 )}
-                </div>
-                <div className='text-black mb-3'>
-                  <h3 className='text-md font-medium'>Revisor:</h3>
-                  {workflowInfo.t08_workflow_revisor && workflowInfo.t08_workflow_revisor.length > 0 ? (
-                    <p>{workflowInfo.t08_workflow_revisor.map(revisor => revisor.name).join(', ')}</p>
-                  ) : (
-                    <p>No hay revisor(es) asignado(s)</p>
-                  )}
-                </div>
-                <div className='text-black mb-3'>
-                  <h3 className='text-md font-medium'>Aprobador:</h3>
-                  {workflowInfo.t08_workflow_aprobator && workflowInfo.t08_workflow_aprobator.length > 0 ? (
-                    <p>{workflowInfo.t08_workflow_aprobator.map(aprobator => aprobator.name).join(', ')}</p>
-                  ) : (
+              </div>
+              <div className='text-black mb-3'>
+                <h3 className='text-md font-medium'>Revisor:</h3>
+                {workflowInfo.t08_workflow_revisor && workflowInfo.t08_workflow_revisor.length > 0 ? (
+                  <p>{workflowInfo.t08_workflow_revisor.map(revisor => revisor.name).join(', ')}</p>
+                ) : (
+                  <p>No hay revisor(es) asignado(s)</p>
+                )}
+              </div>
+              <div className='text-black mb-3'>
+                <h3 className='text-md font-medium'>Aprobador:</h3>
+                {workflowInfo.t08_workflow_aprobator && workflowInfo.t08_workflow_aprobator.length > 0 ? (
+                  <p>{workflowInfo.t08_workflow_aprobator.map(aprobator => aprobator.name).join(', ')}</p>
+                ) : (
                   <p>No hay aprobador(es) asignado(s)</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className=' ml-3 rounded border-2 mt-[20px] h-[550px]'>
-              <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
-                {fileInfo && (
-                  <div className="text-black flex flex-col items-center">
-                    <h2 className="mb-2">Documento cargado:</h2>            
-                    <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                    <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
-                      {fileInfo.name}
-                    </p>
-                  </div>
-                )}
-                {annexesInfo && (
-                  <div className="text-black flex flex-col items-center ml-6">
-                    <h2 className="mb-2">Anexos:</h2>
-                    <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                    <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
-                      {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
-                    </p>
-                  </div>
                 )}
               </div>
-              <div className='mb-2 px-5 text-black'>
-                <Listbox value={selectedEditor} onChange={(value) => {
-                  setSelectedEditor(value);
-                }} className="max-w-[100px]">
-                  {({ open }) => (
-                    <>
-                      <Listbox.Label className="block text-sm font-medium leading-6 text-black">Editor</Listbox.Label>
-                      <div className="relative mt-2">
-                        <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
-                          <span className="flex items-center">
-                            <span className="ml-3 block truncate">
-                              {selectedEditor?.userName || "Selecciona..."}
-                            </span>
-                          </span>
-                          <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                            <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                          </span>
-                        </Listbox.Button>
-                        <Transition
-                          show={open}
-                          as={Fragment}
-                          leave="transition ease-in duration-100"
-                          leaveFrom="opacity-100"
-                          leaveTo="opacity-0">
-                          <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                            {list.map((user) => (
-                              <Listbox.Option
-                                key={user.userUuid}
-                                value={user}
-                                className={({ active }) =>
-                                  classNames(
-                                    active ? 'bg-indigo-600 text-white' : 'text-black',
-                                    'relative cursor-default select-none py-2 pl-3 pr-9')}>
-                                {({ selected, active }) => (
-                                  <>
-                                    <div className="flex items-center">
-                                      <span
-                                        className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
-                                        {user.userName}
-                                      </span>
-                                    </div>
-                                    {selected ? (
-                                      <span
-                                        className={classNames(
-                                          active ? 'text-white' : 'text-indigo-600',
-                                          'absolute inset-y-0 right-0 flex items-center pr-4'
-                                        )}>
-                                        <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                      </span>
-                                    ) : null}
-                                  </>
-                                )}
-                              </Listbox.Option>
-                            ))}
-                          </Listbox.Options>
-                        </Transition>
-                      </div>
-                    </>
-                  )}
-                </Listbox>
-              </div>
-              <div className='flex justify-between mt-3'>
-                <div className='ml-5 max-h-[300px] h-[200px] max-w-[200px]'>
-                  <p className="block text-sm font-medium leading-6 text-black">Revisor</p>
-                  <UsersChecks selectedOptions={selectedRevisor} setSelectedOptions={setSelectedRevisor} selectedOrgId={selectedOrgId} />
-                </div>
-                <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
-                  <p className="block text-sm font-medium leading-6 text-black">Aprobador</p>
-                  <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
-                </div>
-
-              </div>                
-              <div className='max-h-[300px] h-[200px] max-w-[200px] ml-5'>
-                  <p className="block text-sm font-medium leading-6 text-black">Consultores</p>
-                  <UsersChecks selectedOptions={selectedConsultor} setSelectedOptions={setSelectedConsultor} selectedOrgId={selectedOrgId} />
-                </div>
             </div>
-          )}
+          </div>
+        ) : (
+          <div className='ml-3 rounded border-2 mt-[20px] h-[630px]'>
+            <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
+              {fileInfo && (
+                <div className="text-black flex flex-col items-center">
+                  <h2 className="mb-2">Documento cargado:</h2>
+                  <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                  <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
+                    {fileInfo.name}
+                  </p>
+                </div>
+              )}
+              {annexesInfo && (
+                <div className="text-black flex flex-col items-center ml-6">
+                  <h2 className="mb-2">Anexos:</h2>
+                  <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                  <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                    {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
+                  </p>
+                </div>
+              )}
+            </div>
+            <div className='mb-2 px-5 text-black'>
+              <Listbox value={selectedEditor} onChange={(value) => {
+                setSelectedEditor(value);
+              }} className="max-w-[100px]">
+                {({ open }) => (
+                  <>
+                    <Listbox.Label className="block text-sm font-medium leading-6 text-black">Editor</Listbox.Label>
+                    <div className="relative mt-2">
+                      <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-black shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                        <span className="flex items-center">
+                          <span className="ml-3 block truncate">
+                            {selectedEditor ? `${selectedEditor.name} ${selectedEditor.last || ''}` : "Selecciona..."}
+                          </span>
+                        </span>
+                        <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
+                          <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                        </span>
+                      </Listbox.Button>
+                      <Transition
+                        show={open}
+                        as={Fragment}
+                        leave="transition ease-in duration-100"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0">
+                        <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                          {list.map((user) => (
+                            <Listbox.Option
+                              key={user.uuid}
+                              value={user}
+                              className={({ active }) =>
+                                classNames(
+                                  active ? 'bg-indigo-600 text-white' : 'text-black',
+                                  'relative cursor-default select-none py-2 pl-3 pr-9')}>
+                              {({ selected, active }) => (
+                                <>
+                                  <div className="flex items-center">
+                                    <span
+                                      className={classNames(selected ? 'font-semibold text-black' : 'font-normal text-black', 'ml-3 block truncate')}>
+                                      {user.name} {user.last}
+                                    </span>
+                                  </div>
+                                  {selected ? (
+                                    <span
+                                      className={classNames(
+                                        active ? 'text-white' : 'text-indigo-600',
+                                        'absolute inset-y-0 right-0 flex items-center pr-4'
+                                      )}>
+                                      <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                                    </span>
+                                  ) : null}
+                                </>
+                              )}
+                            </Listbox.Option>
+                          ))}
+                        </Listbox.Options>
+                      </Transition>
+                    </div>
+                  </>
+                )}
+              </Listbox>
+            </div>
+            <div className='flex justify-between mt-3'>
+              <div className='ml-5 max-h-[300px] h-[200px] max-w-[200px]'>
+                <p className="block text-sm font-medium leading-6 text-black">Revisor</p>
+                <UsersChecks selectedOptions={selectedRevisor} setSelectedOptions={setSelectedRevisor} selectedOrgId={selectedOrgId} />
+              </div>
+              <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
+                <p className="block text-sm font-medium leading-6 text-black">Aprobador</p>
+                <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
+              </div>
+            </div>
+            <div className='max-h-[300px] h-[200px] max-w-[200px] ml-5'>
+              <p className="block text-sm font-medium leading-6 text-black">Consultores</p>
+              <UsersChecks selectedOptions={selectedConsultor} setSelectedOptions={setSelectedConsultor} selectedOrgId={selectedOrgId} />
+            </div>
+          </div>
+        )}
       </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
         {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} onClose={() => setIsModal2Open(false)} onAnnexesUpload={handleAnnexesUpload} />}

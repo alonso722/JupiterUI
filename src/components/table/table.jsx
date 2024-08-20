@@ -158,17 +158,46 @@ const TanStackTable = () => {
             header: "Departamento",
         }),
         columnHelper.accessor("editor", {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => {
+                const editor = info.getValue();
+                return (
+                    <span>
+                        {editor ? `${editor.userName} ${editor.last}` : 'No Editor'}
+                    </span>
+                );
+            },
             header: "Editor",
         }),
         columnHelper.accessor("revisor", {
-            cell: (info) => <span>{info.getValue().join(', ')}</span>,
+            cell: (info) => {
+                const revisors = info.getValue();
+                return (
+                    <ul className="list-disc pl-5">
+                    {revisors && revisors.length > 0 ? revisors.map((revisor, index) => (
+                        <li key={index}>
+                        {`${revisor.userName} ${revisor.last}`}
+                        </li>
+                    )) : <li>No Revisor</li>}
+                    </ul>
+                );
+            },
             header: "Revisor",
         }),
         columnHelper.accessor("aprobator", {
-            cell: (info) => <span>{info.getValue().join(', ')}</span>,
+            cell: (info) => {
+                const aprobators = info.getValue();
+                return (
+                    <ul className="list-disc pl-5">
+                    {aprobators && aprobators.length > 0 ? aprobators.map((aprobator, index) => (
+                        <li key={index}>
+                        {`${aprobator.userName} ${aprobator.last}`}
+                        </li>
+                    )) : <li>No Aprobador</li>}
+                    </ul>
+                );
+            },
             header: "Aprobador",
-        }),
+        }),        
         columnHelper.accessor("status", {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Estado",

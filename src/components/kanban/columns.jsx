@@ -12,51 +12,52 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     const [permissions, setPermissions] = useState([]);
     const [workflows, setAccess] = useState([]);
     const [cards, setCards] = useState([]);
-    const effectMounted = useRef(false);
-    const api= useApi();
+    const api = useApi();
+
+    const fetchData = () => {
+        let parsedPermissions;
+        const storedPermissions = localStorage.getItem('permissions');
+        const token = localStorage.getItem('token');
+        if (storedPermissions) {
+            parsedPermissions = JSON.parse(storedPermissions);
+            setPermissions(parsedPermissions);
+        }
+
+        let parsedAccess;
+        const storedAccess = localStorage.getItem('workflows');
+        if (storedAccess) {
+            parsedAccess = JSON.parse(storedAccess);
+            setAccess(parsedAccess);
+        }
+        let cooWorkflows = [
+            ...parsedAccess.revisorOf,
+            ...parsedAccess.aprobatorOf,
+            ...parsedAccess.editorOf,
+            ...parsedAccess.consultorOf
+        ];
+        const userType = parsedPermissions;
+        const orga = parsedPermissions.Organization;
+        userType.token = token;
+
+        api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter, cooWorkflows})
+            .then((response) => {
+                localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
+                const fetchedCards = response.data.data.map(item => ({
+                    id: item.id.toString(),
+                    name: item.process,
+                    column: convertStatusToColumn(item.status),
+                    department: item.departmentName
+                }));
+                setCards(fetchedCards); 
+            })
+            .catch((error) => {
+                console.error("Error al consultar procesos:", error);
+            });
+    };
 
     useEffect(() => {
-        if (effectMounted.current === false) { 
-            let parsedPermissions;
-            const storedPermissions = localStorage.getItem('permissions');
-            const token = localStorage.getItem('token');
-            if (storedPermissions) {
-                parsedPermissions = JSON.parse(storedPermissions);
-                setPermissions(parsedPermissions);
-            }
-
-            let parsedAccess;
-            const storedAccess = localStorage.getItem('workflows');
-            if (storedAccess) {
-                parsedAccess = JSON.parse(storedAccess);
-                setAccess(parsedAccess);
-            }
-            let cooWorkflows = [
-                ...parsedAccess.revisorOf,
-                ...parsedAccess.aprobatorOf,
-                ...parsedAccess.editorOf,
-                ...parsedAccess.consultorOf
-            ];
-            const userType = parsedPermissions;
-            const orga = parsedPermissions.Organization;
-            userType.token = token;
-            api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter, cooWorkflows})
-                .then((response) => {
-                    localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
-                    const fetchedCards = response.data.data.map(item => ({
-                        id: item.id.toString(),
-                        name: item.process,
-                        column: convertStatusToColumn(item.status),
-                        department: item.departmentName
-                    }));
-                    setCards(fetchedCards); 
-                })
-                .catch((error) => {
-                    console.error("Error al consultar procesos:", error);
-                });
-            effectMounted.current = true;
-        }
-    }, []);
+        fetchData(); 
+    }, [departmentFilter, processFilter]); 
 
     const convertStatusToColumn = (status) => {
         switch(status) {
@@ -81,12 +82,17 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     const handleCloseModal = () => {
         setIsModalOpen(false);
         setSelectedCard(null);
+        fetchData(); 
     };
 
     return (
-        <div 
-        className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded ">
-            <Board onCardClick={handleCardClick} cards={cards} setCards={setCards} permissions={permissions} />
+        <div className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded ">
+            <Board 
+                onCardClick={handleCardClick} 
+                cards={cards} 
+                setCards={setCards} 
+                permissions={permissions} 
+            />
             {isModalOpen && selectedCard && (
                 <Details  card={selectedCard} onClose={handleCloseModal} />
             )}
@@ -143,70 +149,70 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
     const [active, setActive] = useState(false);
     const api = useApi(); 
 
-    const handleDragStart = (e, card) => {
-        e.dataTransfer.setData("cardId", card.id);
-    };
+    // const handleDragStart = (e, card) => {
+    //     e.dataTransfer.setData("cardId", card.id);
+    // };
 
-    const handleDragEnd = (e) => {
-        const cardId = e.dataTransfer.getData("cardId");
+    // const handleDragEnd = (e) => {
+    //     const cardId = e.dataTransfer.getData("cardId");
 
-        setActive(false);
-        clearHighlights();
+    //     setActive(false);
+    //     clearHighlights();
 
-        const indicators = getIndicators();
-        const { element } = getNearestIndicator(e, indicators);
-        const before = element.dataset.before || "-1";
-        //const uuid = localStorage.getItem('uuid');
-        const uuid = permissions.uuid;
+    //     const indicators = getIndicators();
+    //     const { element } = getNearestIndicator(e, indicators);
+    //     const before = element.dataset.before || "-1";
+    //     //const uuid = localStorage.getItem('uuid');
+    //     const uuid = permissions.uuid;
 
-        if (before !== cardId) {
-            let copy = [...cards];
-            let cardToTransfer = copy.find((c) => c.id === cardId);
-            if (!cardToTransfer) return;
-            const oldColumn = cardToTransfer.column; 
-            cardToTransfer = { ...cardToTransfer, column };
+    //     if (before !== cardId) {
+    //         let copy = [...cards];
+    //         let cardToTransfer = copy.find((c) => c.id === cardId);
+    //         if (!cardToTransfer) return;
+    //         const oldColumn = cardToTransfer.column; 
+    //         cardToTransfer = { ...cardToTransfer, column };
 
-            copy = copy.filter((c) => c.id !== cardId);
+    //         copy = copy.filter((c) => c.id !== cardId);
 
-            const moveToBack = before === "-1";
+    //         const moveToBack = before === "-1";
 
-            if (moveToBack) {
-                copy.push(cardToTransfer);
-            } else {
-                const insertAtIndex = copy.findIndex((el) => el.id === before);
-                if (insertAtIndex === undefined) return;
-                copy.splice(insertAtIndex, 0, cardToTransfer);
-            }
+    //         if (moveToBack) {
+    //             copy.push(cardToTransfer);
+    //         } else {
+    //             const insertAtIndex = copy.findIndex((el) => el.id === before);
+    //             if (insertAtIndex === undefined) return;
+    //             copy.splice(insertAtIndex, 0, cardToTransfer);
+    //         }
 
-            setCards(copy);
-            let log = {};
-            log.id = cardId;
-            log.uuid = uuid;
-            log.type = 23;
-            api.post('/user/process/update', {
-                id: cardId,
-                newColumn: column,
-                oldColumn: oldColumn,
-            })
-            .then( async (response) => {
-                try {
-                    await api.post('/user/log/setLog', log);
-                  } catch (error) {
-                    console.error("Error al hacer el registro:", error);
-                  }
-            })
-            .catch((error) => {
-                console.error("Error al actualizar la columna en backend:", error);
-            });
-        }
-    };
+    //         setCards(copy);
+    //         let log = {};
+    //         log.id = cardId;
+    //         log.uuid = uuid;
+    //         log.type = 23;
+    //         api.post('/user/process/update', {
+    //             id: cardId,
+    //             newColumn: column,
+    //             oldColumn: oldColumn,
+    //         })
+    //         .then( async (response) => {
+    //             try {
+    //                 await api.post('/user/log/setLog', log);
+    //               } catch (error) {
+    //                 console.error("Error al hacer el registro:", error);
+    //               }
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error al actualizar la columna en backend:", error);
+    //         });
+    //     }
+    // };
 
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        highlightIndicator(e);
+    // const handleDragOver = (e) => {
+    //     e.preventDefault();
+    //     highlightIndicator(e);
 
-        setActive(true);
-    };
+    //     setActive(true);
+    // };
 
     const clearHighlights = (els) => {
         const indicators = els || getIndicators();
@@ -273,14 +279,16 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 </div>
             </div>
             <div
-                onDrop={handleDragEnd}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
+                //onDrop={handleDragEnd}
+                //onDragOver={handleDragOver}
+                //onDragLeave={handleDragLeave}
                 className={`h-[670px] overflow-auto scrollbar-hide transition-colors ${
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
-                    return <Card key={c.id} {...c} handleDragStart={handleDragStart} onCardClick={onCardClick} permissions={permissions} />;
+                    return <Card key={c.id} {...c} 
+                    //handleDragStart={handleDragStart} 
+                    onCardClick={onCardClick} permissions={permissions} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
             </div>
@@ -290,18 +298,18 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 
 
 const Card = ({ name, id, column, handleDragStart, onCardClick, permissions }) => {
-    const canDrag = permissions.Type !== 5;
+    //const canDrag = permissions.Type == 6;
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
             <motion.div
                 layout
                 layoutId={id}
-                draggable={canDrag}
-                onDragStart={(e) => handleDragStart(e, { name, id, column })}
+               // draggable={canDrag}
+                //onDragStart={(e) => handleDragStart(e, { name, id, column })}
                 onClick={() => onCardClick({ name, id, column })}
                 style={{ zIndex: 1 }}
-                className="mt-2 cursor-grab rounded bg-[#F1CF2B] p-3 active:cursor-grabbing shadow-xl flex items-center justify-between">
+                className="mt-2 cursor-pointer rounded bg-[#F1CF2B] p-3 shadow-xl flex items-center justify-between">
                 <p className="text-sm text-black truncate">
                     {name}
                 </p>

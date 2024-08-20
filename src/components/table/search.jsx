@@ -11,7 +11,6 @@ const Search = ({
     setValue(initValue);
   }, [initValue]);
 
-  // *  0.5s after set value in state
   useEffect(() => {
     const timeout = setTimeout(() => {
       onChange(value);

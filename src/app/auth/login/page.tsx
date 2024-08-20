@@ -35,13 +35,13 @@ export default function Page(data: { searchParams: { callback?: string } }) {
               <p className="text-2xl md:text-3xl text-[#2A1A3F] font-semibold mt-12">
                 ¡Únete ahora!
               </p>
-              <Button
+              {/* <Button
                 rounded
                 type="submit"
                 color={colors.DARK_JUPITER_OUTLINE}
                 className="w-56 h-12 mt-8">
                 Ir ahora
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
