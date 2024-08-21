@@ -1,11 +1,10 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Fragment } from 'react';
+import { Fragment, useState, useRef, useEffect } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { useEffect, useRef, useState, Suspense } from 'react';
 import { toast } from 'react-toastify';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
@@ -20,7 +19,11 @@ export default function TopNewMenuClientDashboard() {
     const [authStateValue, setAuth] = useRecoilState(authState);
     const router = useRouter();
     const department = searchParams.get('department');
+    const [logoUrl, setLogoUrl] = useState('');
     const api = useApi();
+    
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [files, setFile] = useState([]);
 
     const showToast = (type, message) => {
         toast[type](message, {
@@ -31,7 +34,13 @@ export default function TopNewMenuClientDashboard() {
 
     useEffect(() => {    
         let parsedPermissions;
+        
         if (effectMounted.current === false) {    
+            if (!authStateValue.loggedIn) {
+                showToast('error', 'Sin autenticación');
+                router.push('/auth/login');
+            }
+
             const storedToken = localStorage.getItem('token');
             const storedPermissions = localStorage.getItem('permissions'); 
             if (storedPermissions) {
@@ -39,33 +48,115 @@ export default function TopNewMenuClientDashboard() {
                 setPermissions(parsedPermissions);
             }
             const uuid = parsedPermissions.uuid;
-            const response = api.post('/user/users/getNameById', {uuid})
+            const orga = parsedPermissions.Organization;
+            const response = api.post('/user/organization/getLogo', {orga})
             .then((response) => {
-                const uName = response.data.name;
-                const uLast = response.data.last;
-                setName(uName);
-                setLast(uLast);
+                const buffer = response.data.data[0];
+                const imageData = response.data.data[0];
+
+                const arrayBuffer = imageData.buffer.data;
+                const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                const url = URL.createObjectURL(blob);
+                
+                setLogoUrl(url);
               })
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);
               });
-            if (!authStateValue.loggedIn) {
-                showToast('error', 'Sin autenticación');
-                router.push('/auth/login');
-            }
             effectMounted.current = true;
         }
-    }, [authStateValue.loggedIn, router, setAuth, searchParams, department, process]);
+    }, [authStateValue.loggedIn, router, setAuth, searchParams, department]);
+
+    useEffect(() => {
+        if (!isModalOpen) {
+            const fetchLogo = async () => {
+                const storedPermissions = localStorage.getItem('permissions'); 
+                if (storedPermissions) {
+                    const parsedPermissions = JSON.parse(storedPermissions);
+                    const orga = parsedPermissions.Organization;
+                    try {
+                        const response = await api.post('/user/organization/getLogo', { orga });
+                        const imageData = response.data.data[0];
+                        const arrayBuffer = imageData.buffer.data;
+                        const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                        const url = URL.createObjectURL(blob);
+                        setLogoUrl(url);
+                    } catch (error) {
+                        console.error("Error al consultar nombre:", error);
+                    }
+                }
+            };
+            fetchLogo();
+        }
+    }, [isModalOpen]);
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile && !['image/jpeg', 'image/png', 'image/gif'].includes(selectedFile.type)) {
+          showToast('error', 'Solo se permiten archivos de imagen (JPEG, PNG, GIF).');
+          setFile(null); 
+        } else {
+          setFile(selectedFile);
+        }
+    };
+      
+    const handleSubmit = async () => {
+        if (!files) {
+            showToast('error', 'Por favor, seleccione un archivo para cargar.');
+            return;
+        }
+        const file = Array.isArray(files) ? files[0] : files;
+        if (!file.type.startsWith('image/')) {
+            showToast('error', 'El archivo seleccionado no es una imagen.');
+            return;
+        }
+        const formData = new FormData();
+        formData.append('file', file);
+        const orga = permissions.Organization || '';
+        formData.append('orga', orga);
+    
+        try {
+            const response = await api.post('/user/organization/updateLogo', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                    'orgaId':orga
+                },
+            });
+    
+            if (response.status === 200) {
+                showToast('success', 'Imagen cargada exitosamente.');
+                closeModal();
+            } else {
+                showToast('error', 'Error al cargar la imagen.');
+            }
+        } catch (error) {
+            console.error('Error en la solicitud:', error);
+            showToast('error', 'Error en la solicitud.');
+        }
+    };
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     return (
         <>
             <div className="flex items-center justify-between fixed bg-white w-full border-b-4 z-50">
                 <div className="flex items-center pb-4 pl-12 pt-5">
+                    <div className="relative">
                     <Image
-                        src="/logos/Lg_JIso.svg"
+                        src={logoUrl || '/logos/Lg_JIso.svg'}
                         alt="Logo"
                         width={180}
-                        height={29}/>
+                        height={29}
+                    />
+                    {permissions.Type === 1 && (
+                        <button
+                            onClick={openModal}
+                            className="absolute top-1/2 -translate-y-1/2 right-[-40px] flex items-center justify-center w-8 h-8 bg-white">
+                            <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
+                        </button>
+                    )}
+                    </div>
                 </div>
                 <div className="flex-1 flex justify-center">
                     <p className="text-black text-center "><b>{name} {last}</b></p>
@@ -109,7 +200,7 @@ export default function TopNewMenuClientDashboard() {
                                 leaveTo="transform opacity-0 scale-95">
                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-[224px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
-                                        {/* <Menu.Item>
+                                                                                {/* <Menu.Item>
                                             {({ active }) => (
                                                 <a href="/user/account" className={`flex justify-center items-center mb-[13px] mt-[10px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
                                                     <Image
@@ -153,16 +244,19 @@ export default function TopNewMenuClientDashboard() {
                                         <form method="POST" action="#">
                                             <Menu.Item>
                                                 {({ active }) => (
-                                                    <button type="submit" className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                        <Image
+                                                    <Link href="/dashboard/logout" passHref>
+                                                        <button 
+                                                            type="button" 
+                                                            className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                            <Image
                                                             className='mr-[10px]'
                                                             src="/svg/icons/logOut.svg"
                                                             alt="Salir"
                                                             width={15}
-                                                            height={17}
-                                                        />
-                                                        <Link href='/dashboard/logout'>Salir</Link>
-                                                    </button>
+                                                            height={17}/>
+                                                            <span>Salir</span>
+                                                        </button>
+                                                    </Link>
                                                 )}
                                             </Menu.Item>
                                         </form>
@@ -174,6 +268,26 @@ export default function TopNewMenuClientDashboard() {
                 </div>
             </div>
             <hr className="dark:bg-camposDark h-1 rounded" />
+
+            {isModalOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
+                    <button onClick={closeModal} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+                        &times;
+                    </button>
+                    <h2 className="text-2xl mb-4 text-black">Cargar nuevo logo</h2>
+                    <input type="file" onChange={handleFileChange} className="mb-4" />
+                        <div>                    
+                            <button
+                                onClick={handleSubmit}
+                                className={`p-2 rounded text-white ${!files ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2C1C47] hover:bg-[#1B1130] cursor-pointer'}`}
+                                disabled={!files} >
+                                Cargar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
