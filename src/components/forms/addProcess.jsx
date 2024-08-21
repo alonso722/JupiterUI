@@ -306,12 +306,12 @@ const AddProcessForm = ({ card, onClose }) => {
   }, []);
   
   useEffect(() => {
-    
     if (workflowInfo && workflowInfo.t08_workflow_name) {
         setProcessName(workflowInfo.t08_workflow_name);
         setSelectedEditor(workflowInfo.t08_workflow_editor[0]);
         setSelectedRevisor(workflowInfo.t08_workflow_revisor);
         setSelectedAprobator(workflowInfo.t08_workflow_aprobator);
+        setSelectedConsultor(workflowInfo.t08_workflow_consultor);
         setDepName(workflowInfo.dName);
         setFileInfo(workflowInfo.file)
         setAnnexesInfo(workflowInfo.anx)
@@ -377,7 +377,6 @@ const AddProcessForm = ({ card, onClose }) => {
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
       }
-  
       if (processDetails.processName) {
         api.post('/user/process/addTab', processDetails)
           .then((response) => {
@@ -670,7 +669,7 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           </div>
         ) : (
-          <div className='ml-3 rounded border-2 mt-[20px] h-[630px]'>
+          <div className='ml-3 rounded border-2 mt-[20px] h-[610px]'>
             <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
               {fileInfo && (
                 <div className="text-black flex flex-col items-center">
@@ -762,7 +761,7 @@ const AddProcessForm = ({ card, onClose }) => {
                 <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
               </div>
             </div>
-            <div className='max-h-[300px] h-[200px] max-w-[200px] ml-5'>
+            <div className='max-h-[300px] h-[200px] max-w-[200px] ml-5 pt-[60px]'>
               <p className="block text-sm font-medium leading-6 text-black">Consultores</p>
               <UsersChecks selectedOptions={selectedConsultor} setSelectedOptions={setSelectedConsultor} selectedOrgId={selectedOrgId} />
             </div>

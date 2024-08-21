@@ -478,7 +478,6 @@ const Details = ({ card, onClose }) => {
         isDisabled = false; 
       }
     } else {
-      console.log("Datos no definidos.");
     }
   
     return isDisabled;
@@ -528,7 +527,7 @@ const Details = ({ card, onClose }) => {
               <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>
               <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
-            <div className='relative'>
+            <div className='relative '>
               <div className='justify-between flex space-x-2 mb-[10px]'>
                 <p className="mt-[8px] text-black mb-2">Documentos asignado al proceso</p>
                 <div className=' pr-[50px]'>
@@ -624,12 +623,12 @@ const Details = ({ card, onClose }) => {
                 <div className='flex flex-col max-w-[95%]'>
                   <div className='w-full  flex flex-col border-b-2 border-indigo-200/50 mb-4'>
                     <div className='flex flex-col'>
-                      <div className='flex items-center mb-2'>
+                      <div className='flex items-center '>
                         <img 
                           src={getFileIcon(document.name)} 
                           onClick={() => document && openViewer(document.path)}
                           alt="File Icon" 
-                          className='w-[50px] h-[50px] cursor-pointer' />
+                          className='w-[50vw] h-[50vh] cursor-pointer' />
                         <div className='flex-grow'>
                           <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
                           <p className="text-black">{document.name}</p>
@@ -646,7 +645,7 @@ const Details = ({ card, onClose }) => {
                     <div className='flex flex-col'>
                       {documentsANX.length > 0 ? (
                         documentsANX.map((anx, index) => (
-                          <div key={index} className='flex items-center mb-2'>
+                          <div key={index} className='flex items-center '>
                             <img 
                               src={getFileAnxIcon([anx])} 
                               onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
@@ -671,7 +670,7 @@ const Details = ({ card, onClose }) => {
                 </div>
               )}
             </div>
-            <div className='mt-7 text-black rounded-lg border-2 border-[#B5B5BD] p-2 w-[90%]'>
+            <div className=' text-black rounded-lg border-2 border-[#B5B5BD] p-2 w-[90%]'>
               <textarea
                 type="text"
                 value={incident}
@@ -888,7 +887,7 @@ const Details = ({ card, onClose }) => {
                 </div>
               <p>Fecha de aprobación</p>
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[200px] overflow-auto">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[200px] max-h-[33%] overflow-auto">
               <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
