@@ -158,9 +158,9 @@ export default function TopNewMenuClientDashboard() {
                     )}
                     </div>
                 </div>
-                {/* <div className="flex-1 flex justify-center">
+                <div className="flex-1 flex justify-center">
                     <p className="text-black text-center "><b>{name} {last}</b></p>
-                </div> */}
+                </div>
                 <div className="flex h-11 w-[346px] items-center justify-end pr-8">
                     {/* <div className="mr-[47px]">
                         <svg
