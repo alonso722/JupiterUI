@@ -49,6 +49,20 @@ export default function TopNewMenuClientDashboard() {
             }
             const uuid = parsedPermissions.uuid;
             const orga = parsedPermissions.Organization;
+            const name = api.post('/user/users/getNameById', {uuid})
+            .then((response) => {
+                const uName = response.data.name;
+                const uLast = response.data.last;
+                setName(uName);
+                setLast(uLast);
+            })
+            .catch((error) => {
+              console.error("Error al consultar nombre:", error);
+            });
+            if (!authStateValue.loggedIn) {
+                showToast('error', 'Sin autenticación');
+                router.push('/auth/login');
+            }
             const response = api.post('/user/organization/getLogo', {orga})
             .then((response) => {
                 const buffer = response.data.data[0];

@@ -155,6 +155,8 @@ const AddUserForm = ({ user, onClose }) => {
       uuid,
     };
 
+    userDetails.role = 2;
+
     const showToast = (type, message) => {
       toast[type](message, {
           position: 'top-center',
@@ -311,7 +313,7 @@ const AddUserForm = ({ user, onClose }) => {
             )}
           </Listbox>
           <div className='mt-4'>
-          <Listbox value={selectedRole} onChange={setSelectedRole} className="max-w-[100px] mt-9">
+          {/* <Listbox value={selectedRole} onChange={setSelectedRole} className="max-w-[100px] mt-9">
             {({ open }) => (
               <>
                 <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Rol del usuario</Listbox.Label>
@@ -369,7 +371,7 @@ const AddUserForm = ({ user, onClose }) => {
                 </div>
               </>
             )}
-          </Listbox>
+          </Listbox> */}
           </div>
 
           <p className=" mt-[20px] mb-4 text-black w-[70%]">
