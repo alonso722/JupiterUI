@@ -446,8 +446,8 @@ const AddProcessForm = ({ card, onClose }) => {
       
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
-        processDetails.fileTitle = fileInfo.name;
-        processDetails.fileName = fileInfo.asignedTitle;
+        processDetails.fileTitle = fileInfo.title;
+        processDetails.fileName = fileInfo.name;
       }
       if (annexesInfo) {
         processDetails.annexes = annexesInfo;
@@ -457,7 +457,7 @@ const AddProcessForm = ({ card, onClose }) => {
           .then((response) => {
 
             if (response.status === 200) {
-              onClose();
+              //onClose();
             }
           })
           .catch((error) => {

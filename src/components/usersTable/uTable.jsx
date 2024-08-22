@@ -118,10 +118,10 @@ const UsersTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento",
         }),
-        columnHelper.accessor("role", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Rol",
-        }),
+        // columnHelper.accessor("role", {
+        //     cell: (info) => <span>{info.getValue()}</span>,
+        //     header: "Rol",
+        // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
