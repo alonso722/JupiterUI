@@ -284,7 +284,6 @@ const AddProcessForm = ({ card, onClose }) => {
         const id = card.id;
         api.post('/user/process/fetchEdit', { id })
           .then((info) => {
-            console.log(info.data)
             setInfo(info.data); 
           })
           .catch((error) => {
@@ -444,10 +443,13 @@ const AddProcessForm = ({ card, onClose }) => {
         showToast('error', "Los usuarios no pueden tener más de dos roles por proceso.");
         return;
     }
-      
       if (fileInfo) {
         processDetails.filePath = fileInfo.path;
-        processDetails.fileTitle = fileInfo.title;
+        if(fileInfo.titleAsig){
+          processDetails.fileTitle = fileInfo.titleAsig;
+        } else{
+          processDetails.fileTitle = fileInfo.title;
+        }
         processDetails.fileName = fileInfo.name;
       }
       if (annexesInfo) {

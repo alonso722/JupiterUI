@@ -108,7 +108,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                         )}
                                     </Menu.Item>
                                 ) : null}
-                                {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
+                                {permissions.Type === 1 || permissions.Type === 6 ? (
                                     <Menu.Item>
                                         {({ active }) => (
                                         <button
