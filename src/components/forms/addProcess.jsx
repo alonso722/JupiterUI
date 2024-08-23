@@ -284,6 +284,7 @@ const AddProcessForm = ({ card, onClose }) => {
         const id = card.id;
         api.post('/user/process/fetchEdit', { id })
           .then((info) => {
+            console.log(info.data)
             setInfo(info.data); 
           })
           .catch((error) => {
