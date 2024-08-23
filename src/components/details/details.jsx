@@ -628,7 +628,7 @@ const Details = ({ card, onClose }) => {
                           src={getFileIcon(document.name)} 
                           onClick={() => document && openViewer(document.path)}
                           alt="File Icon" 
-                          className='w-[50vw] h-[50vh] cursor-pointer' />
+                          className='w-[50px] h-[50px] cursor-pointer' />
                         <div className='flex-grow'>
                           <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
                           <p className="text-black">{document.name}</p>
@@ -681,7 +681,7 @@ const Details = ({ card, onClose }) => {
             <div className="flex items-center mt-4">
             <button 
               onClick={handleSubmit} 
-              className='bg-[#B5B5BD] p-2 rounded text-[#7A828A] active:bg-[#2C1C47]'>
+              className='bg-[#2C1C47] p-2 rounded text-[#ffffff] active:bg-[#B5B5BD]'>
               Enviar 
             </button>
               <div className="ml-4 flex items-center space-x-4">
@@ -715,7 +715,7 @@ const Details = ({ card, onClose }) => {
                 value={selected}
                 onChange={handleStatusUpdate}
                 className="max-w-[100px]"
-                disabled={isListboxDisabled()}
+                disabled={!document || isListboxDisabled()}
               >
                 {({ open }) => (
                   <>
@@ -723,7 +723,7 @@ const Details = ({ card, onClose }) => {
                     <div className="relative mt-2">
                       <Listbox.Button
                         className={`relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
-                          isListboxDisabled() ? 'opacity-50 cursor-not-allowed' : ''
+                          !document || isListboxDisabled() ? 'opacity-50 cursor-not-allowed' : ''
                         }`}
                       >
                         <span className="flex items-center">

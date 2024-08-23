@@ -457,7 +457,7 @@ const AddProcessForm = ({ card, onClose }) => {
           .then((response) => {
 
             if (response.status === 200) {
-              //onClose();
+              onClose();
             }
           })
           .catch((error) => {
