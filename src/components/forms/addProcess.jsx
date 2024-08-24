@@ -601,6 +601,27 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           )}
           </div>
+          <div className='flex w-[400px] py-2 justify-center'>
+            {fileInfo && (
+              <div className="text-black flex flex-col items-center">
+                <h2 className="mb-2">Documento cargado:</h2>
+                <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                <p className='w-[150px] text-black text-center mx-[5px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
+                  {fileInfo.name}
+                </p>
+              </div>
+            )}
+            {annexesInfo && (
+              <div className="text-black flex flex-col items-center ml-6">
+                <h2 className="mb-2">Anexos:</h2>
+                <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
+                <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
+                  {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
+                </p>
+              </div>
+            )}
+          </div>
+          <p className='text-black'>{privileges}</p>
           {privileges === 1 || privileges === 2 ? (
             <div className="flex ml-[10px]">
               <div className='flex mt-[30px]'>
@@ -622,29 +643,9 @@ const AddProcessForm = ({ card, onClose }) => {
           </button>
         </div>
         {permissions.Type !== 1 && permissions.Type !== 6 ? (
-          <div className='ml-3 rounded border-2 mt-[20px] h-[630px]'>
-            <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
-              {fileInfo && (
-                <div className="text-black flex flex-col items-center">
-                  <h2 className="mb-2">Documento cargado:</h2>
-                  <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                  <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
-                    {fileInfo.name}
-                  </p>
-                </div>
-              )}
-              {annexesInfo && (
-                <div className="text-black flex flex-col items-center ml-6">
-                  <h2 className="mb-2">Anexos:</h2>
-                  <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                  <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
-                    {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
-                  </p>
-                </div>
-              )}
-            </div>
+          <div className='ml-3 rounded border-2 mt-[20px] h-[630px] bg-black'>
             <div className='flex flex-col p-3'>
-              <h2 className='text-black text-lg font-semibold mb-2'>Información del Workflow:</h2>
+              <h2 className='text-black text-lg font-semibold mb-2'>Información del proceso:</h2>
               <div className='text-black mb-3'>
                 <h3 className='text-md font-medium'>Editor:</h3>
                 {workflowInfo.t08_workflow_editor && workflowInfo.t08_workflow_editor.length > 0 ? (
@@ -672,28 +673,9 @@ const AddProcessForm = ({ card, onClose }) => {
             </div>
           </div>
         ) : (
-          <div className='ml-3 rounded border-2 mt-[20px] h-[610px]'>
-            <div className='flex w-[450px] p-3 justify-center ml-[60px]'>
-              {fileInfo && (
-                <div className="text-black flex flex-col items-center">
-                  <h2 className="mb-2">Documento cargado:</h2>
-                  <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                  <p className='w-[150px] text-black text-center mx-[14px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
-                    {fileInfo.name}
-                  </p>
-                </div>
-              )}
-              {annexesInfo && (
-                <div className="text-black flex flex-col items-center ml-6">
-                  <h2 className="mb-2">Anexos:</h2>
-                  <img src={getAnnexesIcon(annexesInfo)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
-                  <p className='w-[150px] text-black text-center overflow-hidden text-ellipsis whitespace-nowrap' title={annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}>
-                    {annexesInfo.length > 1 ? annexesInfo[0].title : annexesInfo[0].name}
-                  </p>
-                </div>
-              )}
-            </div>
-            <div className='mb-2 px-5 text-black'>
+          <div className='ml-3 rounded border-2 mt-[20px] max-h-[700px] overflow-y-auto w-[500px] '>
+            <div className='mb-2 px-5 mt-[10px] text-black'>
+            <p className='text-black'>{privileges}</p>
               <Listbox value={selectedEditor} onChange={(value) => {
                 setSelectedEditor(value);
               }} className="max-w-[100px]">

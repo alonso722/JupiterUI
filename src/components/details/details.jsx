@@ -38,6 +38,7 @@ const Details = ({ card, onClose }) => {
   const [document, setDocument] = useState({});
   const [documentsANX, setAnnexe] = useState({});
   const [roles, setRoles] = useState({});
+  const [updated, setDate] = useState({});
   const [incident, setIncident] = useState(''); 
   const [logsPrnt, setLogs] = useState([]);
   const [attendReq, setAttend] = useState(false); 
@@ -56,6 +57,7 @@ const Details = ({ card, onClose }) => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState(null);
   const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+  const [privileges, setPrivileges] = useState('');
 
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
@@ -91,7 +93,33 @@ const Details = ({ card, onClose }) => {
         if (storedPermissions) {
             parsedPermissions = JSON.parse(storedPermissions);
             setPermissions(parsedPermissions);
+        }    
+        
+        let par;
+        const storedA = localStorage.getItem('workflows'); 
+        try {
+            par = JSON.parse(storedA);
+        } catch (e) {
+            console.error("Error al analizar el valor de localStorage:", e);
+            par = null;
         }
+        
+        const cardId = parseInt(card.id, 10);
+        
+        if (parsedPermissions.Type === 1 || parsedPermissions.Type === 6) {
+          setPrivileges(1);
+        } else if (par && typeof par === 'object' && par !== null) {
+        
+            if (par.editorOf && par.editorOf.includes(cardId)) {
+                setPrivileges(2);
+            } else if (par.revisorOf && par.revisorOf.includes(cardId)) {
+                setPrivileges(3);
+            } else if (par.aprobatorOf && par.aprobatorOf.includes(cardId)) {
+                setPrivileges(4);
+            } else {
+                setPrivileges(0);
+            }
+        }         
 
         try {
           const initialStatus = status.find(state => state.column === card.column) || status[0];
@@ -105,6 +133,9 @@ const Details = ({ card, onClose }) => {
           setSelected(initialStatus);
 
           const responseRole = await api.post('/user/process/getRoles', card);
+          const responseDate = await api.post('/user/process/getdate', card);
+          const updateDate = responseDate.data.date;
+          setDate(updateDate);
           const rolesData = responseRole.data[0];
           setRoles(rolesData);
 
@@ -482,6 +513,35 @@ const Details = ({ card, onClose }) => {
   
     return isDisabled;
   };
+
+  const isdownloadDisabled = () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions'); 
+    parsedPermissions = JSON.parse(storedPermissions);
+
+    let par;
+    const storedA = localStorage.getItem('workflows'); 
+    try {
+        par = JSON.parse(storedA);
+    } catch (e) {
+        console.error("Error al analizar el valor de localStorage:", e);
+        par = null;
+    }
+    if (parsedPermissions.Type === 1 || parsedPermissions.Type === 6) {
+      setPrivileges(1);
+  } else if (par && typeof par === 'object' && par !== null) {
+  
+      if (par.editorOf && par.editorOf.includes(card.id)) {
+          setPrivileges(2);
+      } else if (par.revisorOf && par.revisorOf.includes(card.id)) {
+          setPrivileges(3);
+      } else if (par.aprobatorOf && par.aprobatorOf.includes(card.id)) {
+          setPrivileges(4);
+      } else {
+          setPrivileges(0);
+      }
+  } 
+  };
   
   
   const filteredStatus = status.filter((state) => {
@@ -528,7 +588,7 @@ const Details = ({ card, onClose }) => {
               <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
             <div className='relative '>
-              <div className='justify-between flex space-x-2 mb-[10px]'>
+              <div className='justify-between flex space-x-2 mb-[5px]'>
                 <p className="mt-[8px] text-black mb-2">Documentos asignado al proceso</p>
                 <div className=' pr-[50px]'>
                   <button 
@@ -576,22 +636,22 @@ const Details = ({ card, onClose }) => {
                         </strong>
                       </p>
                     </div>
-                    {permissions.Type !== 5 && document?.name && (
+                    { privileges === 1 || privileges === 2 ? (
                       <button
                         onClick={() => handleDownload(document.path)}
                         className="bg-[#2C1C47] p-1 rounded text-white">
                         Descargar
                       </button>
-                    )}
+                    ): null}
                   </div>
 
-                  <div className='flex flex-col items-center w-full sm:w-[40%] mb-4'>
+                  <div className='flex flex-col items-center w-full sm:w-[40%] '>
                     <div className={`w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
                       onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
                       {documentsANX.length > 0 ? (
                         <>
                           <p className={`mt-[15px] text-black text-center ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
-                            <strong>{documentsANX[0].title}</strong>
+                            <strong>{documentsANX[0].title.length > 13 ? `${documentsANX[0].title.substring(0, 13)}...` : documentsANX[0].title}</strong>
                           </p>
                           <img
                             onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
@@ -601,8 +661,8 @@ const Details = ({ card, onClose }) => {
                           <p className="mt-[5px] mb-2 text-black text-center">
                             {documentsANX.length > 1 
                               ? "\u00A0"
-                              : (documentsANX[0]?.name && documentsANX[0].name.length > 23 
-                                  ? `${documentsANX[0].name.slice(0, 23)}...`
+                              : (documentsANX[0]?.name && documentsANX[0].name.length > 13 
+                                  ? `${documentsANX[0].name.substring(0, 13)}...`
                                   : documentsANX[0]?.name || "Nombre no disponible")}
                           </p>
                         </>
@@ -633,11 +693,13 @@ const Details = ({ card, onClose }) => {
                           <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
                           <p className="text-black">{document.name}</p>
                         </div>
-                        <button 
-                          onClick={() => handleDownload(document.path)} 
-                          className='bg-[#2C1C47] p-2 rounded text-white'>
-                          Descargar
-                        </button>
+                        { privileges === 1 || privileges === 2 ? (
+                      <button
+                        onClick={() => handleDownload(document.path)}
+                        className="bg-[#2C1C47] p-1 rounded text-white">
+                        Descargar
+                      </button>
+                    ): null}
                       </div>
                     </div>
                   </div>
@@ -708,7 +770,7 @@ const Details = ({ card, onClose }) => {
               </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 p-3 max-w-[50%] pr-5'>
+          <div className='mt-10 border-l-4 px-3 max-w-[50%] overflow-y-auto pr-5 '>
             <div className='flex'>
               <div className='w-[60%]'>
               <Listbox
@@ -724,8 +786,7 @@ const Details = ({ card, onClose }) => {
                       <Listbox.Button
                         className={`relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
                           !document || isListboxDisabled() ? 'opacity-50 cursor-not-allowed' : ''
-                        }`}
-                      >
+                        }`}>
                         <span className="flex items-center">
                           <span className="ml-3 block truncate">{selected.column}</span>
                         </span>
@@ -836,58 +897,56 @@ const Details = ({ card, onClose }) => {
               </div>
             )}
             <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[650px] max-h-[40%] overflow-auto whitespace-nowrap">
-                <p className='text-[18px]'><strong>Detalles del proceso:</strong></p>
-                <p className='mt-2'>
-                {roles.editor && (
-                  <div>
-                    <p>Editado por:</p>
-                    <ul className="list-disc pl-5">
-                      <li>
-                        <strong>
-                          {roles.editor.name} {roles.editor.last}
-                        </strong>
-                      </li>
-                    </ul>
+              {roles.editor && (
+                <>
+                  <p>Editado por:</p>
+                  <ul className="list-disc pl-5">
+                    <li>
+                      <strong>
+                        {roles.editor.name} {roles.editor.last}
+                      </strong>
+                    </li>
+                  </ul>
+                </>
+              )}
+              <div className='flex'>
+                {roles.revisor && (
+                  <div className="border-l-4 ml-2 pl-2">
+                    <p>Revisado por:</p>
+                    <strong>
+                      <ul className="list-disc pl-5">
+                        {roles.revisor.map((revisor, index) => (
+                          <li key={index}>
+                            {revisor.name} {revisor.last}
+                          </li>
+                        ))}
+                      </ul>
+                    </strong>
                   </div>
                 )}
-                </p>
-                <div className='flex'>
-                  <p>
-                    {roles.revisor && (
-                      <>
-                        Revisado por:<br />
-                        <strong>
-                          <ul className="list-disc pl-5">
-                            {roles.revisor.map((revisor, index) => (
-                              <li key={index}>
-                                {revisor.name} {revisor.last}
-                              </li>
-                            ))}
-                          </ul>
-                        </strong>
-                      </>
-                    )}
-                  </p>
-                  <p className='border-l-4 ml-2 pl-2'>
-                    {roles.aprobator && (
-                      <>
-                        Aprobado por:<br />
-                        <strong>
-                          <ul className="list-disc pl-5">
-                            {roles.aprobator.map((aprobator, index) => (
-                              <li key={index}>
-                                {aprobator.name} {aprobator.last}
-                              </li>
-                            ))}
-                          </ul>
-                        </strong>
-                      </>
-                    )}
-                  </p>
-                </div>
-              <p>Fecha de aprobación</p>
+                {roles.aprobator && (
+                  <div className="border-l-4 ml-2 pl-2">
+                    <p>Aprobado por:</p>
+                    <strong>
+                      <ul className="list-disc pl-5">
+                        {roles.aprobator.map((aprobator, index) => (
+                          <li key={index}>
+                            {aprobator.name} {aprobator.last}
+                          </li>
+                        ))}
+                      </ul>
+                    </strong>
+                  </div>
+                )}
+              </div>
+                {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
+                  <>
+                    <p>Fecha de aprobación</p>
+                    <p><strong>{new Date(updated).toISOString().replace('T', '.').slice(0, 16).replace(/-/g, '/')}</strong></p>
+                  </>
+                )}
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[200px] max-h-[33%] overflow-auto">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[180px] max-h-[33%] overflow-auto">
               <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
