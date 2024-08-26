@@ -315,6 +315,7 @@ const AddProcessForm = ({ card, onClose }) => {
         setDepName(workflowInfo.dName);
         setFileInfo(workflowInfo.file)
         setAnnexesInfo(workflowInfo.anx)
+        console.log(workflowInfo)
     }
   }, [workflowInfo, ]);
   
@@ -648,7 +649,7 @@ const AddProcessForm = ({ card, onClose }) => {
               <div className='text-black mb-3'>
                 <h3 className='text-md font-medium'>Editor:</h3>
                 {workflowInfo.t08_workflow_editor && workflowInfo.t08_workflow_editor.length > 0 ? (
-                  <p>{workflowInfo.t08_workflow_editor[0].name}</p>
+                  <p>{workflowInfo.t08_workflow_editor[0].name} {workflowInfo.t08_workflow_editor[0].last}</p>
                 ) : (
                   <p>No hay editor asignado</p>
                 )}
@@ -656,7 +657,9 @@ const AddProcessForm = ({ card, onClose }) => {
               <div className='text-black mb-3'>
                 <h3 className='text-md font-medium'>Revisor:</h3>
                 {workflowInfo.t08_workflow_revisor && workflowInfo.t08_workflow_revisor.length > 0 ? (
-                  <p>{workflowInfo.t08_workflow_revisor.map(revisor => revisor.name).join(', ')}</p>
+                  <p>
+                    {workflowInfo.t08_workflow_revisor.map(revisor => `${revisor.name} ${revisor.last}`).join(', ')}
+                  </p>
                 ) : (
                   <p>No hay revisor(es) asignado(s)</p>
                 )}
@@ -664,7 +667,9 @@ const AddProcessForm = ({ card, onClose }) => {
               <div className='text-black mb-3'>
                 <h3 className='text-md font-medium'>Aprobador:</h3>
                 {workflowInfo.t08_workflow_aprobator && workflowInfo.t08_workflow_aprobator.length > 0 ? (
-                  <p>{workflowInfo.t08_workflow_aprobator.map(aprobator => aprobator.name).join(', ')}</p>
+                  <p>
+                    {workflowInfo.t08_workflow_aprobator.map(aprobator => `${aprobator.name} ${aprobator.last}`).join(', ')}
+                  </p>
                 ) : (
                   <p>No hay aprobador(es) asignado(s)</p>
                 )}
@@ -674,7 +679,6 @@ const AddProcessForm = ({ card, onClose }) => {
         ) : (
           <div className='ml-3 rounded border-2 mt-[20px] max-h-[700px] overflow-y-auto w-[500px] '>
             <div className='mb-2 px-5 mt-[10px] text-black'>
-            <p className='text-black'>{privileges}</p>
               <Listbox value={selectedEditor} onChange={(value) => {
                 setSelectedEditor(value);
               }} className="max-w-[100px]">
