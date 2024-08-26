@@ -496,6 +496,10 @@ const Details = ({ card, onClose }) => {
     let isDisabled = true;
   
     if (parsedWorkflows && card) {
+      if (parsedWorkflows.coordinator === 0) {
+        return true; 
+      }
+  
       const cardId = Number(card.id);
       if (card.column === "Edición") {
         isDisabled = !parsedWorkflows.editorOf.includes(cardId);
@@ -508,11 +512,11 @@ const Details = ({ card, onClose }) => {
       } else {
         isDisabled = false; 
       }
-    } else {
     }
   
     return isDisabled;
   };
+  
 
   const isdownloadDisabled = () => {
     let parsedPermissions;
@@ -847,8 +851,7 @@ const Details = ({ card, onClose }) => {
                 {!isListboxDisabled() && card.column !== "Edición" && (
                   <button
                     className="bg-red-500 text-white px-4 py-2 rounded"
-                    onClick={handleReject}
-                  >
+                    onClick={handleReject}>
                     Rechazar
                   </button>
                 )}
