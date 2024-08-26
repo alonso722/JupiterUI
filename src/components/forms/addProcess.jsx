@@ -621,7 +621,6 @@ const AddProcessForm = ({ card, onClose }) => {
               </div>
             )}
           </div>
-          <p className='text-black'>{privileges}</p>
           {privileges === 1 || privileges === 2 ? (
             <div className="flex ml-[10px]">
               <div className='flex mt-[30px]'>
@@ -643,7 +642,7 @@ const AddProcessForm = ({ card, onClose }) => {
           </button>
         </div>
         {permissions.Type !== 1 && permissions.Type !== 6 ? (
-          <div className='ml-3 rounded border-2 mt-[20px] h-[630px] bg-black'>
+          <div className='ml-3 rounded border-2 w-[400px] mt-[20px] h-[630px]'>
             <div className='flex flex-col p-3'>
               <h2 className='text-black text-lg font-semibold mb-2'>Información del proceso:</h2>
               <div className='text-black mb-3'>

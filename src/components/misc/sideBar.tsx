@@ -4,9 +4,13 @@ import Image from 'next/image';
 interface Permissions {
     Type: number;
 }
+interface Workflows {
+    coordinator: number;
+}
 
 export default function Sidebar() {
     const [permissions, setPermissions] = useState<Permissions | null>(null); 
+    const [workflows, setWorkflows] = useState<Workflows | null>(null); 
     const [isExpanded, setIsExpanded] = useState(false);
     const [currentPath, setCurrentPath] = useState('');
 
@@ -20,6 +24,12 @@ export default function Sidebar() {
                 console.error('Error parsing permissions:', error);
                 setPermissions(null); 
             }
+        }
+        let parsedWorkflows;
+        const storedWorkflows = localStorage.getItem('workflows');
+        if (storedWorkflows) {
+          parsedWorkflows = JSON.parse(storedWorkflows);
+          setWorkflows(parsedWorkflows);
         }
 
         setCurrentPath(window.location.pathname);
@@ -74,7 +84,7 @@ export default function Sidebar() {
 
     const navItems = [
         { path: '/dashboard/home', icon: 'kanban.svg', label: 'Kanban', condition: true },
-        { path: '/dashboard/table', icon: 'table.svg', label: 'Table', condition: permissions?.Type !== 5 },
+        { path: '/dashboard/table', icon: 'table.svg', label: 'Table', condition: permissions?.Type !== 5 && workflows?.coordinator !== 0 },
         { path: '/organizations', icon: 'orgas.svg', label: 'Organizations', condition: permissions?.Type === 6 },
         { path: '/departments', icon: 'departments.svg', label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/user', icon: 'users.svg', label: 'Users', condition: permissions?.Type === 1 || permissions?.Type === 6 }
