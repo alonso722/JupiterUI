@@ -944,8 +944,8 @@ const Details = ({ card, onClose }) => {
               </div>
                 {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
                   <>
-                    <p>Fecha de aprobación</p>
-                    <p><strong>{new Date(updated).toISOString().replace('T', '.').slice(0, 16).replace(/-/g, '/')}</strong></p>
+                    <p>Fecha de aprobación:</p>
+                    <p><strong>{new Date(updated).toLocaleDateString('es-ES')}</strong></p>
                   </>
                 )}
             </div>
