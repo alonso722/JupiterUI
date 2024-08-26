@@ -149,14 +149,14 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] max-h-[600px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
         <h2 className="text-2xl mb-4 text-black">Cargar anexos</h2>
         <input type="file" multiple onChange={handleFileChange} className="mb-4" />
         {files.length > 0 && (
-          <div className="mb-4 text-black">
+          <div className="mb-4 text-black max-h-[270px] overflow-y-auto">
             {files.map((file, index) => (
               <div key={index} className="mb-2 flex justify-between items-center">
                 <div>
