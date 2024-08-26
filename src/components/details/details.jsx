@@ -707,7 +707,7 @@ const Details = ({ card, onClose }) => {
                       </div>
                     </div>
                   </div>
-                  <div className='w-full  flex flex-col border-b-2 border-indigo-200/50'>
+                  <div className='w-full  flex flex-col border-b-2 max-h-[100px] overflow-y-auto border-indigo-200/50'>
                     <div className='flex flex-col'>
                       {documentsANX.length > 0 ? (
                         documentsANX.map((anx, index) => (

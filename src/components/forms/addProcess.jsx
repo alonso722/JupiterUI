@@ -209,6 +209,7 @@ const AddProcessForm = ({ card, onClose }) => {
   const [selectedConsultor, setSelectedConsultor] = useState([]);
   const [workflowInfo, setInfo] = useState([]);
   const [workflows, setAccess] = useState([]);
+  const [description, setDescription] = useState(''); 
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -332,6 +333,7 @@ const AddProcessForm = ({ card, onClose }) => {
       
       const processDetails = {
         processName,
+        description,
         departments: selectedDepartments,
         editor: selectedEditor,
         revisor: selectedRevisor,
@@ -409,6 +411,7 @@ const AddProcessForm = ({ card, onClose }) => {
       const processDetails = {
         processId: card.id,
         processName,
+        description,
         editor: formatUser(selectedEditor),
         revisor: selectedRevisor.map(formatUser),
         aprobator: selectedAprobator.map(formatUser),
@@ -505,6 +508,10 @@ const AddProcessForm = ({ card, onClose }) => {
           return '/icons/question.png'; 
       }
     }
+  };
+
+  const handleInputChange = (event) => {
+    setDescription(event.target.value); 
   };
 
   return (
@@ -623,18 +630,32 @@ const AddProcessForm = ({ card, onClose }) => {
             )}
           </div>
           {privileges === 1 || privileges === 2 ? (
-            <div className="flex ml-[10px]">
-              <div className='flex mt-[30px]'>
-                <button onClick={() => setIsModalOpen(true)} className='flex bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
-                  <img src='/icons/doc.svg' alt='Iconos' width={19} height={21} className='mr-[13px]'/>
-                  Cargar documento
-                </button>
-                <button onClick={() => setIsModal2Open(true)} className='flex ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
-                  <img src='/icons/clip.svg' alt='Iconos' width={16} height={22} className='mr-[13px]'/>
-                  Cargar anexos
-                </button>
+            <div>
+              <div className="flex ml-[10px]">
+                <div className='flex mt-[30px]'>
+                  <button onClick={() => setIsModalOpen(true)} className='flex bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
+                    <img src='/icons/doc.svg' alt='Iconos' width={19} height={21} className='mr-[13px]'/>
+                    Cargar documento
+                  </button>
+                  <button onClick={() => setIsModal2Open(true)} className='flex ml-[23px] bg-[#EDF2F7] text-black p-2 rounded mt-2'>
+                    <img src='/icons/clip.svg' alt='Iconos' width={16} height={22} className='mr-[13px]'/>
+                    Cargar anexos
+                  </button>
+                </div>
               </div>
-            </div>
+              <div className='mt-9'>
+                <p>
+                  Descripción del proceso:
+                </p>
+                <textarea 
+                  type="text"
+                  value={description}
+                  onChange={handleInputChange}
+                  placeholder="Agrega un comentario o incidencia"
+                  className='w-full h-[170px] border-2 rounded mt-3 overflow-auto border-indigo-200/50'>
+                </textarea>
+              </div>
+            </div>      
           ) : null}
           <button
             onClick={() => card ? handleEditProcess(selectedDepartments) : handleAddProcess(selectedDepartments)}

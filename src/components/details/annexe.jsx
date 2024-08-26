@@ -100,23 +100,20 @@ const Annexes = ({ onClose, cardId }) => {
               {annexe.map((anx) => (
                 <div
                   key={anx.id}
-                  className="flex-shrink-0 flex flex-col items-center justify-center mr-5 w-[120px]"
-                >
+                  className="flex-shrink-0 flex flex-col items-center justify-center mr-5 w-[120px]">
                   <div className="mb-4 rounded border-2 border-indigo-200/50 flex flex-col items-center justify-center px-4 w-full">
                     <img
                       onClick={() => openViewer(anx.path)}
                       src={getFileIcon(anx.name)}
                       alt="File Icon"
-                      className="w-[100px] h-[100px] mt-[10px] cursor-pointer object-contain"
-                    />
-                    <p className="mt-2 mb-4 text-black text-center text-sm">
+                      className="w-[100px] h-[100px] mt-[10px] cursor-pointer object-contain"/>
+                    <p className="mt-2 mb-4 text-black text-center text-sm " title={anx.name}>
                       {anx.name.length > 18 ? `${anx.name.slice(0, 18)}...` : anx.name}
                     </p>
                   </div>
                   <button
                     onClick={() => handleAnxDownload(anx.path)}
-                    className="bg-[#2C1C47] p-2 rounded text-white text-sm"
-                  >
+                    className="bg-[#2C1C47] p-2 rounded text-white text-sm">
                     Descargar anexo
                   </button>
                 </div>
