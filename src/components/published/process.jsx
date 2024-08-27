@@ -47,7 +47,8 @@ export const Published = ({ departmentFilter, processFilter }) => {
                         name: item.process,
                         column: convertStatusToColumn(item.status),
                         department: item.departmentName,
-                        date: item.updated
+                        date: item.updated,
+                        description : item.description
                     }));
                     setCards(fetchedCards); 
                 })
@@ -117,7 +118,7 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
     );
 };
 
-const Card = ({ name, department, date, id, handleDragStart, onCardClick, permissions }) => {
+const Card = ({ name, department, date, id, description, onCardClick, permissions }) => {
     return (
         <motion.div
             layout
@@ -132,8 +133,11 @@ const Card = ({ name, department, date, id, handleDragStart, onCardClick, permis
                     {name}
                 </p>
             </div>
-            <div className="bg-white text-black rounded p-3 justify-between">
-                <p>Descripción:</p>
+            <div className="bg-white text-black rounded p-3 m-1 h-[70%] flex flex-col justify-between">
+                <div>
+                    <p>Descripción: </p>
+                    <p>{description}</p>
+                </div>
                 <p className="text-sm text-black text-right text-[9px]">
                     Actualizado: {new Date(date).toLocaleDateString()}
                 </p>

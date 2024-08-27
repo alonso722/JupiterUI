@@ -316,7 +316,7 @@ const AddProcessForm = ({ card, onClose }) => {
         setDepName(workflowInfo.dName);
         setFileInfo(workflowInfo.file)
         setAnnexesInfo(workflowInfo.anx)
-        console.log(workflowInfo)
+        setDescription(workflowInfo.t08_workflow_description)
     }
   }, [workflowInfo, ]);
   

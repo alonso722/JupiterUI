@@ -186,7 +186,6 @@ const AddUserForm = ({ user, onClose }) => {
     let roleName = userRole ? userRole.name : '';
     const roleInitial = roleName === 'Aprobador' ? 'ap' : roleName.charAt(0);
     const uuid =user.rowData.uuid;
-
     switch (roleName) {
       case 'Editor':
         roleName = 2;

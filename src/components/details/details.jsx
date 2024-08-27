@@ -39,6 +39,7 @@ const Details = ({ card, onClose }) => {
   const [documentsANX, setAnnexe] = useState({});
   const [roles, setRoles] = useState({});
   const [updated, setDate] = useState({});
+  const [description, setDescription] = useState('');
   const [incident, setIncident] = useState(''); 
   const [logsPrnt, setLogs] = useState([]);
   const [attendReq, setAttend] = useState(false); 
@@ -136,6 +137,8 @@ const Details = ({ card, onClose }) => {
           const responseDate = await api.post('/user/process/getdate', card);
           const updateDate = responseDate.data.date;
           setDate(updateDate);
+          const des = responseDate.data.description;
+          setDescription(des);
           const rolesData = responseRole.data[0];
           setRoles(rolesData);
 
@@ -591,6 +594,9 @@ const Details = ({ card, onClose }) => {
               <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>
               <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
+            <div className='text-black border-2 mb-2 mr-2 p-1 overflow-y-auto  max-w-[400px] rounded h-[10%]'>
+              <p>{description}</p>
+            </div>
             <div className='relative '>
               <div className='justify-between flex space-x-2 mb-[5px]'>
                 <p className="mt-[8px] text-black mb-2">Documentos asignado al proceso</p>
@@ -633,11 +639,7 @@ const Details = ({ card, onClose }) => {
                         />
                       ) : null}
                       <p className="mt-[15px] text-black text-center">
-                        <strong title={document?.name || "Sin documento"}>
-                          {document?.name ? 
-                            (document.name.length > 13 ? `${document.name.substring(0, 13)}...` : document.name) 
-                            : ""} 
-                        </strong>
+
                       </p>
                     </div>
                     { privileges === 1 || privileges === 2 ? (
@@ -687,31 +689,37 @@ const Details = ({ card, onClose }) => {
                 <div className='flex flex-col max-w-[95%]'>
                   <div className='w-full  flex flex-col border-b-2 border-indigo-200/50 mb-4'>
                     <div className='flex flex-col'>
-                      <div className='flex items-center '>
+                    {document ? (
+                      <div className='flex items-center'>
                         <img 
                           src={getFileIcon(document.name)} 
                           onClick={() => document && openViewer(document.path)}
                           alt="File Icon" 
-                          className='w-[50px] h-[50px] cursor-pointer' />
+                          className='w-[50px] h-[50px] cursor-pointer' 
+                        />
                         <div className='flex-grow'>
                           <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
                           <p className="text-black">{document.name}</p>
                         </div>
-                        { privileges === 1 || privileges === 2 ? (
-                      <button
-                        onClick={() => handleDownload(document.path)}
-                        className="bg-[#2C1C47] p-1 rounded text-white">
-                        Descargar
-                      </button>
-                    ): null}
+                        {privileges === 1 || privileges === 2 ? (
+                          <button
+                            onClick={() => handleDownload(document.path)}
+                            className="bg-[#2C1C47] p-1 rounded text-white mr-5"
+                          >
+                            Descargar
+                          </button>
+                        ) : null}
                       </div>
+                    ) : (
+                      <p className="text-black">Sin documento</p>
+                    )}
                     </div>
                   </div>
                   <div className='w-full  flex flex-col border-b-2 max-h-[100px] overflow-y-auto border-indigo-200/50'>
                     <div className='flex flex-col'>
                       {documentsANX.length > 0 ? (
                         documentsANX.map((anx, index) => (
-                          <div key={index} className='flex items-center '>
+                          <div key={index} className='flex items-center pr-1'>
                             <img 
                               src={getFileAnxIcon([anx])} 
                               onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
@@ -723,7 +731,7 @@ const Details = ({ card, onClose }) => {
                             </div>
                             <button 
                               onClick={() => handleAnxDownload(anx.path)} 
-                              className='bg-[#2C1C47] p-2 rounded text-white'>
+                              className='bg-[#2C1C47] p-1 p2 rounded text-white'>
                               Descargar
                             </button>
                           </div>
