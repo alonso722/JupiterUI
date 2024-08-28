@@ -643,7 +643,7 @@ const AddProcessForm = ({ card, onClose }) => {
                   </button>
                 </div>
               </div>
-              <div className='mt-9'>
+              <div className='mt-5'>
                 <p>
                   Descripción del proceso:
                 </p>
@@ -651,8 +651,8 @@ const AddProcessForm = ({ card, onClose }) => {
                   type="text"
                   value={description}
                   onChange={handleInputChange}
-                  placeholder="Agrega un comentario o incidencia"
-                  className='w-full h-[170px] border-2 rounded mt-3 overflow-auto border-indigo-200/50'>
+                  placeholder="Descripción del proceso"
+                  className='w-full text-black h-[170px] border-2 rounded mt-3 overflow-auto border-indigo-200/50'>
                 </textarea>
               </div>
             </div>      

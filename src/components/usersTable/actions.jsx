@@ -3,13 +3,23 @@ import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import AddUserForm from '../forms/addUser';
 import useApi from '@/hooks/useApi';
+import { toast } from 'react-toastify';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isRecoveryOpen, setModalRecovery] = useState(false);
+    const [newPass, passRecovery] = useState('');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const api = useApi();
+
+    const showToast = (type, message) => {
+        toast[type](message, {
+          position: 'top-center',
+          autoClose: 2000,
+        });
+      };
 
     const handleMenuClick = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -20,8 +30,36 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
         handleCardClick({rowData});
     };
 
+    const handlePassClick = () => {
+        passRecovery()
+        onActionClick(rowData);
+        handlePassModal({rowData});
+    };
+
+    
+    const handlePassModal = (user) => {
+        setSelectedCard(user);
+        setModalRecovery(true);
+    };
+
     const handleDeleteClick = () => {
         setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmRecovery = (newPass) => {
+        let user ={};
+        user.uuid = rowData.uuid;
+        user.pass = newPass;
+        api.post('/user/users/recovery', user )
+            .then((response) => {
+                if (response.status == 200){
+                    showToast('success','Se actualizó la contraseña.');
+                onClose(); 
+            }
+            })
+            .catch((error) => {
+                console.error("Error al actualizar contraseña:", error);
+            });
     };
 
     const handleConfirmDelete = () => {
@@ -39,6 +77,10 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
 
     const handleCancelDelete = () => {
         setIsDeleteModalOpen(false);
+    };
+
+    const handleCancelRecovery = () => {
+        setModalRecovery(false);
     };
 
     const handleCardClick = (user) => {
@@ -103,6 +145,24 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                             <button
                                                 type="submit"
                                                 className="bg-transparent"
+                                                onClick={handlePassClick}>
+                                                <div className={`flex pl-[20px] pr-[45px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                    <Image
+                                                        className="mr-[20px]"
+                                                        src="/icons/pencil.svg"
+                                                        alt="Logo de Paypal"
+                                                        width={17}
+                                                        height={18} />                                                    
+                                                        Cambiar contraseña                                                    
+                                                </div>
+                                            </button>
+                                        )}
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <button
+                                                type="submit"
+                                                className="bg-transparent"
                                                 onClick={handleDeleteClick}>
                                                 <div className={`flex pl-[20px] pr-[56px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                     <Image
@@ -131,6 +191,31 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                         <div className="flex justify-between w-full px-8">
                         <button className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4" onClick={handleConfirmDelete}>Confirmar</button>
                         <button className="bg-[#E6E8EC]  text-[#2C1C47] p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            {isRecoveryOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+                    <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[200px] relative flex flex-col justify-center items-center">
+                        <h1 className="mb-[20px] text-center text-black">Introduza la nueva contraseña</h1>
+                        <input
+                            
+                            placeholder="Nueva contraseña"
+                            className="mb-4 p-2 border rounded w-[80%]"
+                            value={newPass || ''}
+                            onChange={(e) => passRecovery(e.target.value)}/>
+                        <div className="flex justify-between w-full px-8">
+                            <button
+                                className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4"
+                                onClick={() => handleConfirmRecovery(newPass)}>
+                                Confirmar
+                            </button>
+                            <button
+                                className="bg-[#E6E8EC]  text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                                onClick={handleCancelRecovery}>
+                                Cancelar
+                            </button>
                         </div>
                     </div>
                 </div>

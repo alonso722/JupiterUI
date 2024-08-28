@@ -382,15 +382,17 @@ const AddUserForm = ({ user, onClose }) => {
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </p>
-          <p className=" mt-[20px] mb-4 text-black w-[70%]">
-            <input
-              type="text"
-              placeholder="Contraseña"
-              value={userPass}
-              onChange={(e) => setUserPass(e.target.value)}
-              className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
-            />
-          </p>
+          {!user && (
+            <p className="mt-[20px] mb-4 text-black w-[70%]">
+              <input
+                type="text"
+                placeholder="Contraseña"
+                value={userPass}
+                onChange={(e) => setUserPass(e.target.value)}
+                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
+              />
+            </p>
+          )}
         </div>
         <div className="mt-4 flex justify-end">
           {user ?(
