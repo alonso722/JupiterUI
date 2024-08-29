@@ -91,7 +91,7 @@ export default function Sidebar() {
     ];
 
     if (permissions === null) {
-        return <div>Error: No se pudieron cargar los permisos.</div>;
+        return <div>ECargando...</div>;
     }
 
     return (

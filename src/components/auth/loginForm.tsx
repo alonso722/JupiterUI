@@ -11,6 +11,7 @@ import { CLink } from '../link';
 import { colors } from '../types/enums/colors';
 import useApi from '@/hooks/useApi';
 import Image from 'next/image';
+import RecoveryForm from './forgot-password'; // Asegúrate de que esta ruta sea correcta
 import AuthOptions from './authOptions';
 
 interface LoginFormValues {
@@ -44,6 +45,16 @@ export default function LoginForm({
         });
     };
 
+    const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+
+    const openForgotPasswordModal = () => {
+        setIsForgotPasswordOpen(true);
+    };
+
+    const closeForgotPasswordModal = () => {
+        setIsForgotPasswordOpen(false);
+    };
+
     const submitForm = useCallback(() => {
         setIsLoading(true);
         api.post('/user/auth/login', { 
@@ -55,7 +66,7 @@ export default function LoginForm({
             setTimeout(() => setShowSuccessMessage(false), 2000);
             showToast('success', 'Usuario y contraseña correctos');
             localStorage.setItem('token', response.data.token);
-            router.push(`/auth/complete?token=${response.data}`);     
+            router.push(`/auth/complete?token=${response.data.token}`);     
         })
         .catch((error) => {
             console.error("Error al realizar la solicitud:", error); 
@@ -141,11 +152,13 @@ export default function LoginForm({
                         />
                     </div>
                     <div className="mr-[255px] flex mt-[8px] w-[120px]">
-                        <CLink
-                            href="/auth/forgot-password"
-                            className="mb-4 text-[11px] text-[#777E90] no-underline">
+                        <button
+                            type="button"
+                            onClick={openForgotPasswordModal}
+                            className="mb-4 text-[11px] text-[#777E90] no-underline"
+                        >
                             ¿Olvidó su contraseña?
-                        </CLink>
+                        </button>
                     </div>
                     <div className="w-[376px] mt-[10px] flex justify-center">
                         <Button
@@ -160,12 +173,15 @@ export default function LoginForm({
                     </div>
                     {/* <p className='my-[17px] text-[#777E90]'>o accede mediante otra cuenta</p>
                     <AuthOptions/> */}
-                    <div className='flex font-semibold mt-[26px]'>
+                    {/* <div className='flex font-semibold mt-[26px]'>
                         <p className='text-[#777E90] mr-[5px]'>¿Aún no tienes una cuenta? </p>
                         <p> Registrate gratis</p>
-                    </div>
+                    </div> */}
                 </form>
             </div>
+            {isForgotPasswordOpen && (
+                <RecoveryForm onClose={closeForgotPasswordModal} />
+            )}
         </>
     );
 }
