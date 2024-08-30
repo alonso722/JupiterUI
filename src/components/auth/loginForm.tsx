@@ -11,7 +11,7 @@ import { CLink } from '../link';
 import { colors } from '../types/enums/colors';
 import useApi from '@/hooks/useApi';
 import Image from 'next/image';
-import RecoveryForm from './forgot-password'; // Asegúrate de que esta ruta sea correcta
+import RecoveryForm from './forgot-password'; 
 import AuthOptions from './authOptions';
 
 interface LoginFormValues {
