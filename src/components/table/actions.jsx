@@ -4,7 +4,7 @@ import Image from 'next/image';
 import AddProcessForm from "../forms/addProcess";
 import useApi from '@/hooks/useApi';
 
-const Actions = ({ onActionClick, rowData, onClose }) => {
+const Actions = ({ onActionClick, rowData, onClose,  onCloseModal }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,6 +57,9 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
+        if (onCloseModal) {
+            onCloseModal();
+        }
     };
 
     return (

@@ -16,7 +16,7 @@ import { Button } from '../form/button';
 import { colors } from '../types/enums/colors';
 import AddProcessForm from "../forms/addProcess";
 import { useRouter } from 'next/navigation';
-import Image from 'next/image'; 
+import Image from 'next/image';
 
 const TanStackTable = () => {
     const columnHelper = createColumnHelper();
@@ -82,7 +82,7 @@ const TanStackTable = () => {
             fetchData();
             effectMounted.current = true;
         }
-    }, []);
+    }, [fetchData]);
 
     useEffect(() => {
         if (refreshTable) {
@@ -215,14 +215,17 @@ const TanStackTable = () => {
                 <Actions
                     onActionClick={(id, status) => handleActionClick(id, status)}
                     rowData={info.row.original} 
-                    onClose={() => {
-                        setRefreshTable(true);
-                    }} />
+                    onCloseModal={handleModalClose} />
             ),
             header: "", 
             enableSorting: false, 
         }),
     ];
+
+
+    const handleModalClose = () => {
+        fetchData(); 
+    };
 
     const table = useReactTable({
         data,
@@ -244,6 +247,7 @@ const TanStackTable = () => {
 
     const handleCloseForm = () => {
         setShowForm(false);
+        fetchData();
         setRefreshTable(true);
     };
 
