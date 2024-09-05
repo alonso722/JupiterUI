@@ -10,10 +10,11 @@ const Annexes = ({ onClose, cardId }) => {
   const api = useApi();
   const [urlToView, setFileUrl] = useState(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const [links, setLinks] = useState([]);
   const [permissions, setPermissions] = useState([]);
 
   const openViewer = (path) => {
-    setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
+    setFileUrl(process.env.NEXT_PUBLIC_MS_FILES + '/api/v1/file?f=' + path);
     setIsViewerOpen(true);
   };
 
@@ -28,6 +29,10 @@ const Annexes = ({ onClose, cardId }) => {
         try {
           const responseAnx = await api.post('/user/annexe/fetch', { prId });
           const fetchAnnexe = responseAnx.data.data;
+          const responseLinks = await api.post('/user/annexe/links', { id: cardId });
+          const fetchLinks = responseLinks.data.data;
+          console.log(responseLinks, fetchLinks);
+          setLinks(fetchLinks);
           setAnnexe(fetchAnnexe);
         } catch (error) {
           console.error("Error al consultar procesos:", error);
@@ -94,34 +99,57 @@ const Annexes = ({ onClose, cardId }) => {
           &times;
         </button>
         <h2 className="text-2xl font-bold mb-4 text-black">Anexos al proceso</h2>
-        <div className="flex p-2 overflow-x-auto mx-2">
-          {annexe.length > 0 ? (
-            <div className="flex space-x-5">
-              {annexe.map((anx) => (
-                <div
-                  key={anx.id}
-                  className="flex-shrink-0 flex flex-col items-center justify-center mr-5 w-[120px]">
-                  <div className="mb-4 rounded border-2 border-indigo-200/50 flex flex-col items-center justify-center px-4 w-full">
-                    <img
-                      onClick={() => openViewer(anx.path)}
-                      src={getFileIcon(anx.name)}
-                      alt="File Icon"
-                      className="w-[100px] h-[100px] mt-[10px] cursor-pointer object-contain"/>
-                    <p className="mt-2 mb-4 text-black text-center text-sm " title={anx.name}>
-                      {anx.name.length > 18 ? `${anx.name.slice(0, 18)}...` : anx.name}
-                    </p>
+        <div className='flex'>
+          <div className="flex p-2 overflow-x-auto mx-2 w-[450px] overflow-x-auto mr-5">
+            {annexe.length > 0 ? (
+              <div className="flex space-x-5">
+                {annexe.map((anx) => (
+                  <div
+                    key={anx.id}
+                    className="flex-shrink-0 flex flex-col items-center justify-center mr-5 w-[120px]">
+                    <div className="mb-4 rounded border-2 border-indigo-200/50 flex flex-col items-center justify-center px-4 w-full">
+                      <img
+                        onClick={() => openViewer(anx.path)}
+                        src={getFileIcon(anx.name)}
+                        alt="File Icon"
+                        className="w-[100px] h-[100px] mt-[10px] cursor-pointer object-contain"/>
+                      <p className="mt-2 mb-4 text-black text-center text-sm " title={anx.name}>
+                        {anx.name.length > 18 ? `${anx.name.slice(0, 18)}...` : anx.name}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleAnxDownload(anx.path)}
+                      className="bg-[#2C1C47] p-2 rounded text-white text-sm">
+                      Descargar anexo
+                    </button>
                   </div>
-                  <button
-                    onClick={() => handleAnxDownload(anx.path)}
-                    className="bg-[#2C1C47] p-2 rounded text-white text-sm">
-                    Descargar anexo
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p>No hay anexos para el proceso.</p>
-          )}
+                ))}
+              </div>
+            ) : (
+              <p>No hay anexos para el proceso.</p>
+            )}
+          </div>
+          <div className='w-[450px] px-5 border-l-2'>
+            <p className='text-black font-bold mb-2'>Links:</p>
+            {links.length > 0 ? (
+              <ul>
+                {links.map((link, index) => (
+                  <li key={index} className="mb-2">
+                    <a
+                      href={link.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {link.link || link.link}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>No hay links disponibles.</p>
+            )}
+          </div>
         </div>
       </div>
       {isViewerOpen && (
