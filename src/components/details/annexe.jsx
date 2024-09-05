@@ -31,14 +31,12 @@ const Annexes = ({ onClose, cardId }) => {
           const fetchAnnexe = responseAnx.data.data;
           const responseLinks = await api.post('/user/annexe/links', { id: cardId });
           const fetchLinks = responseLinks.data.data;
-          console.log(responseLinks, fetchLinks);
           setLinks(fetchLinks);
           setAnnexe(fetchAnnexe);
         } catch (error) {
           console.error("Error al consultar procesos:", error);
         }
       };
-
       fetchAnnexes();
       effectMounted.current = true;
     }

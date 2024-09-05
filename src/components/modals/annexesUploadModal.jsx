@@ -105,12 +105,9 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
 
     try {
       const uploadedFiles = [];
-      console.log(files)
-
       for (const file of files) {
         if (!file.existing) {
           const formData = new FormData();
-          console.log("nuevo segun:::",file.file)
           formData.append('file', file.file);
 
           const response = await api.post('/user/file/store', formData);
@@ -135,10 +132,7 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
       };
 
       onLinks(annxLinks);
-      console.log(annxLinks, uploadedFiles);
-
       if (uploadedFiles.length > 0) {
-        console.log(uploadedFiles)
         onAnnexesUpload(uploadedFiles);
       }
       onClose();

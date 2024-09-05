@@ -789,8 +789,7 @@ const Details = ({ card, onClose }) => {
                 value={selected}
                 onChange={handleStatusUpdate}
                 className="max-w-[100px]"
-                disabled={!document || isListboxDisabled()}
-              >
+                disabled={!document || isListboxDisabled()}>
                 {({ open }) => (
                   <>
                     <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>

@@ -153,6 +153,11 @@ const AddProcessForm = ({ card, onClose }) => {
       return;
     }
 
+    if (description && description.length > 150) {
+      showToast('error', "La descripción no puede tener más de 150 caracteres");
+      return;
+    }    
+
     if (!selectedDepartments) {
       showToast('error', "Por favor, seleccione al menos un departamento");
       return;
@@ -236,6 +241,12 @@ const AddProcessForm = ({ card, onClose }) => {
       showToast('error', "Por favor, nombre el proceso");
       return;
     }
+
+    if (description && description.length > 150) {
+      showToast('error', "La descripción no puede tener más de 150 caracteres");
+      return;
+    }
+    
   
     try {
       const formatUser = (user) => ({
@@ -297,7 +308,6 @@ const AddProcessForm = ({ card, onClose }) => {
       if (linksInfo) {
         processDetails.links = linksInfo;
       }
-      console.log(processDetails)
       if (processDetails.processName) {
         api.post('/user/process/editTab', processDetails)
           .then((response) => {
@@ -331,17 +341,12 @@ const AddProcessForm = ({ card, onClose }) => {
   };
 
 const getAnnexesIcon = (extension) => {
-  console.log(extension)
-  // Verificar que annexesInfo y linksInfo no sean nulos/indefinidos y que linksInfo.links sea mayor que 0
   if (annexesInfo && linksInfo && linksInfo.links > 0) {
     return '/icons/folder.png';
   }
-
-  // Verificar si hay más de una extensión
   if (extension.length > 1) {
     return '/icons/folder.png';
   } else {
-    // Verificar la extensión del archivo y devolver el ícono correspondiente
     switch (extension[0].extension.toLowerCase()) {
       case '.pdf':
         return '/icons/pdf.png';

@@ -136,7 +136,9 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
             <div className="bg-white text-black rounded p-3 m-1 h-[70%] flex flex-col justify-between">
                 <div>
                     <p>Descripción: </p>
-                    <p>{description}</p>
+                    <p>
+                        {description ? (description.length > 150 ? `${description.slice(0, 150)}...` : description) : 'Descripción no disponible'}
+                    </p>
                 </div>
                 <p className="text-sm text-black text-right text-[9px]">
                     Actualizado: {new Date(date).toLocaleDateString()}
