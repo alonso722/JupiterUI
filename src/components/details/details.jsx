@@ -37,6 +37,7 @@ const Details = ({ card, onClose }) => {
   const [departmentNameF, setDeptName] = useState({});
   const [document, setDocument] = useState({});
   const [documentsANX, setAnnexe] = useState({});
+  const [links, setLinks] = useState([]);
   const [roles, setRoles] = useState({});
   const [updated, setDate] = useState({});
   const [description, setDescription] = useState('');
@@ -169,6 +170,9 @@ const Details = ({ card, onClose }) => {
           const responseAnx = await api.post('/user/annexe/fetch', ids);
           const fetchAnnexe = responseAnx.data.data;
           setAnnexe(fetchAnnexe);
+          const responseLinks = await api.post('/user/annexe/links', { id: card.id });
+          const fetchLinks = responseLinks.data.data;
+          setLinks(fetchLinks);
         } catch (error) {
           console.error("Error al consultar procesos:", error);
         }
@@ -200,31 +204,31 @@ const Details = ({ card, onClose }) => {
   };
 
   const getFileAnxIcon = (file) => {
-    if(file.length > 1){
+    if (file.length > 1 || file[0].link) {
       return '/icons/folder.png';
-    } else{
-    const fileName = file[0].name;
-    const lastDotIndex = fileName.lastIndexOf('.');
-    if (lastDotIndex !== -1) {
-      const extension = fileName.substring(lastDotIndex).toLowerCase();
-      switch (extension) {
-        case '.pdf':
-          return '/icons/pdf.png';
-        case '.doc':
-        case '.docx':
-          return '/icons/doc.png';
-        case '.xls':
-        case '.xlsx':
-          return '/icons/excel.png';
-        default:
-          return '/icons/question.png';
-      }
     } else {
-      return '/icons/question.png';
+      const fileName = file[0].name;
+      const lastDotIndex = fileName.lastIndexOf('.');
+      if (lastDotIndex !== -1) {
+        const extension = fileName.substring(lastDotIndex).toLowerCase();
+        switch (extension) {
+          case '.pdf':
+            return '/icons/pdf.png';
+          case '.doc':
+          case '.docx':
+            return '/icons/doc.png';
+          case '.xls':
+          case '.xlsx':
+            return '/icons/excel.png';
+          default:
+            return '/icons/question.png';
+        }
+      } else {
+        return '/icons/question.png';
+      }
     }
-  }
   };
-
+  
   const handleDownload = async (path) => {
     if (path) {
       window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
@@ -652,9 +656,9 @@ const Details = ({ card, onClose }) => {
                   </div>
 
                   <div className='flex flex-col items-center w-full sm:w-[40%] '>
-                    <div className={`w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${documentsANX.length > 1 ? 'cursor-pointer' : ''}`}
-                      onClick={documentsANX.length > 1 ? openModalAnx : undefined}>
-                      {documentsANX.length > 0 ? (
+                    <div className={`w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${(documentsANX?.length > 1 || links.length > 1) ? 'cursor-pointer' : ''}`}
+                      onClick={(documentsANX?.length > 1 || links.length > 1) ? openModalAnx : undefined}>
+                      {documentsANX?.length > 0 ? (
                         <>
                           <p className={`mt-[15px] text-black text-center ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
                             <strong>{documentsANX[0].title.length > 13 ? `${documentsANX[0].title.substring(0, 13)}...` : documentsANX[0].title}</strong>
@@ -663,7 +667,8 @@ const Details = ({ card, onClose }) => {
                             onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
                             src={getFileAnxIcon(documentsANX)}
                             alt="File Icon"
-                            className={`w-[50%] h-auto mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}/>
+                            className={`w-[50%] h-auto mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}
+                          />
                           <p className="mt-[5px] mb-2 text-black text-center">
                             {documentsANX.length > 1 
                               ? "\u00A0"
@@ -672,11 +677,23 @@ const Details = ({ card, onClose }) => {
                                   : documentsANX[0]?.name || "Nombre no disponible")}
                           </p>
                         </>
+                      ) : links.length > 0 ? (
+                        <>
+                          <p className={`mt-[15px] text-black text-center ${links.length > 1 ? 'underline cursor-pointer' : ''}`}>
+                            <strong>{links[0].title.length > 13 ? `${links[0].title.substring(0, 13)}...` : links[0].title}</strong>
+                          </p>
+                          <img
+                            onClick={openModalAnx}
+                            src={getFileAnxIcon(links)}
+                            alt="File Icon"
+                            className={`w-[50%] h-auto mt-[10px] ${links.length === 1 ? 'cursor-pointer' : ''}`}
+                          />
+                        </>
                       ) : (
                         <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
                       )}
                     </div>
-                    {documentsANX.length === 1 && permissions.Type !== 5 && (
+                    {documentsANX?.length === 1 && permissions.Type !== 5 && (
                       <button
                         onClick={() => handleAnxDownload(documentsANX[0].path)}
                         className="bg-[#2C1C47] p-1 rounded text-white">
@@ -704,7 +721,7 @@ const Details = ({ card, onClose }) => {
                         {privileges === 1 || privileges === 2 ? (
                           <button
                             onClick={() => handleDownload(document.path)}
-                            className="bg-[#2C1C47] p-1 rounded text-white mr-5"
+                            className="bg-[#2C1C47] p-1 rounded text-white mr-1"
                           >
                             Descargar
                           </button>
@@ -715,7 +732,7 @@ const Details = ({ card, onClose }) => {
                     )}
                     </div>
                   </div>
-                  <div className='w-full  flex flex-col border-b-2 max-h-[100px] overflow-y-auto border-indigo-200/50'>
+                  <div className='w-full  flex flex-col  max-h-[100px] overflow-y-auto'>
                     <div className='flex flex-col'>
                       {documentsANX.length > 0 ? (
                         documentsANX.map((anx, index) => (
@@ -724,20 +741,41 @@ const Details = ({ card, onClose }) => {
                               src={getFileAnxIcon([anx])} 
                               onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
                               alt="File Icon" 
-                              className='w-[50px] h-[50px] mr-2 cursor-pointer'/>
+                              className='w-[50px] h-[50px]  cursor-pointer'/>
                             <div className='flex-grow'>
-                              <p className="text-black"><strong>{anx.title}</strong></p>
                               <p className="text-black">{anx.name}</p>
                             </div>
                             <button 
                               onClick={() => handleAnxDownload(anx.path)} 
-                              className='bg-[#2C1C47] p-1 p2 rounded text-white'>
+                              className='bg-[#2C1C47] p-1 rounded text-white'>
                               Descargar
                             </button>
                           </div>
                         ))
                         ) : (
                         <p className="text-black">No hay anexos para el proceso.</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className='w-full mb-2 flex flex-col border-b-2 max-h-[35px] overflow-y-auto border-indigo-200/50'>
+                    <div className='flex flex-col'>
+                      {links.length > 0 ? (
+                        links.map((anx, index) => (
+                          <div key={index} className='flex items-center pr-1'>
+                            <div className='flex-grow'>
+                              <p className="text-[#0ea5e9] text-sm flex">
+                                +
+                                <strong>
+                                  <a href={anx.link} target="_blank" rel="noopener noreferrer">
+                                     {anx.link.length > 40 ? `${anx.link.substring(0, 40)}...` : anx.link}
+                                  </a>
+                                </strong>
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                        ) : (
+                        <p className="text-black">No hay links para el proceso.</p>
                       )}
                     </div>
                   </div>
@@ -752,7 +790,7 @@ const Details = ({ card, onClose }) => {
                 placeholder="Agrega un comentario o incidencia"
                 className="w-full border-none focus:outline-none h-[80%] " />
             </div>
-            <div className="flex items-center mt-4">
+            <div className="flex items-center mt-2">
             <button 
               onClick={handleSubmit} 
               className='bg-[#2C1C47] p-2 rounded text-[#ffffff] active:bg-[#B5B5BD]'>
