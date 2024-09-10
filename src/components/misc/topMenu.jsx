@@ -214,34 +214,45 @@ export default function TopNewMenuClientDashboard() {
                                 leaveTo="transform opacity-0 scale-95">
                                 <Menu.Items className="absolute right-0 z-10 mt-2 w-[224px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1">
-                                                                                {/* <Menu.Item>
-                                            {({ active }) => (
-                                                <a href="/user/account" className={`flex justify-center items-center mb-[13px] mt-[10px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                    <Image
-                                                        className='mr-[10px]'
-                                                        src="/svg/icons/accountSett.svg"
-                                                        alt="Logo de Paypal"
-                                                        width={21}
-                                                        height={18}
-                                                    />
-                                                    Cuenta
-                                                </a>
-                                            )}
-                                        </Menu.Item>
-                                        <Menu.Item>
-                                            {({ active }) => (
-                                                <a href="/user/settings" className={`flex justify-center items-center my-[13px] w-full min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                    <Image
-                                                        className='mr-[10px]'
-                                                        src="/svg/icons/settings.svg"
-                                                        alt="Logo de Paypal"
-                                                        width={17}
-                                                        height={18}/>
-                                                    Configuración
-                                                </a>
-                                            )}
-                                        </Menu.Item> */}
-                                        <Menu.Item>
+                                    <form method="POST" action="#">
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <Link href="/profile" passHref >
+                                                        <button
+                                                            type='button'
+                                                            className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                            <Image
+                                                            className='mr-[10px]'
+                                                            src="/svg/icons/accountSett.svg"
+                                                            alt="Perfil"
+                                                            width={17}
+                                                            height={18}/>
+                                                        <span>Mi cuenta</span>
+                                                        </button>
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                        </form>
+                                        <form method="POST" action="#">
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <Link href="/settings" passHref >
+                                                        <button
+                                                            type='button'
+                                                            className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                            <Image
+                                                            className='mr-[10px]'
+                                                            src="/svg/icons/settings.svg"
+                                                            alt="Ajustes"
+                                                            width={17}
+                                                            height={18}/>
+                                                        <span>Configuración</span>
+                                                        </button>
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                        </form>
+                                        {/* <Menu.Item>
                                             {({ active }) => (
                                                 <a href="/user/help" className={`flex rounded mx-2 justify-center items-center my-[13px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
                                                     <Image
@@ -254,7 +265,7 @@ export default function TopNewMenuClientDashboard() {
                                                     Ayuda
                                                 </a>
                                             )}
-                                        </Menu.Item>
+                                        </Menu.Item> */}
                                         <form method="POST" action="#">
                                             <Menu.Item>
                                                 {({ active }) => (

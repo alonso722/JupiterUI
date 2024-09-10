@@ -127,7 +127,7 @@ const Annexes = ({ onClose, cardId }) => {
               <p>No hay anexos para el proceso.</p>
             )}
           </div>
-          <div className='w-[450px] px-5 border-l-2'>
+          <div className='w-[450px] max-h-[350px] overflow-y-auto px-5 border-l-2'>
             <p className='text-black font-bold mb-2'>Links:</p>
             {links.length > 0 ? (
               <ul>

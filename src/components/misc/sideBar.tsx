@@ -95,7 +95,7 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="ml-[0px] mt-[80px] flex h-screen rounded fixed z-50 bg-white bg-opacity-[100%]" style={{ maxHeight: '823px' }}>
+        <div className="ml-[0px] mt-[68px] flex h-screen rounded fixed z-50 bg-white bg-opacity-[100%]" style={{ maxHeight: '823px' }}>
             <div 
                 onMouseLeave={handleCloseSidebar} 
                 className={`max-h-[815px] transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'bg-[#2C1C47] text-white w-200' : 'w-20'}`}>

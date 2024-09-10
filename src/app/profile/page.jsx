@@ -9,7 +9,7 @@ import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu.jsx';
-import Published from '@/components/published/process.jsx';
+import Profile from '@/components/profile/profile.jsx';
 
 const SuspenseFallback = () => <div>Loading...</div>;
 
@@ -52,7 +52,7 @@ const PageContent = () => {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <Published/>
+                <Profile/>
             </div>
         </div>
     );
