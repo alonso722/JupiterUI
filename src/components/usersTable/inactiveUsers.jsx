@@ -16,29 +16,22 @@ import { Button } from "@/components/form/button";
 import { colors } from "@/components/types/enums/colors"; 
 import AddUserForm from "@/components/forms/addUser"; 
 import { useRouter } from 'next/navigation';
+import { contains } from "class-validator";
 import Image from 'next/image'; 
 
 const UsersTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
     const [permissions, setPermissions] = useState([]);
+    const handleActionClick = (id, status) => {
+
+    };
+
     const [data, setData] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
     const effectMounted = useRef(false);
 
-    const [toggleOn, setToggleOn] = useState(false); 
-
-    const handleToggleChange = () => {
-        const newToggleState = !toggleOn;
-        setToggleOn(newToggleState);
-        if (newToggleState) {
-            fetchIns();  
-        } else {
-            fetchData(); 
-        }
-    };
-    
     const fetchData = () => {
         let parsedPermissions;
         const storedPermissions = localStorage.getItem('permissions'); 
@@ -46,114 +39,61 @@ const UsersTable = () => {
             parsedPermissions = JSON.parse(storedPermissions);
             setPermissions(parsedPermissions);
         }
-        const organization = parsedPermissions.Organization;
-        api.post('/user/users/fetch', { organization })
-            .then((response) => {
-                const fetchedData = response.data.data.map(item => {
-                    let role;
-                    switch (item.role_id) {
-                        case 2:
-                            role = 'Editor';
-                            break;
-                        case 3:
-                            role = 'Revisor';
-                            break;
-                        case 4:
-                            role = 'Aprobador';
-                            break;
-                        case 5:
-                            role = 'Consultor';
-                            break;
-                        case 1:
-                            role = 'Administrador';
-                            break;
-                        default:
-                            role = 'Desconocido';
-                    }
+        const organization= parsedPermissions.Organization;
+        api.post('/user/users/fetchIns', {organization})
+        .then((response) => {
+            const fetchedData = response.data.data.map(item => {
+                let role;
+                switch (item.role_id) {
+                    case 2:
+                        role = 'Editor';
+                        break;
+                    case 3:
+                        role = 'Revisor';
+                        break;
+                    case 4:
+                        role = 'Aprobador';
+                        break;
+                    case 5:
+                        role = 'Consultor';
+                        break;
+                    case 1:
+                        role = 'Administrador';
+                        break;                    
+                    default:
+                        role = 'Desconocido';
+                }
     
-                    return {
-                        uuid: item.uuid,
-                        name: item.name,
-                        last: item.last,
-                        department: item.department_name,   
-                        role: role,
-                    };
-                });
-    
-                setData(fetchedData);
-                setRefreshTable(false);
-            })
-            .catch((error) => {
-                console.error("Error al consultar usuarios:", error);
+                return {
+                    uuid: item.uuid,
+                    name: item.name,
+                    last: item.last,
+                    department: item.department_name,   
+                    role: role,
+                };
             });
+            
+            setData(fetchedData);
+            setRefreshTable(false);
+        })
+        .catch((error) => {
+            console.error("Error al consultar usuarios:", error);
+        });    
     };
-    
-    const fetchIns = () => {
-        let parsedPermissions;
-        const storedPermissions = localStorage.getItem('permissions'); 
-        if (storedPermissions) {
-            parsedPermissions = JSON.parse(storedPermissions);
-            setPermissions(parsedPermissions);
-        }
-        const organization = parsedPermissions.Organization;
-        api.post('/user/users/fetchIns', { organization })
-            .then((response) => {
-                const fetchedData = response.data.data.map(item => {
-                    let role;
-                    switch (item.role_id) {
-                        case 2:
-                            role = 'Editor';
-                            break;
-                        case 3:
-                            role = 'Revisor';
-                            break;
-                        case 4:
-                            role = 'Aprobador';
-                            break;
-                        case 5:
-                            role = 'Consultor';
-                            break;
-                        case 1:
-                            role = 'Administrador';
-                            break;
-                        default:
-                            role = 'Desconocido';
-                    }
-    
-                    return {
-                        uuid: item.uuid,
-                        name: item.name,
-                        last: item.last,
-                        department: item.department_name,   
-                        role: role,
-                    };
-                });
-    
-                setData(fetchedData);
-                setRefreshTable(false);
-            })
-            .catch((error) => {
-                console.error("Error al consultar usuarios:", error);
-            });
-    };
-    
+
     useEffect(() => {
         if (!effectMounted.current) {
             fetchData();
             effectMounted.current = true;
         }
     }, []);
-    
+
     useEffect(() => {
         if (refreshTable) {
-            if (toggleOn) {
-                fetchIns(); 
-            } else {
-                fetchData(); 
-            }
+            fetchData();
         }
-    }, [refreshTable, toggleOn]);
-    
+    }, [refreshTable]);
+
     const router = useRouter();
     const columns = [
         columnHelper.accessor("icon", {
@@ -164,7 +104,8 @@ const UsersTable = () => {
                         alt="Icono"
                         width={10} 
                         height={10} 
-                        className="h-full w-full"/>
+                        className="h-full w-full"
+                    />
                 </div>
             ),
             header: "", 
@@ -179,6 +120,10 @@ const UsersTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento",
         }),
+        // columnHelper.accessor("role", {
+        //     cell: (info) => <span>{info.getValue()}</span>,
+        //     header: "Rol",
+        // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
@@ -223,8 +168,8 @@ const UsersTable = () => {
     return (
         <div className="mt-[100px] ml-[80px] w-[1590px] py-5 px-10 text-white fill-gray-400">
             <div className="flex justify-between mb-2">
-                <div className="flex items-center gap-1 text-black">
-                    <svg
+                <div className="w-full flex items-center gap-1 text-black">
+                <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="1em"
                         viewBox="0 0 512 512">
@@ -235,19 +180,6 @@ const UsersTable = () => {
                         onChange={(value) => setGlobalFilter(String(value))}
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
-                </div>
-                <div className="flex items-center">
-                    <label htmlFor="toggle" className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                            id="toggle" 
-                            type="checkbox" 
-                            className="sr-only peer" 
-                            checked={toggleOn} 
-                            onChange={handleToggleChange} 
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-checked:bg-blue-600 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 transition-all peer-checked:before:translate-x-full peer-checked:before:bg-white before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:w-5 before:h-5 before:rounded-full before:transition-all" />
-                    </label>
-                    <span className="ml-2 text-gray-700">{toggleOn ? 'Activos' : 'Inactivos'}</span>
                 </div>
                 <div className="mt-[10px] mr-[120px]">
                     <Button
@@ -277,7 +209,7 @@ const UsersTable = () => {
                                                 asc: <i className="fas fa-angle-up ml-1"></i>,
                                                 desc: <i className="fas fa-angle-down ml-1"></i>,
                                             }[header.column.getIsSorted()] ?? (
-                                                header.column.getCanSort() && <i className="fas fa-angle-down ml-1 text-white/0"></i>
+                                                header.column.getCanSort() && <i className="fas fa-angle-down ml-1"></i>
                                             )}
                                         </div>
                                     )}
@@ -286,16 +218,26 @@ const UsersTable = () => {
                         </tr>
                     ))}
                 </thead>
-                <tbody className="rounded">
-                    {table.getRowModel().rows.map((row) => (
-                        <tr key={row.id} className="even:bg-gray-100 hover:bg-gray-200">
-                            {row.getVisibleCells().map((cell) => (
-                                <td key={cell.id} className="capitalize p-3">
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </td>
-                            ))}
+                <tbody>
+                    {table.getRowModel().rows.length ? (
+                        table.getRowModel().rows.map((row, i) => (
+                            <tr
+                                key={row.id}
+                                className={`
+                                    ${i % 2 === 0 ? "" : ""}
+                                    `}>
+                                {row.getVisibleCells().map((cell) => (
+                                    <td key={cell.id} className="px-3.5 py-2">
+                                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                    </td>
+                                ))}
+                            </tr>
+                        ))
+                    ) : (
+                        <tr className="text-center h-32 text-black">
+                            <td colSpan={12}>Sin resultados...</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
             {/* paginacion */}
@@ -324,6 +266,29 @@ const UsersTable = () => {
                         {table.getPageCount()}
                     </strong>
                 </span>
+                <span className="flex items-center gap-1">
+                    | Ir a página:
+                    <input
+                        type="number"
+                        defaultValue={table.getState().pagination.pageIndex + 1}
+                        onChange={(e) => {
+                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
+                            table.setPageIndex(page);
+                        }}
+                        className="border p-1 rounded w-16 bg-transparent" />
+                </span>
+                <select
+                    value={table.getState().pagination.pageSize}
+                    onChange={(e) => {
+                        table.setPageSize(Number(e.target.value));
+                    }}
+                    className="p-2 bg-transparent">
+                    {[10, 20, 30, 50].map((pageSize) => (
+                        <option key={pageSize} value={pageSize}>
+                            Mostrar {pageSize}
+                        </option>
+                    ))}
+                </select>
             </div>
         </div>
     );

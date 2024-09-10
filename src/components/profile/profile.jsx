@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import useApi from '@/hooks/useApi';
 import UserInfoModal from '@/components/modals/userInfoModal';
 import LaboralInfoModal from '@/components/modals/laboralInfoModal';
+import DocsViewer from '../misc/docViewer/docViewer';
 
 export const Profile = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,9 +12,21 @@ export const Profile = ({ departmentFilter, processFilter }) => {
     const [file, setFile] = useState(null);
     const [permissions, setPermissions] = useState([]);
     const [info, setInfo] = useState({});
+    const [profesionalInfo, setPInfo] = useState({});
     const [uuid, setUuid] = useState(null)
+    const [isViewerOpen, setIsViewerOpen] = useState(false);
+    const [urlToView, setFileUrl] = useState(null);
     const effectMounted = useRef(false);
     const api = useApi();
+
+    const openViewer = (path) => {
+        setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
+        setIsViewerOpen(true);
+      };
+    
+      const closeViewer = () => {
+        setIsViewerOpen(false);
+      };
 
     const showToast = (type, message) => {
         toast[type](message, {
@@ -42,6 +55,16 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                 .then((response) => {
                     console.log(response.data)
                     setInfo(response.data, parsedPermissions)
+                    
+                })
+                .catch((error) => {
+                    console.error("Error al consultar procesos:", error);
+                });
+                console.log(uuid)
+
+            api.post('/user/users/profileP', {uuid})
+                .then((response) => {
+                    setPInfo(response.data.record)
                     
                 })
                 .catch((error) => {
@@ -130,6 +153,22 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                             <p className="my-2"><strong>Departamento:</strong> {info.departmentName}</p>
                             <div className="mt-4 rounded-lg w-[500px] ">
                                 <h2 className="mb-4 text-black"><strong>CV:</strong></h2>
+                                {!profesionalInfo.t14_user_record_cv ? (
+                                    <>
+                                        <p className="text-center">Sin CV,</p>
+                                        <p className="text-center">por favor cargue uno...</p>
+                                        <input type="file" onChange={(e) => handleFileUpload(e, 'cv')} className="mb-4" />
+                                    </>
+                                    ) : (
+                                    <div className="mb-4 text-black">
+                                        <img
+                                        onClick={() => document && openViewer(info.cv)}
+                                        src='/icons/pdf.png'
+                                        alt="File Icon"
+                                        className="w-[30%] h-auto mt-[10px] cursor-pointer"
+                                        />
+                                    </div>
+                                    )}
                             </div>
                         </div>
                         <button onClick={() => setIsModalOpen2(true)} className='w-[120px] bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
@@ -139,6 +178,11 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                 </div> 
                 {isModalOpen && <UserInfoModal isOpen={isModalOpen} uuid={permissions} onClose={() => setIsModalOpen(false)} />}
                 {isModalOpen2 && <LaboralInfoModal isOpen={isModalOpen2} uuid={permissions} onClose={() => setIsModalOpen2(false)} />}
+                {isViewerOpen && (
+          <DocsViewer
+            url={urlToView}
+            onClose={closeViewer}/>
+        )}
             </div>
         </div>
     );
