@@ -49,6 +49,7 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetch', { organization })
             .then((response) => {
+                console.log(response.data.data)
                 const fetchedData = response.data.data.map(item => {
                     let role;
                     switch (item.role_id) {
@@ -76,6 +77,8 @@ const UsersTable = () => {
                         name: item.name,
                         last: item.last,
                         department: item.department_name,   
+                        mail: item.mail,
+                        phone :item.phone,
                         role: role,
                     };
                 });
@@ -125,6 +128,8 @@ const UsersTable = () => {
                         name: item.name,
                         last: item.last,
                         department: item.department_name,   
+                        mail: item.mail,
+                        phone :item.phone,  
                         role: role,
                     };
                 });
@@ -179,19 +184,34 @@ const UsersTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento",
         }),
+        columnHelper.accessor("mail", {
+            cell: (info) => (
+                <span style={{ textTransform: "none" }}>
+                    {info.getValue()}
+                </span>
+            ),
+            header: "Correo electrónico",
+        }),        
+        columnHelper.accessor("phone", {
+            cell: (info) => <span>{info.getValue()}</span>,
+            header: "telefono",
+        }),
         columnHelper.accessor("actions", {
             cell: (info) => (
-                <Actions
-                    onActionClick={(id) => handleActionClick(id)}
-                    rowData={info.row.original} 
-                    onClose={() => {
-                        setRefreshTable(true);
-                    }} />
+                permissions.Type === 1 ? (
+                    <Actions
+                        onActionClick={(id) => handleActionClick(id)}
+                        rowData={info.row.original} 
+                        onClose={() => {
+                            setRefreshTable(true);
+                        }} 
+                    />
+                ) : null
             ),
             header: "", 
             enableSorting: false, 
         }),
-    ];
+    ];    
 
     const table = useReactTable({
         data,
@@ -233,31 +253,35 @@ const UsersTable = () => {
                     <Search
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
-                        className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
+                        className="p-2 bg-transparent outline-none border-b-2 w-[200px] focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                <div className="flex items-center">
-                    <label htmlFor="toggle" className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                            id="toggle" 
-                            type="checkbox" 
-                            className="sr-only peer" 
-                            checked={toggleOn} 
-                            onChange={handleToggleChange} 
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-checked:bg-blue-600 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 transition-all peer-checked:before:translate-x-full peer-checked:before:bg-white before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:w-5 before:h-5 before:rounded-full before:transition-all" />
-                    </label>
-                    <span className="ml-2 text-gray-700">{toggleOn ? 'Activos' : 'Inactivos'}</span>
-                </div>
-                <div className="mt-[10px] mr-[120px]">
-                    <Button
-                        className="w-[126px]"
-                        color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleButtonClick}>
-                        Añadir +
-                    </Button>
-                    {showForm && <AddUserForm onClose={handleCloseForm} />}
-                </div>
+                {permissions.Type === 1 && (
+                    <div className="flex items-center">
+                        <label htmlFor="toggle" className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                                id="toggle" 
+                                type="checkbox" 
+                                className="sr-only peer" 
+                                checked={toggleOn} 
+                                onChange={handleToggleChange} 
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-checked:bg-blue-600 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 transition-all peer-checked:before:translate-x-full peer-checked:before:bg-white before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:w-5 before:h-5 before:rounded-full before:transition-all" />
+                        </label>
+                        <span className="ml-2 text-gray-700">{toggleOn ? 'Activos' : 'Inactivos'}</span>
+                    </div>
+                )}
+                {permissions.Type === 1 && (
+                    <div className="mt-[10px] mr-[120px]">
+                        <Button
+                            className="w-[126px]"
+                            color={colors.DARK_JUPITER_OUTLINE}
+                            onClick={handleButtonClick}>
+                            Añadir +
+                        </Button>
+                        {showForm && <AddUserForm onClose={handleCloseForm} />}
+                    </div>
+                )}
             </div>
             <table className="w-[1150px] text-black text-left mt-[10px] rounded-lg mr-[120px]">
                 <thead className="bg-[#f1cf2b] text-black rounded">

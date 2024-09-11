@@ -12,6 +12,7 @@ import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import Search from "@/components/table/search";
 import Actions from "./actions";
+import DepartmentsChart from "./chart";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
 import AddDepartmentForm from "@/components/forms/addDepartment"; 
@@ -22,8 +23,11 @@ const DepartmentsTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
     const [data, setData] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
+    const [showForm, setShowForm] = useState(false);
+    const [showChart, setShowChart] = useState(false);
     const effectMounted = useRef(false);
 
     const handleActionClick = (id, status) => {
@@ -38,6 +42,9 @@ const DepartmentsTable = () => {
         const organization= parsedPermissions.Organization;
         api.post('/user/departments/fetch',{organization})
             .then((response) => {
+                console.log(response.data.data)
+                const departaments = response.data.data;
+                setDepartments(departaments)
                 const fetchedData = response.data.data.map(item => ({
                     id: item.id,
                     department: item.department,
@@ -93,14 +100,14 @@ const DepartmentsTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento o área superior",
         }),
-        columnHelper.accessor("left", {
+        columnHelper.accessor("manager", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento a mismo nivel",
+            header: "Encargado",
         }),
-        columnHelper.accessor("right", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Departamento a mismo nivel",
-        }),
+        // columnHelper.accessor("right", {
+        //     cell: (info) => <span>{info.getValue()}</span>,
+        //     header: "Departamento a mismo nivel",
+        // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
@@ -127,8 +134,6 @@ const DepartmentsTable = () => {
         getSortedRowModel: getSortedRowModel(),
     });
 
-    const [showForm, setShowForm] = useState(false);
-
     const handleButtonClick = () => {
         setShowForm(!showForm);
     };
@@ -136,6 +141,14 @@ const DepartmentsTable = () => {
     const handleCloseForm = () => {
         setShowForm(false);
         setRefreshTable(true);
+    };
+
+    const handleChartClick = () => {
+        setShowChart(!showChart);
+    };
+
+    const handleCloseChart = () => {
+        setShowChart(false);
     };
 
     if (refreshTable) {
@@ -162,10 +175,19 @@ const DepartmentsTable = () => {
                     <Button
                     className="w-[126px]"
                         color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleButtonClick}>
+                        onClick={handleChartClick}>
+                        Organigrama
+                    </Button>
+                    {showChart && <DepartmentsChart onClose={handleCloseChart} />}
+                </div>
+                <div className="mt-[10px] mr-[120px]">
+                    <Button
+                    className="w-[126px]"
+                        color={colors.DARK_JUPITER_OUTLINE}
+                        onClick={handleChartClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddDepartmentForm onClose={handleCloseForm} />}
+                    {showForm && <AddDepartmentForm departments={departments} onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">

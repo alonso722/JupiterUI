@@ -87,7 +87,7 @@ export default function Sidebar() {
         { path: '/dashboard/table', icon: 'table.svg', label: 'Table', condition: permissions?.Type !== 5 && workflows?.coordinator !== 0 },
         { path: '/organizations', icon: 'orgas.svg', label: 'Organizations', condition: permissions?.Type === 6 },
         { path: '/departments', icon: 'departments.svg', label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/user', icon: 'users.svg', label: 'Users', condition: permissions?.Type === 1 || permissions?.Type === 6 }
+        { path: '/user', icon: 'users.svg', label: 'Users', condition: true }
     ];
 
     if (permissions === null) {
