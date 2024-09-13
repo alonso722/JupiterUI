@@ -62,28 +62,9 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                 });
                 console.log(uuid)
 
-            api.post('/user/users/profileP', {uuid})
-                .then((response) => {
-                    setPInfo(response.data.record)
-                    
-                })
-                .catch((error) => {
-                    console.error("Error al consultar procesos:", error);
-                });
             effectMounted.current = true;
         }
     }, []);
-
-    const handleFileChange = (e) => {
-        const selectedFile = e.target.files[0];
-        if (selectedFile && selectedFile.type !== 'application/pdf') {
-          showToast('error', 'Solo se permiten archivos PDF.');
-          setFile(null); 
-        } else {
-          setFile(selectedFile);
-          handleSubmit(selectedFile);
-        }
-      };
 
     const handleSubmit = async (selectedFile, parsedPermissions) => {
         if (!selectedFile) {
@@ -130,7 +111,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                 <strong>Mi cuenta</strong>
             </h1>
             <div className="mt-8 text-black  ">
-                <div className="mb-8">
+                <div className="mb-12">
                     <h1 className="text-black text-xl mb-5">
                         <strong>Infomación personal</strong>
                     </h1>
@@ -139,8 +120,8 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                             <p className="my-2 w-[50%]"><strong>Correo:</strong> {info.mail}</p>
                             <p className="my-2 w-[50%]"><strong>Teléfono:</strong> {info.phone}</p>
                         </div>
-                        <button onClick={() => setIsModalOpen(true)} className='w-[120px] bg-[#EDF2F7] text-black p-2 rounded'>
-                            Ver Información y documentos
+                        <button onClick={() => setIsModalOpen(true)} className='w-[120px] bg-[#F1CF2B] max-h-[50px] text-black p-2 rounded'>
+                            Ver detalles
                         </button>
                     </div>
                 </div>
@@ -153,7 +134,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                             <p className="my-2"><strong>Departamento:</strong> {info.departmentName}</p>
                             <div className="mt-4 rounded-lg w-[500px] ">
                                 <h2 className="mb-4 text-black"><strong>CV:</strong></h2>
-                                {!profesionalInfo.t14_user_record_cv ? (
+                                {!info?.cv ? (
                                     <>
                                         <p className="text-center">Sin CV,</p>
                                         <p className="text-center">por favor cargue uno...</p>
@@ -171,18 +152,18 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                     )}
                             </div>
                         </div>
-                        <button onClick={() => setIsModalOpen2(true)} className='w-[120px] bg-[#EDF2F7] text-black p-2 mt-2 rounded'>
-                            Ver Información y documentos
+                        <button onClick={() => setIsModalOpen2(true)} className='w-[120px] max-h-[50px] bg-[#F1CF2B] text-black p-2 rounded'>
+                            Ver detalles
                         </button>
                     </div>
                 </div> 
                 {isModalOpen && <UserInfoModal isOpen={isModalOpen} uuid={permissions} onClose={() => setIsModalOpen(false)} />}
                 {isModalOpen2 && <LaboralInfoModal isOpen={isModalOpen2} uuid={permissions} onClose={() => setIsModalOpen2(false)} />}
                 {isViewerOpen && (
-          <DocsViewer
-            url={urlToView}
-            onClose={closeViewer}/>
-        )}
+                <DocsViewer
+                    url={urlToView}
+                    onClose={closeViewer}/>
+                )}
             </div>
         </div>
     );

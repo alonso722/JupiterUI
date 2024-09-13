@@ -4,13 +4,12 @@ import useApi from '@/hooks/useApi';
 import DocsViewer from '../misc/docViewer/docViewer';
 
 const UserInfoModal = ({ isOpen, onClose, uuid }) => {
-  const [dniFile, setDniFile] = useState(null);
-  const [birthFile, setBirthFile] = useState(null);
-  const [medicFile, setMedicFile] = useState(null);
+  const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
   const [info, setInfo] = useState({});
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [urlToView, setFileUrl] = useState(null);
+  const [editMode, setEditMode] = useState(false); 
   const effectMounted = useRef(false);
   const api = useApi();
 
@@ -30,19 +29,24 @@ const UserInfoModal = ({ isOpen, onClose, uuid }) => {
     });
   };
 
+  const loadUserProfile = () => {
+    api.post('/user/users/profile', uuid)
+      .then((response) => {
+        console.log(response.data);
+        setInfo(response.data);
+      })
+      .catch((error) => {
+        console.error("Error al consultar el perfil del usuario:", error);
+      });
+  };
+
+  const enableEditMode = () => {
+    setEditMode(true); 
+  };
+
   useEffect(() => {
     if (effectMounted.current === false) {
-      console.log(uuid);
-
-      api.post('/user/users/profile', uuid)
-        .then((response) => {
-          console.log(response.data);
-          setInfo(response.data);
-        })
-        .catch((error) => {
-          console.error("Error al consultar procesos:", error);
-        });
-
+      loadUserProfile();
       effectMounted.current = true;
     }
   }, [uuid]);
@@ -55,32 +59,29 @@ const UserInfoModal = ({ isOpen, onClose, uuid }) => {
     }
     if (selectedFile.type !== 'application/pdf') {
       showToast('error', 'Solo se permiten archivos PDF.');
-      if (fileType === 'dni') setDniFile(null);
-      if (fileType === 'birth') setBirthFile(null);
-      if (fileType === 'medic') setMedicFile(null);
     } else {
-      if (fileType === 'dni') setDniFile(selectedFile);
-      if (fileType === 'birth') setBirthFile(selectedFile);
-      if (fileType === 'medic') setMedicFile(selectedFile);
 
       const formData = new FormData();
       formData.append('file', selectedFile);
       try {
         const response = await api.post('/user/file/store', formData);
         let filems = response.data.data;
+        filems.type = fileType;
+        filems.uuid = uuid.uuid;
         let path = response.data.path;
 
         if (response) {
           console.log(filems);
-          api.post('/user/users/addCv', filems)
+          api.post('/user/users/store', filems)
             .then((response) => {
               console.log(response);
               if (response.status === 200) {
                 showToast('success', 'Archivo cargado con éxito.');
+                loadUserProfile();
               }
             })
             .catch((error) => {
-              console.error("Error al consultar procesos:", error);
+              console.error("Error al almacenar el archivo:", error);
             });
         } else {
           console.error('Error al cargar el archivo:', response.statusText);
@@ -97,7 +98,7 @@ const UserInfoModal = ({ isOpen, onClose, uuid }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[1100px] max-[500px] relative">
+      <div className="bg-white mt-[70px] p-6 rounded-lg shadow-lg w-[40%] overflow-auto relative">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
@@ -113,98 +114,43 @@ const UserInfoModal = ({ isOpen, onClose, uuid }) => {
           </div>
         </div>
         <h2 className="text-xl mb-4 mt-4 text-black">Mis documentos</h2>
-        <div className='rounded border-2 p-2 flex justify-between'>
-          <div className='rounded border-2 p-2 flex flex-col items-center justify-center w-full max-w-[300px]'>
-            <p className="text-center mb-2">Identificación:</p>
-            {!info.dni ? (
-              <>
-                <p className="text-center">Sin documento de identificación,</p>
-                <p className="text-center">por favor cargue uno...</p>
-                <input type="file" onChange={(e) => handleFileUpload(e, 'dni')} className="mb-4" />
-                {dniFile && (
-                  <div className="mb-4 text-black flex flex-col items-center">
-                    <img
-                      onClick={() => document && openViewer(document.path)}
-                      src='/icons/pdf.png'
-                      alt="File Icon"
-                      className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                    />
-                    <p>Archivo seleccionado: {dniFile.name}</p>
-                  </div>
+        <div className='rounded border-2 px-5 max-h-[300px] overflow-y-auto'>
+          <ul className='w-full max-w-[550px]'>
+            {[
+              { label: 'Identificación', key: 'dni', file: info.dni },
+              { label: 'Acta de nacimiento', key: 'birth', file: info.birth },
+              { label: 'CURP', key: 'curp', file: info.curp },
+              { label: 'Comprobante de domicilio', key: 'address', file: info.address },
+              { label: 'Comprobante de estudios', key: 'studies', file: info.studies },
+              { label: 'Número de Seguro Social', key: 'nss', file: info.nss },
+              { label: 'Licencia de conducir', key: 'driver', file: info.driver },
+              { label: 'Aviso de retención INFONAVIT', key: 'saving', file: info.saving },
+              { label: 'Estado de cuenta', key: 'bills', file: info.bills },
+              { label: 'Constancia de situqacion fiscal', key: 'fiscal', file: info.fiscal },
+              { label: 'Certificado medico', key: 'medic', file: info.medic }
+            ].map(({ label, key, file }) => (
+              <li
+                key={key}
+                className='border-b-2 p-2 flex items-center justify-between cursor-pointer'
+                onClick={() => file && openViewer(file)}>
+                <div
+                  className={`min-w-4 min-h-4 mr-2 rounded-full ${file ? 'bg-green-500' : 'bg-red-500'} ml-4`}/>
+                <p className='text-center'>{label}:</p>
+                {!file || editMode ? (
+                  <input type="file" onChange={(e) => handleFileUpload(e, key)} className="ml-4" />
+                ) : (
+                  <p className='ml-4'>Archivo cargado</p>
                 )}
-              </>
-            ) : (
-              <div className="mb-4 text-black flex flex-col items-center">
-                <img
-                  onClick={() => document && openViewer(info.dni)}
-                  src='/icons/pdf.png'
-                  alt="File Icon"
-                  className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                />
-              </div>
-            )}
-          </div>
-
-          <div className='rounded border-2 p-2 flex flex-col items-center justify-center w-full max-w-[300px]'>
-            <p className="text-center mb-2">Acta de nacimiento:</p>
-            {!info.birth ? (
-              <>
-                <p className="text-center">Sin acta de nacimiento,</p>
-                <p className="text-center">por favor cargue una...</p>
-                <input type="file" onChange={(e) => handleFileUpload(e, 'birth')} className="mb-4" />
-                {birthFile && (
-                  <div className="mb-4 text-black flex flex-col items-center">
-                    <img
-                      onClick={() => document && openViewer(document.path)}
-                      src='/icons/pdf.png'
-                      alt="File Icon"
-                      className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                    />
-                    <p>Archivo seleccionado: {birthFile.name}</p>
-                  </div>
+                {editMode && (
+                  <button
+                    onClick={enableEditMode}
+                    className="flex items-center justify-center w-8 h-8 ml-4">
+                    <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
+                  </button>
                 )}
-              </>
-            ) : (
-              <div className="mb-4 text-black flex flex-col items-center">
-                <img
-                  onClick={() => document && openViewer(info.birth)}
-                  src='/icons/pdf.png'
-                  alt="File Icon"
-                  className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                />
-              </div>
-            )}
-          </div>
-          <div className='rounded border-2 p-2 flex flex-col items-center justify-center w-full max-w-[300px]'>
-            <p className="text-center mb-2">Certificado médico:</p>
-            {!info.medic ? (
-              <>
-                <p className="text-center">Sin certificado médico,</p>
-                <p className="text-center">por favor cargue uno...</p>
-                <input type="file" onChange={(e) => handleFileUpload(e, 'medic')} className="mb-4" />
-                {medicFile && (
-                  <div className="mb-4 text-black flex flex-col items-center">
-                    <img
-                      onClick={() => document && openViewer(document.path)}
-                      src='/icons/pdf.png'
-                      alt="File Icon"
-                      className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                    />
-                    <p>Archivo seleccionado: {medicFile.name}</p>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="mb-4 text-black flex flex-col items-center">
-                <img
-                  onClick={() => document && openViewer(info.medic)}
-                  src='/icons/pdf.png'
-                  alt="File Icon"
-                  className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                />
-              </div>
-            )}
-          </div>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
       {isViewerOpen && (

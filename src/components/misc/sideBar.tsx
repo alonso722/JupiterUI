@@ -106,7 +106,7 @@ export default function Sidebar() {
                     <div className="flex flex-col mt-[18px]">
                         {navItems.map((item, index) => (
                             item.condition && (
-                                <button key={index} type="button" className="flex py-[15px] items-center ml-[0px] justify-center hover:bg-[#442E69]" onClick={() => handleNavigation(item.path)}>
+                                <button key={index} title={item.label} type="button" className="flex py-[15px] items-center ml-[0px] justify-center hover:bg-[#442E69]" onClick={() => handleNavigation(item.path)}>
                                     <Image src={`/icons/${currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon}`} alt={item.label} width={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon).width} height={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon).height} />
                                 </button>
                             )
