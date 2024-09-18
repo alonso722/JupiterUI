@@ -67,12 +67,12 @@ export default function TopNewMenuClientDashboard() {
             .then((response) => {
                 const buffer = response.data.data[0];
                 const imageData = response.data.data[0];
-
-                const arrayBuffer = imageData.buffer.data;
-                const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-                const url = URL.createObjectURL(blob);
-                
-                setLogoUrl(url);
+                if(imageData?.buffer?.data){
+                    const arrayBuffer = imageData.buffer.data;
+                    const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                    const url = URL.createObjectURL(blob);
+                    setLogoUrl(url);
+                }
               })
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);
@@ -91,10 +91,12 @@ export default function TopNewMenuClientDashboard() {
                     try {
                         const response = await api.post('/user/organization/getLogo', { orga });
                         const imageData = response.data.data[0];
-                        const arrayBuffer = imageData.buffer.data;
-                        const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-                        const url = URL.createObjectURL(blob);
-                        setLogoUrl(url);
+                        if(imageData?.buffer?.data){
+                            const arrayBuffer = imageData.buffer.data;
+                            const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                            const url = URL.createObjectURL(blob);
+                            setLogoUrl(url);
+                        }
                     } catch (error) {
                         console.error("Error al consultar nombre:", error);
                     }

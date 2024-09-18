@@ -52,6 +52,7 @@
     "mongoose": "^8.3.3",
     "next": "14.2.1",
     "react": "^18",
+    "react-color": "^2.19.3",
     "react-doc-viewer": "^0.1.13",
     "react-dom": "^18",
     "react-hook-form": "^7.51.3",

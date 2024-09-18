@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { useColors } from '@/services/colorService'; 
 
 interface Permissions {
     Type: number;
@@ -13,6 +14,7 @@ export default function Sidebar() {
     const [workflows, setWorkflows] = useState<Workflows | null>(null); 
     const [isExpanded, setIsExpanded] = useState(false);
     const [currentPath, setCurrentPath] = useState('');
+    const { secondary } = useColors(); 
 
     useEffect(() => {
         const storedPermissions = localStorage.getItem('permissions');
@@ -91,15 +93,16 @@ export default function Sidebar() {
     ];
 
     if (permissions === null) {
-        return <div>ECargando...</div>;
+        return <div>Loading...</div>;
     }
 
     return (
-        <div className="ml-[0px] mt-[68px] flex h-screen rounded fixed z-50 bg-white bg-opacity-[100%]" style={{ maxHeight: '823px' }}>
+        <div className="ml-[0px] mt-[68px] flex h-screen rounded fixed z-50" style={{ maxHeight: '823px' }}>
             <div 
                 onMouseLeave={handleCloseSidebar} 
-                className={`max-h-[815px] transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'bg-[#2C1C47] text-white w-200' : 'w-20'}`}>
-                <button type="button" onClick={handleToggleExpand} className="flex ml-[25px]  mt-[35px] bg-purple focus:outline-none rounded">
+                className={`max-h-[815px] transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
+                style={{ backgroundColor: isExpanded ? secondary : 'transparent' }}>
+                <button type="button" onClick={handleToggleExpand} className="flex ml-[25px] mt-[35px] bg-purple focus:outline-none rounded">
                     <Image src={`/icons/${isExpanded ? 'menuB.svg' : 'menu.svg'}`} alt="Menu" width={23} height={14} />
                 </button>
                 {!isExpanded && (
@@ -114,7 +117,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 {isExpanded && (
-                    <div className=" ml-[0px] min-w-[200px] max-w-[200px] ">
+                    <div className="ml-[0px] min-w-[200px] max-w-[200px]">
                         {navItems.map((item, index) => (
                             item.condition && (
                                 <div 

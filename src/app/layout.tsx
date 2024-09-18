@@ -1,4 +1,3 @@
-// src/app/layout.tsx
 'use client';
 
 import { Inter, Montserrat, Poppins } from 'next/font/google';
@@ -11,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import ToastProvider from '@/components/lib/toastProvider';
 import RecoilRootWrapper from '@/components/ReciolRootWrapper';
+import { ColorProvider } from '@/services/colorService';  
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -24,11 +24,12 @@ const poppins = Poppins({
 });
 
 const inter = Inter({ subsets: ['latin'] });
-export default function RootLayout({
-  children,
-}: {
+
+interface RootLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+export default function RootLayout({ children }: RootLayoutProps) {
   const router = useRouter();
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
 
@@ -56,7 +57,9 @@ export default function RootLayout({
     <html>
       <body className={`${montserrat.variable} ${poppins.variable}`}>
         <RecoilRootWrapper>
-          <ToastProvider>{children}</ToastProvider>
+          <ColorProvider> 
+            <ToastProvider>{children}</ToastProvider>
+          </ColorProvider>
         </RecoilRootWrapper>
       </body>
     </html>

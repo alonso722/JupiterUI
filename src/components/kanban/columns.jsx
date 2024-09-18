@@ -4,6 +4,7 @@ import { FiTrash, FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
 import Details from '../details/details';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 import { permission } from "process";
 
 export const Kanban = ({ departmentFilter, processFilter }) => {
@@ -13,6 +14,8 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     const [workflows, setAccess] = useState([]);
     const [cards, setCards] = useState([]);
     const api = useApi();
+
+    const { primary, secondary } = useColors();
 
     const fetchData = () => {
         let parsedPermissions;
@@ -39,7 +42,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
         const orga = parsedPermissions.Organization;
         userType.token = token;
 
-        api.post('/user/process/fetchTab', {orga, userType, departmentFilter, processFilter, cooWorkflows})
+        api.post('/user/process/fetchTab', { orga, userType, departmentFilter, processFilter, cooWorkflows })
             .then((response) => {
                 localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
                 const fetchedCards = response.data.data.map(item => ({
@@ -60,7 +63,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     }, [departmentFilter, processFilter]); 
 
     const convertStatusToColumn = (status) => {
-        switch(status) {
+        switch (status) {
             case '1':
                 return 'Edición';
             case '2':
@@ -86,21 +89,23 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded ">
+        <div className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded">
             <Board 
                 onCardClick={handleCardClick} 
                 cards={cards} 
                 setCards={setCards} 
                 permissions={permissions} 
+                primary={primary} 
+                secondary={secondary}
             />
             {isModalOpen && selectedCard && (
-                <Details  card={selectedCard} onClose={handleCloseModal} />
+                <Details card={selectedCard} onClose={handleCloseModal} />
             )}
         </div>
     );
 };
 
-const Board = ({ onCardClick, cards, setCards, permissions }) => {
+const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }) => {
     return (
         <div style={{  zIndex: -1, }}
         className="flex h-full w-full gap-3 pt-12 justify-between">
@@ -112,6 +117,8 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
                 setCards={setCards}
                 onCardClick={onCardClick}
                 permissions={permissions}
+                primary={primary} 
+                secondary={secondary}
             />
             <Column
                 name="Revisión"
@@ -121,6 +128,8 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
                 setCards={setCards}
                 onCardClick={onCardClick}
                 permissions={permissions}
+                primary={primary} 
+                secondary={secondary}
             />
             <Column
                 name="Aprobación"
@@ -130,6 +139,8 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
                 setCards={setCards}
                 onCardClick={onCardClick}
                 permissions={permissions}
+                primary={primary} 
+                secondary={secondary}
             />
             <Column
                 name="Aprobado"
@@ -139,13 +150,15 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
                 setCards={setCards}
                 onCardClick={onCardClick}
                 permissions={permissions}
+                primary={primary} 
+                secondary={secondary}
             />
             {/* <DelBarrel setCards={setCards} /> */}
         </div>
     );
 };
 
-const Column = ({ name, headingColor, column, cards, setCards, onCardClick, permissions }) => {
+const Column = ({ name, headingColor, column, cards, setCards, onCardClick, permissions, primary, secondary }) => {
     const [active, setActive] = useState(false);
     const api = useApi(); 
 
@@ -288,7 +301,11 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 {filteredCards.map((c) => {
                     return <Card key={c.id} {...c} 
                     //handleDragStart={handleDragStart} 
-                    onCardClick={onCardClick} permissions={permissions} />;
+                    onCardClick={onCardClick} 
+                    permissions={permissions}
+                    primary={primary} 
+                    secondary={secondary} 
+                    />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
             </div>
@@ -297,7 +314,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
 };
 
 
-const Card = ({ name, id, column, handleDragStart, onCardClick, permissions }) => {
+const Card = ({ name, id, column, handleDragStart, onCardClick, permissions, primary, secondary }) => {
     //const canDrag = permissions.Type == 6;
     return (
         <>
@@ -305,11 +322,15 @@ const Card = ({ name, id, column, handleDragStart, onCardClick, permissions }) =
             <motion.div
                 layout
                 layoutId={id}
-               // draggable={canDrag}
-                //onDragStart={(e) => handleDragStart(e, { name, id, column })}
+                // draggable={canDrag}
+                // onDragStart={(e) => handleDragStart(e, { name, id, column })}
                 onClick={() => onCardClick({ name, id, column })}
-                style={{ zIndex: 1 }}
-                className="mt-2 cursor-pointer rounded bg-[#F1CF2B] p-3 shadow-xl flex items-center justify-between">
+                style={{ 
+                    zIndex: 1,
+                    backgroundColor: primary 
+                }}
+                className="mt-2 cursor-pointer rounded p-3 shadow-xl flex items-center justify-between"
+                >
                 <p className="text-sm text-black truncate">
                     {name}
                 </p>

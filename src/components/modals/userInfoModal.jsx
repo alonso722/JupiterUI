@@ -3,9 +3,7 @@ import { toast } from 'react-toastify';
 import useApi from '@/hooks/useApi';
 import DocsViewer from '../misc/docViewer/docViewer';
 
-const UserInfoModal = ({ isOpen, onClose, uuid }) => {
-  const [file, setFile] = useState(null);
-  const [title, setTitle] = useState('');
+const UserInfoModal = ({ isOpen, uuid }) => {
   const [info, setInfo] = useState({});
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [urlToView, setFileUrl] = useState(null);
@@ -30,6 +28,7 @@ const UserInfoModal = ({ isOpen, onClose, uuid }) => {
   };
 
   const loadUserProfile = () => {
+    console.log("uuuuuuuuuuuuuuu",uuid)
     api.post('/user/users/profile', uuid)
       .then((response) => {
         console.log(response.data);
