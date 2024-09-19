@@ -3,14 +3,15 @@ import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
+import { useColors } from '@/services/colorService';
 
 const DepartmentsChart = ({ onClose }) => {
     const api = useApi();
     const [data, setData] = useState([]);
     const [refreshTable, setRefreshTable] = useState(false);
     const effectMounted = useRef(false);
+    const { primary, secondary } = useColors();
 
-    // Función para construir la jerarquía
     const buildHierarchy = (departments) => {
         const map = {};
         const roots = [];
@@ -65,7 +66,9 @@ const DepartmentsChart = ({ onClose }) => {
     const renderTree = (node) => {
         return (
             <div key={node.id} className="flex flex-col items-center relative">
-                <div className="bg-[#F1CF2B] text-black p-2 rounded text-center">
+                <div
+                    style={{ backgroundColor: primary || '#F1CF2B' }}
+                    className="text-black p-2 rounded text-center">
                     <p>{node.department}</p>
                     <p className="text-sm mt-3">Manager: {node.manager || 'N/A'}</p>
                 </div>

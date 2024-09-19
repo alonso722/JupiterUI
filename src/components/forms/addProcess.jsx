@@ -7,6 +7,8 @@ import { toast } from 'react-toastify';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import DocumentUploadModal from '@/components/modals/documentUploadModal';
 import AnnexesUploadModal from '@/components/modals/annexesUploadModal';
+import InstructionsUploadModal from '@/components/modals/instructionsUploadModal';
+import { useColors } from '@/services/colorService';
 
 const AddProcessForm = ({ card, onClose }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +19,7 @@ const AddProcessForm = ({ card, onClose }) => {
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [fileInfo, setFileInfo] = useState(null); 
   const [annexesInfo, setAnnexesInfo] = useState(null);
+  const [instructionsInfo, setInstructionsInfo] = useState(null);
   const [linksInfo, setLinksInfo] = useState(null); 
   const effectMounted = useRef(false);
   const api = useApi();
@@ -32,6 +35,7 @@ const AddProcessForm = ({ card, onClose }) => {
   const [workflowInfo, setInfo] = useState([]);
   const [workflows, setAccess] = useState([]);
   const [description, setDescription] = useState(''); 
+  const { primary, secondary } = useColors();
 
   function classNames(...classes) {
     return classes.filter(Boolean).join(' ');
@@ -50,6 +54,10 @@ const AddProcessForm = ({ card, onClose }) => {
 
   const handleAnnexesUpload = (filems) => {
     setAnnexesInfo(filems); 
+  };
+
+  const handleInstructionsUpload = (filems) => {
+    setInstructionsInfo(filems); 
   };
 
   const handleSetLinks = (links) => {
@@ -142,7 +150,7 @@ const AddProcessForm = ({ card, onClose }) => {
         setDepName(workflowInfo.dName);
         setFileInfo(workflowInfo.file)
         setAnnexesInfo(workflowInfo.anx)
-        //setLinksInfo(workflowInfo.links)
+        setLinksInfo(workflowInfo.links)
         setDescription(workflowInfo.t08_workflow_description)
     }
   }, [workflowInfo, ]);
@@ -380,18 +388,18 @@ const getAnnexesIcon = (extension) => {
             {workflowInfo ? workflowInfo.dName : ''}
           </p>
             <div className='flex'> 
-            <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'></div>            
-            <h2 className="text-2xl mt-[15px] mb-2 text-black">
-              <input
-                type="text"
-                placeholder="Nombre del proceso"
-                defaultValue={workflowInfo ? workflowInfo.t08_workflow_name : ""}
-                value={processName}
-                onChange={(e) => setProcessName(e.target.value)}
-                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
-                disabled={permissions.Type !== 1 && permissions.Type !== 6}
-              />
-            </h2>
+              <div style={{ backgroundColor: primary || '#F1CF2B' }} className='h-[13px] w-[13px] mt-[25px] mr-2'></div>            
+              <h2 className="text-2xl mt-[15px] mb-2 text-black">
+                <input
+                  type="text"
+                  placeholder="Nombre del proceso"
+                  defaultValue={workflowInfo ? workflowInfo.t08_workflow_name : ""}
+                  value={processName}
+                  onChange={(e) => setProcessName(e.target.value)}
+                  className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
+                  disabled={permissions.Type !== 1 && permissions.Type !== 6}
+                />
+              </h2>
             </div>
             {permissions.Type === 6 && (
             <div className='mb-2 p-1 text-black'>
@@ -470,6 +478,7 @@ const getAnnexesIcon = (extension) => {
                 <p className='w-[150px] text-black text-center mx-[5px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
                   {fileInfo.name}
                 </p>
+                
               </div>
             )}
             {annexesInfo && (
@@ -509,7 +518,9 @@ const getAnnexesIcon = (extension) => {
           ) : null}
           <button
             onClick={() => card ? handleEditProcess(selectedDepartments) : handleAddProcess(selectedDepartments)}
-            className="bg-[#2C1C47] py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[10px]">
+            className="py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] mt-[10px]"
+            style={{ backgroundColor: secondary }}
+          >
             {card ? 'Editar proceso' : 'Añadir proceso'}
           </button>
         </div>

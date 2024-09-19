@@ -3,6 +3,7 @@ import useApi from '@/hooks/useApi';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { toast } from 'react-toastify';
+import { useColors } from '@/services/colorService';
 
 const AddDepartmentForm = ({ onClose, rowData }) => {
   const [departmentName, setDepartmentName] = useState('');
@@ -15,6 +16,7 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
   const [subDepartments, setSubDepartments] = useState([]);
   const [selectedSubDepartment, setSelectedSubDepartment] = useState('');
   const [permissions, setPermissions] = useState([]);
+  const { primary, secondary } = useColors();
 
   const showToast = (type, message) => {
     toast[type](message, {
@@ -280,11 +282,19 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
         </div>
         <div className="mt-4 flex justify-end">
           {data.id ? (
-            <button onClick={handleEditDepartment} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+            <button 
+              onClick={handleEditDepartment} 
+              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
               Editar departamento
             </button>
           ) : (
-            <button onClick={handleAddDepartment} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+            <button 
+              onClick={handleAddDepartment} 
+              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
               Añadir departamento
             </button>
           )}

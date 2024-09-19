@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 
 export default function TopNewMenuClientDashboard() {
     const [permissions, setPermissions] = useState([]);
@@ -21,6 +22,7 @@ export default function TopNewMenuClientDashboard() {
     const department = searchParams.get('department');
     const [logoUrl, setLogoUrl] = useState('');
     const api = useApi();
+    const { primary, secondary } = useColors();
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [files, setFile] = useState([]);
@@ -32,7 +34,7 @@ export default function TopNewMenuClientDashboard() {
         });
     };
 
-    useEffect(() => {    
+    useEffect(() => {
         let parsedPermissions;
         
         if (effectMounted.current === false) {    
@@ -185,7 +187,8 @@ export default function TopNewMenuClientDashboard() {
                     </div> */}
                     <Link
                         href={permissions?.Type === 5 ? "/dashboard/consultor" : "/dashboard/home"}
-                        className="text-[#F1CF2B] mr-[38px] text-base font-bold leading-4">
+                        className="mr-[38px] text-base font-bold leading-4"
+                        style={{ color: primary || "" }} >
                         Inicio
                     </Link>
                     <div className="mr-[36px] text-black">

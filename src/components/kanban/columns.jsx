@@ -14,7 +14,6 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     const [workflows, setAccess] = useState([]);
     const [cards, setCards] = useState([]);
     const api = useApi();
-
     const { primary, secondary } = useColors();
 
     const fetchData = () => {
@@ -112,7 +111,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
             <Column
                 name="Edición"
                 column="Edición"
-                headingColor="text-[#2C1C47]"
+                headingColor={secondary}
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
@@ -123,7 +122,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
             <Column
                 name="Revisión"
                 column="Revisión"
-                headingColor="text-[#2C1C47]"
+                headingColor={secondary}
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
@@ -134,7 +133,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
             <Column
                 name="Aprobación"
                 column="Aprobación"
-                headingColor="text-[#2C1C47]"
+                headingColor={secondary}
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
@@ -145,7 +144,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
             <Column
                 name="Aprobado"
                 column="Aprobado"
-                headingColor="text-[#2C1C47]"
+                headingColor={secondary}
                 cards={cards}
                 setCards={setCards}
                 onCardClick={onCardClick}
@@ -285,7 +284,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
         <div className="w-[200px] shrink-0">
             <div style={{ position: 'sticky', zIndex: -1, }}>
                 <div className="mb-3 flex items-center justify-between border-b-4">
-                    <h3 className={`font-medium ${headingColor}`}>{name}</h3>
+                <h3 className="font-medium" style={{ color: headingColor || '#2C1C47' }}>{name}</h3>
                     <span className="rounded text-sm text-[#2C1C47]">
                         {filteredCards.length}
                     </span>
@@ -327,10 +326,10 @@ const Card = ({ name, id, column, handleDragStart, onCardClick, permissions, pri
                 onClick={() => onCardClick({ name, id, column })}
                 style={{ 
                     zIndex: 1,
-                    backgroundColor: primary 
+                    backgroundColor: primary || '#F1CF2B'
                 }}
                 className="mt-2 cursor-pointer rounded p-3 shadow-xl flex items-center justify-between"
-                >
+            >
                 <p className="text-sm text-black truncate">
                     {name}
                 </p>

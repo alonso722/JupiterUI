@@ -17,6 +17,7 @@ import { colors } from "@/components/types/enums/colors";
 import AddUserForm from "@/components/forms/addUser"; 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
+import { useColors } from '@/services/colorService';
 
 const UsersTable = () => {
     const columnHelper = createColumnHelper();
@@ -26,7 +27,10 @@ const UsersTable = () => {
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
     const effectMounted = useRef(false);
+    const { primary, secondary } = useColors();
+    const handleActionClick = (id, status) => {
 
+    };
     const [toggleOn, setToggleOn] = useState(false); 
 
     const handleToggleChange = () => {
@@ -284,7 +288,7 @@ const UsersTable = () => {
                 )}
             </div>
             <table className="w-[1150px] text-black text-left mt-[10px] rounded-lg mr-[120px]">
-                <thead className="bg-[#f1cf2b] text-black rounded">
+                <thead className="text-black rounded" style={{ backgroundColor: primary || '#F1CF2B' }}>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 
 const Incident = ({ incident, onClose }) => {
   const [details, setDetails] = useState({});
   const effectMounted = useRef(false);
+  const { primary, secondary } = useColors();
   const api = useApi();
 
   useEffect(() => {
@@ -85,7 +87,8 @@ const Incident = ({ incident, onClose }) => {
         {details.incidentType === 2 && (
           <button 
             onClick={() => handleAttend(details.id)}
-            className="bg-[#2C1C47] rounded absolute w-[150px] right-2 font-bold hover:text-gray-700 p-2 mr-4">
+            className="rounded absolute w-[150px] right-2 font-bold hover:text-gray-700 p-2 mr-4"
+            style={{ backgroundColor: secondary }}>
             Acción resuelta
           </button>
         )}

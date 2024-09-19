@@ -3,8 +3,9 @@ import { toast } from 'react-toastify';
 import Image from 'next/image';
 import { SketchPicker } from 'react-color';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 
-export const Settings = ({ initialPrimaryColor = "#007bff", initialSecondaryColor = "#442E69" }) => {
+export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryColor = "#442E69" }) => {
     const [permissions, setPermissions] = useState([]);
     const [info, setInfo] = useState({});
     const [priColor, setPriColor] = useState(initialPrimaryColor); 
@@ -12,6 +13,7 @@ export const Settings = ({ initialPrimaryColor = "#007bff", initialSecondaryColo
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [files, setFile] = useState([]);
     const [logoUrl, setLogoUrl] = useState('');
+    const { primary, secondary } = useColors();
     const effectMounted = useRef(false);
     const api = useApi();
 
@@ -162,12 +164,13 @@ export const Settings = ({ initialPrimaryColor = "#007bff", initialSecondaryColo
                             </div> 
                         </div>
                         <button 
-                            className="mt-5 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
+                            className="mt-5 ml-[180px] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
                             onClick={handleUpdateColor}>
                             Actualizar Colores
                         </button>
                     </div>
-                    <div className="flex flex-col justify-center items-center h-full ml-20">
+                    <div className="flex flex-col justify-center items-center h-full ml-[200px]">
+                    <p className="text-lg mb-3">Su logo actual:</p>
                         <div className="flex items-center pb-4 pt-5">
                             {logoUrl ? (
                                 <Image
@@ -198,8 +201,10 @@ export const Settings = ({ initialPrimaryColor = "#007bff", initialSecondaryColo
                             <div>                    
                                 <button
                                     onClick={handleSubmit}
-                                    className={`p-2 rounded text-white ${!files ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2C1C47] hover:bg-[#1B1130] cursor-pointer'}`}
-                                    disabled={!files} >
+                                    className={`p-2 rounded text-white ${!files ? 'cursor-not-allowed' : 'hover:bg-[#1B1130] cursor-pointer'}`}
+                                    style={{ backgroundColor: !files ? 'gray' : secondary }}
+                                    disabled={!files}
+                                    >
                                     Cargar
                                 </button>
                             </div>

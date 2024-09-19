@@ -18,6 +18,7 @@ import { colors } from "@/components/types/enums/colors";
 import AddDepartmentForm from "@/components/forms/addDepartment"; 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
+import { useColors } from '@/services/colorService';
 
 const DepartmentsTable = () => {
     const columnHelper = createColumnHelper();
@@ -29,6 +30,7 @@ const DepartmentsTable = () => {
     const [showForm, setShowForm] = useState(false);
     const [showChart, setShowChart] = useState(false);
     const effectMounted = useRef(false);
+    const { primary, secondary } = useColors();
 
     const handleActionClick = (id, status) => {
 
@@ -191,7 +193,7 @@ const DepartmentsTable = () => {
                 </div>
             </div>
             <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">
-                <thead className="bg-[#f1cf2b] text-black rounded">
+                <thead style={{ backgroundColor: primary || '#F1CF2B' }} className="text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (

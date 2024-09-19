@@ -3,12 +3,14 @@ import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import AddOrganizationForm from '../forms/addOrganization';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const { primary, secondary } = useColors();
     const api = useApi();
 
     const handleMenuClick = () => {
@@ -130,7 +132,13 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
                         <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar la organización?</h1>
                         <div className="flex justify-between w-full px-8">
-                        <button className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4" onClick={handleConfirmDelete}>Confirmar</button>
+                        <button
+                            className="text-white p-3 rounded-lg flex-grow mx-4"
+                            onClick={handleConfirmDelete}
+                            style={{ backgroundColor: secondary }}
+                            >
+                            Confirmar
+                        </button>
                         <button className="bg-[#E6E8EC]  text-[#2C1C47] p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>
                         </div>
                     </div>

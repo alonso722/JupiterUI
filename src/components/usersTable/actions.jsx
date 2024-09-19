@@ -4,6 +4,7 @@ import Image from 'next/image';
 import AddUserForm from '../forms/addUser';
 import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
+import { useColors } from '@/services/colorService';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -12,6 +13,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     const [isRecoveryOpen, setModalRecovery] = useState(false);
     const [newPass, passRecovery] = useState('');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const { primary, secondary } = useColors();
     const api = useApi();
 
     const showToast = (type, message) => {
@@ -189,8 +191,13 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
                         <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar el usuario?</h1>
                         <div className="flex justify-between w-full px-8">
-                        <button className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4" onClick={handleConfirmDelete}>Confirmar</button>
-                        <button className="bg-[#E6E8EC]  text-[#2C1C47] p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>
+                            <button
+                                className="text-white p-3 rounded-lg flex-grow mx-4"
+                                onClick={handleConfirmDelete}
+                                style={{ backgroundColor: secondary }}>
+                                Confirmar
+                            </button>
+                            <button className="bg-[#E6E8EC]  text-[#2C1C47] p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>
                         </div>
                     </div>
                 </div>
@@ -207,8 +214,9 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                             onChange={(e) => passRecovery(e.target.value)}/>
                         <div className="flex justify-between w-full px-8">
                             <button
-                                className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4"
-                                onClick={() => handleConfirmRecovery(newPass)}>
+                                className="text-white p-3 rounded-lg flex-grow mx-4"
+                                onClick={() => handleConfirmRecovery(newPass)}
+                                style={{ backgroundColor: secondary }}>
                                 Confirmar
                             </button>
                             <button

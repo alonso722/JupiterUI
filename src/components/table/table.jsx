@@ -17,11 +17,12 @@ import { colors } from '../types/enums/colors';
 import AddProcessForm from "../forms/addProcess";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useColors } from '@/services/colorService';
 
 const TanStackTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
-
+    const { primary, secondary } = useColors();
     const handleActionClick = (id, status) => {
 
     };
@@ -285,7 +286,7 @@ const TanStackTable = () => {
                 </div>
             </div>
             <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] mr-[130px] ml-[30px]">
-                <thead className="bg-[#f1cf2b] text-black rounded">
+                <thead style={{ backgroundColor: primary || '#F1CF2B' }} className="text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
                             {headerGroup.headers.map((header) => (

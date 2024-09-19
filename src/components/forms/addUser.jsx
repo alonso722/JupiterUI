@@ -3,6 +3,7 @@ import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { useColors } from '@/services/colorService';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -20,6 +21,7 @@ const AddUserForm = ({ user, onClose }) => {
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
   const [data, setData] = useState({});
+  const { primary, secondary } = useColors();
 
   const showToast = (type, message) => {
     toast[type](message, {
@@ -395,12 +397,20 @@ const AddUserForm = ({ user, onClose }) => {
           )}
         </div>
         <div className="mt-4 flex justify-end">
-          {user ?(
-            <button onClick={handleEditUser} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+          {user ? (
+            <button 
+              onClick={handleEditUser} 
+              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
               Editar usuario
             </button>
           ) : (
-            <button onClick={handleAddUser} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+            <button 
+              onClick={handleAddUser} 
+              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
               Añadir usuario
             </button>
           )}

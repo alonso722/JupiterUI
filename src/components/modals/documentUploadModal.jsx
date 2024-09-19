@@ -77,9 +77,9 @@ const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
         />
         <button
           onClick={handleSubmit}
-          className={`p-2 rounded text-white ${!file ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#2C1C47] hover:bg-[#1B1130] cursor-pointer'}`}
-          disabled={!file} 
-        >
+          className={`p-2 rounded text-white ${!file ? 'bg-gray-400 cursor-not-allowed' : 'hover:bg-[#1B1130] cursor-pointer'}`}
+          style={{ backgroundColor: file ? secondary : '' }}
+          disabled={!file}>
           Cargar
         </button>
       </div>

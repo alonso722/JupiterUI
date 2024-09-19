@@ -3,13 +3,13 @@ import useApi from '@/hooks/useApi';
 import { color } from 'framer-motion';
 
 const ColorService = createContext({
-  primary: '#007bff', 
+  primary: '##F1CF2B', 
   secondary: '#442E69' 
 });
 
 export const ColorProvider = ({ children }) => {
   const [colors, setColors] = useState({
-    primary: '#007bff', 
+    primary: '##F1CF2B', 
     secondary: '#442E69' 
   });
   const [permissions, setPermissions] = useState([]);
@@ -33,7 +33,7 @@ export const ColorProvider = ({ children }) => {
   
         if (response) {
           let colors = {
-            primary: response.data.data.t01_primary_color || '#007bff',   
+            primary: response.data.data.t01_primary_color || '#F1CF2B',   
             secondary: response.data.data.t01_secondary_color || '#442E69' 
           };
           console.log(response.data.data);
@@ -41,7 +41,7 @@ export const ColorProvider = ({ children }) => {
           setColors(colors);
         } else {
           setColors({
-            primary: '#007bff',
+            primary: '##F1CF2B',
             secondary: '#442E69'
           });
         }
@@ -49,7 +49,7 @@ export const ColorProvider = ({ children }) => {
       } catch (error) {
         console.error('Error fetching colors:', error);
         setColors({
-          primary: '#007bff',
+          primary: '##F1CF2B',
           secondary: '#442E69'
         });
       }

@@ -8,6 +8,7 @@ import DocsViewer from '../misc/docViewer/docViewer';
 import dotenv from 'dotenv';
 import { toast } from 'react-toastify';
 dotenv.config();
+import { useColors } from '@/services/colorService';
 
 const status = [
   { id: 1, column: 'Edición' },
@@ -60,6 +61,7 @@ const Details = ({ card, onClose }) => {
   const [newStatus, setNewStatus] = useState(null);
   const [isRejectModalOpen, setRejectModalOpen] = useState(false);
   const [privileges, setPrivileges] = useState('');
+  const { primary, secondary } = useColors();
 
   const openViewer = (path) => {
     setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
@@ -606,13 +608,15 @@ const Details = ({ card, onClose }) => {
                 <p className="mt-[8px] text-black mb-2">Documentos asignado al proceso</p>
                 <div className=' pr-[50px]'>
                   <button 
-                      onClick={() => setView('icons')} 
-                      className={`p-2 mr-2 rounded border-2 ${view === 'icons' ? 'bg-[#2C1C47]' : ''}`}>
-                      <img src='/icons/icons.svg' alt='Iconos' width={24} height={24} />
+                    onClick={() => setView('icons')} 
+                    className={`p-2 mr-2 rounded border-2 ${view === 'icons' ? '' : ''}`} 
+                    style={{ backgroundColor: view === 'icons' ? secondary : '' }}>
+                    <img src='/icons/icons.svg' alt='Iconos' width={24} height={24} />
                   </button>
                   <button 
                     onClick={() => setView('list')} 
-                    className={`p-2 rounded border-2 ${view === 'list' ? 'bg-[#2C1C47]' : ''}`}>
+                    className={`p-2 rounded border-2`} 
+                    style={{ backgroundColor: view === 'list' ? secondary : '' }}>
                     <img src='/icons/list.svg' alt='Lista' width={24} height={24} />
                   </button>
                 </div>
@@ -649,7 +653,8 @@ const Details = ({ card, onClose }) => {
                     { privileges === 1 || privileges === 2 ? (
                       <button
                         onClick={() => handleDownload(document.path)}
-                        className="bg-[#2C1C47] p-1 rounded text-white">
+                        className="p-1 rounded text-white"
+                        style={{ backgroundColor: secondary }}>
                         Descargar
                       </button>
                     ): null}
@@ -696,7 +701,8 @@ const Details = ({ card, onClose }) => {
                     {documentsANX?.length === 1 && permissions.Type !== 5 && (
                       <button
                         onClick={() => handleAnxDownload(documentsANX[0].path)}
-                        className="bg-[#2C1C47] p-1 rounded text-white">
+                        className="p-1 rounded text-white"
+                        style={{ backgroundColor: secondary }}>
                         Descargar
                       </button>
                     )}
@@ -721,8 +727,8 @@ const Details = ({ card, onClose }) => {
                         {privileges === 1 || privileges === 2 ? (
                           <button
                             onClick={() => handleDownload(document.path)}
-                            className="bg-[#2C1C47] p-1 rounded text-white mr-1"
-                          >
+                            className="p-1 rounded text-white mr-1"
+                            style={{ backgroundColor: secondary }}>
                             Descargar
                           </button>
                         ) : null}
@@ -747,7 +753,8 @@ const Details = ({ card, onClose }) => {
                             </div>
                             <button 
                               onClick={() => handleAnxDownload(anx.path)} 
-                              className='bg-[#2C1C47] p-1 rounded text-white'>
+                              className="p-1 rounded text-white"
+                              style={{ backgroundColor: secondary }}>
                               Descargar
                             </button>
                           </div>
@@ -793,8 +800,9 @@ const Details = ({ card, onClose }) => {
             <div className="flex items-center mt-2">
             <button 
               onClick={handleSubmit} 
-              className='bg-[#2C1C47] p-2 rounded text-[#ffffff] active:bg-[#B5B5BD]'>
-              Enviar 
+              className={`p-2 rounded text-[#ffffff] ${secondary ? `bg-[${secondary}]` : ''} active:bg-[#B5B5BD]`}
+            >
+              Enviar
             </button>
               <div className="ml-4 flex items-center space-x-4">
                 <div className="flex items-center">
@@ -908,15 +916,15 @@ const Details = ({ card, onClose }) => {
                   <h1 className="mb-[20px] text-center text-black">{modalMessage}</h1>
                   <div className="flex justify-between w-full px-8">
                     <button
-                      className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4"
-                      onClick={handleConfirmUpdate}
-                    >
+                      className="text-white p-3 rounded-lg flex-grow mx-4"
+                      style={{ backgroundColor: secondary }}
+                      onClick={handleConfirmUpdate}>
                       Confirmar
                     </button>
                     <button
-                      className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
-                      onClick={handleCancelUpdate}
-                    >
+                      className="text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                      style={{ backgroundColor: '#E6E8EC' }}
+                      onClick={handleCancelUpdate}>
                       Cancelar
                     </button>
                   </div>
@@ -929,13 +937,15 @@ const Details = ({ card, onClose }) => {
                   <h1 className="mb-[20px] text-center text-black">Está seguro de que desea rechazar este proceso?</h1>
                   <div className="flex justify-between w-full px-8">
                     <button
-                      className="bg-[#2C1C47] text-white p-3 rounded-lg flex-grow mx-4"
+                      className="text-white p-3 rounded-lg flex-grow mx-4"
+                      style={{ backgroundColor: secondary }}
                       onClick={handleConfirmReject}
                     >
                       Confirmar
                     </button>
                     <button
-                      className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                      className="text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                      style={{ backgroundColor: '#E6E8EC' }}
                       onClick={handleCancelReject}
                     >
                       Cancelar

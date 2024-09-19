@@ -1,12 +1,15 @@
 import React, { useState, useEffect, Fragment, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
+import { useColors } from '@/services/colorService';
 
 const AddOrganizationForm = ({ onClose, rowData }) => {
   const [departmentName, setDepartmentName] = useState('');
   const effectMounted = useRef(false);
   const [data, setData] = useState({});
   const api = useApi();
+  const { primary, secondary } = useColors();
+
   const showToast = (type, message) => {
     toast[type](message, {
         position: 'top-center',
@@ -91,11 +94,19 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
         </div>
         <div className="mt-4 flex justify-end">
           {data.id ? (
-            <button onClick={handleEditDepartment} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
-              Editar organizacion
+            <button 
+              onClick={handleEditDepartment} 
+              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
+              Editar organización
             </button>
           ) : (
-            <button onClick={handleAddDepartment} className="bg-[#2C1C47] p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]">
+            <button 
+              onClick={handleAddDepartment} 
+              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
               Añadir organización
             </button>
           )}

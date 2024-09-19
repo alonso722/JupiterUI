@@ -3,6 +3,7 @@ import useApi from '@/hooks/useApi';
 import DocsViewer from '../misc/docViewer/docViewer';
 import dotenv from 'dotenv';
 dotenv.config();
+import { useColors } from '@/services/colorService';
 
 const Annexes = ({ onClose, cardId }) => {
   const effectMounted = useRef(false);
@@ -11,6 +12,7 @@ const Annexes = ({ onClose, cardId }) => {
   const [urlToView, setFileUrl] = useState(null);
   const [isViewerOpen, setIsViewerOpen] = useState(false);
   const [links, setLinks] = useState([]);
+  const { primary, secondary } = useColors();
   const [permissions, setPermissions] = useState([]);
 
   const openViewer = (path) => {
@@ -117,7 +119,8 @@ const Annexes = ({ onClose, cardId }) => {
                     </div>
                     <button
                       onClick={() => handleAnxDownload(anx.path)}
-                      className="bg-[#2C1C47] p-2 rounded text-white text-sm">
+                      className="p-2 rounded text-white text-sm"
+                      style={{ backgroundColor: secondary }}>
                       Descargar anexo
                     </button>
                   </div>

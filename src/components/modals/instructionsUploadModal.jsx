@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import useApi from '@/hooks/useApi';
-import { useColors } from '@/services/colorService';
 
-const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, processId }) => {
+const InstructionsUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, processId }) => {
   const [files, setFiles] = useState([]);
   const [title, setTitle] = useState('');
   const [links, setLinks] = useState([]);
   const [linkInput, setLinkInput] = useState('');
   const [isInputVisible, setIsInputVisible] = useState(false);
-  const { primary, secondary } = useColors();
   const effectMounted = useRef(false);
   const api = useApi();
 
@@ -241,16 +239,14 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
             </div>
         </div>
         <div className='flex justify-end'>
-          <button 
-            onClick={handleSubmit} 
-            className="p-2 rounded text-white"
-            style={{ backgroundColor: secondary }}>
-            Cargar
-          </button>
+            <button onClick={handleSubmit} className="bg-[#2C1C47] p-2 rounded text-white">
+                Cargar
+            </button>
         </div>
+        
       </div>
     </div>
   );
 };
 
-export default AnnexesUploadModal;
+export default InstructionsUploadModal;

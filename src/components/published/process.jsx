@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Details from '../details/details';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 
 export const Published = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -9,6 +10,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
     const [permissions, setPermissions] = useState([]);
     const [cards, setCards] = useState([]);
     const [workflows, setAccess] = useState([]);
+    const { primary, secondary } = useColors();
     const effectMounted = useRef(false);
     const api = useApi();
 
@@ -124,7 +126,8 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
             layout
             layoutId={id}
             onClick={() => onCardClick({ name, department, date, id })}
-            className="mt-2 cursor-pointer rounded bg-[#F1CF2B] p-1 shadow-xl w-[300px] h-[300px]">
+            className="mt-2 cursor-pointer rounded p-1 shadow-xl w-[300px] h-[300px]"
+            style={{ backgroundColor: primary || '#F1CF2B' }}>
             <div className="bg-white rounded p-3 mb-3 justify-between">
                 <p className="text-sm text-black text-[10px]">
                     {department}
