@@ -165,13 +165,6 @@ export default function TopNewMenuClientDashboard() {
                         width={180}
                         height={29}
                     />
-                    {permissions.Type === 1 && (
-                        <button
-                            onClick={openModal}
-                            className="absolute top-1/2 -translate-y-1/2 right-[-40px] flex items-center justify-center w-8 h-8 bg-white">
-                            <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
-                        </button>
-                    )}
                     </div>
                 </div>
                 <div className="flex-1 flex justify-center">
