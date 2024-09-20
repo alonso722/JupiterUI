@@ -585,143 +585,55 @@ const Details = ({ card, onClose }) => {
 
   return (
     <div className="fixed mt-7 inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[80%] h-[80%] relative">
-      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
-        &times;
-      </button>
+      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[80%] max-h-[80%] relative">
+        <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+          &times;
+        </button>
         <div className='flex'>
-          <div className='min-w-[55%] max-w-[70%] ml-2 '>
-            <p className='text-[#7A828A]'>
-              {departmentNameF && `${departmentNameF}`}
-            </p>
+          <div className='min-w-[55%] max-w-[70%] ml-2'>
+            <div className="flex justify-between items-center">
+              <p className="text-[#7A828A] text-[16px]">
+                {departmentNameF && `${departmentNameF}`}
+              </p>
+              {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
+                <p className="text-black text-xs text-center flex-grow text-right">
+                  Fecha de aprobación: <strong>{new Date(updated).toLocaleString()}</strong>
+                </p>
+              )}
+            </div>
             <div className='flex'>
-              <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[25px] mr-2'>.</div>
+              <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[20px] mr-2'>.</div>
               <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
-            <div className='text-black border-2 mb-2 mr-2 p-1 overflow-y-auto  max-w-[400px] rounded h-[10%]'>
+            <div className='text-black border-2 mb-2 mr-2 p-1 overflow-y-auto  max-w-[450px] rounded h-[14%]'>
               <p>{description}</p>
             </div>
-            <div className='relative '>
-              <div className='justify-between flex space-x-2 mb-[5px]'>
-                <p className="mt-[8px] text-black mb-2">Documentos asignado al proceso</p>
-                <div className=' pr-[50px]'>
-                  <button 
-                      onClick={() => setView('icons')} 
-                      className={`p-2 mr-2 rounded border-2 ${view === 'icons' ? 'bg-[#2C1C47]' : ''}`}>
-                      <img src='/icons/icons.svg' alt='Iconos' width={24} height={24} />
-                  </button>
-                  <button 
-                    onClick={() => setView('list')} 
-                    className={`p-2 rounded border-2 ${view === 'list' ? 'bg-[#2C1C47]' : ''}`}>
-                    <img src='/icons/list.svg' alt='Lista' width={24} height={24} />
-                  </button>
-                </div>
-              </div>
-              {view === 'icons' ? (
-                <div className='flex flex-wrap justify-center items-center max-w-[95%]'>
-                  <div className='flex flex-col items-center w-full sm:w-[40%] sm:mr-[10%] mb-4'>
-                    <div className='w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2'>
-                      {document ? (
-                        <p className="mt-[15px] text-black text-center">
-                          <strong title={document.title || "Sin documento"}>
-                            {document.title ? 
-                              (document.title.length > 13 ? `${document.title.substring(0, 13)}...` : document.title) 
-                              : "Sin documento"}
-                          </strong>
-                        </p>
-                      ) : (
-                        <p className="mt-[15px] text-black text-center">
-                          <strong>Sin documento</strong>
-                        </p>
-                      )}
-                      {document?.name ? (
-                        <img
-                          onClick={() => document && openViewer(document.path)}
-                          src={getFileIcon(document.name)}
-                          alt="File Icon"
-                          className="w-[50%] h-auto mt-[10px] cursor-pointer"
-                        />
-                      ) : null}
-                      <p className="mt-[15px] text-black text-center">
-
-                      </p>
-                    </div>
-                    { privileges === 1 || privileges === 2 ? (
-                      <button
-                        onClick={() => handleDownload(document.path)}
-                        className="bg-[#2C1C47] p-1 rounded text-white">
-                        Descargar
-                      </button>
-                    ): null}
-                  </div>
-
-                  <div className='flex flex-col items-center w-full sm:w-[40%] '>
-                    <div className={`w-full max-w-[170px] px-4 flex flex-col items-center justify-center rounded-lg border-2 border-indigo-200/50 mb-2 ${(documentsANX?.length > 1 || links.length > 1) ? 'cursor-pointer' : ''}`}
-                      onClick={(documentsANX?.length > 1 || links.length > 1) ? openModalAnx : undefined}>
-                      {documentsANX?.length > 0 ? (
-                        <>
-                          <p className={`mt-[15px] text-black text-center ${documentsANX.length > 1 ? 'underline cursor-pointer' : ''}`}>
-                            <strong>{documentsANX[0].title.length > 13 ? `${documentsANX[0].title.substring(0, 13)}...` : documentsANX[0].title}</strong>
-                          </p>
-                          <img
-                            onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
-                            src={getFileAnxIcon(documentsANX)}
-                            alt="File Icon"
-                            className={`w-[50%] h-auto mt-[10px] ${documentsANX.length === 1 ? 'cursor-pointer' : ''}`}
-                          />
-                          <p className="mt-[5px] mb-2 text-black text-center">
-                            {documentsANX.length > 1 
-                              ? "\u00A0"
-                              : (documentsANX[0]?.name && documentsANX[0].name.length > 13 
-                                  ? `${documentsANX[0].name.substring(0, 13)}...`
-                                  : documentsANX[0]?.name || "Nombre no disponible")}
-                          </p>
-                        </>
-                      ) : links.length > 0 ? (
-                        <>
-                          <p className={`mt-[15px] text-black text-center ${links.length > 1 ? 'underline cursor-pointer' : ''}`}>
-                            <strong>{links[0].title.length > 13 ? `${links[0].title.substring(0, 13)}...` : links[0].title}</strong>
-                          </p>
-                          <img
-                            onClick={openModalAnx}
-                            src={getFileAnxIcon(links)}
-                            alt="File Icon"
-                            className={`w-[50%] h-auto mt-[10px] ${links.length === 1 ? 'cursor-pointer' : ''}`}
-                          />
-                        </>
-                      ) : (
-                        <p className="mt-[15px] text-black mb-4">No hay anexos para el proceso.</p>
-                      )}
-                    </div>
-                    {documentsANX?.length === 1 && permissions.Type !== 5 && (
-                      <button
-                        onClick={() => handleAnxDownload(documentsANX[0].path)}
-                        className="bg-[#2C1C47] p-1 rounded text-white">
-                        Descargar
-                      </button>
-                    )}
-                  </div>
-                </div>
-                ) : (
-                <div className='flex flex-col max-w-[95%]'>
-                  <div className='w-full  flex flex-col border-b-2 border-indigo-200/50 mb-4'>
-                    <div className='flex flex-col'>
+            <div className=''>
+              {/* <div className='justify-between flex space-x-2 mb-[5px]'>
+                <p className="mt-[8px] text-black mb-2">Documentos asignados al proceso:</p>
+              </div> */}
+              <div className='flex flex-col max-w-[95%]'>
+                <div className='w-full flex flex-col border-b-2 border-indigo-200/50 pb-1'>
+                  <div className='flex flex-col'>
                     {document ? (
                       <div className='flex items-center'>
                         <img 
                           src={getFileIcon(document.name)} 
                           onClick={() => document && openViewer(document.path)}
                           alt="File Icon" 
-                          className='w-[50px] h-[50px] cursor-pointer' 
+                          className='w-[5%] h-auto cursor-pointer' 
                         />
                         <div className='flex-grow'>
-                          <p className="text-black mr-[20px]"><strong>{document.title}</strong></p>
-                          <p className="text-black">{document.name}</p>
+                          <p 
+                            className="text-black mr-[20px] underline" 
+                            onClick={() => document && openViewer(document.path)}>
+                            <strong>{document.title}</strong></p>
+                          {/* <p className="text-black">{document.name}</p> */}
                         </div>
                         {privileges === 1 || privileges === 2 ? (
                           <button
                             onClick={() => handleDownload(document.path)}
-                            className="bg-[#2C1C47] p-1 rounded text-white mr-1"
+                            className="bg-[#2C1C47] p-1 rounded text-white mr-[19px]"
                           >
                             Descargar
                           </button>
@@ -730,57 +642,57 @@ const Details = ({ card, onClose }) => {
                     ) : (
                       <p className="text-black">Sin documento</p>
                     )}
-                    </div>
-                  </div>
-                  <div className='w-full  flex flex-col  max-h-[100px] overflow-y-auto'>
-                    <div className='flex flex-col'>
-                      {documentsANX.length > 0 ? (
-                        documentsANX.map((anx, index) => (
-                          <div key={index} className='flex items-center pr-1'>
-                            <img 
-                              src={getFileAnxIcon([anx])} 
-                              onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
-                              alt="File Icon" 
-                              className='w-[50px] h-[50px]  cursor-pointer'/>
-                            <div className='flex-grow'>
-                              <p className="text-black">{anx.name}</p>
-                            </div>
-                            <button 
-                              onClick={() => handleAnxDownload(anx.path)} 
-                              className='bg-[#2C1C47] p-1 rounded text-white'>
-                              Descargar
-                            </button>
-                          </div>
-                        ))
-                        ) : (
-                        <p className="text-black">No hay anexos para el proceso.</p>
-                      )}
-                    </div>
-                  </div>
-                  <div className='w-full mb-2 flex flex-col border-b-2 max-h-[35px] overflow-y-auto border-indigo-200/50'>
-                    <div className='flex flex-col'>
-                      {links.length > 0 ? (
-                        links.map((anx, index) => (
-                          <div key={index} className='flex items-center pr-1'>
-                            <div className='flex-grow'>
-                              <p className="text-[#0ea5e9] text-sm flex">
-                                +
-                                <strong>
-                                  <a href={anx.link} target="_blank" rel="noopener noreferrer">
-                                     {anx.link.length > 40 ? `${anx.link.substring(0, 40)}...` : anx.link}
-                                  </a>
-                                </strong>
-                              </p>
-                            </div>
-                          </div>
-                        ))
-                        ) : (
-                        <p className="text-black">No hay links para el proceso.</p>
-                      )}
-                    </div>
                   </div>
                 </div>
-              )}
+                <div className='w-full flex flex-col max-h-[80px] overflow-y-auto'>
+                  <div className='flex flex-col'>
+                    {documentsANX.length > 0 ? (
+                      documentsANX.map((anx, index) => (
+                        <div key={index} className='flex items-center pr-1 my-1'>
+                          <img 
+                            src={getFileAnxIcon([anx])} 
+                            onClick={() => document && openViewer(anx.path)}
+                            alt="File Icon" 
+                            className='w-[5%] h-auto cursor-pointer' 
+                          />
+                          <div className='flex-grow'
+                            onClick={() => document && openViewer(anx.path)}>
+                            <p 
+                              className="text-black underline"
+                              onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
+                            >{anx.name}</p>
+                          </div>
+                          <button 
+                            onClick={() => handleAnxDownload(anx.path)} 
+                            className='bg-[#2C1C47] p-1 rounded text-white'>
+                            Descargar
+                          </button>
+                        </div>
+                      ))
+                    ) : null}
+                  </div>
+                </div>
+                <div className='w-full mb-2 flex flex-col border-b-2 max-h-[35px] overflow-y-auto border-indigo-200/50'>
+                  <div className='flex flex-col'>
+                    {links.length > 0 ? (
+                      links.map((anx, index) => (
+                        <div key={index} className='flex items-center pr-1'>
+                          <div className='flex-grow'>
+                            <p className="text-[#0ea5e9] text-sm flex">
+                              +
+                              <strong>
+                                <a href={anx.link} target="_blank" rel="noopener noreferrer">
+                                  {anx.link.length > 40 ? `${anx.link.substring(0, 40)}...` : anx.link}
+                                </a>
+                              </strong>
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : null}
+                  </div>
+                </div>
+              </div>
             </div>
             <div className=' text-black rounded-lg border-2 border-[#B5B5BD] p-2 w-[90%]'>
               <textarea
@@ -820,7 +732,7 @@ const Details = ({ card, onClose }) => {
               </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 px-3 max-w-[50%] overflow-y-auto pr-5 '>
+          <div className='mt-10 border-l-4 px-3 max-w-[50%] overflow-y-auto pr-5'>
             <div className='flex'>
               <div className='w-[60%]'>
               <Listbox
@@ -987,14 +899,8 @@ const Details = ({ card, onClose }) => {
                   </div>
                 )}
               </div>
-                {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
-                  <>
-                    <p>Fecha de aprobación:</p>
-                    <p><strong>{new Date(updated).toLocaleString()}</strong></p>
-                  </>
-                )}
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[180px] max-h-[33%] overflow-auto">
+            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[150px] max-h-[33%] overflow-auto">
               <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
