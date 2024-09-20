@@ -592,12 +592,12 @@ const Details = ({ card, onClose }) => {
         <div className='flex'>
           <div className='min-w-[55%] max-w-[70%] ml-2'>
             <div className="flex justify-between items-center">
-              <p className="text-[#7A828A] text-[16px]">
-                {departmentNameF && `${departmentNameF}`}
-              </p>
+            <p className="text-[#7A828A] text-[16px]">
+              {typeof departmentNameF === 'string' && (departmentNameF.length > 50 ? departmentNameF.substring(0, 50) + "..." : departmentNameF)}
+            </p>
               {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
                 <p className="text-black text-xs text-center flex-grow text-right">
-                  Fecha de aprobación: <strong>{new Date(updated).toLocaleString()}</strong>
+                  Aprobado: <strong>{new Date(updated).toLocaleString()}</strong>
                 </p>
               )}
             </div>
@@ -625,7 +625,7 @@ const Details = ({ card, onClose }) => {
                         />
                         <div className='flex-grow'>
                           <p 
-                            className="text-black mr-[20px] underline" 
+                            className="text-black mr-[20px] underline cursor-pointer" 
                             onClick={() => document && openViewer(document.path)}>
                             <strong>{document.title}</strong></p>
                           {/* <p className="text-black">{document.name}</p> */}
@@ -651,16 +651,13 @@ const Details = ({ card, onClose }) => {
                         <div key={index} className='flex items-center pr-1 my-1'>
                           <img 
                             src={getFileAnxIcon([anx])} 
-                            onClick={() => document && openViewer(anx.path)}
                             alt="File Icon" 
-                            className='w-[5%] h-auto cursor-pointer' 
+                            className='w-[5%] h-auto' 
                           />
-                          <div className='flex-grow'
-                            onClick={() => document && openViewer(anx.path)}>
-                            <p 
-                              className="text-black underline"
-                              onClick={documentsANX.length === 1 ? () => openViewer(documentsANX[0].path) : undefined}
-                            >{anx.name}</p>
+                          <div className='flex-grow'>
+                          <p className="text-black">
+                            {anx.name.length > 60 ? anx.name.substring(0, 60) + "..." : anx.name}
+                          </p>
                           </div>
                           <button 
                             onClick={() => handleAnxDownload(anx.path)} 
