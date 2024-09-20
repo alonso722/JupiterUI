@@ -109,13 +109,13 @@ export default function LoginForm({
 
     return (
         <>
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex items-center justify-center h-full">
                 <form
                     onSubmit={(e) => {
-                        e.preventDefault();
-                        validate(); 
+                    e.preventDefault();
+                    validate();
                     }}
-                    className='h-[573px] w-[451px] bg-white rounded-md px-[40px] flex flex-col items-center'>
+                    className='h-[85%] w-[451px] bg-white rounded-md px-[40px] flex flex-col items-center'>
                     <Image
                         src="/logos/Lg_JIso.svg"
                         alt="Logo"

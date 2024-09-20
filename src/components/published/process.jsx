@@ -133,8 +133,8 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
             className="mt-2 cursor-pointer rounded p-1 shadow-xl w-[300px] h-[300px]"
             style={{ backgroundColor: primary || '#F1CF2B' }}>
             <div className="bg-white rounded p-3 mb-3 justify-between">
-                <p className="text-sm text-black text-[10px]">
-                    {department}
+                <p className="text-sm text-black text-[10px]" title={department}>
+                    {typeof department === 'string' && (department.length > 40 ? department.substring(0, 40) + "..." : department)}
                 </p>
                 <p className="text-sm text-black text-center ">
                     {name}
