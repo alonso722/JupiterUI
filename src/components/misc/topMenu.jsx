@@ -65,48 +65,48 @@ export default function TopNewMenuClientDashboard() {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
             }
-            const response = api.post('/user/organization/getLogo', {orga})
-            .then((response) => {
-                const buffer = response.data.data[0];
-                const imageData = response.data.data[0];
-                if(imageData?.buffer?.data){
-                    const arrayBuffer = imageData.buffer.data;
-                    const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-                    const url = URL.createObjectURL(blob);
-                    setLogoUrl(url);
-                }
-              })
-              .catch((error) => {
-                console.error("Error al consultar nombre:", error);
-              });
+            // const response = api.post('/user/organization/getLogo', {orga})
+            // .then((response) => {
+            //     const buffer = response.data.data[0];
+            //     const imageData = response.data.data[0];
+            //     if(imageData?.buffer?.data){
+            //         const arrayBuffer = imageData.buffer.data;
+            //         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+            //         const url = URL.createObjectURL(blob);
+            //         setLogoUrl(url);
+            //     }
+            //   })
+            //   .catch((error) => {
+            //     console.error("Error al consultar nombre:", error);
+            //   });
             effectMounted.current = true;
         }
     }, [authStateValue.loggedIn, router, setAuth, searchParams, department]);
 
-    useEffect(() => {
-        if (!isModalOpen) {
-            const fetchLogo = async () => {
-                const storedPermissions = localStorage.getItem('permissions'); 
-                if (storedPermissions) {
-                    const parsedPermissions = JSON.parse(storedPermissions);
-                    const orga = parsedPermissions.Organization;
-                    try {
-                        const response = await api.post('/user/organization/getLogo', { orga });
-                        const imageData = response.data.data[0];
-                        if(imageData?.buffer?.data){
-                            const arrayBuffer = imageData.buffer.data;
-                            const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-                            const url = URL.createObjectURL(blob);
-                            setLogoUrl(url);
-                        }
-                    } catch (error) {
-                        console.error("Error al consultar nombre:", error);
-                    }
-                }
-            };
-            fetchLogo();
-        }
-    }, [isModalOpen]);
+    // useEffect(() => {
+    //     if (!isModalOpen) {
+    //         const fetchLogo = async () => {
+    //             const storedPermissions = localStorage.getItem('permissions'); 
+    //             if (storedPermissions) {
+    //                 const parsedPermissions = JSON.parse(storedPermissions);
+    //                 const orga = parsedPermissions.Organization;
+    //                 try {
+    //                     const response = await api.post('/user/organization/getLogo', { orga });
+    //                     const imageData = response.data.data[0];
+    //                     if(imageData?.buffer?.data){
+    //                         const arrayBuffer = imageData.buffer.data;
+    //                         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+    //                         const url = URL.createObjectURL(blob);
+    //                         setLogoUrl(url);
+    //                     }
+    //                 } catch (error) {
+    //                     console.error("Error al consultar nombre:", error);
+    //                 }
+    //             }
+    //         };
+    //         fetchLogo();
+    //     }
+    // }, [isModalOpen]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];

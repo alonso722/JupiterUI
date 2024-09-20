@@ -93,6 +93,8 @@ export const Published = ({ departmentFilter, processFilter }) => {
                 cards={cards} 
                 setCards={setCards} 
                 permissions={permissions} 
+                primary={primary} 
+                secondary={secondary}
             />
             {isModalOpen && selectedCard && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -103,7 +105,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
     );
 };
 
-const Board = ({ onCardClick, cards, setCards, permissions }) => {
+const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }) => {
     const approvedCards = cards.filter(card => card.column === 'Aprobado');
 
     return (
@@ -114,13 +116,15 @@ const Board = ({ onCardClick, cards, setCards, permissions }) => {
                     {...card}
                     onCardClick={onCardClick}
                     permissions={permissions}
+                    primary={primary} 
+                    secondary={secondary}
                 />
             ))}
         </div>
     );
 };
 
-const Card = ({ name, department, date, id, description, onCardClick, permissions }) => {
+const Card = ({ name, department, date, id, description, onCardClick, permissions, primary, secondary }) => {
     return (
         <motion.div
             layout
