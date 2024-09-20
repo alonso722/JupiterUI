@@ -136,8 +136,8 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
                 <p className="text-sm text-black text-[10px]" title={department}>
                     {typeof department === 'string' && (department.length > 40 ? department.substring(0, 40) + "..." : department)}
                 </p>
-                <p className="text-sm text-black text-center ">
-                    {name}
+                <p className="text-sm text-black text-center "title={name}>
+                    {typeof name === 'string' && (name.length > 40 ? name.substring(0, 40) + "..." : name)}
                 </p>
             </div>
             <div className="bg-white text-black rounded p-3 m-1 h-[70%] flex flex-col justify-between">

@@ -65,48 +65,48 @@ export default function TopNewMenuClientDashboard() {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
             }
-            // const response = api.post('/user/organization/getLogo', {orga})
-            // .then((response) => {
-            //     const buffer = response.data.data[0];
-            //     const imageData = response.data.data[0];
-            //     if(imageData?.buffer?.data){
-            //         const arrayBuffer = imageData.buffer.data;
-            //         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-            //         const url = URL.createObjectURL(blob);
-            //         setLogoUrl(url);
-            //     }
-            //   })
-            //   .catch((error) => {
-            //     console.error("Error al consultar nombre:", error);
-            //   });
+            const response = api.post('/user/organization/getLogo', {orga})
+            .then((response) => {
+                const buffer = response.data.data[0];
+                const imageData = response.data.data[0];
+                if(imageData?.buffer?.data){
+                    const arrayBuffer = imageData.buffer.data;
+                    const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                    const url = URL.createObjectURL(blob);
+                    setLogoUrl(url);
+                }
+              })
+              .catch((error) => {
+                console.error("Error al consultar nombre:", error);
+              });
             effectMounted.current = true;
         }
     }, [authStateValue.loggedIn, router, setAuth, searchParams, department]);
 
-    // useEffect(() => {
-    //     if (!isModalOpen) {
-    //         const fetchLogo = async () => {
-    //             const storedPermissions = localStorage.getItem('permissions'); 
-    //             if (storedPermissions) {
-    //                 const parsedPermissions = JSON.parse(storedPermissions);
-    //                 const orga = parsedPermissions.Organization;
-    //                 try {
-    //                     const response = await api.post('/user/organization/getLogo', { orga });
-    //                     const imageData = response.data.data[0];
-    //                     if(imageData?.buffer?.data){
-    //                         const arrayBuffer = imageData.buffer.data;
-    //                         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-    //                         const url = URL.createObjectURL(blob);
-    //                         setLogoUrl(url);
-    //                     }
-    //                 } catch (error) {
-    //                     console.error("Error al consultar nombre:", error);
-    //                 }
-    //             }
-    //         };
-    //         fetchLogo();
-    //     }
-    // }, [isModalOpen]);
+    useEffect(() => {
+        if (!isModalOpen) {
+            const fetchLogo = async () => {
+                const storedPermissions = localStorage.getItem('permissions'); 
+                if (storedPermissions) {
+                    const parsedPermissions = JSON.parse(storedPermissions);
+                    const orga = parsedPermissions.Organization;
+                    try {
+                        const response = await api.post('/user/organization/getLogo', { orga });
+                        const imageData = response.data.data[0];
+                        if(imageData?.buffer?.data){
+                            const arrayBuffer = imageData.buffer.data;
+                            const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                            const url = URL.createObjectURL(blob);
+                            setLogoUrl(url);
+                        }
+                    } catch (error) {
+                        console.error("Error al consultar nombre:", error);
+                    }
+                }
+            };
+            fetchLogo();
+        }
+    }, [isModalOpen]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -231,25 +231,31 @@ export default function TopNewMenuClientDashboard() {
                                                 )}
                                             </Menu.Item>
                                         </form>
-                                        <form method="POST" action="#">
-                                            <Menu.Item>
+                                        {(permissions.Type === 1 || permissions.Type === 6) && (
+                                            <form method="POST" action="#">
+                                                <Menu.Item>
                                                 {({ active }) => (
-                                                    <Link href="/settings" passHref >
-                                                        <button
-                                                            type='button'
-                                                            className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
-                                                            <Image
-                                                            className='mr-[10px]'
-                                                            src="/svg/icons/settings.svg"
-                                                            alt="Ajustes"
-                                                            width={17}
-                                                            height={18}/>
+                                                    <Link href="/settings" passHref>
+                                                    <button
+                                                        type="button"
+                                                        className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${
+                                                        active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                                                        } hover:bg-gray-200`}
+                                                    >
+                                                        <Image
+                                                        className="mr-[10px]"
+                                                        src="/svg/icons/settings.svg"
+                                                        alt="Ajustes"
+                                                        width={17}
+                                                        height={18}
+                                                        />
                                                         <span>Configuración</span>
-                                                        </button>
+                                                    </button>
                                                     </Link>
                                                 )}
-                                            </Menu.Item>
-                                        </form>
+                                                </Menu.Item>
+                                            </form>
+                                        )}
                                         {/* <Menu.Item>
                                             {({ active }) => (
                                                 <a href="/user/help" className={`flex rounded mx-2 justify-center items-center my-[13px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>

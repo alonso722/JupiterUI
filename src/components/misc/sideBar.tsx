@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
+import { FaKaaba, FaTable, FaUsers, FaBuilding, FaSitemap, FaBars } from 'react-icons/fa'; // Importamos algunos iconos de react-icons
 import { useColors } from '@/services/colorService';
 
 interface Permissions {
@@ -14,7 +14,7 @@ export default function Sidebar() {
     const [workflows, setWorkflows] = useState<Workflows | null>(null);
     const [isExpanded, setIsExpanded] = useState(false);
     const [currentPath, setCurrentPath] = useState('');
-    const { primary, secondary } = useColors();
+    const { primary, secondary } = useColors(); 
 
     useEffect(() => {
         const storedPermissions = localStorage.getItem('permissions');
@@ -27,11 +27,10 @@ export default function Sidebar() {
                 setPermissions(null);
             }
         }
-        let parsedWorkflows;
+
         const storedWorkflows = localStorage.getItem('workflows');
         if (storedWorkflows) {
-            parsedWorkflows = JSON.parse(storedWorkflows);
-            setWorkflows(parsedWorkflows);
+            setWorkflows(JSON.parse(storedWorkflows));
         }
 
         setCurrentPath(window.location.pathname);
@@ -41,12 +40,6 @@ export default function Sidebar() {
         setIsExpanded(!isExpanded);
     };
 
-    const handleCloseSidebar = () => {
-        if (isExpanded) {
-            setIsExpanded(false);
-        }
-    };
-
     const handleNavigation = (path: string) => {
         if (path === '/dashboard/home' && permissions?.Type === 5) {
             path = '/dashboard/consultor';
@@ -54,42 +47,12 @@ export default function Sidebar() {
         window.location.href = path;
     };
 
-    const getIconSize = (icon: string) => {
-        switch (icon) {
-            case 'menu.svg':
-            case 'menuB.svg':
-                return { width: 23, height: 14 };
-            case 'kanban.svg':
-            case 'kanbanS.svg':
-            case 'kanbanB.svg':
-                return { width: 18, height: 16 }; 
-            case 'table.svg':
-            case 'tableS.svg':
-            case 'tableB.svg':
-                return { width: 17, height: 14 }; 
-            case 'orgas.svg':
-            case 'orgasS.svg':
-            case 'orgasB.svg':
-                return { width: 20, height: 20 }; 
-            case 'departments.svg':
-            case 'departmentsS.svg':
-            case 'departmentsB.svg':
-                return { width: 20, height: 18 }; 
-            case 'users.svg':
-            case 'usersS.svg':
-            case 'usersB.svg':
-                return { width: 24, height: 15 }; 
-            default:
-                return { width: 24, height: 24 }; 
-        }
-    };
-
     const navItems = [
-        { path: '/dashboard/home', icon: 'kanban.svg', label: 'Kanban', condition: true },
-        { path: '/dashboard/table', icon: 'table.svg', label: 'Table', condition: permissions?.Type === 6 || workflows?.coordinator !== 0 },
-        { path: '/organizations', icon: 'orgas.svg', label: 'Organizations', condition: permissions?.Type === 6 },
-        { path: '/departments', icon: 'departments.svg', label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/user', icon: 'users.svg', label: 'Users', condition: true }
+        { path: '/dashboard/home', icon: FaKaaba, label: 'Kanban', condition: true },
+        { path: '/dashboard/table', icon: FaTable, label: 'Table', condition: permissions?.Type === 6 || workflows?.coordinator !== 0 },
+        { path: '/organizations', icon: FaBuilding, label: 'Organizations', condition: permissions?.Type === 6 },
+        { path: '/departments', icon: FaSitemap, label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/user', icon: FaUsers, label: 'Users', condition: true }
     ];
 
     if (permissions === null) {
@@ -99,18 +62,19 @@ export default function Sidebar() {
     return (
         <div className="ml-[0px] mt-[68px] flex h-screen rounded fixed z-50" style={{ maxHeight: '823px' }}>
             <div 
-                onMouseLeave={handleCloseSidebar} 
-                className={`max-h-[815px] transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
-                style={{ backgroundColor: isExpanded ? secondary : 'transparent' }}>
-                <button type="button" onClick={handleToggleExpand} className="flex ml-[25px] mt-[35px] bg-purple focus:outline-none rounded">
-                    <Image src={`/icons/${isExpanded ? 'menuB.svg' : 'menu.svg'}`} alt="Menu" width={23} height={14} />
+                onMouseLeave={() => isExpanded && setIsExpanded(false)}
+                className={`transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
+                style={{ backgroundColor: isExpanded ? secondary : 'transparent' }}
+            >
+                <button type="button" onClick={handleToggleExpand} className="flex ml-[25px] mt-[35px] focus:outline-none rounded">
+                    <FaBars size={23} color={ primary} />
                 </button>
                 {!isExpanded && (
                     <div className="flex flex-col mt-[18px]">
                         {navItems.map((item, index) => (
                             item.condition && (
-                                <button key={index} title={item.label} type="button" className="flex py-[15px] items-center ml-[0px] justify-center hover:bg-[#442E69]" onClick={() => handleNavigation(item.path)}>
-                                    <Image src={`/icons/${currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon}`} alt={item.label} width={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon).width} height={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : item.icon).height} />
+                                <button key={index} title={item.label} type="button" className="flex py-[15px] items-center justify-center hover:bg-opacity-75" style={{ backgroundColor: currentPath === item.path ? primary : 'transparent', color: currentPath === item.path ? secondary : primary }} onClick={() => handleNavigation(item.path)}>
+                                    <item.icon size={24} />
                                 </button>
                             )
                         ))}
@@ -120,12 +84,14 @@ export default function Sidebar() {
                     <div className="ml-[0px] min-w-[200px] max-w-[200px]">
                         {navItems.map((item, index) => (
                             item.condition && (
-                                <div 
-                                    key={index} 
-                                    className={`relative flex items-center pl-[30px] mt-[27px] hover:bg-purple-950 hover:text-white focus:outline-none rounded ${currentPath === item.path ? 'bg-[#442E69] py-[10px]' : ''}`}
-                                    onClick={() => handleNavigation(item.path)}>
-                                    <Image src={`/icons/${currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : isExpanded ? item.icon.replace('.svg', 'B.svg') : item.icon}`} alt={item.label} width={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : isExpanded ? item.icon.replace('.svg', 'B.svg') : item.icon).width} height={getIconSize(currentPath === item.path ? item.icon.replace('.svg', 'S.svg') : isExpanded ? item.icon.replace('.svg', 'B.svg') : item.icon).height} />
-                                    <p className={`ml-[10px] ${currentPath === item.path && isExpanded ? 'text-white' : ''}`}>{item.label}</p>
+                                <div
+                                    key={index}
+                                    className={`relative flex items-center pl-[30px] mt-[27px] hover:bg-opacity-75 focus:outline-none  ${currentPath === item.path ? 'bg-[#442E69] py-[10px]' : ''}`}
+                                    onClick={() => handleNavigation(item.path)}
+                                    style={{ backgroundColor: currentPath === item.path ? primary : 'transparent', color: currentPath === item.path ? secondary : primary }}
+                                >
+                                    <item.icon size={24} />
+                                    <p className={`ml-[10px] ${currentPath === item.path ? 'text-white' : ''}`}>{item.label}</p>
                                 </div>
                             )
                         ))}
