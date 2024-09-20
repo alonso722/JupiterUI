@@ -592,7 +592,7 @@ const Details = ({ card, onClose }) => {
         <div className='flex'>
           <div className='min-w-[55%] max-w-[70%] ml-2'>
             <div className="flex justify-between items-center">
-            <p className="text-[#7A828A] text-[16px]">
+            <p className="text-[#7A828A] text-[16px]" title={departmentNameF}>
               {typeof departmentNameF === 'string' && (departmentNameF.length > 50 ? departmentNameF.substring(0, 50) + "..." : departmentNameF)}
             </p>
               {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
@@ -603,7 +603,7 @@ const Details = ({ card, onClose }) => {
             </div>
             <div className='flex'>
               <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[20px] mr-2'>.</div>
-              <h2 className="text-2xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
+              <h2 className="text-xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
             <div className='text-black border-2 mb-2 mr-2 p-1 overflow-y-auto  max-w-[450px] rounded h-[14%]'>
               <p>{description}</p>
@@ -655,7 +655,7 @@ const Details = ({ card, onClose }) => {
                             className='w-[5%] h-auto' 
                           />
                           <div className='flex-grow'>
-                          <p className="text-black">
+                          <p className="text-black" title={anx.name}>
                             {anx.name.length > 60 ? anx.name.substring(0, 60) + "..." : anx.name}
                           </p>
                           </div>
