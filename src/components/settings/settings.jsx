@@ -97,6 +97,9 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
             if (response.status === 200) {
                 showToast('success', 'Imagen cargada exitosamente.');
                 closeModal();
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);  
             } else {
                 showToast('error', 'Error al cargar la imagen.');
             }
@@ -127,6 +130,9 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
             const response = await api.post('/user/organization/setSets', { sets });
             if (response.status === 200) {
                 showToast('success', 'Colores actualizados exitosamente');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);  
             } else {
                 showToast('error', 'Error al actualizar los colores');
             }

@@ -60,6 +60,7 @@ const Details = ({ card, onClose }) => {
   const [isUpdateModalOpen, setUpdateModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState(null);
   const [isRejectModalOpen, setRejectModalOpen] = useState(false);
+  const [isVersionModalOpen, setVersionModalOpen] = useState(false);
   const [privileges, setPrivileges] = useState('');
   const { primary, secondary } = useColors();
 
@@ -388,6 +389,10 @@ const Details = ({ card, onClose }) => {
     setRejectModalOpen(true);
   }
 
+  const handleVersion=()=>{
+    setVersionModalOpen(true);
+  }
+
   const handleConfirmReject=()=>{
     setRejectModalOpen(true);
     let log = {};
@@ -411,6 +416,30 @@ const Details = ({ card, onClose }) => {
     onClose();
   }
 
+  const handleConfirmVersion = () => {
+    let log = {};
+    log.id = card.id;
+    log.uuid = permissions.uuid;
+    log.type = 23;
+  
+    api.post('/user/process/version', {
+      id: card.id
+    })
+    .then((response) => {
+      const { message } = response.data;
+      
+      if (message === "Versión ya en proceso") {
+        showToast('warning', 'Ya existe una versión en proceso.');
+      } else {
+        showToast('success', 'Se actualizó el estado del proceso. Versión creada correctamente.');
+      }
+    })
+    .catch((error) => {
+      console.error("Error al actualizar la columna en backend:", error);
+      showToast('error', 'Error al actualizar el proceso.');
+    });
+    onClose();
+  };  
 
   const handleStatusCheck = (newStatus)=>{
     const vobo = {};
@@ -489,6 +518,10 @@ const Details = ({ card, onClose }) => {
 
   const handleCancelReject = () => {
     setRejectModalOpen(false);
+  };
+
+  const handleVersionReject = () => {
+    setVersionModalOpen(false);
   };
 
   const isListboxDisabled = () => {
@@ -604,7 +637,9 @@ const Details = ({ card, onClose }) => {
               )}
             </div>
             <div className='flex'>
-              <div className='bg-[#F1CF2B] h-[13px] w-[13px] mt-[20px] mr-2'>.</div>
+              <div 
+                className=' h-[13px] w-[13px] mt-[20px] mr-2'
+                style={{ backgroundColor: primary }}>.</div>
               <h2 className="text-xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
             <div className='text-black border-2 mb-2 mr-2 p-1 overflow-y-auto  max-w-[450px] rounded h-[14%]'>
@@ -635,8 +670,8 @@ const Details = ({ card, onClose }) => {
                         {privileges === 1 || privileges === 2 ? (
                           <button
                             onClick={() => handleDownload(document.path)}
-                            className="bg-[#2C1C47] p-1 rounded text-white mr-[19px]"
-                          >
+                            className="p-1 rounded text-white mr-[19px]"
+                            style={{ backgroundColor: primary }}>
                             Descargar
                           </button>
                         ) : null}
@@ -663,7 +698,8 @@ const Details = ({ card, onClose }) => {
                           </div>
                           <button 
                             onClick={() => handleAnxDownload(anx.path)} 
-                            className='bg-[#2C1C47] p-1 rounded text-white'>
+                            className='p-1 rounded text-white'
+                            style={{ backgroundColor: primary }}>
                             Descargar
                           </button>
                         </div>
@@ -704,7 +740,8 @@ const Details = ({ card, onClose }) => {
             <div className="flex items-center mt-2">
             <button 
               onClick={handleSubmit} 
-              className={`p-2 rounded text-[#ffffff] ${secondary ? `bg-[${secondary}]` : ''} active:bg-[#B5B5BD]`}
+              className={`p-2 rounded text-[#ffffff]`}
+              style={{ backgroundColor: primary }}
             >
               Enviar
             </button>
@@ -805,13 +842,21 @@ const Details = ({ card, onClose }) => {
               </Listbox>
               </div>
               <div className="flex items-center pl-7">
-                {!isListboxDisabled() && card.column !== "Edición" && (
-                  <button
-                    className="bg-red-500 text-white px-4 py-2 rounded"
-                    onClick={handleReject}>
-                    Rechazar
-                  </button>
-                )}
+              {!isListboxDisabled() && card.column == "Aprobación" && card.column == "Revisión" && (
+                <button
+                  className="bg-red-500 text-white px-4 py-2 rounded"
+                  onClick={handleReject}>
+                  Rechazar
+                </button>
+              )}
+              {!isListboxDisabled() && card.column === "Aprobado" && (
+                <button
+                  className="text-white px-4 py-2 rounded"
+                  style={{ backgroundColor: secondary }}
+                  onClick={handleVersion}>
+                  Actualizar
+                </button>
+              )}
               </div>
             </div>
             {isUpdateModalOpen && (
@@ -852,6 +897,28 @@ const Details = ({ card, onClose }) => {
                       style={{ backgroundColor: '#E6E8EC' }}
                       onClick={handleCancelReject}
                     >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+            {isVersionModalOpen && (
+              <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
+                  <h1 className="mb-[20px] text-center text-black">
+                    Desea iniciar el flujo para una nueva version de este proceso?</h1>
+                  <div className="flex justify-between w-full px-8">
+                    <button
+                      className="text-white p-3 rounded-lg flex-grow mx-4"
+                      style={{ backgroundColor: secondary }}
+                      onClick={handleConfirmVersion}>
+                      Confirmar
+                    </button>
+                    <button
+                      className="text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                      style={{ backgroundColor: '#E6E8EC' }}
+                      onClick={handleVersionReject}>
                       Cancelar
                     </button>
                   </div>

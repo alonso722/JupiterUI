@@ -71,6 +71,8 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
                 return 'Aprobación';
             case '4':
                 return 'Aprobado';
+            case '5':
+                return 'Historico';
             default:
                 return 'Edición';
         }
@@ -152,6 +154,19 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
                 primary={primary} 
                 secondary={secondary}
             />
+            {(permissions.Type === 1 || permissions.Type === 6) && (
+                <Column
+                    name="Historico"
+                    column="Historico"
+                    headingColor={secondary}
+                    cards={cards}
+                    setCards={setCards}
+                    onCardClick={onCardClick}
+                    permissions={permissions}
+                    primary={primary}
+                    secondary={secondary}
+                />
+            )}
             {/* <DelBarrel setCards={setCards} /> */}
         </div>
     );
@@ -160,71 +175,6 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
 const Column = ({ name, headingColor, column, cards, setCards, onCardClick, permissions, primary, secondary }) => {
     const [active, setActive] = useState(false);
     const api = useApi(); 
-
-    // const handleDragStart = (e, card) => {
-    //     e.dataTransfer.setData("cardId", card.id);
-    // };
-
-    // const handleDragEnd = (e) => {
-    //     const cardId = e.dataTransfer.getData("cardId");
-
-    //     setActive(false);
-    //     clearHighlights();
-
-    //     const indicators = getIndicators();
-    //     const { element } = getNearestIndicator(e, indicators);
-    //     const before = element.dataset.before || "-1";
-    //     //const uuid = localStorage.getItem('uuid');
-    //     const uuid = permissions.uuid;
-
-    //     if (before !== cardId) {
-    //         let copy = [...cards];
-    //         let cardToTransfer = copy.find((c) => c.id === cardId);
-    //         if (!cardToTransfer) return;
-    //         const oldColumn = cardToTransfer.column; 
-    //         cardToTransfer = { ...cardToTransfer, column };
-
-    //         copy = copy.filter((c) => c.id !== cardId);
-
-    //         const moveToBack = before === "-1";
-
-    //         if (moveToBack) {
-    //             copy.push(cardToTransfer);
-    //         } else {
-    //             const insertAtIndex = copy.findIndex((el) => el.id === before);
-    //             if (insertAtIndex === undefined) return;
-    //             copy.splice(insertAtIndex, 0, cardToTransfer);
-    //         }
-
-    //         setCards(copy);
-    //         let log = {};
-    //         log.id = cardId;
-    //         log.uuid = uuid;
-    //         log.type = 23;
-    //         api.post('/user/process/update', {
-    //             id: cardId,
-    //             newColumn: column,
-    //             oldColumn: oldColumn,
-    //         })
-    //         .then( async (response) => {
-    //             try {
-    //                 await api.post('/user/log/setLog', log);
-    //               } catch (error) {
-    //                 console.error("Error al hacer el registro:", error);
-    //               }
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error al actualizar la columna en backend:", error);
-    //         });
-    //     }
-    // };
-
-    // const handleDragOver = (e) => {
-    //     e.preventDefault();
-    //     highlightIndicator(e);
-
-    //     setActive(true);
-    // };
 
     const clearHighlights = (els) => {
         const indicators = els || getIndicators();
@@ -291,15 +241,11 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 </div>
             </div>
             <div
-                //onDrop={handleDragEnd}
-                //onDragOver={handleDragOver}
-                //onDragLeave={handleDragLeave}
                 className={`h-[670px] overflow-auto scrollbar-hide transition-colors ${
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
                     return <Card key={c.id} {...c} 
-                    //handleDragStart={handleDragStart} 
                     onCardClick={onCardClick} 
                     permissions={permissions}
                     primary={primary} 
@@ -311,7 +257,6 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
         </div>
     );
 };
-
 
 const Card = ({ name, id, column, handleDragStart, onCardClick, permissions, primary, secondary }) => {
     //const canDrag = permissions.Type == 6;
