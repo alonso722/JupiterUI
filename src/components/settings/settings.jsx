@@ -12,10 +12,27 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const [secColor, setSecColor] = useState(initialSecondaryColor);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [files, setFile] = useState([]);
+    const [values, setValues] = useState([]);
     const [logoUrl, setLogoUrl] = useState('');
+    const [history, setHistory] = useState('');
+    const [vision, setVision] = useState('');
+    const [mision, setMision] = useState('');
     const { primary, secondary } = useColors();
     const effectMounted = useRef(false);
     const api = useApi();
+    const [newValue, setNewValue] = useState("");
+
+    const handleAddValue = () => {
+      if (newValue.trim()) {
+        setValues([...values, newValue]);
+        setNewValue("");
+      }
+    };
+  
+    const handleRemoveValue = (index) => {
+      const updatedValues = values.filter((_, i) => i !== index);
+      setValues(updatedValues);
+    };
 
     const showToast = (type, message) => {
         toast[type](message, {
@@ -37,8 +54,15 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
             
                     const profileResponse = await api.post('/user/organization/getSets', parsedPermissions);
                     const data = profileResponse.data.data;
+                    console.log(data)
                     const imageData = data.t01_organization_logo;
-            
+                    setHistory(data.t01_organization_history)
+                    setVision(data.t01_organization_vision)
+                    setMision(data.t01_organization_mision)
+                    const valuesString = data.t01_organization_values; 
+                    const valuesArray = JSON.parse(valuesString);
+                    console.log(valuesArray);
+                    setValues(valuesArray);                    
                     if (imageData?.data) { 
                         const arrayBuffer = imageData.data;  
                         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: data.t01_logo_mimetype });
@@ -117,16 +141,21 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
         setSecColor(newColor.hex); 
     };
 
-    const handleUpdateColor = async () => {
+    const handleUpdateSets = async () => {
         let parsedPermissions;
         const storedPermissions = localStorage.getItem('permissions');
         parsedPermissions = JSON.parse(storedPermissions);
         try {
             let sets = {
                 orga: parsedPermissions.Organization,
+                vision: vision,
+                mision: mision,
+                history: history,
                 primary: priColor,
                 secondary: secColor,
+                values: values
             };
+            console.log(sets)
             const response = await api.post('/user/organization/setSets', { sets });
             if (response.status === 200) {
                 showToast('success', 'Colores actualizados exitosamente');
@@ -146,55 +175,131 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const closeModal = () => setIsModalOpen(false);
 
     return (
-        <div className="mt-[60px] ml-[100px] mr-[250px] w-[100%] text-neutral-50 rounded">
+        <div className="mt-[60px] ml-[100px] w-[90%] text-neutral-50 rounded items-center justify-center">
             <div className="mt-8 text-black">
                 <div className="mb-5">
                     <h1 className="text-black text-xl mb-5">
                         <strong>Personalización</strong>
                     </h1>
                 </div>
-                <div className="flex">
-                    <div>
-                        <div className="flex ">
-                            <div className="mb-5 mr-20">
-                                <h2 className="text-lg mb-3">Selecciona un color primario:</h2>
-                                <SketchPicker 
-                                    color={priColor} 
-                                    onChangeComplete={handlePrimaryColorChange} />
-                            </div>
-                            <div className="mb-5">
-                                <h2 className="text-lg mb-3">Selecciona un color secundario:</h2>
-                                <SketchPicker 
-                                    color={secColor} 
-                                    onChangeComplete={handleSecondaryColorChange} />
+                <div className="flex w-full"> 
+                    <div className="px-5 mr-2">                    
+                        <div className="flex flex-col justify-center items-center ">
+                            <p className="text-lg mb-3">Logo actual:</p>
+                            <div className="flex items-center pb-4 pt-2">
+                                {logoUrl ? (
+                                    <Image
+                                        src={logoUrl}
+                                        alt="Logo"
+                                        width={180}
+                                        height={29}
+                                    />
+                                ) : (
+                                    <p className="text-white">No hay logo disponible</p> 
+                                )}
+                                <button
+                                    onClick={openModal}
+                                    className="bg-white text-black ml-5 rounded-lg p-2 border-2">
+                                    <p>Cambiar logo</p>
+                                </button>
                             </div> 
                         </div>
-                        <button 
-                            className="mt-5 ml-[180px] bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700"
-                            onClick={handleUpdateColor}>
-                            Actualizar Colores
-                        </button>
-                    </div>
-                    <div className="flex flex-col justify-center items-center h-full ml-[200px]">
-                    <p className="text-lg mb-3">Su logo actual:</p>
-                        <div className="flex items-center pb-4 pt-5">
-                            {logoUrl ? (
-                                <Image
-                                    src={logoUrl}
-                                    alt="Logo"
-                                    width={180}
-                                    height={29}
-                                />
-                            ) : (
-                                <p className="text-white">No hay logo disponible</p> 
-                            )}
+                        <div>
+                            <div className="flex ">
+                                <div className="mb-5 mr-20">
+                                    <h2 className="text-[15px] mb-3">Selecciona un color primario:</h2>
+                                    <SketchPicker 
+                                        color={priColor} 
+                                        onChangeComplete={handlePrimaryColorChange} />
+                                </div>
+                                <div className="mb-5">
+                                    <h2 className="text-[15px] mb-3">Selecciona un color secundario:</h2>
+                                    <SketchPicker 
+                                        color={secColor} 
+                                        onChangeComplete={handleSecondaryColorChange} />
+                                </div> 
+                            </div>
                         </div>
-                        <button
-                            onClick={openModal}
-                            className="bg-white text-black mt-4 rounded-lg p-3 border-2">
-                            <p>Cambiar logo</p>
-                        </button> 
                     </div>
+                    <div className="border-l-2  pl-5 w-[60%]">
+                        <p className="text-xl mb-4 text-black">
+                            <textarea
+                                type="text"
+                                placeholder="Historia de la organizacion"
+                                value={history}
+                                onChange={(e) => setHistory(e.target.value)}
+                                className="w-full py-1 px-3 border-gray-300 rounded focus:border-purple-500 outline-none"
+                                style={{
+                                    backgroundColor: `${secondary}60` 
+                                }}
+                            />
+                        </p>
+                        <p className="text-xl mt-[15px] mb-4 text-black">
+                            <textarea
+                                type="text"
+                                placeholder="Misión de la organización"
+                                value={mision}
+                                onChange={(e) => setMision(e.target.value)}
+                                className="w-full py-1 px-3 border-gray-300  rounded focus:border-purple-500 outline-none"
+                                style={{
+                                    backgroundColor: `${primary}60`, 
+                                }}
+                            />
+                        </p>
+                        <p className="text-xl mt-[15px] mb-4 text-black">
+                            <textarea
+                                type="text"
+                                placeholder="Visión de la organización"
+                                value={vision}
+                                onChange={(e) => setVision(e.target.value)}
+                                className="w-full py-1 px-3 rounded border-gray-300 focus:border-purple-500 outline-none"
+                                style={{
+                                    backgroundColor: `${secondary}60`, 
+                                }}/>
+                        </p>
+                        <div className="max-h-[200px] overflow-y-auto ">
+                            <h2 className="mb-4">Valores de la organización</h2>
+                            {values.map((value, index) => (
+                                <div key={index} className="flex items-center mb-2 ">
+                                <input
+                                    type="text"
+                                    value={value}
+                                    readOnly
+                                    className="border p-2 mr-2"
+                                />
+                                <button
+                                    className="bg-red-500 text-white px-1 py-1 rounded"
+                                    onClick={() => handleRemoveValue(index)}>
+                                    -
+                                </button>
+                                </div>
+                            ))}
+
+                            <div className="flex items-center mt-4">
+                                <input
+                                    type="text"
+                                    value={newValue}
+                                    onChange={(e) => setNewValue(e.target.value)}
+                                    className="p-2 mr-2"
+                                    placeholder="Agregar nuevo valor"/>
+                                <button
+                                    className="bg-blue-500 text-white px-1 py-1 rounded"
+                                    onClick={handleAddValue}>
+                                    +
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div className="flex w-[90%] justify-center mt-5">
+                    <button 
+                        className="text-white py-2 px-4 rounded"
+                        onClick={handleUpdateSets}
+                        style={{ 
+                            backgroundColor: primary,
+                        }}>
+                        Actualizar información y Personalización
+                    </button>
                 </div>
                 {isModalOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
@@ -210,7 +315,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     className={`p-2 rounded text-white ${!files ? 'cursor-not-allowed' : 'hover:bg-[#1B1130] cursor-pointer'}`}
                                     style={{ backgroundColor: !files ? 'gray' : secondary }}
                                     disabled={!files}
-                                    >
+                                >
                                     Cargar
                                 </button>
                             </div>
@@ -219,7 +324,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                 )}
             </div>
         </div>
-    );
+    );    
 };
 
 export default Settings;

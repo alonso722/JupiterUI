@@ -149,6 +149,7 @@ const Details = ({ card, onClose }) => {
           const prId = card.id;
           const processLogs = await api.post('/user/log/getLogs', { prId });
           const prscdlogs = processLogs.data; 
+          console.log(prscdlogs)
           setLogs(prscdlogs);
           const incidentStatuses = {};
           for (const log of prscdlogs) {
@@ -314,6 +315,10 @@ const Details = ({ card, onClose }) => {
   };
 
   function getEventTypeText(type) {
+    console.log(card.column)
+    if(!card?.column){
+      card.column = 'Aprobado'
+    }
     switch (type) {
       case 21:
         return " un comentario";

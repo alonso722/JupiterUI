@@ -67,10 +67,10 @@ export default function CompleteAuth({
                             router.push('/auth/login');
                             showToast('error','No tienes acceso a este servicio');
                         } else if (workflows.coordinator === 0) {
-                            router.push('/dashboard/consultor');
+                            router.push('/dashboard/home');
                             showToast('success','Autenticación completada.');
                         } else {
-                            router.push('/dashboard/table');
+                            router.push('/dashboard/home');
                             showToast('success','Autenticación completada.');
                         }
                         

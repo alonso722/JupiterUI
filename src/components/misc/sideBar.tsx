@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { IoMdHome } from "react-icons/io";
 import { FaColumns, FaTable, FaUsers, FaBuilding, FaSitemap, FaBars } from "react-icons/fa";
 import { BsFillGrid3X2GapFill } from "react-icons/bs"; 
 import { FaTableCells } from "react-icons/fa6";
@@ -43,14 +44,15 @@ export default function Sidebar() {
     };
 
     const handleNavigation = (path: string) => {
-        if (path === '/dashboard/home' && permissions?.Type === 5) {
+        if (path === '/dashboard/kanban' && permissions?.Type === 5) {
             path = '/dashboard/consultor';
         }
         window.location.href = path;
     };
 
     const navItems = [
-        { path: '/dashboard/home', icon: BsFillGrid3X2GapFill, label: 'Kanban', condition: true },
+        { path: '/dashboard/home', icon: IoMdHome, label: 'Inicio', condition: true },
+        { path: '/dashboard/kanban', icon: BsFillGrid3X2GapFill, label: 'Kanban', condition: true },
         { path: '/dashboard/table', icon: FaTableCells, label: 'Table', condition: permissions?.Type === 6 || workflows?.coordinator !== 0 },
         { path: '/organizations', icon: FaBuilding, label: 'Organizations', condition: permissions?.Type === 6 },
         { path: '/departments', icon: FaSitemap, label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },

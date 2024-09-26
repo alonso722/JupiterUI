@@ -16,7 +16,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
     if (storedPermissions) {
       parsedPermissions = JSON.parse(storedPermissions);
       if (parsedPermissions.Type === 5) {
-        router.push('/dashboard/home');
+        router.push('/dashboard/kanban');
       }
       setPermissions(parsedPermissions);
     }

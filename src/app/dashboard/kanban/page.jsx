@@ -9,8 +9,7 @@ import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu.jsx';
-import Published from '@/components/published/process.jsx';
-import ECarousel from '@/components/misc/carousel/carousel.jsx';
+import Kanban from '@/components/kanban/columns';
 
 const SuspenseFallback = () => <div>Loading...</div>;
 
@@ -50,11 +49,10 @@ const PageContent = () => {
 
     return (
         <div>
-            <div className=''>
+            <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <ECarousel/>
-                <Published/>  
+                <Kanban departmentFilter={department} processFilter={process} />
             </div>
         </div>
     );

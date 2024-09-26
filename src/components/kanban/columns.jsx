@@ -48,8 +48,10 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
                     id: item.id.toString(),
                     name: item.process,
                     column: convertStatusToColumn(item.status),
-                    department: item.departmentName
+                    department: item.departmentName,
+                    version: item.version
                 }));
+                console.log(fetchedCards)
                 setCards(fetchedCards); 
             })
             .catch((error) => {
@@ -84,6 +86,7 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     };
 
     const handleCloseModal = () => {
+        console.log("se cerro el modal")
         setIsModalOpen(false);
         setSelectedCard(null);
         fetchData(); 
@@ -249,8 +252,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                     onCardClick={onCardClick} 
                     permissions={permissions}
                     primary={primary} 
-                    secondary={secondary} 
-                    />;
+                    secondary={secondary} />;
                 })}
                 <DropIndicator beforeId="-1" column={column} />
             </div>
@@ -258,33 +260,39 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
     );
 };
 
-const Card = ({ name, id, column, handleDragStart, onCardClick, permissions, primary, secondary }) => {
-    //const canDrag = permissions.Type == 6;
+const Card = ({ name, id, column, version, handleDragStart, onCardClick, permissions, primary, secondary }) => {
     return (
         <>
             <DropIndicator beforeId={id} column={column} />
             <motion.div
                 layout
                 layoutId={id}
-                // draggable={canDrag}
-                // onDragStart={(e) => handleDragStart(e, { name, id, column })}
                 onClick={() => onCardClick({ name, id, column })}
                 style={{ 
-                    zIndex: 1,
-                    backgroundColor: primary || '#F1CF2B'
+                    backgroundColor: primary,
+                    position: 'relative',
                 }}
-                className="mt-2 cursor-pointer rounded p-3 shadow-xl flex items-center justify-between"
+                className="mt-2 cursor-pointer rounded py-4 px-3 pb-3 shadow-xl items-center justify-between"
             >
-                <p className="text-sm text-black truncate">
-                    {name}
-                </p>
-                <p className="text-sm text-black">
-                    ...
-                </p>
+            {version && (
+                <span className="px-1 text-[9px] font-semibold text-white rounded-full"
+                style={{ 
+                    backgroundColor: secondary,
+                    position: 'absolute',
+                    top: '5px',
+                    right: '5px'
+                }}>
+                    v{version}
+                </span>
+            )}
+            <p className="text-sm text-black truncate">
+                {name}
+            </p>
             </motion.div>
         </>
     );
 };
+
 
 const DropIndicator = ({ beforeId, column }) => {
     return (

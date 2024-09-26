@@ -87,7 +87,8 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[110px] ml-[100px] mr-[250px] w-[100%] text-neutral-50 rounded">
+        <div className="mt-[30px] ml-[100px] mr-[250px] w-[90%] text-neutral-50 rounded ">
+            <p className="text-black">Mis procesos:</p>
             <Board 
                 onCardClick={handleCardClick} 
                 cards={cards} 
@@ -109,7 +110,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
     const approvedCards = cards.filter(card => card.column === 'Aprobado');
 
     return (
-        <div className="flex h-full w-full gap-3 pt-12 flex-wrap justify-center">
+        <div className="flex h-full w-full gap-3 pt-2 flex-wrap justify-center">
             {approvedCards.map((card) => (
                 <Card
                     key={card.id}

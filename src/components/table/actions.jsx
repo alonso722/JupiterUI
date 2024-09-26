@@ -38,14 +38,14 @@ const Actions = ({ onActionClick, rowData, onClose,  onCloseModal }) => {
     const handleConfirmDelete = () => {
         api.post('/user/process/delete', { process: rowData.id })
             .then((response) => {
-                onClose(); 
+                onCloseModal(); 
             })
             .catch((error) => {
                 console.error("Error borrando proceso:", error);
             });
            
         setIsDeleteModalOpen(false); 
-        onClose();
+        onCloseModal();
     };
 
     const handleCancelDelete = () => {

@@ -142,7 +142,7 @@ const TanStackTable = () => {
             cell: (info) => (
                 <a
                     className="underline cursor-pointer"
-                    onClick={() => router.push(`/dashboard/home?process=${info.getValue()}`)}>
+                    onClick={() => router.push(`/dashboard/kanban?process=${info.getValue()}`)}>
                     {info.getValue()}
                 </a>
             ),
@@ -152,7 +152,7 @@ const TanStackTable = () => {
             cell: (info) => (
                 <a
                     className="underline cursor-pointer"
-                    onClick={() => router.push(`/dashboard/home?department=${info.getValue()}`)}>
+                    onClick={() => router.push(`/dashboard/kanban?department=${info.getValue()}`)}>
                     {info.getValue()}
                 </a>
             ),
