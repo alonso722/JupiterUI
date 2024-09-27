@@ -28,10 +28,8 @@ const UserInfoModal = ({ isOpen, uuid }) => {
   };
 
   const loadUserProfile = () => {
-    console.log("uuuuuuuuuuuuuuu",uuid)
     api.post('/user/users/profile', uuid)
       .then((response) => {
-        console.log(response.data);
         setInfo(response.data);
       })
       .catch((error) => {
@@ -70,10 +68,8 @@ const UserInfoModal = ({ isOpen, uuid }) => {
         let path = response.data.path;
 
         if (response) {
-          console.log(filems);
           api.post('/user/users/store', filems)
             .then((response) => {
-              console.log(response);
               if (response.status === 200) {
                 showToast('success', 'Archivo cargado con éxito.');
                 loadUserProfile();

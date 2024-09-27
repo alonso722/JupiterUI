@@ -308,6 +308,7 @@ const Details = ({ card, onClose }) => {
       showToast('error','Error al enviar el comentario o incidencia.');
       console.error("Error al hacer el registro:", error);
     }
+    fetchDocument();
   };
 
   const handleInputChange = (event) => {

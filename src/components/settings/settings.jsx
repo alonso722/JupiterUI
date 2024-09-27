@@ -54,14 +54,12 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
             
                     const profileResponse = await api.post('/user/organization/getSets', parsedPermissions);
                     const data = profileResponse.data.data;
-                    console.log(data)
                     const imageData = data.t01_organization_logo;
                     setHistory(data.t01_organization_history)
                     setVision(data.t01_organization_vision)
                     setMision(data.t01_organization_mision)
                     const valuesString = data.t01_organization_values; 
                     const valuesArray = JSON.parse(valuesString);
-                    console.log(valuesArray);
                     setValues(valuesArray);                    
                     if (imageData?.data) { 
                         const arrayBuffer = imageData.data;  
@@ -155,7 +153,6 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                 secondary: secColor,
                 values: values
             };
-            console.log(sets)
             const response = await api.post('/user/organization/setSets', { sets });
             if (response.status === 200) {
                 showToast('success', 'Colores actualizados exitosamente');

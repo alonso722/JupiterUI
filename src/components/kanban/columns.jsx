@@ -51,7 +51,6 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
                     department: item.departmentName,
                     version: item.version
                 }));
-                console.log(fetchedCards)
                 setCards(fetchedCards); 
             })
             .catch((error) => {
@@ -86,7 +85,6 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
     };
 
     const handleCloseModal = () => {
-        console.log("se cerro el modal")
         setIsModalOpen(false);
         setSelectedCard(null);
         fetchData(); 

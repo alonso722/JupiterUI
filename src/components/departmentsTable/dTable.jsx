@@ -44,7 +44,6 @@ const DepartmentsTable = () => {
         const organization= parsedPermissions.Organization;
         api.post('/user/departments/fetch',{organization})
             .then((response) => {
-                console.log(response.data.data)
                 const departaments = response.data.data;
                 setDepartments(departaments)
                 const fetchedData = response.data.data.map(item => ({

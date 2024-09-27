@@ -55,12 +55,10 @@ export const Profile = ({ departmentFilter, processFilter }) => {
     
                 userType.token = token;
                 const profileResponse = await api.post('/user/users/profile', userType);
-                console.log(profileResponse.data);
                 setInfo(profileResponse.data, parsedPermissions);
     
                 if (userType) {
                     const profilePResponse = await api.post('/user/users/profileP', userType);
-                    console.log(profilePResponse.data);
                     setInfoLI(profilePResponse.data);
                 } else {
                     console.error("UUID is not defined");
@@ -96,10 +94,8 @@ export const Profile = ({ departmentFilter, processFilter }) => {
             let path = response.data.path;
     
             if (response) {
-              console.log(filems);
               api.post('/user/users/store', filems)
                 .then((response) => {
-                  console.log(response);
                   if (response.status === 200) {
                     showToast('success', 'Archivo cargado con éxito.');
                     fetchData();
@@ -125,7 +121,6 @@ export const Profile = ({ departmentFilter, processFilter }) => {
 
     const handleFileUploadLI = async (e, fileType) => {
         const selectedFile = e.target.files[0];
-        console.log(fileType, selectedFile);
         if (!selectedFile) {
           showToast('error', 'Por favor, seleccione un archivo para cargar.');
           return;
@@ -143,10 +138,8 @@ export const Profile = ({ departmentFilter, processFilter }) => {
             let path = response.data.path;
     
             if (response) {
-              console.log(filems);
               api.post('/user/users/storeP', filems)
                 .then((response) => {
-                  console.log(response);
                   if (response.status === 200) {
                     showToast('success', 'Archivo cargado con éxito.');
                     fetchData();

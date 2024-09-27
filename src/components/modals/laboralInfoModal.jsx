@@ -32,7 +32,6 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
   const loadLaboralProfile = () => {
     api.post('/user/users/profileP', uuid)
       .then((response) => {
-        console.log(response.data);
         setInfo(response.data);
       })
       .catch((error) => {
@@ -42,7 +41,6 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
 
   useEffect(() => {
     if (effectMounted.current === false) {
-      console.log(uuid);
       loadLaboralProfile();
       effectMounted.current = true;
     }
@@ -54,7 +52,6 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
 
   const handleFileUpload = async (e, fileType) => {
     const selectedFile = e.target.files[0];
-    console.log(fileType, selectedFile);
     if (!selectedFile) {
       showToast('error', 'Por favor, seleccione un archivo para cargar.');
       return;
@@ -72,10 +69,8 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
         let path = response.data.path;
 
         if (response) {
-          console.log(filems);
           api.post('/user/users/storeP', filems)
             .then((response) => {
-              console.log(response);
               if (response.status === 200) {
                 showToast('success', 'Archivo cargado con éxito.');
                 loadLaboralProfile();

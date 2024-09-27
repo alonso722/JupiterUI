@@ -45,7 +45,7 @@ export default function Sidebar() {
 
     const handleNavigation = (path: string) => {
         if (path === '/dashboard/kanban' && permissions?.Type === 5) {
-            path = '/dashboard/consultor';
+            path = '/dashboard/home';
         }
         window.location.href = path;
     };

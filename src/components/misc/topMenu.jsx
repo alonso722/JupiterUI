@@ -1,7 +1,7 @@
 'use client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Fragment, useState, useRef, useEffect } from 'react';
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, Transition, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -34,6 +34,21 @@ export default function TopNewMenuClientDashboard() {
         });
     };
 
+    const [notifications, setNotifications] = useState([ ]);
+
+      const getNotificationMessage = (type, process) => {
+        switch (type) {
+          case 1:
+            return `Se te asignó un rol en el proceso: ${process}`;
+          case 2:
+            return `Se actualizó el estado del proceso: ${process}`;
+          case 3:
+            return `Se realizó un comentario en el proceso: ${process}`;
+          default:
+            return `Notificación relacionada con el ${process}`;
+        }
+      };
+
     useEffect(() => {
         let parsedPermissions;
         
@@ -42,7 +57,6 @@ export default function TopNewMenuClientDashboard() {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
             }
-
             const storedToken = localStorage.getItem('token');
             const storedPermissions = localStorage.getItem('permissions'); 
             if (storedPermissions) {
@@ -65,7 +79,7 @@ export default function TopNewMenuClientDashboard() {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
             }
-            const response = api.post('/user/organization/getLogo', {orga})
+            api.post('/user/organization/getLogo', {orga})
             .then((response) => {
                 const buffer = response.data.data[0];
                 const imageData = response.data.data[0];
@@ -78,6 +92,17 @@ export default function TopNewMenuClientDashboard() {
               })
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);
+              });
+              console.log(uuid)
+              api.post('/user/notifications/fetch', {uuid})
+              .then((response) => {
+                console.log(response)
+                const nots = response.data
+                setNotifications(nots)
+
+              })
+              .catch((error) => {
+                console.error("Error al consultar notificaciones", error);
               });
             effectMounted.current = true;
         }
@@ -153,6 +178,33 @@ export default function TopNewMenuClientDashboard() {
         }
     };
 
+    const unreadCount = notifications.filter((n) => n.read === 0).length;
+
+    const deleteNotification = (id, path) => {
+        console.log("eliminada notificacion:", id)
+        setNotifications(notifications.filter((notification) => notification.id !== id));
+        let read = {}
+        read.id = id
+        read.uuid = permissions.uuid;
+        api.post('/user/notifications/del', {read})
+      };
+
+    const handleNavigation = (type, id) => {
+        let read = {}
+        read.id = id
+        read.uuid = permissions.uuid;
+        api.post('/user/notifications/read', {read})
+        let path = '';
+        if (type === 1 || type === 2) {
+            path = '/dashboard/kanban';
+        } else if (type === 3) {
+            path = '/dashboard/table';
+        }
+        if (path) {
+            window.location.href = path;
+        }
+    };
+
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
@@ -192,7 +244,57 @@ export default function TopNewMenuClientDashboard() {
                         Inicio
                     </Link>
                     <div className="mr-[36px] text-black">
-                        <i className="text-black fas fa-bell ml-1"></i>
+                        <Menu as="div" className="relative inline-block text-left">
+                            <div className="relative">
+                                <Menu.Button className="inline-flex justify-center rounded-full px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-200">
+                                    <i className="fas fa-bell"></i>
+                                    {unreadCount > 0 && (
+                                        <span className="absolute top-0 right-0 inline-flex items-center justify-center h-4 w-4 rounded-full text-xs text-white"
+                                            style={{ backgroundColor: primary }}>
+                                            {unreadCount}
+                                        </span>
+                                    )}
+                                </Menu.Button>
+                            </div>
+                            <Transition as={Fragment}>
+                                <Menu.Items className="cursor-pointer absolute right-0 mt-2 w-64 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                    <div className="py-1 px-3 border-b-4">
+                                        {notifications.length > 0 ? (
+                                            notifications.map((notification) => (
+                                                <Menu.Item key={notification.id}>
+                                                    {({ active }) => (
+                                                        <div
+                                                            onClick={() => handleNavigation(notification.type, notification.id)} 
+                                                            className={`flex justify-between rounded my-2 items-center px-4 py-2 text-sm ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} ${notification.read ? 'font-normal' : 'font-bold'}`}
+                                                            style={{ backgroundColor: notification.read ? '#ffffff' : `${secondary}60` }}>
+                                                            <div className="flex items-center">
+                                                                {!notification.read && (
+                                                                    <span className="min-h-[10px] min-w-[10px] rounded-full mr-2" style={{ backgroundColor: primary }}></span>
+                                                                )}
+                                                                <div>
+                                                                   <span>{getNotificationMessage(notification.type, notification.process)}</span>
+                                                                <p className='text-[9px] text-black'>{new Date(notification.date).toLocaleString()}</p> 
+                                                                </div>
+                                                            </div>
+                                                            <button
+                                                                onClick={(event) => {
+                                                                    event.stopPropagation(); 
+                                                                    deleteNotification(notification.id);
+                                                                }}
+                                                                className="ml-4 text-black text-xs px-2 py-1 rounded">
+                                                                x
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                </Menu.Item>
+                                            ))
+                                        ) : (
+                                            <div className="block px-4 py-2 text-sm text-gray-700">No tienes notificaciones</div>
+                                        )}
+                                    </div>
+                                </Menu.Items>
+                            </Transition>
+                        </Menu>
                     </div>
                     <div className="font-semibold text-[14px] text-darkJupiter">
                         <Menu as="div" className="relative inline-block text-left">

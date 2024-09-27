@@ -69,9 +69,6 @@ export const ECarousel = ({ }) => {
                     )
                 }                            
             ];
-    
-            console.log(fetchedCards);
-    
             setCards(fetchedCards);
         })
         .catch((error) => {
