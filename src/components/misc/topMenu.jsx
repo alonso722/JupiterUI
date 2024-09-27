@@ -93,10 +93,8 @@ export default function TopNewMenuClientDashboard() {
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);
               });
-              console.log(uuid)
               api.post('/user/notifications/fetch', {uuid})
               .then((response) => {
-                console.log(response)
                 const nots = response.data
                 setNotifications(nots)
 
@@ -180,8 +178,7 @@ export default function TopNewMenuClientDashboard() {
 
     const unreadCount = notifications.filter((n) => n.read === 0).length;
 
-    const deleteNotification = (id, path) => {
-        console.log("eliminada notificacion:", id)
+    const deleteNotification = (id, path) => {s
         setNotifications(notifications.filter((notification) => notification.id !== id));
         let read = {}
         read.id = id

@@ -148,8 +148,7 @@ const Details = ({ card, onClose }) => {
 
           const prId = card.id;
           const processLogs = await api.post('/user/log/getLogs', { prId });
-          const prscdlogs = processLogs.data; 
-          console.log(prscdlogs)
+          const prscdlogs = processLogs.data;
           setLogs(prscdlogs);
           const incidentStatuses = {};
           for (const log of prscdlogs) {
@@ -316,7 +315,6 @@ const Details = ({ card, onClose }) => {
   };
 
   function getEventTypeText(type) {
-    console.log(card.column)
     if(!card?.column){
       card.column = 'Aprobado'
     }
@@ -370,7 +368,7 @@ const Details = ({ card, onClose }) => {
       handleStatusCheck(newStatus);
     } else {
       let log = {};
-      log.id = card.column;
+      log.id = card.id;
       log.uuid = permissions.uuid;
       log.type = 23;
       api.post('/user/process/update', {

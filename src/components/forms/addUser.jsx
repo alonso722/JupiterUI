@@ -120,14 +120,19 @@ const AddUserForm = ({ user, onClose }) => {
   
   const handleAddUser = () => {
     if (!userName) {
-      showToast('error',"Por favor, nombre al usuario");
-      return;
+        showToast('error', "Por favor, nombre al usuario");
+        return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(userMail)) {
+        showToast('error', "Por favor, ingrese un correo electrónico válido");
+        return;
     }
 
     const userRole = roles.find(role => role.id === selectedRole);
     let roleName = userRole ? userRole.name : '';
     const roleInitial = roleName === 'Aprobador' ? 'ap' : roleName.charAt(0);
-    const uuid = `u${userName.substring(0, 3)}${userLast.substring(0, 3)}${roleInitial}`;
 
     switch (roleName) {
       case 'Editor':
@@ -154,17 +159,9 @@ const AddUserForm = ({ user, onClose }) => {
       userPass,
       department: selectedDepartments[0].department,
       role: roleName,
-      uuid,
     };
 
     userDetails.role = 2;
-
-    const showToast = (type, message) => {
-      toast[type](message, {
-          position: 'top-center',
-          autoClose: 2000,
-      });
-    };
 
     api.post('/user/users/add', userDetails)
     .then((response) => {
@@ -176,7 +173,6 @@ const AddUserForm = ({ user, onClose }) => {
       console.error("Error al consultar procesos:", error);
     });
   };
-
   
   const handleEditUser = () => {
     if (!userName) {
@@ -313,68 +309,6 @@ const AddUserForm = ({ user, onClose }) => {
               </>
             )}
           </Listbox>
-          <div className='mt-4'>
-          {/* <Listbox value={selectedRole} onChange={setSelectedRole} className="max-w-[100px] mt-9">
-            {({ open }) => (
-              <>
-                <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Rol del usuario</Listbox.Label>
-                <div className="relative mt-2">
-                  <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
-                    <span className="flex items-center">
-                      <span className="ml-3 block truncate">
-                        {selectedRole ? roles.find(role => role.id === selectedRole).name : "Seleccionar rol"}
-                      </span>
-                    </span>
-                    <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">
-                      <ChevronUpDownIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                    </span>
-                  </Listbox.Button>
-                  <Transition
-                    show={open}
-                    as={Fragment}
-                    leave="transition ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0">
-                    <Listbox.Options className="absolute z-10 mt-1 max-h-56 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {roles.map((role) => (
-                        <Listbox.Option
-                          key={role.id}
-                          className={({ active }) =>
-                            classNames(
-                              active ? 'bg-indigo-600 text-white' : 'text-gray-900',
-                              'relative cursor-default select-none py-2 pl-3 pr-9'
-                            )
-                          }
-                          value={role.id}>
-                          {({ selected, active }) => (
-                            <>
-                              <div className="flex items-center">
-                                <span
-                                  className={classNames(selected ? 'font-semibold' : 'font-normal', 'ml-3 block truncate')}>
-                                  {role.name}
-                                </span>
-                              </div>
-                              {selected ? (
-                                <span
-                                  className={classNames(
-                                    active ? 'text-white' : 'text-indigo-600',
-                                    'absolute inset-y-0 right-0 flex items-center pr-4'
-                                  )}>
-                                  <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                                </span>
-                              ) : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      ))}
-                    </Listbox.Options>
-                  </Transition>
-                </div>
-              </>
-            )}
-          </Listbox> */}
-          </div>
-
           <p className=" mt-[20px] mb-4 text-black w-[70%]">
             <input
               type="text"

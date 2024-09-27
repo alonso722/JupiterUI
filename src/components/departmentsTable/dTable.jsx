@@ -185,7 +185,7 @@ const DepartmentsTable = () => {
                     <Button
                     className="w-[126px]"
                         color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleChartClick}>
+                        onClick={handleButtonClick}>
                         Añadir +
                     </Button>
                     {showForm && <AddDepartmentForm departments={departments} onClose={handleCloseForm} />}
