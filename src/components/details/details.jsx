@@ -314,17 +314,17 @@ const Details = ({ card, onClose }) => {
     setIncident(event.target.value); 
   };
 
-  function getEventTypeText(type) {
+  function getEventTypeText(log) {
     if(!card?.column){
       card.column = 'Aprobado'
     }
-    switch (type) {
+    switch (log.type) {
       case 21:
         return " un comentario";
       case 22:
         return " una descarga";
       case 23:
-        return `una actualización del estado del proceso a '${card.column}'`;
+        return `una actualización del estado del proceso a '${log.state}'`;
       case 24:
         return " una descarga del anexo";  
       default:
@@ -363,7 +363,6 @@ const Details = ({ card, onClose }) => {
   const handleConfirmUpdate = () => {
     setSelected(newStatus);
     setUpdateModalOpen(false);
-
     if (newStatus.id === 3 || newStatus.id === 4) {
       handleStatusCheck(newStatus);
     } else {
@@ -371,6 +370,7 @@ const Details = ({ card, onClose }) => {
       log.id = card.id;
       log.uuid = permissions.uuid;
       log.type = 23;
+      log.update = newStatus.column;
       api.post('/user/process/update', {
         id: card.id,
         newColumn: newStatus.column,
@@ -450,11 +450,11 @@ const Details = ({ card, onClose }) => {
     vobo.uuid = permissions.uuid;
     vobo.process = parseInt(card.id);
     const state = newStatus.id;
-
     let log = {};
       log.id = card.id;
       log.uuid = permissions.uuid;
       log.type = 23;
+      log.update = newStatus.column;
     if(state == 3){
       api.post('/user/vobo/revisionA', vobo)
       .then( async (response) => {
@@ -984,7 +984,7 @@ const Details = ({ card, onClose }) => {
                       {log.type === 21 && <p className="">{incidentStatus[log.id]}</p>}
                       <div className='mb-2 '>
                           <strong>{log.name}</strong> 
-                          , realizó <strong>{getEventTypeText(log.type)}</strong>.<br/>
+                          , realizó <strong>{getEventTypeText(log)}</strong>.<br/>
                           <p className='text-[12px]'><br/>{new Date(log.created).toLocaleString()}</p>
                       </div>
                   </div>

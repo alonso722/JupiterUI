@@ -508,7 +508,7 @@ const getAnnexesIcon = (extension) => {
               <div className='mt-3'>
                 <textarea 
                   type="text"
-                  value={description}
+                  value={description || ""}
                   onChange={handleInputChange}
                   placeholder="Descripción del proceso"
                   className='w-full text-black h-[80px] max-h-[80px] border-2 px-2 rounded overflow-auto border-indigo-200/50'>

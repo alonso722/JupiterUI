@@ -254,7 +254,7 @@ export default function TopNewMenuClientDashboard() {
                                 </Menu.Button>
                             </div>
                             <Transition as={Fragment}>
-                                <Menu.Items className="cursor-pointer absolute right-0 mt-2 w-64 origin-top-right bg-white divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                <Menu.Items className="cursor-pointer absolute right-0 mt-2 w-64 origin-top-right bg-white max-h-[400px] overflow-y-auto divide-y divide-gray-100 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                     <div className="py-1 px-3 border-b-4">
                                         {notifications.length > 0 ? (
                                             notifications.map((notification) => (

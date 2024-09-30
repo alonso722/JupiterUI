@@ -59,15 +59,19 @@ export const ECarousel = ({ }) => {
                     title: "Valores",
                     description: (
                         <span className="p-4">
-                            {valuesArray.map((value, index) => (
-                                <span key={index} className="mr-4">
-                                    {index >= 0 && <span> • </span>} 
-                                    {value}
-                                </span>
-                            ))}
+                            {Array.isArray(valuesArray) && valuesArray.length > 0 ? (
+                                valuesArray.map((value, index) => (
+                                    <span key={`value-${index}`} className="mr-4">
+                                        {index > 0 && <span> • </span>}
+                                        {value}
+                                    </span>
+                                ))
+                            ) : (
+                                <span>No hay valores disponibles</span>
+                            )}
                         </span>
                     )
-                }                            
+                }                                                         
             ];
             setCards(fetchedCards);
         })
@@ -108,17 +112,21 @@ export const ECarousel = ({ }) => {
     return (
         <div className="mt-[90px] ml-[100px] mr-[250px] w-[90%] text-neutral-50 rounded ">
             <Slider {...settings} className="w-full">
-                {cards.map((card) => (
-                    <div key={card.id} className=" text-black">
-                        <div className="rounded-lg shadow-lg p-6 text-black"
-                            style={{ 
-                            backgroundColor: primary,
-                            }}>
-                            <h3 className="text-lg font-bold black">{card.title}</h3>
-                            <p className="text-sm mt-2 text-gray-black">{card.description}</p>
+                {cards && cards.length > 0 ? (
+                    cards.map((card) => (
+                        <div key={card.id} className="text-black">
+                            <div
+                                className="rounded-lg shadow-lg p-6 text-black"
+                                style={{ backgroundColor: primary }}
+                            >
+                                <h3 className="text-lg font-bold black">{card.title}</h3>
+                                <p className="text-sm mt-2 text-gray-black">{card.description}</p>
+                            </div>
                         </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p>No hay tarjetas disponibles</p>
+                )}
             </Slider>
         </div>
     );

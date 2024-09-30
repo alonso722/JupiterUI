@@ -1,11 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { toast } from 'react-toastify';
 import useApi from '@/hooks/useApi';
+import { useColors } from '@/services/colorService';
 
 const DocumentUploadModal = ({ isOpen, onClose, onFileUpload }) => {
   const [file, setFile] = useState(null);
   const [title, setTitle] = useState('');
   const effectMounted = useRef(false);
+  const { primary, secondary } = useColors();
   const api = useApi();
 
   const showToast = (type, message) => {
