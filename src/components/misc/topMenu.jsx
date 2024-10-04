@@ -178,7 +178,7 @@ export default function TopNewMenuClientDashboard() {
 
     const unreadCount = notifications.filter((n) => n.read === 0).length;
 
-    const deleteNotification = (id, path) => {s
+    const deleteNotification = (id, path) => {
         setNotifications(notifications.filter((notification) => notification.id !== id));
         let read = {}
         read.id = id
