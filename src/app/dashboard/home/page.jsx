@@ -11,6 +11,7 @@ import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu.jsx';
 import Published from '@/components/published/process.jsx';
 import ECarousel from '@/components/misc/carousel/carousel.jsx';
+import Calendar from '@/components/misc/calendar/calendar';
 
 const SuspenseFallback = () => <div>Loading...</div>;
 
@@ -54,7 +55,10 @@ const PageContent = () => {
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
                 <ECarousel/>
-                <Published/>  
+                <div className='flex'>
+                    <Published/>  
+                    <Calendar/>
+                </div>
             </div>
         </div>
     );

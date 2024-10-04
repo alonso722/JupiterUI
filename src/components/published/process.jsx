@@ -87,7 +87,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[30px] ml-[100px] mr-[250px] w-[90%] text-neutral-50 rounded ">
+        <div className="mt-[30px] ml-[100px] mr-[0px] w-[90%] text-neutral-50 rounded ">
             <p className="text-black">Mis procesos:</p>
             <Board 
                 onCardClick={handleCardClick} 
@@ -127,6 +127,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
 
 const Card = ({ name, department, date, id, description, onCardClick, permissions, primary, secondary }) => {
     return (
+        <>
         <motion.div
             layout
             layoutId={id}
@@ -153,6 +154,7 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
                 </p>
             </div>
         </motion.div>
+        </>      
     );
 };
 
