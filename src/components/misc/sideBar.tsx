@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { IoMdHome } from "react-icons/io";
 import { FaColumns, FaTable, FaUsers, FaBuilding, FaSitemap, FaBars } from "react-icons/fa";
 import { BsFillGrid3X2GapFill } from "react-icons/bs"; 
-import { FaTableCells } from "react-icons/fa6";
+import { FaTableCells, FaMapLocationDot } from "react-icons/fa6";
 import { useColors } from '@/services/colorService';
 
 interface Permissions {
@@ -52,10 +52,11 @@ export default function Sidebar() {
 
     const navItems = [
         { path: '/dashboard/home', icon: IoMdHome, label: 'Inicio', condition: true },
-        { path: '/dashboard/kanban', icon: BsFillGrid3X2GapFill, label: 'Kanban', condition: true },
-        { path: '/dashboard/table', icon: FaTableCells, label: 'Table', condition: permissions?.Type === 6 || workflows?.coordinator !== 0 },
-        { path: '/organizations', icon: FaBuilding, label: 'Organizations', condition: permissions?.Type === 6 },
-        { path: '/departments', icon: FaSitemap, label: 'Departments', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/dashboard/kanban', icon: BsFillGrid3X2GapFill, label: 'Procesos', condition: true },
+        { path: '/dashboard/table', icon: FaTableCells, label: 'Tabla de procesos', condition: permissions?.Type === 6 || workflows?.coordinator !== 0 },
+        { path: '/organizations', icon: FaBuilding, label: 'Organizacioness', condition: permissions?.Type === 6 },
+        { path: '/departments', icon: FaSitemap, label: 'Departmentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/user', icon: FaUsers, label: 'Users', condition: true }
     ];
 

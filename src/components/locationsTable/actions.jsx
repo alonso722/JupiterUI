@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import AddDepartmentForm from '../forms/addDepartment';
+import AddLocationForm from '../forms/addLocation';
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 
@@ -27,7 +27,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleConfirmDelete = () => {
-        api.post('/user/departments/del', { department: rowData.id })
+        api.post('/user/location/del', { id: rowData.id })
             .then((response) => {
                 onClose(); 
             })
@@ -125,12 +125,12 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                 </div>
             </div>
             {isModalOpen && selectedCard && (
-                <AddDepartmentForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
+                <AddLocationForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
             )}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
-                        <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar el departamento?</h1>
+                        <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar el corporativo?</h1>
                         <div className="flex justify-between w-full px-8">
                             <button className="text-white p-3 rounded-lg flex-grow mx-4" style={{ backgroundColor: secondary }} onClick={handleConfirmDelete}>Confirmar</button>
                             <button className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>

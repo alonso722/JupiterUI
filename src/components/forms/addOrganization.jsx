@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useColors } from '@/services/colorService';
 
 const AddOrganizationForm = ({ onClose, rowData }) => {
-  const [departmentName, setDepartmentName] = useState('');
+  const [organizationName, setOrganizationName] = useState('');
   const effectMounted = useRef(false);
   const [data, setData] = useState({});
   const api = useApi();
@@ -20,25 +20,25 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
   useEffect(() => {
     if (effectMounted.current === false) {
       if (rowData) {
-        setDepartmentName(rowData.organization);
+        setOrganizationName(rowData.organization);
         setData(rowData)
       }
     }
     effectMounted.current = true;
   }, [rowData]);
 
-  const handleAddDepartment = () => {
-    if (!departmentName) {
+  const handleAddOrganization = () => {
+    if (!organizationName) {
       showToast('error',"Por favor, nombre el departamento");
       return;
     }
 
-    const departmentDetails = {
-      name: departmentName
+    const organizationDetails = {
+      name: organizationName
     };
 
-    if (departmentDetails) {
-      api.post('/user/organization/add', departmentDetails)
+    if (organizationDetails) {
+      api.post('/user/organization/add', organizationDetails)
         .then((response) => {
           if (response.status === 200) {
             onClose();
@@ -50,19 +50,19 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
     }
   };
 
-  const handleEditDepartment = () => {
-    if (!departmentName) {
+  const handleEditOrganization = () => {
+    if (!organizationName) {
       showToast('error',"Por favor, nombre el departamento");
       return;
     }
 
-    const departmentDetails = {
+    const organizationDetails = {
       id: data.id,
-      name: departmentName,
+      name: organizationName,
     };
 
-    if (departmentDetails) {
-      api.post('/user/organization/edit', departmentDetails)
+    if (organizationDetails) {
+      api.post('/user/organization/edit', organizationDetails)
         .then((response) => {
           if (response.status === 200) {
             onClose();
@@ -86,8 +86,8 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
               <input
                 type="text"
                 placeholder="Nombre de la organización"
-                value={departmentName}
-                onChange={(e) => setDepartmentName(e.target.value)}
+                value={organizationName}
+                onChange={(e) => setOrganizationName(e.target.value)}
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
             </h2>
           </div>
@@ -95,7 +95,7 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
         <div className="mt-4 flex justify-end">
           {data.id ? (
             <button 
-              onClick={handleEditDepartment} 
+              onClick={handleEditOrganization} 
               className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
               style={{ backgroundColor: secondary }}
             >
@@ -103,7 +103,7 @@ const AddOrganizationForm = ({ onClose, rowData }) => {
             </button>
           ) : (
             <button 
-              onClick={handleAddDepartment} 
+              onClick={handleAddOrganization} 
               className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
               style={{ backgroundColor: secondary }}
             >

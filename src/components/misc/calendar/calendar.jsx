@@ -63,25 +63,26 @@ const CustomCalendar = () => {
   };
 
   const handleAddEntrace = () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions'); 
+    if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const organization = parsedPermissions.Organization;
+    const uuid = parsedPermissions.uuid;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          const latDentroRango = 19.323918112397451;
-          const lonDentroRango = -99.20059122730651;
-  
-          const distance = getDistance(
-            { latitude, longitude }, 
-            { latitude: latDentroRango, longitude: lonDentroRango }
-          );
-  
           console.log(`Latitud actual: ${latitude}, Longitud actual: ${longitude}`);
-          console.log(`Distancia entre los dos puntos: ${distance} metros`);
-          api.post('/user/event/add', { 
-            ...newEvent, 
-            distance, 
+          api.post('/user/event/addEntrace', { 
+            ...newEvent,
+            latitude,
+            longitude,
             type: 1,       
-            title: 'Entrada'   
+            title: 'Entrada',
+            orga: organization, 
+            uuid: uuid  
           })
             .then((response) => {
               console.log('Evento añadido exitosamente:', response.data);
@@ -91,8 +92,7 @@ const CustomCalendar = () => {
             });
   
           setEvents([...events, { 
-            ...newEvent, 
-            distance, 
+            ...newEvent,
             type: 1,       
             title: 'Entrada'  
           }]);

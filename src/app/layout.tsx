@@ -55,7 +55,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
   return (
     <html>
-      <body className={`${montserrat.variable} ${poppins.variable}`}>
+      <body>
         <RecoilRootWrapper>
           <ColorProvider> 
             <ToastProvider>{children}</ToastProvider>
