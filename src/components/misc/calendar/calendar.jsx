@@ -30,6 +30,36 @@ const CustomCalendar = () => {
     });
   };
   
+  const handleNavigate = (action) => {
+    let newDate = new Date(date);
+    switch (action) {
+      case 'PREV':
+        if (view === 'month') {
+          newDate.setMonth(newDate.getMonth() - 1);
+        } else if (view === 'week') {
+          newDate.setDate(newDate.getDate() - 7);
+        } else {
+          newDate.setDate(newDate.getDate() - 1);
+        }
+        break;
+      case 'NEXT':
+        if (view === 'month') {
+          newDate.setMonth(newDate.getMonth() + 1);
+        } else if (view === 'week') {
+          newDate.setDate(newDate.getDate() + 7);
+        } else {
+          newDate.setDate(newDate.getDate() + 1);
+        }
+        break;
+        case 'TODAY':
+          newDate = new Date();
+          break;
+        default:
+          break;
+    }
+    setDate(newDate);
+  }
+
   const fetchEvents = async () => {
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
@@ -90,38 +120,38 @@ const CustomCalendar = () => {
       parsedPermissions = JSON.parse(storedPermissions);
     }
     const uuid = parsedPermissions.uuid;
+    let nType;
     switch(type) {
       case 'Permiso':
-          newEvent.type = '3';
+          nType = 3;
           break;
       case 'Vacaciones':
-          newEvent.type = '4';
+          nType = 4;
           break;
       case 'Incapacidad':
-          newEvent.type = '5';
+          nType = 5;
           break;
       default:
-          newEvent.type = '3'; 
+          nType = 3; 
   }
     console.log(newEvent)
-    if (!newEvent?.type){
+    if (!nType){
       showToast('error',"Por favor, seleccione una opción...");
       return;
     }
-    console.log("permiso>>>.", newEvent)
-    // try {
-    //   await api.post('/user/event/add', {
-    //     ...newEvent,
-    //     type: 2,
-    //     uuid: uuid
-    //   });
-    //   showToast('success',"Evento registrado");
-    //   setShowModal(false);
+    try {
+      await api.post('/user/event/add', {
+        ...newEvent,
+        type: nType,
+        uuid: uuid
+      });
+      showToast('success',"Evento registrado");
+      setShowModalPer(false);
   
-    //   fetchEvents();
-    // } catch (error) {
-    //   console.error('Error al añadir el evento:', error);
-    // }
+      fetchEvents();
+    } catch (error) {
+      console.error('Error al añadir el evento:', error);
+    }
   };
 
   const handleAddEntrace = () => {
@@ -298,7 +328,7 @@ const CustomCalendar = () => {
             }}
             components={{
               toolbar: (props) => (
-                <CustomToolbar label={props.label} onNavigate={props.onNavigate} onView={setView} view={view} />
+                <CustomToolbar label={props.label} onNavigate={handleNavigate} onView={setView} view={view} />
               ),
             }}/>
             {showModal && (
@@ -380,7 +410,7 @@ const CustomCalendar = () => {
                 </button>
               </div>
               <button className='px-2 py-1 pointer rounded text-white align-end' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
-                Solicitar vacaciones o permisos
+                + Permisos
               </button>
             </div>
       </div>
