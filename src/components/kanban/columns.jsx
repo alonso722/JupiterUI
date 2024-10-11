@@ -7,7 +7,7 @@ import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 import { permission } from "process";
 
-export const Kanban = ({ departmentFilter, processFilter }) => {
+export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [permissions, setPermissions] = useState([]);
@@ -60,6 +60,9 @@ export const Kanban = ({ departmentFilter, processFilter }) => {
 
     useEffect(() => {
         fetchData(); 
+        if(processIdNot){
+            handleCardClick(processIdNot)
+        }
     }, [departmentFilter, processFilter]); 
 
     const convertStatusToColumn = (status) => {

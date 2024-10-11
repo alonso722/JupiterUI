@@ -186,21 +186,28 @@ export default function TopNewMenuClientDashboard() {
         api.post('/user/notifications/del', {read})
       };
 
-    const handleNavigation = (type, id) => {
-        let read = {}
-        read.id = id
+      const handleNavigation = (notification) => {
+        console.log(notification);
+        let read = {};
+        let process = {};
+        read.id = notification.id;
         read.uuid = permissions.uuid;
-        api.post('/user/notifications/read', {read})
+        console.log(notification.processName);
+        process.name = notification.processName;
+        process.id = notification.process;
+        
+        api.post('/user/notifications/read', { read });
+    
         let path = '';
-        if (type === 1 || type === 2) {
-            path = '/dashboard/kanban';
-        } else if (type === 3) {
-            path = '/dashboard/table';
-        }
+        if (notification.type === 1 || notification.type === 2) {
+            path = `/dashboard/kanban?processId=${process.id}&processName=${encodeURIComponent(process.name)}`;
+        } else if (notification.type === 3) {
+            path = `/dashboard/table?processId=${process.id}&processName=${encodeURIComponent(process.name)}`;
+        } 
         if (path) {
             window.location.href = path;
         }
-    };
+    };    
 
     const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
@@ -261,7 +268,7 @@ export default function TopNewMenuClientDashboard() {
                                                 <Menu.Item key={notification.id}>
                                                     {({ active }) => (
                                                         <div
-                                                            onClick={() => handleNavigation(notification.type, notification.id)} 
+                                                            onClick={() => handleNavigation(notification)} 
                                                             className={`flex justify-between rounded my-2 items-center px-4 py-2 text-sm ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} ${notification.read ? 'font-normal' : 'font-bold'}`}
                                                             style={{ backgroundColor: notification.read ? '#ffffff' : `${secondary}60` }}>
                                                             <div className="flex items-center">
@@ -269,7 +276,7 @@ export default function TopNewMenuClientDashboard() {
                                                                     <span className="min-h-[10px] min-w-[10px] rounded-full mr-2" style={{ backgroundColor: primary }}></span>
                                                                 )}
                                                                 <div>
-                                                                   <span>{getNotificationMessage(notification.type, notification.process)}</span>
+                                                                   <span>{getNotificationMessage(notification.type, notification.processName)}</span>
                                                                 <p className='text-[9px] text-black'>{new Date(notification.date).toLocaleString()}</p> 
                                                                 </div>
                                                             </div>

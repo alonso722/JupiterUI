@@ -21,6 +21,12 @@ const PageContent = () => {
     const [permissions, setPermissions] = useState([]);
     const effectMounted = useRef(false);
     const process = searchParams.get('process');
+    const processId = searchParams.get('processId');
+    const processName = searchParams.get('processName');
+    const processNot = {
+        id: processId,
+        name: processName
+    };
     const department = searchParams.get('department');
 
     const showToast = (type, message) => {
@@ -45,14 +51,14 @@ const PageContent = () => {
             }
             effectMounted.current = true;
         }
-    }, [authStateValue.loggedIn, router, setAuth, searchParams, department, process]);
+    }, [authStateValue.loggedIn, router, setAuth, searchParams, department, process, processId]);
 
     return (
         <div>
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <Kanban departmentFilter={department} processFilter={process} />
+                <Kanban departmentFilter={department} processFilter={process} processIdNot={processNot} />
             </div>
         </div>
     );

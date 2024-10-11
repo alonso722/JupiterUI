@@ -226,12 +226,6 @@ const CustomCalendar = () => {
             .catch((error) => {
               console.error('Error al añadir el evento:', error);
             });
-  
-          setEvents([...events, { 
-            ...newEvent,
-            type: 1,       
-            title: 'Entrada'  
-          }]);
           setShowModal(false);
           setNewEvent({ title: '', start: new Date(), end: new Date() });
         },
