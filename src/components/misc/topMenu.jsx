@@ -192,18 +192,15 @@ export default function TopNewMenuClientDashboard() {
         let process = {};
         read.id = notification.id;
         read.uuid = permissions.uuid;
-        console.log(notification.processName);
         process.name = notification.processName;
         process.id = notification.process;
         
         api.post('/user/notifications/read', { read });
     
         let path = '';
-        if (notification.type === 1 || notification.type === 2) {
+        if (notification.type === 1 || notification.type === 2|| notification.type === 3) {
             path = `/dashboard/kanban?processId=${process.id}&processName=${encodeURIComponent(process.name)}`;
-        } else if (notification.type === 3) {
-            path = `/dashboard/table?processId=${process.id}&processName=${encodeURIComponent(process.name)}`;
-        } 
+        }
         if (path) {
             window.location.href = path;
         }

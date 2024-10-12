@@ -54,7 +54,7 @@ const PageContent = () => {
             <div className=''>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <ECarousel/>
+                {/* <ECarousel/> */}
                 <div className='flex'>
                     <Published/>  
                     <Calendar/>

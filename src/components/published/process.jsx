@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import Details from '../details/details';
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
+import ECarousel from '@/components/misc/carousel/carousel.jsx';
 
 export const Published = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -10,6 +11,8 @@ export const Published = ({ departmentFilter, processFilter }) => {
     const [permissions, setPermissions] = useState([]);
     const [cards, setCards] = useState([]);
     const [workflows, setAccess] = useState([]);
+    const [name, setName] = useState('');
+    const [last, setLast] = useState('');
     const { primary, secondary } = useColors();
     const effectMounted = useRef(false);
     const api = useApi();
@@ -23,6 +26,18 @@ export const Published = ({ departmentFilter, processFilter }) => {
                 parsedPermissions = JSON.parse(storedPermissions);
                 setPermissions(parsedPermissions);
             }
+            const uuid = parsedPermissions.uuid;
+            const name = api.post('/user/users/getNameById', {uuid})
+            .then((response) => {
+                const uName = response.data.name;
+                const uLast = response.data.last;
+                console.log(uLast,uName)
+                setName(uName);
+                setLast(uLast);
+            })
+            .catch((error) => {
+              console.error("Error al consultar nombre:", error);
+            });
 
             const userType = parsedPermissions;
         
@@ -87,8 +102,9 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[30px] ml-[100px] mr-[0px] w-[90%] text-neutral-50 rounded ">
-            <p className="text-black">Mis procesos:</p>
+        <div className="mt-[110px] ml-[110px] mr-[0px] w-[90%] text-neutral-50 rounded ">
+            <p className="text-black text-[24px]">Bienvenido de vuelta, <b>{name}</b>!</p>
+            <ECarousel/>
             <Board 
                 onCardClick={handleCardClick} 
                 cards={cards} 
@@ -110,7 +126,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
     const approvedCards = cards.filter(card => card.column === 'Aprobado');
 
     return (
-        <div className="flex h-full w-full gap-3 pt-2 flex-wrap justify-center">
+        <div className="flex h-full w-[70%] border-t-4 mt-[30px] gap-3 pt-2 flex-wrap justify-center">
             {approvedCards.map((card) => (
                 <Card
                     key={card.id}

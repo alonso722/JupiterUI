@@ -90,97 +90,99 @@ const Details = ({ card, onClose }) => {
     });
 };
 
+
+
+    const fetchDocument = async () => {
+      let parsedPermissions;
+      const storedPermissions = localStorage.getItem('permissions'); 
+      if (storedPermissions) {
+          parsedPermissions = JSON.parse(storedPermissions);
+          setPermissions(parsedPermissions);
+      }    
+      
+      let par;
+      const storedA = localStorage.getItem('workflows'); 
+      try {
+          par = JSON.parse(storedA);
+      } catch (e) {
+          console.error("Error al analizar el valor de localStorage:", e);
+          par = null;
+      }
+      
+      const cardId = parseInt(card.id, 10);
+      
+      if (parsedPermissions.Type === 1 || parsedPermissions.Type === 6) {
+        setPrivileges(1);
+      } else if (par && typeof par === 'object' && par !== null) {
+      
+          if (par.editorOf && par.editorOf.includes(cardId)) {
+              setPrivileges(2);
+          } else if (par.revisorOf && par.revisorOf.includes(cardId)) {
+              setPrivileges(3);
+          } else if (par.aprobatorOf && par.aprobatorOf.includes(cardId)) {
+              setPrivileges(4);
+          } else {
+              setPrivileges(0);
+          }
+      }         
+
+      try {
+        const initialStatus = status.find(state => state.column === card.column) || status[0];
+        const responseDep = await api.post('/user/departments/getName', card);
+        const departmentName = responseDep.data.data;
+        setDeptName(departmentName);
+
+        const responseDoc = await api.post('/user/document/fetch', card);
+        const fetchDocument = responseDoc.data.data[0];
+        setDocument(fetchDocument);
+        setSelected(initialStatus);
+
+        const responseRole = await api.post('/user/process/getRoles', card);
+        const responseDate = await api.post('/user/process/getdate', card);
+        const updateDate = responseDate.data.date;
+        setDate(updateDate);
+        const des = responseDate.data.description;
+        setDescription(des);
+        const rolesData = responseRole.data[0];
+        setRoles(rolesData);
+
+        const prId = card.id;
+        const processLogs = await api.post('/user/log/getLogs', { prId });
+        const prscdlogs = processLogs.data;
+        setLogs(prscdlogs);
+        const incidentStatuses = {};
+        for (const log of prscdlogs) {
+          if (log.type === 21) {
+            incidentStatuses[log.id] = await getIncidentStatus(log.id);
+          }
+        }
+        setIncidentStatus(incidentStatuses);
+
+      } catch (error) {
+        console.error("Error al consultar procesos:", error);
+      }
+    }
+
+    const fetchAnnexes = async () => {
+      try {
+        const responseDep = await api.post('/user/departments/getId', card);
+        const departmentId = responseDep.data.departmentId;
+        const ids ={};
+        ids.prId= card.id;
+        ids.deptId= departmentId;
+        const responseAnx = await api.post('/user/annexe/fetch', ids);
+        const fetchAnnexe = responseAnx.data.data;
+        setAnnexe(fetchAnnexe);
+        const responseLinks = await api.post('/user/annexe/links', { id: card.id });
+        const fetchLinks = responseLinks.data.data;
+        setLinks(fetchLinks);
+      } catch (error) {
+        console.error("Error al consultar procesos:", error);
+      }
+    };
+
   useEffect(() => {
     if (effectMounted.current === false) {
-      const fetchDocument = async () => {
-        let parsedPermissions;
-        const storedPermissions = localStorage.getItem('permissions'); 
-        if (storedPermissions) {
-            parsedPermissions = JSON.parse(storedPermissions);
-            setPermissions(parsedPermissions);
-        }    
-        
-        let par;
-        const storedA = localStorage.getItem('workflows'); 
-        try {
-            par = JSON.parse(storedA);
-        } catch (e) {
-            console.error("Error al analizar el valor de localStorage:", e);
-            par = null;
-        }
-        
-        const cardId = parseInt(card.id, 10);
-        
-        if (parsedPermissions.Type === 1 || parsedPermissions.Type === 6) {
-          setPrivileges(1);
-        } else if (par && typeof par === 'object' && par !== null) {
-        
-            if (par.editorOf && par.editorOf.includes(cardId)) {
-                setPrivileges(2);
-            } else if (par.revisorOf && par.revisorOf.includes(cardId)) {
-                setPrivileges(3);
-            } else if (par.aprobatorOf && par.aprobatorOf.includes(cardId)) {
-                setPrivileges(4);
-            } else {
-                setPrivileges(0);
-            }
-        }         
-
-        try {
-          const initialStatus = status.find(state => state.column === card.column) || status[0];
-          const responseDep = await api.post('/user/departments/getName', card);
-          const departmentName = responseDep.data.data;
-          setDeptName(departmentName);
-
-          const responseDoc = await api.post('/user/document/fetch', card);
-          const fetchDocument = responseDoc.data.data[0];
-          setDocument(fetchDocument);
-          setSelected(initialStatus);
-
-          const responseRole = await api.post('/user/process/getRoles', card);
-          const responseDate = await api.post('/user/process/getdate', card);
-          const updateDate = responseDate.data.date;
-          setDate(updateDate);
-          const des = responseDate.data.description;
-          setDescription(des);
-          const rolesData = responseRole.data[0];
-          setRoles(rolesData);
-
-          const prId = card.id;
-          const processLogs = await api.post('/user/log/getLogs', { prId });
-          const prscdlogs = processLogs.data;
-          setLogs(prscdlogs);
-          const incidentStatuses = {};
-          for (const log of prscdlogs) {
-            if (log.type === 21) {
-              incidentStatuses[log.id] = await getIncidentStatus(log.id);
-            }
-          }
-          setIncidentStatus(incidentStatuses);
-
-        } catch (error) {
-          console.error("Error al consultar procesos:", error);
-        }
-      };
-
-      const fetchAnnexes = async () => {
-        try {
-          const responseDep = await api.post('/user/departments/getId', card);
-          const departmentId = responseDep.data.departmentId;
-          const ids ={};
-          ids.prId= card.id;
-          ids.deptId= departmentId;
-          const responseAnx = await api.post('/user/annexe/fetch', ids);
-          const fetchAnnexe = responseAnx.data.data;
-          setAnnexe(fetchAnnexe);
-          const responseLinks = await api.post('/user/annexe/links', { id: card.id });
-          const fetchLinks = responseLinks.data.data;
-          setLinks(fetchLinks);
-        } catch (error) {
-          console.error("Error al consultar procesos:", error);
-        }
-      };
-
       fetchDocument();
       fetchAnnexes();
       effectMounted.current = true;

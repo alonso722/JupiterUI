@@ -82,7 +82,7 @@ export const ECarousel = ({ }) => {
     }, []);
 
     const settings = {
-        dots: true,
+    
         infinite: true, 
         speed: 500, 
         slidesToShow: 1, 
@@ -110,7 +110,7 @@ export const ECarousel = ({ }) => {
     };
 
     return (
-        <div className="mt-[90px] ml-[100px] mr-[250px] w-[90%] text-neutral-50 rounded ">
+        <div className="mt-[30px] w-[75%] text-neutral-50 rounded ">
             <Slider {...settings} className="w-full">
                 {cards && cards.length > 0 ? (
                     cards.map((card) => (
