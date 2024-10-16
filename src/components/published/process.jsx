@@ -5,6 +5,8 @@ import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 import ECarousel from '@/components/misc/carousel/carousel.jsx';
 
+import Calendar from '@/components/misc/calendar/calendar';
+
 export const Published = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
@@ -102,24 +104,32 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[110px] ml-[110px] mr-[0px] w-[90%] text-neutral-50 rounded ">
-            <p className="text-black text-[24px]">Bienvenido de vuelta, <b>{name}</b>!</p>
-            <ECarousel/>
-            <Board 
-                onCardClick={handleCardClick} 
-                cards={cards} 
-                setCards={setCards} 
-                permissions={permissions} 
-                primary={primary} 
-                secondary={secondary}
-            />
+        <div className="mt-[80px] ml-[110px] mr-[0px] text-neutral-50 rounded overflow-hidden">
+            <div className="flex w-full"> 
+                <div className="flex-1 mr-[20px] max-w-[calc(95%-320px)]"> 
+                    <p className="text-black text-[24px]">Bienvenido de vuelta, <b>{name}</b>!</p>
+                    <ECarousel />
+                    <Board 
+                        onCardClick={handleCardClick} 
+                        cards={cards} 
+                        setCards={setCards} 
+                        permissions={permissions} 
+                        primary={primary} 
+                        secondary={secondary}
+                    />
+                </div>
+                <div className="w-[350px] flex-shrink-0">
+                    <Calendar />
+                </div>
+            </div>
+    
             {isModalOpen && selectedCard && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
                     <Details card={selectedCard} onClose={handleCloseModal} />
                 </div>
             )}
         </div>
-    );
+    );      
 };
 
 const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }) => {

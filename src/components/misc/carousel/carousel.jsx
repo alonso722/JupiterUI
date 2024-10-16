@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 import Slider from "react-slick";
@@ -6,33 +6,36 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const NextArrow = (props) => {
-    const { className, style, onClick } = props;
+    const { onClick } = props;
     return (
-        <div
-            className={`${className} custom-next-arrow`}
-            style={{ ...style, display: "block", right: "0px", zIndex: 1 }}
+        <button
+            className="custom-next-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
+            style={{ position: 'absolute', right: '-50px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
             onClick={onClick}
-        />
+        >
+            &gt;
+        </button>
     );
 };
 
 const PrevArrow = (props) => {
-    const { className, style, onClick } = props;
+    const { onClick } = props;
     return (
-        <div
-            className={`${className} custom-prev-arrow`}
-            style={{ ...style, display: "block", left: "0px", zIndex: 1 }}
+        <button
+            className="custom-prev-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
+            style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
             onClick={onClick}
-        />
+        >
+            &lt;
+        </button>
     );
 };
 
-export const ECarousel = ({ }) => {
+export const ECarousel = () => {
     const [cards, setCards] = useState([]);
     const [permissions, setPermissions] = useState([]);
     const { primary, secondary } = useColors();
     const api = useApi();
-    
 
     useEffect(() => {
         let parsedPermissions;
@@ -82,15 +85,14 @@ export const ECarousel = ({ }) => {
     }, []);
 
     const settings = {
-    
-        infinite: true, 
-        speed: 500, 
-        slidesToShow: 1, 
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
         slidesToScroll: 1,
-        autoplay: true, 
-        autoplaySpeed: 20000, 
-        nextArrow: <NextArrow />, 
-        prevArrow: <PrevArrow />, 
+        autoplay: true,
+        autoplaySpeed: 20000,
+        nextArrow: <NextArrow />,
+        prevArrow: <PrevArrow />,
         responsive: [
             {
                 breakpoint: 1024,
@@ -110,15 +112,12 @@ export const ECarousel = ({ }) => {
     };
 
     return (
-        <div className="mt-[30px] w-[75%] text-neutral-50 rounded ">
-            <Slider {...settings} className="w-full">
+        <div className="mt-[30px]  ml-[45px] text-neutral-50 rounded">
+            <Slider {...settings} className="">
                 {cards && cards.length > 0 ? (
                     cards.map((card) => (
-                        <div key={card.id} className="text-black">
-                            <div
-                                className="rounded-lg shadow-lg p-6 text-black"
-                                style={{ backgroundColor: primary }}
-                            >
+                        <div key={card.id} className="text-black p-3">
+                            <div className="rounded-lg ml-[10px] p-6 text-black shadow-xl">
                                 <h3 className="text-lg font-bold black">{card.title}</h3>
                                 <p className="text-sm mt-2 text-gray-black">{card.description}</p>
                             </div>

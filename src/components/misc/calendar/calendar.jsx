@@ -22,6 +22,7 @@ const CustomCalendar = () => {
   const [showModalPer, setShowModalPer] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
   const [type, setType] = useState('');
+  const [time, setTime] = useState('');
   
   const showToast = (type, message) => {
     toast[type](message, {
@@ -29,7 +30,24 @@ const CustomCalendar = () => {
       autoClose: 2000,
     });
   };
-  
+
+  useEffect(() => {
+    const updateTime = () => {
+        const currentTime = new Date().toLocaleTimeString('es-ES', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false, 
+        });
+        setTime(currentTime);
+    };
+
+    updateTime(); 
+
+    const intervalId = setInterval(updateTime, 60000); 
+
+    return () => clearInterval(intervalId); 
+}, []);
+
   const handleNavigate = (action) => {
     let newDate = new Date(date);
     switch (action) {
@@ -278,11 +296,31 @@ const CustomCalendar = () => {
 
   return (
     <>
+    <div className='ml-[70px]'>
+      <div className='text-black shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
+        <div>
+          <div><strong>Checador</strong>
+            
+          </div>
+          <div className='mr-3'>
+            {time}
+          </div>
+        </div>
+        <div className='flex mt-9 ml-4'>
+          <div>
+            <button className='px-2 py-1 pointer rounded text-white mb-2 mr-2' style={{ backgroundColor: primary }} onClick={handleAddEntrace}>
+              Entrada
+            </button>
+          </div>
+          <div>
+            <button className='px-2 py-1 pointer rounded text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
+              Salida
+            </button>
+          </div>
+        </div>
+      </div>
       <div
-        className='mt-[70px] ml-[1%] mr-[50px] py-2 w-[35%] h-[410px] p-2 rounded text-[12px]'
-        style={{
-          border: `3px solid ${primary}`,
-        }}>
+        className='mt-[70px] ml-[1%]py-2 h-[410px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
           <Calendar
             localizer={localizer}
             events={events}
@@ -395,18 +433,11 @@ const CustomCalendar = () => {
               </div>
             )}
             <div className='mt-2 text-black flex justify-between'>
-              <div>
-                <button className='px-2 py-1 pointer rounded text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddEntrace}>
-                  Entrada
-                </button>
-                <button className='px-2 py-1 pointer rounded text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
-                  Salida
-                </button>
-              </div>
               <button className='px-2 py-1 pointer rounded text-white align-end' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
                 + Permisos
               </button>
             </div>
+      </div>
       </div>
     </>
   );
