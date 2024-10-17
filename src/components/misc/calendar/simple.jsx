@@ -298,6 +298,9 @@ const CustomCalendar = () => {
         <div className='flex mt-[40px]'>
             <div className="ml-[1%] border-white-2 w-[20%] h-[500px] rounded-lg  text-[12px] text-black">
             <p className='text-black ml-9 text-[20px] mt-[50px] mb-[40px] '><strong>Calendario</strong></p>
+            <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
+            + Agendar
+          </button>
             <Calendar
                 localizer={localizer}
                 events={events}
