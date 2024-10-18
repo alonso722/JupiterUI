@@ -5,6 +5,9 @@ import useApi from '@/hooks/useApi';
 import UserInfoModal from '@/components/modals/userInfoModal';
 import LaboralInfoModal from '@/components/modals/laboralInfoModal';
 import DocsViewer from '../misc/docViewer/docViewer';
+import { IoMdDocument } from "react-icons/io";
+
+import { useColors } from '@/services/colorService';
 
 export const Profile = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +24,8 @@ export const Profile = ({ departmentFilter, processFilter }) => {
     const [urlToView, setFileUrl] = useState(null);
     const effectMounted = useRef(false);
     const api = useApi();
+    
+    const { primary, secondary } = useColors(); 
 
     const openViewer = (path) => {
         setFileUrl(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path);
@@ -168,13 +173,19 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                     </h1>
                     <div className="ml-3 flex">
                         <div className="">
-                            <div className="flex">
-                                <p className="mr-9"><strong>Correo:</strong> {info.mail}</p>
-                                <p className=""><strong>Teléfono:</strong> {info.phone}</p>   
+                            <div className="flex justify-between">
+                              <div>
+                                <p className="text-[#B1B5C3]"><strong>Teléfono:</strong></p> 
+                                <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.phone}</p> 
+                              </div>
+                              <div>
+                                <p className="mr-9 text-[#B1B5C3]"><strong>Correo:</strong></p>
+                                <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
+                              </div>   
                             </div>
                             <div className="">
                                 <div className="bg-white overflow-auto relative">
-                                    <div className='rounded border-2 px-5 max-h-[200px] overflow-y-auto mt-4'>
+                                    <div className='rounded  px-5 max-h-[200px] overflow-y-auto mt-4'>
                                         <ul className='w-full '>
                                             {[
                                             { label: 'Identificación', key: 'dni', file: info.dni },
@@ -191,15 +202,25 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                             ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}
-                                                className='border-b-2 p-2 flex items-center justify-between cursor-pointer'
+                                                className={`my-2 rounded-lg p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}y
                                                 onClick={() => file && openViewer(file)}>
                                                     <div className="flex">
-                                                        <div
-                                                        className={`w-4 h-4 mr-2 mt-1 rounded-full ${file ? 'bg-green-500' : 'bg-red-500'} ml-4`}/>
+                                                      <div
+                                                        className="w-4 h-4 mr-2 mt-1 rounded-full ml-4"
+                                                        style={{ backgroundColor: file ? primary : 'white' }}
+                                                      />
+                                                      <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }} />
                                                         <p className='text-center'>{label}</p>
                                                     </div>
                                                 {!file || editMode ? (
-                                                <input type="file" onChange={(e) => handleFileUpload(e, key)} className="ml-4" />
+                                                  <div>
+                  <img src="/icons/addoc.png" alt="Icono" className="h-3 w-3 mr-2 cursor-pointer" /> 
+                                                  <input
+                                                  type="file"
+                                                  onChange={(e) => handleFileUpload(e, key)}
+                                                  className="text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-1"  
+                                              />
+                                              </div>
                                                 ) : (
                                                 <p className='ml-4 underline'>Archivo cargado</p>
                                                 )}

@@ -260,6 +260,8 @@ const CustomCalendar = () => {
     return (
       <div className='mb-1'>
         <div className='px-5 mt-3' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div className='flex'>
+          <img src="/icons/calendar.png" alt="Icono" className="h-3 w-3 mt-1" />
           <select
             className='pointer p-1 rounded text-black'
             onChange={(e) => onView(e.target.value)}
@@ -267,6 +269,7 @@ const CustomCalendar = () => {
             <option value='month'>Mes</option>
             <option value='week'>Semana</option>
           </select>
+          </div>
           <div className='flex text-[#777E90] justify-between px-11'>
             <button
                 className='text-[#777E90] rounded text-[20px] py-1 px-2 pointer' 
@@ -292,16 +295,32 @@ const CustomCalendar = () => {
     );
   };
 
+  const CustomEvent = ({ event }) => {
+    const startTime = event.start.toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  
+    return (
+      <span>
+        {startTime} - 
+        {event.title}
+      </span>
+    );
+  };
+
   return (
     <>
-    <div className='w-full mt-[70px] ml-[70px]'>
+    <div className='w-full mt-[70px] pl-[70px]'>
         <div className='flex mt-[40px]'>
             <div className="ml-[1%] border-white-2 w-[20%] h-[500px] rounded-lg  text-[12px] text-black">
             <p className='text-black ml-9 text-[20px] mt-[50px] mb-[40px] '><strong>Calendario</strong></p>
-            <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
-            + Agendar
+            <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white flex ml-9' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
+              <p className='text-[15px] mr-1'><strong>+</strong></p>
+            Agendar
           </button>
             <Calendar
+            className='ml-9 mt-4'
                 localizer={localizer}
                 events={events}
                 startAccessor="start"
@@ -309,7 +328,7 @@ const CustomCalendar = () => {
                 view="day"
                 date={new Date()}
                 style={{
-                    height: '500px',
+                    height: '450px',
                     fontSize: '10px',
                     border: '2px solid white',
                     boxShadow: 'none',
@@ -331,65 +350,77 @@ const CustomCalendar = () => {
                     </span>
                     ),
                 }}
+                eventPropGetter={(event, start, end, isSelected) => {
+                  const backgroundColor = '#ffffff';
+
+                  return {
+                  style: {
+                      backgroundColor: backgroundColor,
+                      color: 'black',
+                      padding: '55px',
+                  },
+                  };
+              }}
                 />
             </div>
-        <div className='mt-[110px] ml-[1%] py-2 w-[50%] h-[500px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
+        <div className='mt-[110px] ml-[1%] py-2 w-[55%] h-[500px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
             <Calendar
-            localizer={localizer}
-            events={events}
-            startAccessor="start"
-            endAccessor="end"
-            style={{ 
-                height: '90%', 
-                fontSize: '10px',
-                border: '2px solid white', 
-                boxShadow: 'none', 
-            }}
-            views={['month', 'week', 'day']}
-            view={view}
-            onView={setView}
-            date={date}
-            onSelectEvent={(event) => alert(event.title)}
-            messages={{
-                today: 'Hoy',
-                previous: '<',
-                next: '>',
-                month: 'Mes',
-                week: 'Semana',
-                day: 'Día',
-                agenda: 'Agenda',
-                allDay: 'Todo el día',
-                showMore: (total) => (
-                <span className="underline" style={{ color: secondary }}>
-                    ({total}) más ...
-                </span>
-                ),
-            }}
-            eventPropGetter={(event, start, end, isSelected) => {
-                const index = events.indexOf(event);
-                const backgroundColor = index % 2 === 0 ? primary : secondary;
+              localizer={localizer}
+              events={events}
+              startAccessor="start"
+              endAccessor="end"
+              style={{ 
+                  height: '90%', 
+                  fontSize: '10px',
+                  border: '2px solid white', 
+                  boxShadow: 'none', 
+              }}
+              views={['month', 'week', 'day']}
+              view={view}
+              onView={setView}
+              date={date}
+              onSelectEvent={(event) => alert(event.title)}
+              messages={{
+                  today: 'Hoy',
+                  previous: '<',
+                  next: '>',
+                  month: 'Mes',
+                  week: 'Semana',
+                  day: 'Día',
+                  agenda: 'Agenda',
+                  allDay: 'Todo el día',
+                  showMore: (total) => (
+                  <span className="underline" style={{ color: secondary }}>
+                      ({total}) más ...
+                  </span>
+                  ),
+              }}
+              eventPropGetter={(event, start, end, isSelected) => {
+                  const index = events.indexOf(event);
+                  const backgroundColor = index % 2 === 0 ? primary : secondary;
 
-                return {
-                style: {
-                    backgroundColor: backgroundColor,
-                    border: 'none', 
-                    borderRadius: '999px',
-                    color: 'white',
-                    padding: '5px',
-                    margin: '2px',
-                },
-                };
-            }}
-            components={{
-                toolbar: (props) => (
-                <CustomToolbar
-                    label={props.label}
-                    onNavigate={handleNavigate}
-                    onView={setView}
-                    view={view}
-                />
-                ),
-            }}
+                  return {
+                  style: {
+                      backgroundColor: backgroundColor,
+                      border: 'none', 
+                      borderRadius: '999px',
+                      color: 'white',
+                      padding: '5px',
+                      margin: '2px',
+                  },
+                  };
+              }}
+              components={{
+                event: CustomEvent,
+                  toolbar: (props) => (
+                  <CustomToolbar
+                      label={props.label}
+                      onNavigate={handleNavigate}
+                      onView={setView}
+                      view={view}
+                  />
+                  ),
+              }}
             />
             {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">

@@ -267,7 +267,7 @@ export default function TopNewMenuClientDashboard() {
                                                         <div
                                                             onClick={() => handleNavigation(notification)} 
                                                             className={`flex justify-between rounded my-2 items-center px-4 py-2 text-sm ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} ${notification.read ? 'font-normal' : 'font-bold'}`}
-                                                            style={{ backgroundColor: notification.read ? '#ffffff' : `${secondary}60` }}>
+                                                            style={{ backgroundColor: notification.read ? '#ffffff' : `#EDF2F7` }}>
                                                             <div className="flex items-center">
                                                                 {!notification.read && (
                                                                     <span className="min-h-[10px] min-w-[10px] rounded-full mr-2" style={{ backgroundColor: primary }}></span>

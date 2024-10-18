@@ -359,6 +359,11 @@ const CustomCalendar = () => {
     );
   };
 
+  const handleNavigation = () => {
+        const path = '/dashboard/home/calendar';
+    window.location.href = path;
+};
+
   return (
     <>
     <div className='ml-[70px]'>
@@ -388,9 +393,9 @@ const CustomCalendar = () => {
           <div className="max-w-md px-4 mx-auto sm:px-7 md:max-w-4xl md:px-6">
             <div className="">
               <div className='mt-3' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div className="flex items-center">
-                  <img src="/icons/xpnd.png" alt="Icono" className="h-3 w-3 mr-2" /> 
-                  <p>Calendario</p>
+                <div className="flex items-center cursor-pointer" onClick={() => handleNavigation()}>
+                  <img src="/icons/xpnd.png" alt="Icono" className="h-3 w-3 mr-2 cursor-pointer" /> 
+                  <p className='cursor-pointer underline'>Calendario</p>
                 </div>
                 <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
                   + Agendar
