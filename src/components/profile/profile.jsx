@@ -185,7 +185,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                             </div>
                             <div className="">
                                 <div className="bg-white overflow-auto relative">
-                                    <div className='rounded  px-5 max-h-[200px] overflow-y-auto mt-4'>
+                                    <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden mt-4'>
                                         <ul className='w-full '>
                                             {[
                                             { label: 'Identificación', key: 'dni', file: info.dni },
@@ -202,27 +202,35 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                             ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}
-                                                className={`my-2 rounded-lg p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}y
+                                                className={`my-2 rounded-lg  p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}y
                                                 onClick={() => file && openViewer(file)}>
                                                     <div className="flex">
                                                       <div
                                                         className="w-4 h-4 mr-2 mt-1 rounded-full ml-4"
-                                                        style={{ backgroundColor: file ? primary : 'white' }}
+                                                        style={{  backgroundColor: file ? primary : 'white',
+                                                                  borderWidth: '1px',
+                                                                  borderStyle: 'solid',
+                                                                  borderColor: secondary }}
                                                       />
                                                       <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }} />
                                                         <p className='text-center'>{label}</p>
                                                     </div>
                                                 {!file || editMode ? (
-                                                  <div>
-                  <img src="/icons/addoc.png" alt="Icono" className="h-3 w-3 mr-2 cursor-pointer" /> 
-                                                  <input
-                                                  type="file"
-                                                  onChange={(e) => handleFileUpload(e, key)}
-                                                  className="text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-1"  
-                                              />
-                                              </div>
+                                                  <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[40%]">
+                                                    <img
+                                                      src="/icons/addoc.png"
+                                                      alt="Icono"
+                                                      className="absolute h-[16px] w-[13px] right-[220px]"
+                                                    />
+                                                    <input
+                                                      type="file"
+                                                      onChange={(e) => handleFileUpload(e, key)}
+                                                      className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
+                                                      style={{ paddingLeft: '30px' }}
+                                                    />
+                                                  </div>
                                                 ) : (
-                                                <p className='ml-4 underline'>Archivo cargado</p>
+                                                <p className='ml-4  pr-3 underline'>Archivo cargado</p>
                                                 )}
                                                 {editMode && (
                                                 <button
@@ -247,13 +255,15 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                     <div className="ml-3 flex">
                         <div className=" flex">
                             <div className="bg-white  overflow-auto">
-                                <div>
-                                    <p className="my-2 w-[70%]">
-                                        <strong>Departamento:</strong> {infoLI.departmentName || 'N/A'}
-                                    </p>
-                                    <p className="my-2">
-                                        <strong>Dirección:</strong> 
-                                        {[
+                                <div className="flex justify-between">
+                                  <div>
+                                    <p className="text-[#B1B5C3]"><strong>Departamento:</strong></p>
+                                    <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2">{infoLI.departmentName || 'N/A'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="mr-9 text-[#B1B5C3]"><strong>Dirección:</strong></p>
+                                    <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2">                                        
+                                      {[
                                             infoLI.contact?.t13_contact_street + 
                                             (infoLI.contact?.t13_contact_int ? ` #${infoLI.contact.t13_contact_int}` : ''),
                                             infoLI.contact?.t13_contact_colony,
@@ -261,60 +271,67 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                             infoLI.contact?.t13_contact_state
                                         ].filter(Boolean).join(', ')}
                                     </p>
+                                  </div>
                                 </div>
-                                <div className="mb-12">
-                                    <div className="ml-3 flex">
-                                        <div className="">
-                                        <div className="bg-white overflow-auto relative">
-                                            <div className="rounded border-2 px-5 max-h-[200px] overflow-y-auto">
-                                            <ul className="w-full">
-                                                {[
-                                                { label: 'Contrato', key: 'contract', file: infoLI.contract },
-                                                { label: 'Currículum Vitae', key: 'cv', file: infoLI.cv },
-                                                { label: 'Recomendación profesional', key: 'recommendation', file: infoLI.recommendation },
-                                                { label: 'Recomendación personal', key: 'recommendationP', file: infoLI.recommendationP },
-                                                { label: 'Aviso de confidencialidad', key: 'conf', file: infoLI.conf },
-                                                { label: 'Aviso de protección de datos', key: 'data', file: infoLI.data },
-                                                { label: 'Socioeconómico', key: 'socio', file: infoLI.socio },
-                                                { label: 'Anexos', key: 'annx', file: infoLI.annx }
-                                                ].map(({ label, key, file }) => (
-                                                <li
-                                                    key={key}
-                                                    className="border-b-2 p-2 flex items-center justify-between cursor-pointer"
-                                                    onClick={() => file && openViewer(file.path)}>
+                                <div className="">
+                                  <div className="bg-white overflow-auto relative">
+                                    <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden my-4'>
+                                        <ul className='w-full '>
+                                        {[
+                                          { label: 'Contrato', key: 'contract', file: infoLI.contract },
+                                          { label: 'Currículum Vitae', key: 'cv', file: infoLI.cv },
+                                          { label: 'Recomendación profesional', key: 'recommendation', file: infoLI.recommendation },
+                                          { label: 'Recomendación personal', key: 'recommendationP', file: infoLI.recommendationP },
+                                          { label: 'Aviso de confidencialidad', key: 'conf', file: infoLI.conf },
+                                          { label: 'Aviso de protección de datos', key: 'data', file: infoLI.data },
+                                          { label: 'Socioeconómico', key: 'socio', file: infoLI.socio },
+                                          { label: 'Anexos', key: 'annx', file: infoLI.annx }
+                                        ].map(({ label, key, file }) => (
+                                            <li
+                                                key={key}
+                                                className={`my-2 rounded-lg  p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}y
+                                                onClick={() => file && openViewer(file)}>
                                                     <div className="flex">
-                                                        <div
-                                                        className={`w-4 h-4 mr-2 rounded-full ${file ? 'bg-green-500' : 'bg-red-500'} mt-1`}/>
-                                                        <p className="text-center">{label}:</p> 
+                                                      <div
+                                                        className="w-4 h-4 mr-2 mt-1 rounded-full ml-4"
+                                                        style={{  backgroundColor: file ? primary : 'white',
+                                                                  borderWidth: '1px',
+                                                                  borderStyle: 'solid',
+                                                                  borderColor: secondary }}
+                                                      />
+                                                      <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }} />
+                                                        <p className='text-center'>{label}</p>
                                                     </div>
-                                                    
-                                                    {!file || editModeLI ? (
-                                                    <input type="file" onChange={(e) => handleFileUploadLI(e, key)} className="ml-4" />
-                                                    ) : (
-                                                    <p className="ml-4 underline">Archivo cargado</p>
-                                                    )}
-                                                    {editModeLI && (
-                                                    <button
-                                                        onClick={enableEditModeLI}
-                                                        className="flex items-center justify-center w-8 h-8 ml-4"
-                                                    >
-                                                        <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
-                                                    </button>
-                                                    )}
-                                                </li>
-                                                ))}
-                                            </ul>
-                                            </div>
-                                        </div>
-                                        {isViewerOpen && (
-                                            <DocsViewer
-                                            url={urlToView}
-                                            onClose={closeViewer}
-                                            />
-                                        )}
-                                        </div>
+                                                {!file || editMode ? (
+                                                  <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[40%]">
+                                                    <img
+                                                      src="/icons/addoc.png"
+                                                      alt="Icono"
+                                                      className="absolute h-[16px] w-[13px] right-[220px]"
+                                                    />
+                                                    <input
+                                                      type="file"
+                                                      onChange={(e) => handleFileUpload(e, key)}
+                                                      className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
+                                                      style={{ paddingLeft: '30px' }}
+                                                    />
+                                                  </div>
+                                                ) : (
+                                                <p className='ml-4  pr-3 underline'>Archivo cargado</p>
+                                                )}
+                                                {editMode && (
+                                                <button
+                                                    onClick={enableEditMode}
+                                                    className="flex items-center justify-center w-8 h-8 ml-4">
+                                                    <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
+                                                </button>
+                                                )}
+                                            </li>
+                                            ))}
+                                        </ul>
                                     </div>
                                 </div>
+                              </div>
                             </div>
                         </div>
                     </div>
