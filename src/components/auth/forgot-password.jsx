@@ -11,9 +11,9 @@ const RecoveryForm = ({ onClose }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isCodeSent, setIsCodeSent] = useState(false);
     const [verificationCode, setVerificationCode] = useState('');
-    const [isCodeVerified, setIsCodeVerified] = useState(false); // Nuevo estado para verificar el código
-    const [newPassword, setNewPassword] = useState(''); // Estado para nueva contraseña
-    const [confirmPassword, setConfirmPassword] = useState(''); // Estado para confirmar contraseña
+    const [isCodeVerified, setIsCodeVerified] = useState(false); 
+    const [newPassword, setNewPassword] = useState(''); 
+    const [confirmPassword, setConfirmPassword] = useState(''); 
     const api = useApi();
 
     const showToast = (type, message) => {

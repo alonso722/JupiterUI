@@ -34,7 +34,6 @@ export const Published = ({ departmentFilter, processFilter }) => {
             .then((response) => {
                 const uName = response.data.name;
                 const uLast = response.data.last;
-                console.log(uLast,uName)
                 setName(uName);
                 setLast(uLast);
             })

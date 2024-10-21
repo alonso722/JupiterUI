@@ -65,14 +65,14 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="ml-[0px] mt-[68px] flex h-screen rounded fixed z-50" style={{ maxHeight: '823px' }}>
+        <div className="ml-[0px] mt-[68px] flex h-full rounded fixed z-50" style={{ maxHeight: '92%' }}>
             <div 
                 onMouseLeave={() => isExpanded && setIsExpanded(false)}
                 className={`transition-all duration-300 mt-100 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
                 style={{ backgroundColor: isExpanded ? secondary : 'transparent' }}
             >
                 <button type="button" onClick={handleToggleExpand} className="flex ml-[25px] mt-[35px] focus:outline-none rounded">
-                    <FaBars size={23} color={ primary} />
+                    <FaBars size={23} color={primary} />
                 </button>
                 {!isExpanded && (
                     <div className="flex flex-col mt-[18px]">
@@ -102,6 +102,9 @@ export default function Sidebar() {
                         ))}
                     </div>
                 )}
+                <div className="absolute bottom-2 left-2 text-xs text-gray-400">
+                    V 1.1.0
+                </div>
             </div>
         </div>
     );

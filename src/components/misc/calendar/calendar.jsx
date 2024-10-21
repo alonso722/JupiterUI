@@ -214,7 +214,6 @@ const CustomCalendar = () => {
       default:
           nType = 3; 
   }
-    console.log(newEvent)
     if (!nType){
       showToast('error',"Por favor, seleccione una opción...");
       return;

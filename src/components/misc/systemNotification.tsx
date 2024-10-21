@@ -4,7 +4,7 @@ import Alert from './alert';
 import { colors } from '../types/enums/colors';
 
 interface SystemNotificationProps {
-    message: string; // Nuevo prop para el mensaje personalizado
+    message: string; 
 }
 
 export default function SystemNotification({ message }: SystemNotificationProps) {
@@ -22,7 +22,7 @@ export default function SystemNotification({ message }: SystemNotificationProps)
                         Lo sentimos, ha ocurrido un error.
                     </p>
                     <p className="font-bold">
-                        Causa: <span className="italic">{message}</span> {/* Mostrar el mensaje personalizado */}
+                        Causa: <span className="italic">{message}</span> 
                     </p>
                 </div>
             </div>

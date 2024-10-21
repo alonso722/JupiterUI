@@ -187,7 +187,6 @@ export default function TopNewMenuClientDashboard() {
       };
 
       const handleNavigation = (notification) => {
-        console.log(notification);
         let read = {};
         let process = {};
         read.id = notification.id;
