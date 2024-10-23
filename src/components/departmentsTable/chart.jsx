@@ -1,12 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { useColors } from '@/services/colorService';
+import Details from './details';
 import useApi from '@/hooks/useApi';
 
 const DepartmentsChart = ({ onClose }) => {
     const api = useApi();
     const [data, setData] = useState(null);
     const effectMounted = useRef(false);
-    const { primary, secondary } = useColors(); 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedDepartment, setSelectedCard] = useState(null);
+    const { primary, secondary } = useColors();
+
+    const handleDepartmentClick = (department) => {
+        setSelectedCard(department);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setSelectedCard(null);
+    };
 
     const buildHierarchy = (departments) => {
         const map = {};
@@ -31,12 +44,12 @@ const DepartmentsChart = ({ onClose }) => {
 
     const formatChartData = (hierarchy) => {
         const data = [
-            ['Department', 'Parent', 'Size', { role: 'tooltip', type: 'string', p: { html: true } }], 
+            ['Department', 'Parent', 'Size', { role: 'tooltip', type: 'string', p: { html: true } }],
         ];
 
         const parseHierarchy = (nodes) => {
             nodes.forEach((node) => {
-                const tooltip = node.manager ? `Manager: ${node.manager}` : ''; 
+                const tooltip = node.manager ? `Manager: ${node.manager}` : '';
                 data.push([node.department, node.parent ? node.parent : null, 1, tooltip]);
                 if (node.children && node.children.length > 0) {
                     parseHierarchy(node.children);
@@ -95,11 +108,12 @@ const DepartmentsChart = ({ onClose }) => {
                     const nodes = document.querySelectorAll('.org-chart-node');
                     nodes.forEach(node => {
                         node.style.backgroundColor = primary;
-                        node.style.borderRadius = '15px';
+                        node.style.borderRadius = '7px';
                         node.style.borderColor = "#FFFFFF";
-                        node.style.borderWidth = '2px';
                         node.style.padding = '5px';
                         node.style.cursor = 'pointer';
+                        node.style.minWidth = '200px';  
+                        node.style.Height = '200px';
                     });
 
                     const lines = document.querySelectorAll('tr > td > table > tbody > tr:first-child > td > div');
@@ -113,6 +127,8 @@ const DepartmentsChart = ({ onClose }) => {
                             const selectedItem = selection[0];
                             const rowIndex = selectedItem.row;
                             const clickedNodeData = dataTable.getValue(rowIndex, 0);
+                            handleDepartmentClick(clickedNodeData);
+                            getSelection(null)
                         }
                     });
                 });
@@ -130,16 +146,21 @@ const DepartmentsChart = ({ onClose }) => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-[70%] h-[70%] relative z-50 overflow-auto">
                 <button
                     onClick={onClose}
-                    className="absolute top-2 right-2 text-2xl font-bold text-red-600 hover:text-gray-700 z-50"
+                    className="absolute top-2 right-2 text-2xl font-bold text-black hover:text-gray-700 z-50"
                 >
                     &times;
                 </button>
                 <div
                     id="chart_div"
-                    className="w-full h-full overflow-auto"
+                    className="w-full h-full overflow-auto p-5"
                     style={{ maxHeight: '100%', maxWidth: '100%' }}
                 ></div>
             </div>
+            {isModalOpen && selectedDepartment && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <Details department={selectedDepartment} onClose={handleCloseModal} />
+                </div>
+            )}
         </div>
     );
 };

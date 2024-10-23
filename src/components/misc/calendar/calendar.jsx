@@ -574,11 +574,11 @@ const CustomCalendar = () => {
             </div>
           </div>
         )}
-        <div className='mt-2 text-black flex justify-between'>
+        {/* <div className='mt-2 text-black flex justify-between'>
           <button className='px-2 py-1 pointer rounded text-white align-end' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
             + Permisos
           </button>
-        </div>
+        </div> */}
       </div>
     </div>
     </>

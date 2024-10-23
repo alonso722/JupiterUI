@@ -117,7 +117,6 @@ export const Published = ({ departmentFilter, processFilter }) => {
                         primary={primary} 
                         secondary={secondary}
                     />
-                    <Calendar />
                 </div>
                 <div className="w-[350px] flex-shrink-0">
                     <Calendar />
@@ -125,7 +124,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
             </div>
     
             {isModalOpen && selectedCard && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50">
                     <Details card={selectedCard} onClose={handleCloseModal} />
                 </div>
             )}
@@ -137,7 +136,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
     const approvedCards = cards.filter(card => card.column === 'Aprobado');
 
     return (
-        <div className="flex h-full w-[100%] border-t-4 mt-[30px] gap-3 pt-2 flex-wrap justify-center">
+        <div className="flex w-[100%] border-t-4 mt-[30px] pt-2 flex-wrap justify-center">
             {approvedCards.map((card) => (
                 <Card
                     key={card.id}
@@ -159,13 +158,13 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
             layout
             layoutId={id}
             onClick={() => onCardClick({ name, department, date, id })}
-            className="mt-2 cursor-pointer rounded-lg p-1 shadow-xl w-[300px] h-[300px]">
+            className="my-2 mx-2 cursor-pointer rounded-lg p-1 shadow-xl w-[300px] h-[300px] ">
             <div className="flex bg-white border-b-2 p-3 mx-3 justify-between">
-                <p className="text-[10px] text-black " title={department}>
-                    {typeof department === 'string' && (department.length > 40 ? department.substring(0, 40) + "..." : department)}
+                <p className="text-[10px] text-black max-w-[27%] " title={department}>
+                    {typeof department === 'string' && (department.length > 25 ? department.substring(0, 25) + "..." : department)}
                 </p>
                 <p className="text-[12px] text-black text-center "title={name}>
-                    {typeof name === 'string' && (name.length > 40 ? name.substring(0, 40) + "..." : name)}
+                    {typeof name === 'string' && (name.length > 25 ? name.substring(0, 25) + "..." : name)}
                 </p>
             </div>
             <div className="bg-white text-black rounded p-3 m-1 h-[70%] flex flex-col justify-between ">
