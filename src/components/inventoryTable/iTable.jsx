@@ -12,15 +12,14 @@ import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import Search from "@/components/table/search";
 import Actions from "./actions";
-import DepartmentsChart from "./map";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
-import AddLocationForm from "@/components/forms/addLocation"; 
+import AddInventoryForm from "@/components/forms/addInventory"; 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
 import { useColors } from '@/services/colorService';
 
-const LocationsTable = () => {
+const InventoryTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
     const [data, setData] = useState([]);
@@ -42,15 +41,14 @@ const LocationsTable = () => {
             parsedPermissions = JSON.parse(storedPermissions);
         }
         const organization= parsedPermissions.Organization;
-        api.post('/user/location/fetch',{organization})
+        api.post('/user/inventory/fetch',{organization})
             .then((response) => {
-                const locations = response.data;
-                setDepartments(locations)
+                console.log(response.data)
+                const objects = response.data;
+                setDepartments(objects)
                 const fetchedData = response.data.map(item => ({
                     id: item.id,
-                    name: item.name,
-                    longitude: item.longitude, 
-                    latitude: item.latitude,    
+                    object: item.object,    
                 }));
                 
                 setData(fetchedData);
@@ -91,22 +89,18 @@ const LocationsTable = () => {
             header: "", 
             enableSorting: false, 
         }),
-        columnHelper.accessor("name", {
-            cell: (info) => <span>{info?.getValue()}</span>,
-            header: "Corporativo",
-        }),
-        columnHelper.accessor("latitude", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Latitud",
-        }),
-        columnHelper.accessor("longitude", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Longitud",
-        }),
         columnHelper.accessor("object", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Inventario",
+            cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Equipo de resguardo",
         }),
+        // columnHelper.accessor("latitude", {
+        //     cell: (info) => <span>{info.getValue()}</span>,
+        //     header: "Latitud",
+        // }),
+        // columnHelper.accessor("longitude", {
+        //     cell: (info) => <span>{info.getValue()}</span>,
+        //     header: "Longitud",
+        // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
@@ -142,16 +136,8 @@ const LocationsTable = () => {
         setRefreshTable(true);
     };
 
-    const handleChartClick = () => {
-        setShowChart(!showChart);
-    };
-
-    const handleCloseChart = () => {
-        setShowChart(false);
-    };
-
     if (refreshTable) {
-        return <LocationsTable />;
+        return <InventoryTable />;
     }
 
     return (
@@ -170,15 +156,6 @@ const LocationsTable = () => {
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                {/* <div className="mt-[10px] mr-[120px]">
-                    <Button
-                    className="w-[126px]"
-                        color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleChartClick}>
-                        Organigrama
-                    </Button>
-                    {showChart && <DepartmentsChart onClose={handleCloseChart} />}
-                </div> */}
                 <div className="mt-[10px] mr-[120px]">
                     <Button
                     className="w-[126px]"
@@ -186,7 +163,7 @@ const LocationsTable = () => {
                         onClick={handleButtonClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddLocationForm departments={departments} onClose={handleCloseForm} />}
+                    {showForm && <AddInventoryForm onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">
@@ -201,10 +178,8 @@ const LocationsTable = () => {
                                             onClick={header.column.getToggleSortingHandler()}>
                                             {flexRender(
                                                 header.column.columnDef.header,
-                                                header.getContext()
-                                            )}
-                                            {{
-                                                asc: <i className="fas fa-angle-up ml-1"></i>,
+                                                header.getContext())}
+                                            {{ asc: <i className="fas fa-angle-up ml-1"></i>,
                                                 desc: <i className="fas fa-angle-down ml-1"></i>,
                                             }[header.column.getIsSorted()] ?? (
                                                 header.column.getCanSort() && <i className="fas fa-angle-down ml-1"></i>
@@ -238,7 +213,6 @@ const LocationsTable = () => {
                     )}
                 </tbody>
             </table>
-            {/* paginacion */}
             <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[150px]">
                 <button
                     onClick={() => {
@@ -292,4 +266,4 @@ const LocationsTable = () => {
     );
 };
 
-export default LocationsTable;
+export default InventoryTable;

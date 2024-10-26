@@ -2,11 +2,15 @@ import React, { useState, useEffect, Fragment, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
 import { useColors } from '@/services/colorService';
+import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
 
 const AddLocationForm = ({ onClose, rowData }) => {
   const [locationName, setLocationName] = useState('');
   const [locationLatitude, setLocationLatitude] = useState('');
   const [locationLongitude, setLocationLongitude] = useState('');
+  
+  const [selectedOrgId, setSelectedOrgId] = useState(null);
+  const [selectedDepartments, setSelectedDepartments] = useState([]);
   const effectMounted = useRef(false);
   const [data, setData] = useState({});
   const api = useApi();
@@ -65,7 +69,7 @@ const AddLocationForm = ({ onClose, rowData }) => {
 
   const handleEditLocation = () => {
     if (!locationName) {
-      showToast('error',"Por favor, nombre el departamento");
+      showToast('error',"Por favor, nombre el corporativo");
       return;
     }
 
@@ -92,9 +96,9 @@ const AddLocationForm = ({ onClose, rowData }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
       <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[300px] relative">
-      <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
-        &times;
-      </button>
+        <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+          &times;
+        </button>
         <div className='flex'>
           <div className='w-[400px]'>
             <h2 className="text-2xl mt-[15px] mb-4 text-black">
@@ -131,21 +135,22 @@ const AddLocationForm = ({ onClose, rowData }) => {
             </h2>
           </div>
         </div>
+        <div className='max-h-[300px] h-[200px]'>
+          <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} />
+        </div>
         <div className="mt-4 flex justify-end">
           {data.id ? (
             <button 
               onClick={handleEditLocation} 
               className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[10px]"
-              style={{ backgroundColor: secondary }}
-            >
+              style={{ backgroundColor: secondary }}>
               Editar ubicación
             </button>
           ) : (
             <button 
               onClick={handleAddLocation} 
               className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[10px]"
-              style={{ backgroundColor: secondary }}
-            >
+              style={{ backgroundColor: secondary }}>
               Añadir ubicación
             </button>
           )}

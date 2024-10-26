@@ -3,6 +3,7 @@ import { IoMdHome } from "react-icons/io";
 import { FaColumns, FaTable, FaUsers, FaBuilding, FaSitemap, FaBars } from "react-icons/fa";
 import { BsFillGrid3X2GapFill } from "react-icons/bs"; 
 import { FaTableCells, FaMapLocationDot } from "react-icons/fa6";
+import { MdOutlineInventory } from "react-icons/md";
 import { useColors } from '@/services/colorService';
 
 interface Permissions {
@@ -57,6 +58,7 @@ export default function Sidebar() {
         { path: '/organizations', icon: FaBuilding, label: 'Organizacioness', condition: permissions?.Type === 6 },
         { path: '/departments', icon: FaSitemap, label: 'Departmentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/locations/inventory', icon: MdOutlineInventory, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/user', icon: FaUsers, label: 'Users', condition: true }
     ];
 
@@ -69,8 +71,7 @@ export default function Sidebar() {
             <div 
                 onMouseLeave={() => isExpanded && setIsExpanded(false)}
                 className={`transition-all duration-300 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
-                style={{ backgroundColor: isExpanded ? secondary : '#FFFFFF' }} 
-            >
+                style={{ backgroundColor: isExpanded ? secondary : '#FFFFFF' }}>
                 <button type="button" onClick={handleToggleExpand} className="flex ml-[25px] mt-[35px] focus:outline-none rounded">
                     <FaBars size={23} color={primary} />
                 </button>
