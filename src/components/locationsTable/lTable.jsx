@@ -51,7 +51,9 @@ const LocationsTable = () => {
                     name: item.name,
                     longitude: item.longitude, 
                     latitude: item.latitude,    
+                    object: item.object
                 }));
+                console.log(fetchedData, response.data)
                 
                 setData(fetchedData);
                 setRefreshTable(false);
@@ -104,9 +106,18 @@ const LocationsTable = () => {
             header: "Longitud",
         }),
         columnHelper.accessor("object", {
-            cell: (info) => <span>{info.getValue()}</span>,
+            cell: (info) => {
+                const inventoryList = JSON.parse(info.getValue() || '[]');
+                return (
+                    <ul className="list-disc">
+                        {inventoryList.map((item, index) => (
+                            <li key={index}>{item}</li>
+                        ))}
+                    </ul>
+                );
+            },
             header: "Inventario",
-        }),
+        }),        
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
@@ -142,12 +153,9 @@ const LocationsTable = () => {
         setRefreshTable(true);
     };
 
-    const handleChartClick = () => {
-        setShowChart(!showChart);
-    };
-
-    const handleCloseChart = () => {
-        setShowChart(false);
+    const handleInventory = () => {
+        const path = '/inventory';
+        window.location.href = path;
     };
 
     if (refreshTable) {
@@ -170,15 +178,14 @@ const LocationsTable = () => {
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                {/* <div className="mt-[10px] mr-[120px]">
+                <div className="mt-[10px] mr-[120px]">
                     <Button
                     className="w-[126px]"
                         color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleChartClick}>
-                        Organigrama
+                        onClick={handleInventory}>
+                        Caracteristicas de inventario
                     </Button>
-                    {showChart && <DepartmentsChart onClose={handleCloseChart} />}
-                </div> */}
+                </div>
                 <div className="mt-[10px] mr-[120px]">
                     <Button
                     className="w-[126px]"

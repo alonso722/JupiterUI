@@ -43,35 +43,36 @@ export const Profile = ({ departmentFilter, processFilter }) => {
         });
       };
 
-      useEffect(() => {
-        const fetchData = async () => {
-            try {
-                let parsedPermissions;
-                const storedPermissions = localStorage.getItem('permissions');
-                const token = localStorage.getItem('token');
-                if (storedPermissions) {
-                    parsedPermissions = JSON.parse(storedPermissions);
-                    setPermissions(parsedPermissions);
-                }
-    
-                const userType = parsedPermissions;
-                const uuid = parsedPermissions.uuid;
-                setUuid(uuid);
-    
-                userType.token = token;
-                const profileResponse = await api.post('/user/users/profile', userType);
-                setInfo(profileResponse.data, parsedPermissions);
-    
-                if (userType) {
-                    const profilePResponse = await api.post('/user/users/profileP', userType);
-                    setInfoLI(profilePResponse.data);
-                } else {
-                    console.error("UUID is not defined");
-                }
-            } catch (error) {
-                console.error("Error al consultar los perfiles:", error);
+      const fetchData = async () => {
+        try {
+            let parsedPermissions;
+            const storedPermissions = localStorage.getItem('permissions');
+            const token = localStorage.getItem('token');
+            if (storedPermissions) {
+                parsedPermissions = JSON.parse(storedPermissions);
+                setPermissions(parsedPermissions);
             }
-        };
+
+            const userType = parsedPermissions;
+            const uuid = parsedPermissions.uuid;
+            setUuid(uuid);
+
+            userType.token = token;
+            const profileResponse = await api.post('/user/users/profile', userType);
+            setInfo(profileResponse.data, parsedPermissions);
+
+            if (userType) {
+                const profilePResponse = await api.post('/user/users/profileP', userType);
+                setInfoLI(profilePResponse.data);
+            } else {
+                console.error("UUID is not defined");
+            }
+        } catch (error) {
+            console.error("Error al consultar los perfiles:", error);
+        }
+    };
+
+      useEffect(() => {
         fetchData();
     }, []);
     
@@ -95,9 +96,8 @@ export const Profile = ({ departmentFilter, processFilter }) => {
             const response = await api.post('/user/file/store', formData);
             let filems = response.data.data;
             filems.type = fileType;
-            filems.uuid = uuid.uuid;
+            filems.uuid = uuid;
             let path = response.data.path;
-    
             if (response) {
               api.post('/user/users/store', filems)
                 .then((response) => {
@@ -139,7 +139,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
             const response = await api.post('/user/file/store', formData);
             let filems = response.data.data;
             filems.type = fileType;
-            filems.uuid = uuid.uuid;
+            filems.uuid = uuid;
             let path = response.data.path;
     
             if (response) {
@@ -197,8 +197,8 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                             { label: 'Licencia de conducir', key: 'driver', file: info.driver },
                                             { label: 'Aviso de retención INFONAVIT', key: 'saving', file: info.saving },
                                             { label: 'Estado de cuenta', key: 'bills', file: info.bills },
-                                            { label: 'Constancia de situqacion fiscal', key: 'fiscal', file: info.fiscal },
-                                            { label: 'Certificado medico', key: 'medic', file: info.medic }
+                                            { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal },
+                                            { label: 'Certificado médico', key: 'medic', file: info.medic }
                                             ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}
@@ -284,7 +284,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                           { label: 'Recomendación personal', key: 'recommendationP', file: infoLI.recommendationP },
                                           { label: 'Aviso de confidencialidad', key: 'conf', file: infoLI.conf },
                                           { label: 'Aviso de protección de datos', key: 'data', file: infoLI.data },
-                                          { label: 'Socioeconómico', key: 'socio', file: infoLI.socio },
+                                          { label: 'Estudio socioeconómico', key: 'socio', file: infoLI.socio },
                                           { label: 'Anexos', key: 'annx', file: infoLI.annx }
                                         ].map(({ label, key, file }) => (
                                             <li
@@ -311,7 +311,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                                     />
                                                     <input
                                                       type="file"
-                                                      onChange={(e) => handleFileUpload(e, key)}
+                                                      onChange={(e) => handleFileUploadLI(e, key)}
                                                       className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
                                                       style={{ paddingLeft: '30px' }}
                                                     />

@@ -43,7 +43,6 @@ const InventoryTable = () => {
         const organization= parsedPermissions.Organization;
         api.post('/user/inventory/fetch',{organization})
             .then((response) => {
-                console.log(response.data)
                 const objects = response.data;
                 setDepartments(objects)
                 const fetchedData = response.data.map(item => ({

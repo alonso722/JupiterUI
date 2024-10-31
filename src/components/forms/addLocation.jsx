@@ -2,15 +2,13 @@ import React, { useState, useEffect, Fragment, useRef } from 'react';
 import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
 import { useColors } from '@/services/colorService';
-import DepartmentsChecks from '../misc/checkbox/departmentsChecks';
+import InventoryChecks from '../misc/checkbox/inventoryChecks';
 
 const AddLocationForm = ({ onClose, rowData }) => {
   const [locationName, setLocationName] = useState('');
   const [locationLatitude, setLocationLatitude] = useState('');
   const [locationLongitude, setLocationLongitude] = useState('');
-  
-  const [selectedOrgId, setSelectedOrgId] = useState(null);
-  const [selectedDepartments, setSelectedDepartments] = useState([]);
+  const [selectedInventory, setSelectedInventory] = useState([]);
   const effectMounted = useRef(false);
   const [data, setData] = useState({});
   const api = useApi();
@@ -25,6 +23,7 @@ const AddLocationForm = ({ onClose, rowData }) => {
 
   useEffect(() => {
     if (effectMounted.current === false) {
+      console.log(rowData)
       if (rowData) {
         setLocationName(rowData.name);
         setLocationLatitude(rowData.latitude);
@@ -51,10 +50,12 @@ const AddLocationForm = ({ onClose, rowData }) => {
       orga: parsedPermissions.Organization,
       name: locationName,
       latitude: locationLatitude,
-      longitude: locationLongitude
+      longitude: locationLongitude,
+      inventory: selectedInventory
     };
 
     if (locationDetails) {
+      console.log(locationDetails)
       api.post('/user/location/add', locationDetails)
         .then((response) => {
           if (response.status === 200) {
@@ -77,7 +78,8 @@ const AddLocationForm = ({ onClose, rowData }) => {
       id: data.id,
       name: locationName,
       latitude: locationLatitude,
-      longitude: locationLongitude
+      longitude: locationLongitude,
+      inventory: selectedInventory
     };
 
     if (locationDetails) {
@@ -95,7 +97,7 @@ const AddLocationForm = ({ onClose, rowData }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[300px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[500px] relative">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
@@ -136,7 +138,7 @@ const AddLocationForm = ({ onClose, rowData }) => {
           </div>
         </div>
         <div className='max-h-[300px] h-[200px]'>
-          <DepartmentsChecks selectedOptions={selectedDepartments} setSelectedOptions={setSelectedDepartments} />
+          <InventoryChecks selectedOptions={selectedInventory} rowData={rowData} setSelectedOptions={setSelectedInventory} />
         </div>
         <div className="mt-4 flex justify-end">
           {data.id ? (

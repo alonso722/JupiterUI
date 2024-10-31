@@ -7,6 +7,7 @@ import ECarousel from '@/components/misc/carousel/carousel.jsx';
 
 import Calendar from '@/components/misc/calendar/calendar';
 import SimpleCalendar from '@/components/misc/calendar/simple';
+import { version } from "os";
 
 export const Published = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -67,7 +68,8 @@ export const Published = ({ departmentFilter, processFilter }) => {
                         column: convertStatusToColumn(item.status),
                         department: item.departmentName,
                         date: item.updated,
-                        description : item.description
+                        description : item.description,
+                        version: item.version
                     }));
                     setCards(fetchedCards); 
                 })
@@ -151,7 +153,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
     );
 };
 
-const Card = ({ name, department, date, id, description, onCardClick, permissions, primary, secondary }) => {
+const Card = ({ name, department, date, id, description, onCardClick, version, permissions, primary, secondary }) => {
     return (
         <>
         <motion.div
@@ -174,9 +176,14 @@ const Card = ({ name, department, date, id, description, onCardClick, permission
                         {description ? (description.length > 150 ? `${description.slice(0, 150)}...` : description) : 'Descripción no disponible'}
                     </p>
                 </div>
-                <p className="text-sm text-black text-right text-[9px]">
+                <div className="flex justify-between">
+                    <p className="text-gray text-[11px]">
+                        v.{version}
+                    </p>
+                    <p className="text-sm text-black text-right text-[9px] justify-between">
                     Actualizado: {new Date(date).toLocaleDateString()}
-                </p>
+                    </p>
+                </div>
             </div>
         </motion.div>
         </>      

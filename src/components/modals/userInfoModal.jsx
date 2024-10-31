@@ -121,8 +121,8 @@ const UserInfoModal = ({ isOpen, uuid }) => {
               { label: 'Licencia de conducir', key: 'driver', file: info.driver },
               { label: 'Aviso de retención INFONAVIT', key: 'saving', file: info.saving },
               { label: 'Estado de cuenta', key: 'bills', file: info.bills },
-              { label: 'Constancia de situqacion fiscal', key: 'fiscal', file: info.fiscal },
-              { label: 'Certificado medico', key: 'medic', file: info.medic }
+              { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal },
+              { label: 'Certificado médico', key: 'medic', file: info.medic }
             ].map(({ label, key, file }) => (
               <li
                 key={key}

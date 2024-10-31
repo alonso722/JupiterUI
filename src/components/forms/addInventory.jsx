@@ -21,7 +21,6 @@ const AddInventoryForm = ({ onClose, rowData }) => {
   useEffect(() => {
     if (effectMounted.current === false) {
       if (rowData) {
-        console.log(rowData)
         setObject(rowData.object);
         setData(rowData)
       }

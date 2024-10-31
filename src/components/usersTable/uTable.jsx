@@ -197,7 +197,7 @@ const UsersTable = () => {
         }),        
         columnHelper.accessor("phone", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "telefono",
+            header: "Teléfono",
         }),
         columnHelper.accessor("actions", {
             cell: (info) => (
