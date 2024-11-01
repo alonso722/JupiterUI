@@ -59,7 +59,7 @@ export default function Sidebar() {
         { path: '/departments', icon: FaSitemap, label: 'Departmentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory', icon: MdOutlineInventory, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/locations/inventoryList', icon:  FaListCheck, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/inventory/assigned', icon:  FaListCheck, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/user', icon: FaUsers, label: 'Users', condition: true }
     ];
 

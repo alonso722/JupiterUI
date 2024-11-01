@@ -14,20 +14,19 @@ import Search from "@/components/table/search";
 import Actions from "./actions";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
-import AddInventoryForm from "@/components/forms/addInventory"; 
+import AddAssignedForm from "@/components/forms/addAssigned"; 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
 import { useColors } from '@/services/colorService';
 
-const InventoryTable = () => {
+const AssignedTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
     const [data, setData] = useState([]);
-    const [departments, setObjects] = useState([]);
+    const [departments, setAssigned] = useState([]);
     const [globalFilter, setGlobalFilter] = useState("");
     const [refreshTable, setRefreshTable] = useState(false);
     const [showForm, setShowForm] = useState(false);
-    const [showChart, setShowChart] = useState(false);
     const effectMounted = useRef(false);
     const { primary, secondary } = useColors();
 
@@ -44,18 +43,17 @@ const InventoryTable = () => {
         api.post('/user/inventory/fetch',{organization})
             .then((response) => {
                 const objects = response.data;
-                setObjects(objects)
+                setAssigned(objects)
                 const fetchedData = response.data.map(item => ({
                     id: item.id,
                     object: item.object,
                     chars:item.chars    
                 }));
-                
                 setData(fetchedData);
                 setRefreshTable(false);
             })
             .catch((error) => {
-                console.error("Error al consultar inventario:", error);
+                console.error("Error al consultar asignados:", error);
             });
     };
 
@@ -143,7 +141,7 @@ const InventoryTable = () => {
     };
 
     if (refreshTable) {
-        return <InventoryTable />;
+        return <AssignedTable />;
     }
 
     return (
@@ -169,7 +167,7 @@ const InventoryTable = () => {
                         onClick={handleButtonClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddInventoryForm onClose={handleCloseForm} />}
+                    {showForm && <AddAssignedForm onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-[1150px] text-left text-black rounded-lg mt-[10px] ml-[30px] mr-[120px]">
@@ -272,4 +270,4 @@ const InventoryTable = () => {
     );
 };
 
-export default InventoryTable;
+export default AssignedTable;
