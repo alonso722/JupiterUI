@@ -53,8 +53,6 @@ const LocationsTable = () => {
                     latitude: item.latitude,    
                     object: item.object
                 }));
-                console.log(fetchedData, response.data)
-                
                 setData(fetchedData);
                 setRefreshTable(false);
             })

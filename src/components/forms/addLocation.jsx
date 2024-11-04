@@ -23,7 +23,6 @@ const AddLocationForm = ({ onClose, rowData }) => {
 
   useEffect(() => {
     if (effectMounted.current === false) {
-      console.log(rowData)
       if (rowData) {
         setLocationName(rowData.name);
         setLocationLatitude(rowData.latitude);
@@ -55,7 +54,6 @@ const AddLocationForm = ({ onClose, rowData }) => {
     };
 
     if (locationDetails) {
-      console.log(locationDetails)
       api.post('/user/location/add', locationDetails)
         .then((response) => {
           if (response.status === 200) {

@@ -1,7 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
-import AddInventoryForm from '../forms/addInventory';
+import AddAssignedForm from '../forms/addAssigned';
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 
@@ -27,7 +27,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleConfirmDelete = () => {
-        api.post('/user/inventory/del', { id: rowData.id })
+        api.post('/user/assignation/del', { id: rowData.id })
             .then((response) => {
                 onClose(); 
             })
@@ -125,7 +125,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                 </div>
             </div>
             {isModalOpen && selectedCard && (
-                <AddInventoryForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
+                <AddAssignedForm card={selectedCard} onClose={handleCloseModal} rowData={rowData} /> 
             )}
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">

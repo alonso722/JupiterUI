@@ -40,13 +40,17 @@ const AssignedTable = () => {
             parsedPermissions = JSON.parse(storedPermissions);
         }
         const organization= parsedPermissions.Organization;
-        api.post('/user/inventory/fetch',{organization})
+        api.post('/user/assignation/fetch',{organization})
             .then((response) => {
                 const objects = response.data;
                 setAssigned(objects)
                 const fetchedData = response.data.map(item => ({
                     id: item.id,
                     object: item.object,
+                    user: item.userName,
+                    location: item.locationName,
+                    locationId: item.location,
+                    uuid: item.uuid,
                     chars:item.chars    
                 }));
                 setData(fetchedData);
@@ -91,20 +95,31 @@ const AssignedTable = () => {
             cell: (info) => <span>{info?.getValue()}</span>,
             header: "Equipo de resguardo",
         }),
+        columnHelper.accessor("user", {
+            cell: (info) => {
+                const user = info.getValue();
+                return (
+                    <p className="overflow-y-auto max-h-[70px]">
+                        {user.name} {user.last}
+                    </p>
+                );
+            },
+            header: "Colaborador",
+        }),        
+        columnHelper.accessor("location", {
+            cell: (info) => <span>{info.getValue()}</span>,
+            header: "Corporativo",
+        }),
         columnHelper.accessor("chars", {
             cell: (info) => (
                 <ul className="list-disc overflow-y-auto pl-8 max-h-[70px]">
                     {info.getValue().map((char, index) => (
-                        <li key={index} className="list-disc">{char.characteristics}</li>
+                        <li key={index} className="list-disc">{char.characteristics}: {char.charValue}</li>
                     ))}
                 </ul>
             ),
             header: "Características",
         }),
-        // columnHelper.accessor("longitude", {
-        //     cell: (info) => <span>{info.getValue()}</span>,
-        //     header: "Longitud",
-        // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
