@@ -104,6 +104,8 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetchIns', { organization })
             .then((response) => {
+                console.log(response)
+                console.log(response.data)
                 const fetchedData = response.data.data.map(item => {
                     let role;
                     switch (item.role_id) {
