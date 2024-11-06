@@ -51,7 +51,8 @@ const AssignedTable = () => {
                     location: item.locationName,
                     locationId: item.location,
                     uuid: item.uuid,
-                    chars:item.chars    
+                    chars:item.chars,
+                    status:item.status    
                 }));
                 setData(fetchedData);
                 setRefreshTable(false);
@@ -120,6 +121,12 @@ const AssignedTable = () => {
             ),
             header: "Características",
         }),
+        columnHelper.accessor("status", {
+            cell: (info) => (
+                <span>{info.getValue() === 1 ? "Obsoleto/Dañado" : "En funcionamiento"}</span>
+            ),
+            header: "Estado",
+        }),        
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions

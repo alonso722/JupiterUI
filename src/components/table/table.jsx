@@ -18,6 +18,7 @@ import AddProcessForm from "../forms/addProcess";
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useColors } from '@/services/colorService';
+import { Noto_Traditional_Nushu } from "next/font/google";
 
 const TanStackTable = () => {
     const columnHelper = createColumnHelper();
@@ -59,7 +60,7 @@ const TanStackTable = () => {
         const orga = parsedPermissions.Organization;
         api.post('/user/process/fetchTab', {orga, userType, cooWorkflows})
             .then((response) => {
-                const fetchedData = response.data.data.map(item => ({
+                let fetchedData = response.data.data.map(item => ({
                     id: item.id,
                     process: item.process,
                     department: item.departmentName,
@@ -70,13 +71,17 @@ const TanStackTable = () => {
                     created: formatDate(item.created),
                     updated: formatDate(item.updated),
                 }));
+                const type = userType.Type;
+                if (type !== 1 || type !== 6) {
+                    fetchedData = fetchedData.filter(item => item.status !== "Historico");
+                }
                 setData(fetchedData.reverse());
                 setRefreshTable(false);
             })
             .catch((error) => {
                 console.error("Error al consultar procesos:", error);
             });
-    };
+    };    
 
     useEffect(() => {
         if (!effectMounted.current) {
@@ -101,6 +106,8 @@ const TanStackTable = () => {
                 return 'Aprobación';
             case '4':
                 return 'Aprobado';
+            case '5':
+                return 'Historico';
             default:
                 return 'Edición';
         }

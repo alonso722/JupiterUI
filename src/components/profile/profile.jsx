@@ -14,6 +14,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [file, setFile] = useState(null);
     const [permissions, setPermissions] = useState([]);
+    const [inventory, setInv] = useState([]);
     const [info, setInfo] = useState({});
     const [profesionalInfo, setPInfo] = useState({});
     const [uuid, setUuid] = useState(null)
@@ -72,8 +73,37 @@ export const Profile = ({ departmentFilter, processFilter }) => {
         }
     };
 
-      useEffect(() => {
-        fetchData();
+    const fetchInventory = () => {
+      let parsedPermissions;
+      const storedPermissions = localStorage.getItem('permissions'); 
+      if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+      }
+      let organization = {};
+      organization.organization = parsedPermissions.Organization;
+      organization.uuid = parsedPermissions.uuid;
+      api.post('/user/assignation/fetch', organization)
+        .then((response) => {
+          const fetchedData = response.data.map(item => ({
+            id: item.id,
+            object: item.object,
+            user: item.userName,
+            location: item.locationName,
+            locationId: item.location,
+            uuid: item.uuid,
+            chars:item.chars,
+            status:item.status    
+          }));
+          setInv(fetchedData);
+          })
+          .catch((error) => {
+              console.error("Error al consultar asignados:", error);
+          });
+    };
+
+    useEffect(() => {
+      fetchData();
+      fetchInventory();
     }, []);
     
       const enableEditMode = () => {
@@ -165,7 +195,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[60px] ml-[100px] mr-[250px] w-[100%] text-neutral-50 rounded ">
+        <div className="mt-[60px] ml-[100px] w-[100%] text-neutral-50 rounded flex">
             <div className="mt-8 text-black  ">
                 <div className="mb-5">
                     <h1 className="text-black text-xl mb-5">
@@ -202,7 +232,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                             ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}
-                                                className={`my-2 rounded-lg  p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}y
+                                                className={`my-2 rounded-lg  p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}
                                                 onClick={() => file && openViewer(file)}>
                                                     <div className="flex">
                                                       <div
@@ -289,7 +319,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                         ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}
-                                                className={`my-2 rounded-lg  p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}y
+                                                className={`my-2 rounded-lg  p-2 flex items-center justify-between cursor-pointer ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}
                                                 onClick={() => file && openViewer(file)}>
                                                     <div className="flex">
                                                       <div
@@ -344,6 +374,21 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                     onClose={closeViewer}/>
                 )}
             </div>
+            <div className="text-black mt-[80px] ml-[5%] pl-[5%] border-l-4 w-[17%]">
+              <p className="mb-4"><strong>Mi equipo asignado:</strong></p>
+              {inventory.map((item, index) => (
+                  <div key={index}>
+                      <p className="">-{item.object}:</p>
+                      <ul className="ml-4 list-disc">
+                          {item.chars.map((char, charIndex) => (
+                              <li key={charIndex}>
+                                  {char.characteristics}: {char.charValue || 'N/A'}
+                              </li>
+                          ))}
+                      </ul>
+                  </div>
+              ))}
+          </div>
         </div>
     );
 };
