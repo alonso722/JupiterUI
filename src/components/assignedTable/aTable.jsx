@@ -122,11 +122,25 @@ const AssignedTable = () => {
             header: "Características",
         }),
         columnHelper.accessor("status", {
-            cell: (info) => (
-                <span>{info.getValue() === 1 ? "Obsoleto/Dañado" : "En funcionamiento"}</span>
-            ),
+            cell: (info) => {
+              let label;
+              switch (info.getValue()) {
+                case 1:
+                  label = "En resguardo";
+                  break;
+                case 2:
+                  label = "Asignado";
+                  break;
+                case 3:
+                  label = "Obsoleto/Dañado";
+                  break;
+                default:
+                  label = "Estado desconocido";
+              }
+              return <span>{label}</span>;
+            },
             header: "Estado",
-        }),        
+          }),                
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
