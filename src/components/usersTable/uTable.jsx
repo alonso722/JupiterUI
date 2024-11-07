@@ -53,39 +53,17 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetch', { organization })
             .then((response) => {
-                const fetchedData = response.data.data.map(item => {
-                    let role;
-                    switch (item.role_id) {
-                        case 2:
-                            role = 'Editor';
-                            break;
-                        case 3:
-                            role = 'Revisor';
-                            break;
-                        case 4:
-                            role = 'Aprobador';
-                            break;
-                        case 5:
-                            role = 'Consultor';
-                            break;
-                        case 1:
-                            role = 'Administrador';
-                            break;
-                        default:
-                            role = 'Desconocido';
-                    }
-    
+                const fetchedData = response.data.data.map(item => {    
                     return {
                         uuid: item.uuid,
                         name: item.name,
                         last: item.last,
                         department: item.department_name,   
                         mail: item.mail,
-                        phone :item.phone,
-                        role: role,
+                        phone: item.phone,
+                        time: item.time
                     };
                 });
-    
                 setData(fetchedData);
                 setRefreshTable(false);
             })
@@ -199,6 +177,17 @@ const UsersTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Teléfono",
         }),
+        columnHelper.accessor("time", {
+            cell: (info) => {
+                const time = info.getValue();
+                return(
+                    <span>
+                        {time ? `${time.entrance.slice(0, 5)} - ${time.leave.slice(0, 5)}` : 'Sin horario registrado'}
+                    </span>
+                )
+            },
+            header: "Horario",
+        }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 permissions.Type === 1 ? (
@@ -271,7 +260,7 @@ const UsersTable = () => {
                             />
                             <div className="w-11 h-6 bg-gray-200 peer-checked:bg-blue-600 rounded-full peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 transition-all peer-checked:before:translate-x-full peer-checked:before:bg-white before:content-[''] before:absolute before:top-[2px] before:left-[2px] before:w-5 before:h-5 before:rounded-full before:transition-all" />
                         </label>
-                        <span className="ml-2 text-gray-700">{toggleOn ? 'Activos' : 'Inactivos'}</span>
+                        <span className="ml-2 text-gray-700">{toggleOn ? 'Inactivos' : 'Activos'}</span>
                     </div>
                 )}
                 {permissions.Type === 1 && (

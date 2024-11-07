@@ -52,7 +52,7 @@ export default function TopNewMenuClientDashboard() {
     useEffect(() => {
         let parsedPermissions;
         
-        if (effectMounted.current === false) {    
+        if (effectMounted.current === false) {
             if (!authStateValue.loggedIn) {
                 showToast('error', 'Sin autenticación');
                 router.push('/auth/login');
@@ -102,34 +102,11 @@ export default function TopNewMenuClientDashboard() {
               .catch((error) => {
                 console.error("Error al consultar notificaciones", error);
               });
+              fetchLogo();
+              getTime();
             effectMounted.current = true;
         }
     }, [authStateValue.loggedIn, router, setAuth, searchParams, department]);
-
-    useEffect(() => {
-        if (!isModalOpen) {
-            const fetchLogo = async () => {
-                const storedPermissions = localStorage.getItem('permissions'); 
-                if (storedPermissions) {
-                    const parsedPermissions = JSON.parse(storedPermissions);
-                    const orga = parsedPermissions.Organization;
-                    try {
-                        const response = await api.post('/user/organization/getLogo', { orga });
-                        const imageData = response.data.data[0];
-                        if(imageData?.buffer?.data){
-                            const arrayBuffer = imageData.buffer.data;
-                            const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-                            const url = URL.createObjectURL(blob);
-                            setLogoUrl(url);
-                        }
-                    } catch (error) {
-                        console.error("Error al consultar nombre:", error);
-                    }
-                }
-            };
-            fetchLogo();
-        }
-    }, [isModalOpen]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -138,6 +115,47 @@ export default function TopNewMenuClientDashboard() {
           setFile(null); 
         } else {
           setFile(selectedFile);
+        }
+    };
+
+    const getTime = async () => {
+        let parsedPermissions = {};
+        const storedPermissions = localStorage.getItem('permissions'); 
+        if (storedPermissions) {
+            parsedPermissions = JSON.parse(storedPermissions);
+        }
+        const uuid = parsedPermissions.uuid;
+        try {
+            const response = await api.post('/user/time/getTime', {uuid});
+            const time = response.data;
+            if(time.code == 1 ){
+                showToast('warning', 'Hora límite de registro de entrada!');
+            }
+            if(time.code == 2 ){
+                showToast('warning', 'No olvides registrar tu salida...');
+            }
+        } catch (error) {
+            console.error("Error al consultar nombre:", error);
+        }
+    };
+
+    const fetchLogo = async () => {
+        const storedPermissions = localStorage.getItem('permissions'); 
+        if (storedPermissions) {
+            const parsedPermissions = JSON.parse(storedPermissions);
+            const orga = parsedPermissions.Organization;
+            try {
+                const response = await api.post('/user/organization/getLogo', { orga });
+                const imageData = response.data.data[0];
+                if(imageData?.buffer?.data){
+                    const arrayBuffer = imageData.buffer.data;
+                    const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
+                    const url = URL.createObjectURL(blob);
+                    setLogoUrl(url);
+                }
+            } catch (error) {
+                console.error("Error al consultar nombre:", error);
+            }
         }
     };
       

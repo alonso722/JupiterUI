@@ -94,7 +94,7 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
     };
 
     return (
-        <div className="mt-[110px] ml-[100px] mr-[250px]  w-[100%] text-neutral-50 rounded">
+        <div className="mt-[110px] ml-[150px] mr-[250px]  w-[100%] text-neutral-50 rounded">
             <Board 
                 onCardClick={handleCardClick} 
                 cards={cards} 

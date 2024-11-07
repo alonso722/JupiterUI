@@ -148,7 +148,6 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
   }, [rowData]);
 
   const handleAddAssignation = () => {
-    console.log(selectedStatus)
     if (!selectedLocation) {
       showToast('error', "Por favor, seleccione un corporativo");
       return;
@@ -171,7 +170,7 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
 
     api.post('/user/assignation/add', userDetails)
       .then((response) => {
-        if (response.data.code === 200) {
+        if (response.status === 200) {
           onClose();
         }
       })

@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect, useRef } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import Image from 'next/image';
 import AddUserForm from '../forms/addUser';
@@ -8,11 +8,15 @@ import { useColors } from '@/services/colorService';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [selectedCard, setSelectedCard] = useState(null);
+    const [selectedCard, setSelectedUser] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isRecoveryOpen, setModalRecovery] = useState(false);
+    const [isTimeOpen, setModalTime] = useState(false);
     const [newPass, passRecovery] = useState('');
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [entrance, setEntrance] = useState('');
+    const [leave, setLeave] = useState('');
+    const effectMounted = useRef(false);
     const { primary, secondary } = useColors();
     const api = useApi();
 
@@ -22,6 +26,20 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
           autoClose: 2000,
         });
       };
+
+      useEffect(() => {
+        if (!effectMounted.current) {
+            if (rowData && rowData.time) {
+                if (rowData.time.entrance) {
+                    setEntrance(rowData.time.entrance.slice(0, 5)); 
+                }
+                if (rowData.time.leave) {
+                    setLeave(rowData.time.leave.slice(0, 5)); 
+                }
+            }
+            effectMounted.current = true;
+        }
+    }, [rowData]);
 
     const handleMenuClick = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -37,11 +55,26 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
         onActionClick(rowData);
         handlePassModal({rowData});
     };
-
     
     const handlePassModal = (user) => {
-        setSelectedCard(user);
+        setSelectedUser(user);
         setModalRecovery(true);
+    };
+
+    const handleTimeClick = () => {
+        passRecovery()
+        onActionClick(rowData);
+        handleTimeModal({rowData});
+    };
+
+    const handleTimeModal = (user) => {
+        setSelectedUser(user);
+        setModalTime(true);
+    };
+
+    const generateTimestamp = (time) => {
+        const currentDate = new Date().toISOString().split('T')[0];
+        return `${currentDate} ${time}:00`;
     };
 
     const handleDeleteClick = () => {
@@ -61,6 +94,29 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
             })
             .catch((error) => {
                 console.error("Error al actualizar contraseña:", error);
+            });
+    };
+
+    const handleConfirmTime = (newPass) => {
+        if(!entrance){
+            showToast('error','Establezca la hora de entrada.');
+        }
+        if(!leave){
+            showToast('error','Establezca la hora de salida.');
+        }
+        let time ={};
+        time.uuid = rowData.uuid;
+        time.entrance = entrance;
+        time.leave = leave;
+        api.post('/user/time/setTime', time )
+            .then((response) => {
+                if (response.status == 200){
+                    showToast('success','Se actualizó el horario laboral.');
+                onClose(); 
+                }
+            })
+            .catch((error) => {
+                console.error("Error al actualizar horario laboral:", error);
             });
     };
 
@@ -85,8 +141,12 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
         setModalRecovery(false);
     };
 
+    const handleCancelTime = () => {
+        setModalTime(false);
+    };
+
     const handleCardClick = (user) => {
-        setSelectedCard(user);
+        setSelectedUser(user);
         setIsModalOpen(true);
     };
 
@@ -134,7 +194,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                     <Image
                                                         className="mr-[30px]"
                                                         src="/icons/pencil.svg"
-                                                        alt="Logo de Paypal"
+                                                        alt="image"
                                                         width={17}
                                                         height={18} />                                                    
                                                         Editar                                                    
@@ -152,10 +212,28 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                     <Image
                                                         className="mr-[20px]"
                                                         src="/icons/pencil.svg"
-                                                        alt="Logo de Paypal"
+                                                        alt="image"
                                                         width={17}
                                                         height={18} />                                                    
                                                         Cambiar contraseña                                                    
+                                                </div>
+                                            </button>
+                                        )}
+                                    </Menu.Item>
+                                    <Menu.Item>
+                                        {({ active }) => (
+                                            <button
+                                                type="submit"
+                                                className="bg-transparent"
+                                                onClick={handleTimeClick}>
+                                                <div className={`flex pl-[20px] pr-[45px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                    <Image
+                                                        className="mr-[20px]"
+                                                        src="/icons/pencil.svg"
+                                                        alt="image"
+                                                        width={17}
+                                                        height={18} />                                                    
+                                                        Establecer horario                                                   
                                                 </div>
                                             </button>
                                         )}
@@ -170,7 +248,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                     <Image
                                                         className="mr-[30px]"
                                                         src="/icons/trash.svg"
-                                                        alt="Logo de Paypal"
+                                                        alt="image"
                                                         width={17}
                                                         height={18} />                                                                                                        Eliminar                                                
                                                 </div>
@@ -228,6 +306,75 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                     </div>
                 </div>
             )}
+            {isTimeOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+                <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[300px] relative flex flex-col justify-center items-center">
+                    <h1 className="mb-4 text-center text-black">Seleccione las horas de entrada y salida</h1>
+                    <div className="mb-4 flex justify-center items-center w-[80%]">
+                        <span className="mr-2 text-black">Entrada:</span>
+                        <select
+                            className="p-2 border rounded mr-2"
+                            value={entrance.split(':')[0] || ''}
+                            onChange={(e) => setEntrance(`${e.target.value}:${entrance.split(':')[1] || '00'}`)}
+                        >
+                            <option value="" disabled>Hora</option>
+                            {Array.from({ length: 24 }, (_, i) => (
+                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
+                            ))}
+                        </select>
+                        <select
+                            className="p-2 border rounded ml-2"
+                            value={entrance.split(':')[1] || ''}
+                            onChange={(e) => setEntrance(`${entrance.split(':')[0] || '00'}:${e.target.value}`)}
+                        >
+                            <option value="" disabled>Minuto</option>
+                            {Array.from({ length: 60 }, (_, i) => (
+                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className="mb-4 flex justify-center items-center w-[80%]">
+                        <span className="mr-2 text-black">Salida:</span>
+                        <select
+                            className="p-2 border rounded mr-2"
+                            value={leave.split(':')[0] || ''}
+                            onChange={(e) => setLeave(`${e.target.value}:${leave.split(':')[1] || '00'}`)}
+                        >
+                            <option value="" disabled>Hora</option>
+                            {Array.from({ length: 24 }, (_, i) => (
+                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
+                            ))}
+                        </select>
+                        <select
+                            className="p-2 border rounded ml-2"
+                            value={leave.split(':')[1] || ''}
+                            onChange={(e) => setLeave(`${leave.split(':')[0] || '00'}:${e.target.value}`)}>
+                            <option value="" disabled>Minuto</option>
+                            {Array.from({ length: 60 }, (_, i) => (
+                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex justify-between w-full px-8">
+                        <button
+                            className="text-white p-3 rounded-lg flex-grow mx-4"
+                            onClick={() => handleConfirmTime({
+                                entranceTimestamp: generateTimestamp(entrance),
+                                leaveTimestamp: generateTimestamp(leave)
+                            })}
+                            style={{ backgroundColor: secondary }}>
+                            Confirmar
+                        </button>
+                        <button
+                            className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
+                            onClick={handleCancelTime}>
+                            Cancelar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )}
         </div>
     );
 };

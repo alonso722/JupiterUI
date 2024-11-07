@@ -22,6 +22,7 @@ const CustomCalendar = () => {
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
+  const [isChecked, setIsChecked] = useState(false);
   const [time, setTime] = useState('');
 
   let today = startOfToday();
@@ -118,8 +119,30 @@ const CustomCalendar = () => {
       console.error("Error al consultar eventos:", error);
     }
   };
-  
+
+  const getChecks = async () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+      parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const uuid = parsedPermissions.uuid;
+    try {
+      const response = await api.post('/user/event/getChecks', { uuid });
+      const events = response.data;
+      const entranceDate = new Date(events.entrance);
+      const currentDate = new Date();
+      const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
+      if (differenceInHours < 8) {
+        setIsChecked(true);
+      }
+    } catch (error) {
+      console.error("Error al consultar eventos:", error);
+    }
+  };
+
   useEffect(() => {
+    getChecks();
     fetchEvents();
   }, []);
   
@@ -245,18 +268,35 @@ return (
       <div>
         <div><strong>Checador</strong>
         </div>
-        <div className='mr-3 text-[30px] text-[#777E90]'>
+        <div className=' text-[30px] text-[#777E90]'>
           {time}
         </div>
       </div>
-      <div className='flex mt-9 ml-4'>
+      <div className='flex mt-6 ml-4 justify-between'>
         <div>
-          <button className='px-2 py-1 pointer rounded-lg text-white mb-2 mr-2' style={{ backgroundColor: primary }} onClick={handleAddEntrace}>
-            Entrada
-          </button>
+          {isChecked ? (
+            <div
+              className="mr-2 rounded-lg flex items-center justify-center px-4 py-2"
+              style={{ backgroundColor: `${primary}90`, textAlign: 'center' }} 
+            >
+              <span className="text-white text-[10px] font-semibold text-center">Entrada registrada</span>
+            </div>
+          ) : (
+            <button
+              className='px-2 py-1 pointer rounded-lg text-white mt-2 mr-1'
+              style={{ backgroundColor: primary }}
+              onClick={handleAddEntrace}
+            >
+              Entrada
+            </button>
+          )}
         </div>
         <div>
-          <button className='px-2 py-1 pointer rounded-lg text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
+          <button
+            className='px-2 py-1 pointer rounded-lg text-white mt-2 mr-2'
+            style={{ backgroundColor: primary }}
+            onClick={handleAddLeave}
+          >
             Salida
           </button>
         </div>

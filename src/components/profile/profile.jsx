@@ -217,18 +217,18 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                 <div className="bg-white overflow-auto relative">
                                     <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden mt-4'>
                                         <ul className='w-full '>
+                                          
                                             {[
-                                            { label: 'Identificación', key: 'dni', file: info.dni },
+                                            { label: 'Currículum', key: 'cv', file: infoLI.cv },
                                             { label: 'Acta de nacimiento', key: 'birth', file: info.birth },
-                                            { label: 'CURP', key: 'curp', file: info.curp },
-                                            { label: 'Comprobante de domicilio', key: 'address', file: info.address },
+                                            { label: 'Comp. de domicilio', key: 'address', file: info.address },              
+                                            { label: 'Ident. Oficial', key: 'dni', file: info.dni },
+                                            { label: 'Cartilla', key: 'socio', file: infoLI.socio },
                                             { label: 'Comprobante de estudios', key: 'studies', file: info.studies },
+                                            { label: 'Recomendaciones', key: 'recommendationP', file: infoLI.recommendationP },
                                             { label: 'Número de Seguro Social', key: 'nss', file: info.nss },
-                                            { label: 'Licencia de conducir', key: 'driver', file: info.driver },
-                                            { label: 'Aviso de retención INFONAVIT', key: 'saving', file: info.saving },
-                                            { label: 'Estado de cuenta', key: 'bills', file: info.bills },
-                                            { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal },
-                                            { label: 'Certificado médico', key: 'medic', file: info.medic }
+                                            { label: 'Cuenta Bancaria', key: 'bills', file: info.bills },
+                                            { label: 'Crédito INFONAVIT', key: 'saving', file: info.saving },
                                             ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}
@@ -308,14 +308,15 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                     <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden my-4'>
                                         <ul className='w-full '>
                                         {[
-                                          { label: 'Contrato', key: 'contract', file: infoLI.contract },
-                                          { label: 'Currículum Vitae', key: 'cv', file: infoLI.cv },
-                                          { label: 'Recomendación profesional', key: 'recommendation', file: infoLI.recommendation },
-                                          { label: 'Recomendación personal', key: 'recommendationP', file: infoLI.recommendationP },
-                                          { label: 'Aviso de confidencialidad', key: 'conf', file: infoLI.conf },
-                                          { label: 'Aviso de protección de datos', key: 'data', file: infoLI.data },
-                                          { label: 'Estudio socioeconómico', key: 'socio', file: infoLI.socio },
-                                          { label: 'Anexos', key: 'annx', file: infoLI.annx }
+                                          { label: 'Requisición de personal', key: 'data', file: infoLI.data },
+                                          { label: 'Referencia Laboral', key: 'recommendation', file: infoLI.recommendation },
+                                          { label: 'Autorizacion de contratación', key: 'conf', file: infoLI.conf },
+                                          { label: 'Certificado médico', key: 'medic', file: info.medic },
+                                          { label: 'Licencia de conducir', key: 'driver', file: info.driver },
+                                          { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal }, 
+                                          { label: 'CURP', key: 'curp', file: info.curp },
+                                          { label: 'Contrato', key: 'contract', file: infoLI.contract },                                         
+                                          { label: 'Hoja de control', key: 'annx', file: infoLI.annx }
                                         ].map(({ label, key, file }) => (
                                             <li
                                                 key={key}

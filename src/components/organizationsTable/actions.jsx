@@ -88,7 +88,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                 <Image
                                                     className="mr-[30px]"
                                                     src="/icons/pencil.svg"
-                                                    alt="Logo de Paypal"
+                                                    alt="image"
                                                     width={17}
                                                     height={18} />
                                                 <button
@@ -110,7 +110,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                     <Image
                                                         className="mr-[30px]"
                                                         src="/icons/trash.svg"
-                                                        alt="Logo de Paypal"
+                                                        alt="image"
                                                         width={17}
                                                         height={18} />
                                                         Eliminar
