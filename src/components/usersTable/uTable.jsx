@@ -53,7 +53,13 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetch', { organization })
             .then((response) => {
-                const fetchedData = response.data.data.map(item => {    
+                const fetchedData = response.data.data.map(item => {
+                    let entrance = '';
+                    let leave = '';
+                    if (item.time) {
+                        entrance = new Date(item.time.entrance).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                        leave = new Date(item.time.leave).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                    }
                     return {
                         uuid: item.uuid,
                         name: item.name,
@@ -61,7 +67,10 @@ const UsersTable = () => {
                         department: item.department_name,   
                         mail: item.mail,
                         phone: item.phone,
-                        time: item.time
+                        time: {
+                            entrance,
+                            leave 
+                        }
                     };
                 });
                 setData(fetchedData);
