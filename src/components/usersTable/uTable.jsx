@@ -53,21 +53,19 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetch', { organization })
             .then((response) => {
-                console.log("horario antes de pintar::::",response.data.data)
+                console.log("horario antes de pintar::::", response.data.data)
                 const fetchedData = response.data.data.map(item => {
                     let entrance = '';
                     let leave = '';
                     if (item.time) {
-                        entrance = new Date(item.time.entrance).toLocaleTimeString('es-MX', {
-                            timeZone: 'America/Mexico_City', 
-                            hour: '2-digit', 
-                            minute: '2-digit'
-                            });                          
-                        leave = new Date(item.time.leave).toLocaleTimeString('es-MX', {
-                            timeZone: 'America/Mexico_City', 
-                            hour: '2-digit', 
-                            minute: '2-digit'
-                            });                        
+                        const entranceDate = new Date(item.time.entrance);
+                        const leaveDate = new Date(item.time.leave);
+                        entrance = entranceDate.toTimeString().split(' ')[0].substring(0, 5); 
+                        leave = leaveDate.toTimeString().split(' ')[0].substring(0, 5); 
+                        if (leaveDate < entranceDate) {
+                            leaveDate.setDate(leaveDate.getDate() + 1); 
+                            leave = leaveDate.toTimeString().split(' ')[0].substring(0, 5); 
+                        }
                     }
                     return {
                         uuid: item.uuid,
@@ -89,7 +87,7 @@ const UsersTable = () => {
                 console.error("Error al consultar usuarios:", error);
             });
     };
-    
+        
     const fetchIns = () => {
         let parsedPermissions;
         const storedPermissions = localStorage.getItem('permissions'); 
