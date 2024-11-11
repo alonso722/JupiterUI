@@ -58,16 +58,16 @@ const UsersTable = () => {
                     let entrance = '';
                     let leave = '';
                     if (item.time) {
-                        entrance = new Date(item.time.entrance).toLocaleTimeString('es-ES', { 
-                            timeZone: 'Europe/Madrid', 
+                        entrance = new Date(item.time.entrance).toLocaleTimeString('es-MX', {
+                            timeZone: 'America/Mexico_City', 
                             hour: '2-digit', 
-                            minute: '2-digit' 
-                          });                          
-                        leave = new Date(item.time.leave).toLocaleTimeString('es-ES', { 
-                            timeZone: 'Europe/Madrid', 
+                            minute: '2-digit'
+                            });                          
+                        leave = new Date(item.time.leave).toLocaleTimeString('es-MX', {
+                            timeZone: 'America/Mexico_City', 
                             hour: '2-digit', 
-                            minute: '2-digit' 
-                          });                          
+                            minute: '2-digit'
+                            });                        
                     }
                     return {
                         uuid: item.uuid,
