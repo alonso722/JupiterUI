@@ -57,7 +57,7 @@ const UsersTable = () => {
                     let entrance = '';
                     let leave = '';
                     if (item.time) {
-                        entrance = new Date(item.time.entrance).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                        entrance = new Date(item.time.entrance).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
                         leave = new Date(item.time.leave).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                     }
                     return {
