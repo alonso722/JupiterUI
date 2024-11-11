@@ -60,11 +60,12 @@ const UsersTable = () => {
                     if (item.time) {
                         const entranceDate = new Date(item.time.entrance);
                         const leaveDate = new Date(item.time.leave);
-                        entrance = entranceDate.toTimeString().split(' ')[0].substring(0, 5); 
-                        leave = leaveDate.toTimeString().split(' ')[0].substring(0, 5); 
+                        entrance = entranceDate.getUTCHours().toString().padStart(2, '0') + ':' + entranceDate.getUTCMinutes().toString().padStart(2, '0');
+                        leave = leaveDate.getUTCHours().toString().padStart(2, '0') + ':' + leaveDate.getUTCMinutes().toString().padStart(2, '0');
+    
                         if (leaveDate < entranceDate) {
                             leaveDate.setDate(leaveDate.getDate() + 1); 
-                            leave = leaveDate.toTimeString().split(' ')[0].substring(0, 5); 
+                            leave = leaveDate.getUTCHours().toString().padStart(2, '0') + ':' + leaveDate.getUTCMinutes().toString().padStart(2, '0');
                         }
                     }
                     return {
@@ -87,7 +88,8 @@ const UsersTable = () => {
                 console.error("Error al consultar usuarios:", error);
             });
     };
-        
+    
+    
     const fetchIns = () => {
         let parsedPermissions;
         const storedPermissions = localStorage.getItem('permissions'); 
