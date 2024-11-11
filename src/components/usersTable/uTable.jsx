@@ -53,11 +53,12 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetch', { organization })
             .then((response) => {
+                console.log("horario antes de pintar::::",response.data.data)
                 const fetchedData = response.data.data.map(item => {
                     let entrance = '';
                     let leave = '';
                     if (item.time) {
-                        entrance = new Date(item.time.entrance).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                        entrance = new Date(item.time.entrance).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                         leave = new Date(item.time.leave).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                     }
                     return {
