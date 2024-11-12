@@ -254,21 +254,21 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     backgroundColor: `${secondary}60`, 
                                 }}/>
                         </p>
-                        <div className="max-h-[200px] overflow-y-auto ">
+                        <div className="max-h-[200px] overflow-y-auto">
                             <h2 className="mb-4">Valores de la organización</h2>
-                            {values.map((value, index) => (
-                                <div key={index} className="flex items-center mb-2 ">
-                                <input
-                                    type="text"
-                                    value={value}
-                                    readOnly
-                                    className="border p-2 mr-2"
-                                />
-                                <button
-                                    className="bg-red-500 text-white px-1 py-1 rounded"
-                                    onClick={() => handleRemoveValue(index)}>
-                                    -
-                                </button>
+                            {(values ?? []).map((value, index) => (
+                                <div key={index} className="flex items-center mb-2">
+                                    <input
+                                        type="text"
+                                        value={value}
+                                        readOnly
+                                        className="border p-2 mr-2"
+                                    />
+                                    <button
+                                        className="bg-red-500 text-white px-1 py-1 rounded"
+                                        onClick={() => handleRemoveValue(index)}>
+                                        -
+                                    </button>
                                 </div>
                             ))}
 
@@ -278,7 +278,8 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     value={newValue}
                                     onChange={(e) => setNewValue(e.target.value)}
                                     className="p-2 mr-2"
-                                    placeholder="Agregar nuevo valor"/>
+                                    placeholder="Agregar nuevo valor"
+                                />
                                 <button
                                     className="bg-blue-500 text-white px-1 py-1 rounded"
                                     onClick={handleAddValue}>
