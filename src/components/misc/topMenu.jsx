@@ -229,14 +229,14 @@ export default function TopNewMenuClientDashboard() {
     return (
         <>
             <div className="flex items-center justify-between fixed bg-white w-full border-b-4 z-50">
-                <div className="flex items-center pb-4 pl-12 pt-5">
-                    <div className="relative">
-                    <Image
+                <div className="flex items-center pb-2 pt-5">
+                    <div className="relative w-[200px] h-[40px] overflow-hidden">
+                        <Image
                         src={logoUrl || '/logos/Lg_JIso.svg'}
                         alt="Logo"
-                        width={180}
-                        height={29}
-                    />
+                        fill
+                        className="object-contain"
+                        />
                     </div>
                 </div>
                 <div className="flex-1 flex justify-center">
