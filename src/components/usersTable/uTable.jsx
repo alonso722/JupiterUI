@@ -53,7 +53,6 @@ const UsersTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetch', { organization })
             .then((response) => {
-                console.log("horario antes de pintar::::", response.data.data)
                 const fetchedData = response.data.data.map(item => {
                     let entrance = '';
                     let leave = '';

@@ -234,7 +234,7 @@ const CustomCalendar = () => {
             latitude,
             longitude,
             type: 1,       
-            title: 'Salida', // Cambiado de 'Entrada' a 'Salida'
+            title: 'Salida',
             orga: organization, 
             uuid: uuid  
           })
