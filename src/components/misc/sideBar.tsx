@@ -105,7 +105,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 2.2.5
+                    V 2.3.5
                 </div>
             </div>
         </div>

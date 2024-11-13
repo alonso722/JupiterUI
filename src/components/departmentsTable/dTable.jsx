@@ -45,7 +45,6 @@ const DepartmentsTable = () => {
         api.post('/user/departments/fetch', { organization })
         .then((response) => {
             const departments = response.data.data;
-            console.log(departments);
             const filteredDepartments = departments.filter(dept => dept.type !== 41);
             setDepartments(filteredDepartments);
             const fetchedData = filteredDepartments.map(item => ({
@@ -245,55 +244,35 @@ const DepartmentsTable = () => {
                 </tbody>
             </table>
             {/* paginacion */}
-            <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[150px]">
-                <button
-                    onClick={() => {
-                        table.previousPage();
-                    }}
-                    disabled={!table.getCanPreviousPage()}
-                    className="p-1 border border-purple-950 px-2 rounded">
-                    {"<"}
-                </button>
-                <button
-                    onClick={() => {
-                        table.nextPage();
-                    }}
-                    disabled={!table.getCanNextPage()}
-                    className="p-1 border border-purple-950 px-2 rounded">
-                    {">"}
-                </button>
+                {table.getPageCount() > 0 && (
+                    <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[200px]">
+                        <button
+                            onClick={() => {
+                                table.previousPage();
+                            }}
+                            disabled={!table.getCanPreviousPage()}
+                            className="p-1 border border-purple-950 px-2 rounded"
+                        >
+                            {"<"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                table.nextPage();
+                            }}
+                            disabled={!table.getCanNextPage()}
+                            className="p-1 border border-purple-950 px-2 rounded"
+                        >
+                            {">"}
+                        </button>
 
-                <span className="flex items-center gap-1">
-                    <div>Página</div>
-                    <strong>
-                        {table.getState().pagination.pageIndex + 1} de{" "}
-                        {table.getPageCount()}
-                    </strong>
-                </span>
-                <span className="flex items-center gap-1">
-                    | Ir a página:
-                    <input
-                        type="number"
-                        defaultValue={table.getState().pagination.pageIndex + 1}
-                        onChange={(e) => {
-                            const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                            table.setPageIndex(page);
-                        }}
-                        className="border p-1 rounded w-16 bg-transparent" />
-                </span>
-                <select
-                    value={table.getState().pagination.pageSize}
-                    onChange={(e) => {
-                        table.setPageSize(Number(e.target.value));
-                    }}
-                    className="border p-1 rounded bg-transparent">
-                    {[10, 20, 30, 40, 50].map((pageSize) => (
-                        <option key={pageSize} value={pageSize}>
-                            Mostrar {pageSize}
-                        </option>
-                    ))}
-                </select>
-            </div>
+                        <span className="flex items-center gap-1">
+                            <div>Página</div>
+                            <strong>
+                                {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+                            </strong>
+                        </span>
+                    </div>
+                )}
         </div>
     );
 };

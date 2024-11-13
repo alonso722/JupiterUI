@@ -331,32 +331,35 @@ const UsersTable = () => {
                 </tbody>
             </table>
             {/* paginacion */}
-            <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[200px]">
-                <button
-                    onClick={() => {
-                        table.previousPage();
-                    }}
-                    disabled={!table.getCanPreviousPage()}
-                    className="p-1 border border-purple-950 px-2 rounded">
-                    {"<"}
-                </button>
-                <button
-                    onClick={() => {
-                        table.nextPage();
-                    }}
-                    disabled={!table.getCanNextPage()}
-                    className="p-1 border border-purple-950 px-2 rounded">
-                    {">"}
-                </button>
+            {table.getPageCount() > 0 && (
+                    <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[200px]">
+                        <button
+                            onClick={() => {
+                                table.previousPage();
+                            }}
+                            disabled={!table.getCanPreviousPage()}
+                            className="p-1 border border-purple-950 px-2 rounded"
+                        >
+                            {"<"}
+                        </button>
+                        <button
+                            onClick={() => {
+                                table.nextPage();
+                            }}
+                            disabled={!table.getCanNextPage()}
+                            className="p-1 border border-purple-950 px-2 rounded"
+                        >
+                            {">"}
+                        </button>
 
-                <span className="flex items-center gap-1">
-                    <div>Página</div>
-                    <strong>
-                        {table.getState().pagination.pageIndex + 1} de{" "}
-                        {table.getPageCount()}
-                    </strong>
-                </span>
-            </div>
+                        <span className="flex items-center gap-1">
+                            <div>Página</div>
+                            <strong>
+                                {table.getState().pagination.pageIndex + 1} de {table.getPageCount()}
+                            </strong>
+                        </span>
+                    </div>
+                )}
         </div>
     );
 };

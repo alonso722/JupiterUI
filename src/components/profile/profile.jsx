@@ -5,6 +5,7 @@ import useApi from '@/hooks/useApi';
 import UserInfoModal from '@/components/modals/userInfoModal';
 import LaboralInfoModal from '@/components/modals/laboralInfoModal';
 import DocsViewer from '../misc/docViewer/docViewer';
+import { CiEdit, CiSaveDown2 } from "react-icons/ci";
 import { IoMdDocument } from "react-icons/io";
 
 import { useColors } from '@/services/colorService';
@@ -12,6 +13,8 @@ import { useColors } from '@/services/colorService';
 export const Profile = ({ departmentFilter, processFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
+    const [phone, setPhone] = useState('');
+    const [isEditable, setIsEditable] = useState(false);
     const [file, setFile] = useState(null);
     const [permissions, setPermissions] = useState([]);
     const [inventory, setInv] = useState([]);
@@ -60,6 +63,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
 
             userType.token = token;
             const profileResponse = await api.post('/user/users/profile', userType);
+            setPhone(profileResponse.data.phone)
             setInfo(profileResponse.data, parsedPermissions);
 
             if (userType) {
@@ -87,7 +91,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
           const fetchedData = response.data.map(item => ({
             id: item.id,
             object: item.object,
-            user: item.userName,
+            user: item.phone,
             location: item.locationName,
             locationId: item.location,
             uuid: item.uuid,
@@ -154,6 +158,26 @@ export const Profile = ({ departmentFilter, processFilter }) => {
         setEditModeLI(true); 
     };
 
+    const handleSaveClick = () => {
+      let update = {};
+      update.uuid = permissions.uuid;
+      update.phone = phone;
+      if (isEditable) {
+        api.post('/user/users/updatePhone', update)
+        .then((response) => {
+          if (response.status === 200) {
+            showToast('success', 'Archivo cargado con éxito.');
+            fetchData();
+          }
+        })
+        .catch((error) => {
+          console.error("Error al almacenar el archivo:", error);
+        });
+
+      }
+      setIsEditable(!isEditable);
+    };
+
     const handleFileUploadLI = async (e, fileType) => {
         const selectedFile = e.target.files[0];
         if (!selectedFile) {
@@ -204,9 +228,29 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                     <div className="ml-3 flex">
                         <div className="">
                             <div className="flex justify-between">
-                              <div>
-                                <p className="text-[#B1B5C3]"><strong>Teléfono:</strong></p> 
-                                <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.phone}</p> 
+                              <div className="relative">
+                                <p className="text-[#B1B5C3]">
+                                  <strong>Teléfono:</strong>
+                                </p>
+                                <input
+                                  type="text"
+                                  placeholder="Teléfono celular"
+                                  value={phone}
+                                  onChange={(e) => setPhone(e.target.value)}
+                                  disabled={!isEditable}
+                                  className={`w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${isEditable ? 'cursor-text' : 'cursor-not-allowed'}`}
+                                />
+                                {isEditable ? (
+                                  <CiSaveDown2
+                                    className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
+                                    onClick={handleSaveClick} style={{  color: primary }} 
+                                  />
+                                ) : (
+                                  <CiEdit
+                                    className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
+                                    onClick={handleSaveClick} style={{  color: primary }} 
+                                  />
+                                )}
                               </div>
                               <div>
                                 <p className="mr-9 text-[#B1B5C3]"><strong>Correo:</strong></p>

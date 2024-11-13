@@ -157,6 +157,11 @@ const CustomCalendar = () => {
       showToast('error',"Por favor, nombre el evento...");
       return;
     }
+    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
+      showToast('warning', "Revise las fechas de inicio y término");
+      return;
+    }
+
     try {
       await api.post('/user/event/add', {
         ...newEvent,
@@ -372,11 +377,13 @@ return (
               placeholder='Título'
               value={newEvent.title}
               onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}/>
-            <div>
+            <div className='text-black'>
+              <p className='mt-2'>Inicio:</p>
               <input
                 type='datetime-local'
                 value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
                 onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}/>
+                <p className='mt-2'>Fin:</p>
               <input
                 type='datetime-local'
                 value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}

@@ -111,25 +111,30 @@ const CustomCalendar = () => {
     if (storedPermissions) {
       parsedPermissions = JSON.parse(storedPermissions);
     }
-    const uuid = parsedPermissions.uuid;
-    if (!newEvent?.title){
-      showToast('error',"Por favor, nombre el evento...");
+    const uuid = parsedPermissions?.uuid;
+    if (!newEvent?.title) {
+      showToast('error', "Por favor, nombre el evento...");
       return;
     }
+    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
+      showToast('warning', "Revise las fechas de inicio y término");
+      return;
+    }
+
     try {
       await api.post('/user/event/add', {
         ...newEvent,
         type: 2,
         uuid: uuid
       });
-      showToast('success',"Evento registrado");
+      showToast('success', "Evento registrado");
       setShowModal(false);
-  
       fetchEvents();
     } catch (error) {
       console.error('Error al añadir el evento:', error);
     }
   };
+  
 
   const handleAddPerm = async () => {
     let parsedPermissions;
@@ -430,11 +435,13 @@ const CustomCalendar = () => {
                     placeholder='Título'
                     value={newEvent.title}
                     onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}/>
-                <div>
+                <div className='text-black'>
+                  <p className='mt-2'>Inicio:</p>
                     <input
                     type='datetime-local'
                     value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
                     onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}/>
+                    <p className='mt-2'>Fin:</p>
                     <input
                     type='datetime-local'
                     value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
