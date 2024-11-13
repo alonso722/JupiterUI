@@ -10,6 +10,7 @@ function classNames(...classes) {
 }
 
 const AddUserForm = ({ user, onClose }) => {
+  const [orga, setOrga] = useState('');
   const [userName, setUserName] = useState('');
   const [userLast, setUserLast] = useState('');
   const [userMail, setUserMail] = useState('');
@@ -48,6 +49,7 @@ const AddUserForm = ({ user, onClose }) => {
       parsedPermissions = JSON.parse(storedPermissions);
     }
     const organization = parsedPermissions.Organization;
+    setOrga(organization)
     try {
       const response = await api.post('/user/departments/fetch', { organization });
       const fetchedData = response.data.data.map(item => ({
@@ -153,6 +155,7 @@ const AddUserForm = ({ user, onClose }) => {
     }
 
     const userDetails = {
+      orga,
       userName,
       userLast,
       userMail,
@@ -162,7 +165,6 @@ const AddUserForm = ({ user, onClose }) => {
     };
 
     userDetails.role = 2;
-
     api.post('/user/users/add', userDetails)
     .then((response) => {
       if (response.data.code === 200) {

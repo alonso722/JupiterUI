@@ -42,25 +42,29 @@ const DepartmentsTable = () => {
             parsedPermissions = JSON.parse(storedPermissions);
         }
         const organization= parsedPermissions.Organization;
-        api.post('/user/departments/fetch',{organization})
-            .then((response) => {
-                const departaments = response.data.data;
-                setDepartments(departaments)
-                const fetchedData = response.data.data.map(item => ({
-                    id: item.id,
-                    department: item.department,
-                    manager: item.manager || '-', 
-                    parent: item.parent || '-',   
-                    left: item.left || '-',       
-                    right: item.right || '-',     
-                }));
-                
-                setData(fetchedData);
-                setRefreshTable(false);
-            })
-            .catch((error) => {
-                console.error("Error al consultar departamentos:", error);
-            });
+        api.post('/user/departments/fetch', { organization })
+        .then((response) => {
+            const departments = response.data.data;
+            console.log(departments);
+            const filteredDepartments = departments.filter(dept => dept.type !== 41);
+            setDepartments(filteredDepartments);
+            const fetchedData = filteredDepartments.map(item => ({
+                id: item.id,
+                department: item.department,
+                manager: item.manager || '-',
+                parent: item.parent || '-',
+                left: item.left || '-',
+                right: item.right || '-',
+                type: item.type
+            }));
+    
+            setData(fetchedData);
+            setRefreshTable(false);
+        })
+        .catch((error) => {
+            console.error("Error al consultar departamentos:", error);
+        });
+    
     };
 
     useEffect(() => {

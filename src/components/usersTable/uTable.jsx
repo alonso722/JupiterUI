@@ -131,7 +131,6 @@ const UsersTable = () => {
                         role: role,
                     };
                 });
-    
                 setData(fetchedData);
                 setRefreshTable(false);
             })
