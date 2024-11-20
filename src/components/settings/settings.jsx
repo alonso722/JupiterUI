@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { SketchPicker } from 'react-color';
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
+import UsersChecks from '../misc/checkbox/usersChecks';
 
 export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryColor = "#442E69" }) => {
     const [permissions, setPermissions] = useState([]);
@@ -18,6 +19,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const [vision, setVision] = useState('');
     const [mision, setMision] = useState('');
     const { primary, secondary } = useColors();
+    const [selectedUsers, setSelectedUsers] = useState([]);
     const effectMounted = useRef(false);
     const api = useApi();
     const [newValue, setNewValue] = useState("");
@@ -60,7 +62,8 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     setMision(data.t01_organization_mision)
                     const valuesString = data.t01_organization_values; 
                     const valuesArray = JSON.parse(valuesString);
-                    setValues(valuesArray);                    
+                    setValues(valuesArray);        
+                    setSelectedUsers(data.users)     
                     if (imageData?.data) { 
                         const arrayBuffer = imageData.data;  
                         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: data.t01_logo_mimetype });
@@ -151,7 +154,9 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                 history: history,
                 primary: priColor,
                 secondary: secColor,
-                values: values
+                values: values,
+                users : selectedUsers.map(user =>  user.uuid )
+
             };
             const response = await api.post('/user/organization/setSets', { sets });
             if (response.status === 200) {
@@ -254,37 +259,42 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     backgroundColor: `${secondary}60`, 
                                 }}/>
                         </p>
-                        <div className="max-h-[200px] overflow-y-auto">
-                            <h2 className="mb-4">Valores de la organización</h2>
-                            {(values ?? []).map((value, index) => (
-                                <div key={index} className="flex items-center mb-2">
+                        <div className="flex">
+                            <div className="max-h-[200px] overflow-y-auto">
+                                <h2 className="mb-4">Valores de la organización</h2>
+                                {(values ?? []).map((value, index) => (
+                                    <div key={index} className="flex items-center mb-2">
+                                        <input
+                                            type="text"
+                                            value={value}
+                                            readOnly
+                                            className="border p-2 mr-2"
+                                        />
+                                        <button
+                                            className="bg-red-500 text-white px-1 py-1 rounded"
+                                            onClick={() => handleRemoveValue(index)}>
+                                            -
+                                        </button>
+                                    </div>
+                                ))}
+                                <div className="flex items-center mt-4 mr-5">
                                     <input
                                         type="text"
-                                        value={value}
-                                        readOnly
-                                        className="border p-2 mr-2"
+                                        value={newValue}
+                                        onChange={(e) => setNewValue(e.target.value)}
+                                        className="p-2 mr-2"
+                                        placeholder="Agregar nuevo valor"
                                     />
                                     <button
-                                        className="bg-red-500 text-white px-1 py-1 rounded"
-                                        onClick={() => handleRemoveValue(index)}>
-                                        -
+                                        className="bg-blue-500 text-white px-1 py-1 rounded"
+                                        onClick={handleAddValue}>
+                                        +
                                     </button>
                                 </div>
-                            ))}
-
-                            <div className="flex items-center mt-4">
-                                <input
-                                    type="text"
-                                    value={newValue}
-                                    onChange={(e) => setNewValue(e.target.value)}
-                                    className="p-2 mr-2"
-                                    placeholder="Agregar nuevo valor"
-                                />
-                                <button
-                                    className="bg-blue-500 text-white px-1 py-1 rounded"
-                                    onClick={handleAddValue}>
-                                    +
-                                </button>
+                            </div>
+                            <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
+                                <p className="block text-sm font-medium leading-6 text-black">Encargados de RH</p>
+                                <UsersChecks selectedOptions={selectedUsers} setSelectedOptions={setSelectedUsers}/>
                             </div>
                         </div>
                     </div>

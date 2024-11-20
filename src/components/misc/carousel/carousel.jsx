@@ -50,9 +50,7 @@ export const ECarousel = () => {
         api.post('/user/organization/fetchInfo', { orga })
         .then((response) => {
             const data = response.data;
-    
             const valuesArray = JSON.parse(data.values);
-    
             const fetchedCards = [
                 { id: 1, title: "Historia", description: data.history },
                 { id: 2, title: "Misión", description: data.mision },

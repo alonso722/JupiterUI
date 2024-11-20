@@ -9,7 +9,7 @@ import useApi from '@/hooks/useApi';
 
 import SideNavbarClientDashboard from '@/components/misc/sideBar';
 import TopNavbar from '@/components/misc/topMenu.jsx';
-import Profile from '@/components/profile/profile.jsx';
+import RhTable from '@/components/rhTable/rhTable';
 
 const SuspenseFallback = () => <div>Loading...</div>;
 
@@ -20,7 +20,7 @@ const PageContent = () => {
     const api = useApi();
     const [permissions, setPermissions] = useState([]);
     const effectMounted = useRef(false);
-    const user = searchParams.get('user');
+    const process = searchParams.get('process');
     const department = searchParams.get('department');
 
     const showToast = (type, message) => {
@@ -52,7 +52,7 @@ const PageContent = () => {
             <div className='flex'>
                 <TopNavbar />                
                 <SideNavbarClientDashboard />
-                <Profile userFilter={user}/>
+                <RhTable />
             </div>
         </div>
     );

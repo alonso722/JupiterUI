@@ -5,9 +5,11 @@ import { BsFillGrid3X2GapFill } from "react-icons/bs";
 import { FaTableCells, FaMapLocationDot, FaListCheck } from "react-icons/fa6";
 import { MdOutlineInventory } from "react-icons/md";
 import { useColors } from '@/services/colorService';
+import { TbUserShield } from "react-icons/tb";
 
 interface Permissions {
     Type: number;
+    isRh: number;
 }
 interface Workflows {
     coordinator: number;
@@ -57,6 +59,7 @@ export default function Sidebar() {
         { path: '/dashboard/table', icon: FaTableCells, label: 'Tabla de procesos',  condition: permissions?.Type === 1 || permissions?.Type === 6 || workflows?.coordinator !== 0 },
         { path: '/organizations', icon: FaBuilding, label: 'Organizacioness', condition: permissions?.Type === 6 },
         { path: '/departments', icon: FaSitemap, label: 'Departmentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/HHRR', icon: TbUserShield, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh=== 1 },
         { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory', icon: MdOutlineInventory, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory/assigned', icon:  FaListCheck, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
@@ -105,7 +108,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 2.3.5
+                    V 2.4.6
                 </div>
             </div>
         </div>

@@ -17,6 +17,7 @@ const CustomCalendar = () => {
   const api = useApi();
   const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
+  const [isChecked, setIsChecked] = useState(false);
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showModalPer, setShowModalPer] = useState(false);
@@ -100,8 +101,30 @@ const CustomCalendar = () => {
       console.error("Error al consultar eventos:", error);
     }
   };
+
+  const getChecks = async () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+      parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const uuid = parsedPermissions.uuid;
+    try {
+      const response = await api.post('/user/event/getChecks', { uuid });
+      const events = response.data;
+      const entranceDate = new Date(events.entrance);
+      const currentDate = new Date();
+      const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
+      if (differenceInHours < 8) {
+        setIsChecked(true);
+      }
+    } catch (error) {
+      console.error("Error al consultar eventos:", error);
+    }
+  };
   
   useEffect(() => {
+    getChecks();
     fetchEvents();
   }, []);
   
@@ -361,7 +384,6 @@ const CustomCalendar = () => {
                   style: {
                       backgroundColor: backgroundColor,
                       color: 'black',
-                      padding: '55px',
                   },
                   };
               }}
@@ -504,25 +526,36 @@ const CustomCalendar = () => {
             </div>
         </div>
         <div className='text-black w-[20%] max-h-[100px] shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
+          <div>
             <div>
-                <div><strong>Checador</strong>
-                </div>
-                <div className='mr-3 text-[30px] text-[#777E90]'>
-                    {time}
-                </div>
+              <strong>Checador</strong>
             </div>
-            <div className='flex mt-9 ml-4'>
-                <div>
-                    <button className='px-2 py-1 pointer rounded-lg text-white mb-2 mr-2' style={{ backgroundColor: primary }} onClick={handleAddEntrace}>
-                    Entrada
-                    </button>
-                </div>
-                <div>
-                    <button className='px-2 py-1 pointer rounded-lg text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
-                    Salida
-                    </button>
-                </div>
+            <div className='mr-3 text-[30px] text-[#777E90]'>
+              {time}
             </div>
+          </div>
+          <div className='flex mt-9 ml-4'>
+            <div>
+              {isChecked ? (
+                <div
+                  className="mr-2 rounded-lg flex items-center justify-center px-4 py-1 "
+                  style={{ backgroundColor: `${primary}90`, textAlign: 'center' }} >
+                  <span className="text-white text-[10px] font-semibold text-center">Entrada registrada</span>
+                </div>
+                ) : (
+                <button className='px-2 py-1 pointer rounded-lg text-white mb-2 mr-2'
+                  style={{ backgroundColor: primary }}
+                  onClick={handleAddEntrace}>
+                  Entrada
+                </button>
+              )}
+            </div>
+            <div>
+              <button className='px-2 py-1 pointer rounded-lg text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
+                Salida
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

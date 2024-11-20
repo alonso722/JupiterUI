@@ -10,7 +10,7 @@ import { IoMdDocument } from "react-icons/io";
 
 import { useColors } from '@/services/colorService';
 
-export const Profile = ({ departmentFilter, processFilter }) => {
+export const Profile = ({ departmentFilter, userFilter }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpen2, setIsModalOpen2] = useState(false);
     const [phone, setPhone] = useState('');
@@ -58,8 +58,13 @@ export const Profile = ({ departmentFilter, processFilter }) => {
             }
 
             const userType = parsedPermissions;
+            console.log(userType)
             const uuid = parsedPermissions.uuid;
             setUuid(uuid);
+
+            if(userFilter){
+              userType.uuid = userFilter
+            }
 
             userType.token = token;
             const profileResponse = await api.post('/user/users/profile', userType);
@@ -86,6 +91,9 @@ export const Profile = ({ departmentFilter, processFilter }) => {
       let organization = {};
       organization.organization = parsedPermissions.Organization;
       organization.uuid = parsedPermissions.uuid;
+      if(userFilter){
+        organization.uuid = userFilter
+      }
       api.post('/user/assignation/fetch', organization)
         .then((response) => {
           const fetchedData = response.data.map(item => ({
@@ -110,49 +118,109 @@ export const Profile = ({ departmentFilter, processFilter }) => {
       fetchInventory();
     }, []);
     
-      const enableEditMode = () => {
-        setEditMode(true); 
-      };
+    const enableEditMode = () => {
+      setEditMode(true); 
+    };
+
+    const handleFileUploadSwitch = (e, fileType) => {
+      console.log(fileType)
+      switch (fileType) {          
+          case 'cv':
+          case 'socio':
+          case 'recommendationP':
+          case 'data':
+          case 'recommendation':
+          case 'conf':
+          case 'contract':
+          case 'annx':
+              handleFileUploadLI(e, fileType);
+              break;
+  
+          default:
+              handleFileUpload(e, fileType);
+              break;
+      }
+    };
     
-      const handleFileUpload = async (e, fileType) => {
-        const selectedFile = e.target.files[0];
-        if (!selectedFile) {
-          showToast('error', 'Por favor, seleccione un archivo para cargar.');
-          return;
-        }
-        if (selectedFile.type !== 'application/pdf') {
-          showToast('error', 'Solo se permiten archivos PDF.');
-        } else {
-    
-          const formData = new FormData();
-          formData.append('file', selectedFile);
-          try {
-            const response = await api.post('/user/file/store', formData);
-            let filems = response.data.data;
-            filems.type = fileType;
-            filems.uuid = uuid;
-            let path = response.data.path;
-            if (response) {
-              api.post('/user/users/store', filems)
-                .then((response) => {
-                  if (response.status === 200) {
-                    showToast('success', 'Archivo cargado con éxito.');
-                    fetchData();
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error al almacenar el archivo:", error);
-                });
-            } else {
-              console.error('Error al cargar el archivo:', response.statusText);
-              alert('Error al cargar el archivo');
-            }
+    const handleFileUpload = async (e, fileType) => {
+      const selectedFile = e.target.files[0];
+      if (!selectedFile) {
+        showToast('error', 'Por favor, seleccione un archivo para cargar.');
+        return;
+      }
+      if (selectedFile.type !== 'application/pdf') {
+        showToast('error', 'Solo se permiten archivos PDF.');
+      } else {    
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        try {
+          const response = await api.post('/user/file/store', formData);
+          let filems = response.data.data;
+          filems.type = fileType;
+          filems.uuid = uuid;
+          let path = response.data.path;
+          if (response) {
+            api.post('/user/users/store', filems)
+              .then((response) => {
+                if (response.status === 200) {
+                  showToast('success', 'Archivo cargado con éxito.');
+                  fetchData();
+                }
+              })
+              .catch((error) => {
+                console.error("Error al almacenar el archivo:", error);
+              });
+          } else {
+            console.error('Error al cargar el archivo:', response.statusText);
+            alert('Error al cargar el archivo');
+          }
           } catch (error) {
             console.error('Error en la solicitud:', error);
             alert('Error en la solicitud');
           }
         }
     };
+
+    const handleFileUploadLI = async (e, fileType) => {
+      console.log("Profesionalllllllllllllllllll",fileType)
+      const selectedFile = e.target.files[0];
+      if (!selectedFile) {
+        showToast('error', 'Por favor, seleccione un archivo para cargar.');
+        return;
+      }
+      if (selectedFile.type !== 'application/pdf') {
+        showToast('error', 'Solo se permiten archivos PDF.');
+      } else {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        try {
+          const response = await api.post('/user/file/store', formData);
+          let filems = response.data.data;
+          filems.type = fileType;
+          filems.uuid = uuid;
+          let path = response.data.path;
+  
+          if (response) {
+            api.post('/user/users/storeP', filems)
+              .then((response) => {
+                if (response.status === 200) {
+                  showToast('success', 'Archivo cargado con éxito.');
+                  fetchData();
+                }
+              })
+              .catch((error) => {
+                console.error("Error al almacenar el archivo:", error);
+              });
+          } else {
+            console.error('Error al cargar el archivo:', response.statusText);
+            alert('Error al cargar el archivo');
+          }
+        } catch (error) {
+          console.error('Error en la solicitud:', error);
+          alert('Error en la solicitud');
+        }
+      }
+  };
     
     const enableEditModeLI = () => {
         setEditModeLI(true); 
@@ -178,45 +246,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
       setIsEditable(!isEditable);
     };
 
-    const handleFileUploadLI = async (e, fileType) => {
-        const selectedFile = e.target.files[0];
-        if (!selectedFile) {
-          showToast('error', 'Por favor, seleccione un archivo para cargar.');
-          return;
-        }
-        if (selectedFile.type !== 'application/pdf') {
-          showToast('error', 'Solo se permiten archivos PDF.');
-        } else {
-          const formData = new FormData();
-          formData.append('file', selectedFile);
-          try {
-            const response = await api.post('/user/file/store', formData);
-            let filems = response.data.data;
-            filems.type = fileType;
-            filems.uuid = uuid;
-            let path = response.data.path;
-    
-            if (response) {
-              api.post('/user/users/storeP', filems)
-                .then((response) => {
-                  if (response.status === 200) {
-                    showToast('success', 'Archivo cargado con éxito.');
-                    fetchData();
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error al almacenar el archivo:", error);
-                });
-            } else {
-              console.error('Error al cargar el archivo:', response.statusText);
-              alert('Error al cargar el archivo');
-            }
-          } catch (error) {
-            console.error('Error en la solicitud:', error);
-            alert('Error en la solicitud');
-          }
-        }
-    };
+
 
     return (
         <div className="mt-[60px] ml-[100px] w-[100%] text-neutral-50 rounded flex">
@@ -235,10 +265,12 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                 <input
                                   type="text"
                                   placeholder="Teléfono celular"
-                                  value={phone}
+                                  value={phone ?? ""}
                                   onChange={(e) => setPhone(e.target.value)}
                                   disabled={!isEditable}
-                                  className={`w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${isEditable ? 'cursor-text' : 'cursor-not-allowed'}`}
+                                  className={`w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
+                                    isEditable ? "cursor-text" : "cursor-not-allowed"
+                                  }`}
                                 />
                                 {isEditable ? (
                                   <CiSaveDown2
@@ -298,7 +330,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                                     />
                                                     <input
                                                       type="file"
-                                                      onChange={(e) => handleFileUpload(e, key)}
+                                                      onChange={(e) => handleFileUploadSwitch(e, key)}
                                                       className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
                                                       style={{ paddingLeft: '30px' }}
                                                     />
@@ -386,7 +418,7 @@ export const Profile = ({ departmentFilter, processFilter }) => {
                                                     />
                                                     <input
                                                       type="file"
-                                                      onChange={(e) => handleFileUploadLI(e, key)}
+                                                      onChange={(e) => handleFileUploadSwitch(e, key)}
                                                       className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
                                                       style={{ paddingLeft: '30px' }}
                                                     />
