@@ -135,7 +135,7 @@ export default function LoginForm({
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             error={errors.email}
-                            placeholder="Dirección de correo electrónico."
+                            placeholder="Escribe tu correo electrónico"
                             className="w-full bg-[#EDF2F7] text-[#7A828A]"
                         />
                     </div>
@@ -148,28 +148,24 @@ export default function LoginForm({
                             setPassword={setPassword}
                             onKeyDown={onPwdKeyDown}
                             error={errors.password}
-                            placeholder="Contraseña"
+                            placeholder="Escribe tu contraseña"
                         />
                     </div>
                     <div className="mr-[255px] flex mt-[8px] w-[120px]">
                         <button
                             type="button"
                             onClick={openForgotPasswordModal}
-                            className="mb-4 text-[11px] text-[#777E90] no-underline"
-                        >
+                            className="mb-4 text-[11px] text-[#777E90] no-underline">
                             ¿Olvidó su contraseña?
                         </button>
                     </div>
                     <div className="w-[376px] mt-[10px] flex justify-center">
-                        <Button
-                            rounded
-                            isLoading={isLoading}
+                        <button
                             type="submit" 
                             onClick={validate}
-                            color={colors.PRIMARY}
-                            className="w-full outline-0">
+                            className="w-full outline-0 bg-[#FDD500] py-3 rounded-full ">
                             Entrar
-                        </Button>
+                        </button>
                     </div>
                     {/* <p className='my-[17px] text-[#777E90]'>o accede mediante otra cuenta</p>
                     <AuthOptions/> */}

@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useRecoilState } from 'recoil';
 import { authState } from '@/state/auth';
 import useApi from '@/hooks/useApi';
+import { FaRegBell } from "react-icons/fa6";
 import { useColors } from '@/services/colorService';
 
 export default function TopNewMenuClientDashboard() {
@@ -265,7 +266,7 @@ export default function TopNewMenuClientDashboard() {
                         <Menu as="div" className="relative inline-block text-left">
                             <div className="relative">
                                 <Menu.Button className="inline-flex justify-center rounded-full px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-200">
-                                    <i className="fas fa-bell"></i>
+                                <FaRegBell className="w-[18px] h-[21px]" style={{ color: "#9ca3af" }} />
                                     {unreadCount > 0 && (
                                         <span className="absolute top-0 right-0 inline-flex items-center justify-center h-4 w-4 rounded-full text-xs text-white"
                                             style={{ backgroundColor: primary }}>

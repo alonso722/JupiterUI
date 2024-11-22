@@ -53,7 +53,6 @@ const RhTable = () => {
         const organization = parsedPermissions.Organization;
         api.post('/user/users/fetchRH', { organization })
             .then((response) => {
-                console.log(response.data.data)
                 const fetchedData = response.data.data.map(item => {
                     let entrance = '';
                     let leave = '';

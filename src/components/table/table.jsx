@@ -216,7 +216,7 @@ const TanStackTable = () => {
         }),
         columnHelper.accessor("updated", {
             cell: (info) => <span>{info.getValue()}</span>,
-            header: "Actualización",
+            header: "Última actualización",
         }),
         columnHelper.accessor("actions", {
             cell: (info) => (
@@ -229,7 +229,6 @@ const TanStackTable = () => {
             enableSorting: false, 
         }),
     ];
-
 
     const handleModalClose = () => {
         fetchData(); 

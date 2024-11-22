@@ -109,7 +109,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
         <div className="mt-[80px] ml-[110px] mr-[0px] text-neutral-50 rounded overflow-hidden">
             <div className="flex w-full"> 
                 <div className="flex-1 mr-[20px] max-w-[calc(95%-320px)]"> 
-                    <p className="text-black text-[24px]">Bienvenido de vuelta, <b>{name}</b>!</p>
+                    <p className="text-black text-[20px] mt-9"><b>¡Bienvenido de vuelta, {name}!</b></p>
                     <ECarousel />
                     <Board 
                         onCardClick={handleCardClick} 
