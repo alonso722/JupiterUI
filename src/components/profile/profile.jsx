@@ -59,7 +59,6 @@ export const Profile = ({ departmentFilter, userFilter }) => {
             }
 
             const userType = parsedPermissions;
-            console.log(userType)
             const uuid = parsedPermissions.uuid;
             setUuid(uuid);
 
@@ -70,7 +69,6 @@ export const Profile = ({ departmentFilter, userFilter }) => {
             userType.token = token;
             const profileResponse = await api.post('/user/users/profile', userType);
             const fullName = `${profileResponse.data.name} ${profileResponse.data.last}`;
-            console.log(fullName)
             setName(fullName)
             setPhone(profileResponse.data.phone)
             setInfo(profileResponse.data, parsedPermissions);
@@ -126,8 +124,14 @@ export const Profile = ({ departmentFilter, userFilter }) => {
       setEditMode(true); 
     };
 
+    const viewArchive = () => {
+      setIsModalOpen(true); 
+    };
+
     const handleReplace = (file, key) => {
-      console.log(file,"|||||", key)
+      let filecom = {};
+      filecom.file = file;
+      filecom.type = key;
       switch (key) {          
         case 'cv':
         case 'socio':
@@ -137,23 +141,26 @@ export const Profile = ({ departmentFilter, userFilter }) => {
         case 'conf':
         case 'contract':
         case 'annx':
-            replaceLI(file);
+            replaceLI(filecom);
             break;
 
         default:
-            replace(file);
+            replace(filecom);
             break;
       }
     };
 
-    const replace = (file, key) => { 
+    const replace = (filecom) => { 
       let update ={};
       update.uuid = userFilter;
-      update.file= file;   
+      update.file= filecom.file;
+      update.type = filecom.type;   
       api.post('/user/users/replaceFile', update)
       .then((response) => {
-        if (response.data.code === 200) {
-          onClose();
+        if (response.status === 200) {
+          fetchData();
+          fetchInventory();
+          showToast('success', 'Archivo retirado.');
         }
       })
       .catch((error) => {
@@ -161,14 +168,17 @@ export const Profile = ({ departmentFilter, userFilter }) => {
       });
     }
 
-    const replaceLI = (file, key) => {    
+    const replaceLI = (filecom) => {    
       let update ={};
       update.uuid = userFilter;
-      update.file= file;
+      update.file= filecom.file;
+      update.type = filecom.type;
       api.post('/user/users/replaceFileLI', update)
       .then((response) => {
-        if (response.data.code === 200) {
-          onClose();
+        if (response.status === 200) {
+          fetchData();
+          fetchInventory();
+          showToast('success', 'Archivo retirado.');
         }
       })
       .catch((error) => {
@@ -300,7 +310,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
     return (
         <div className="mt-[60px] ml-[100px] w-[100%] text-neutral-50 rounded flex">
             <div className="mt-8 text-black  ">
-                <div className="mb-5">
+              <div className="mb-5">
                 <div className="flex">
                     <h1 className="text-black text-xl mb-5 ">
                         <strong>Información personal</strong>
@@ -345,7 +355,15 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                               <div>
                                 <p className="mr-9 text-[#B1B5C3]"><strong>Correo:</strong></p>
                                 <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
-                              </div>   
+                              </div>  
+                              {userFilter && (
+                                <button
+                                  onClick={() => viewArchive()}
+                                  className="p-2 rounded text-white h-[30px] text-[10px] mt-6 ml-3 mr-[20px]"
+                                  style={{ backgroundColor: primary }}>
+                                  Archivos anteriores
+                                </button>
+                              )}
                             </div>
                             <div className="">
                                 <div className="bg-white overflow-auto relative">
@@ -539,7 +557,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                     </div>
                 </div>
               </div> 
-              {isModalOpen && <UserInfoModal isOpen={isModalOpen} uuid={permissions} onClose={() => setIsModalOpen(false)} />}
+              {isModalOpen && <UserInfoModal isOpen={isModalOpen} uuid={userFilter} onClose={() => setIsModalOpen(false)} />}
               {isModalOpen2 && <LaboralInfoModal isOpen={isModalOpen2} uuid={permissions} onClose={() => setIsModalOpen2(false)} />}
               {isViewerOpen && (
                 <DocsViewer
@@ -547,7 +565,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                   onClose={closeViewer}/>
               )}
             </div>
-            <div className="text-black mt-[80px] ml-[5%] pl-[5%] border-l-4 w-[17%]">
+            <div className="text-black mt-[80px] ml-[5%] pl-[5%] border-l-4 w-[20%]">
               <p className="mb-4"><strong>Equipo asignado:</strong></p>
               {inventory.map((item, index) => (
                 <div key={index}>

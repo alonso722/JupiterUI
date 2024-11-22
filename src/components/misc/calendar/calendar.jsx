@@ -199,6 +199,7 @@ const CustomCalendar = () => {
             uuid: uuid  
           })
             .then((response) => {
+              getChecks();
               showToast('success',"Entrada registrada");
             })
             .catch((error) => {
@@ -244,6 +245,7 @@ const CustomCalendar = () => {
             uuid: uuid  
           })
             .then((response) => {
+              getChecks();
               showToast('success',"Salida registrada");
             })
             .catch((error) => {
