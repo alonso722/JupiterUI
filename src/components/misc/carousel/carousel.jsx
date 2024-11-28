@@ -55,24 +55,20 @@ export const ECarousel = () => {
                 { id: 1, title: "Historia", description: data.history },
                 { id: 2, title: "Misión", description: data.mision },
                 { id: 3, title: "Visión", description: data.vision },
-                {
-                    id: 4,
-                    title: "Valores",
-                    description: (
-                        <span className="p-4">
-                            {Array.isArray(valuesArray) && valuesArray.length > 0 ? (
-                                valuesArray.map((value, index) => (
-                                    <span key={`value-${index}`} className="mr-4">
-                                        {index > 0 && <span> • </span>}
-                                        {value}
-                                    </span>
-                                ))
-                            ) : (
-                                <span>No hay valores disponibles</span>
-                            )}
-                        </span>
-                    )
-                }                                                         
+                { id: 4, title: "Valores", description: (
+                    <span className="p-4">
+                        {Array.isArray(valuesArray) && valuesArray.length > 0 ? (
+                            valuesArray.map((value, index) => (
+                                <span key={`value-${index}`} className="mr-4">
+                                    {index > 0 && <span> • </span>}
+                                    {value}
+                                </span>
+                            ))
+                        ) : (
+                            <span>No hay valores disponibles</span>
+                        )}
+                    </span>
+                )}                                                         
             ];
             setCards(fetchedCards);
         })
@@ -117,7 +113,7 @@ export const ECarousel = () => {
                         <div key={card.id} className="text-black p-3">
                             <div className="rounded-lg ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
                                 <h3 className="text-lg font-bold black">{card.title}</h3>
-                                <p className="text-sm my-2 text-gray-black">{card.description}</p>      
+                                <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>      
                             </div>
                         </div>
                     ))

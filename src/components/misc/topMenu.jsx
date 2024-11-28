@@ -24,7 +24,7 @@ export default function TopNewMenuClientDashboard() {
     const [logoUrl, setLogoUrl] = useState('');
     const api = useApi();
     const { primary, secondary } = useColors();
-    
+     const [notifications, setNotifications] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [files, setFile] = useState([]);
 
@@ -35,9 +35,7 @@ export default function TopNewMenuClientDashboard() {
         });
     };
 
-    const [notifications, setNotifications] = useState([ ]);
-
-      const getNotificationMessage = (type, process) => {
+    const getNotificationMessage = (type, process, file) => {
         switch (type) {
           case 1:
             return `Se te asignó un rol en el proceso: ${process}`;
@@ -45,6 +43,8 @@ export default function TopNewMenuClientDashboard() {
             return `Se actualizó el estado del proceso: ${process}`;
           case 3:
             return `Se realizó un comentario en el proceso: ${process}`;
+          case 4:
+            return `Se necesita una actualizacion de tu: ${file}`;
           default:
             return `Notificación relacionada con el ${process}`;
         }
@@ -96,10 +96,36 @@ export default function TopNewMenuClientDashboard() {
               });
               api.post('/user/notifications/fetch', {uuid})
               .then((response) => {
-                const nots = response.data
-                setNotifications(nots)
-
-              })
+                const nots = response.data;
+              
+                // Mapeo entre key y label
+                const keyToLabelMap = {
+                  cv: 'Currículum',
+                  birth: 'Acta de nacimiento',
+                  address: 'Comp. de domicilio',
+                  dni: 'Ident. Oficial',
+                  socio: 'Cartilla',
+                  studies: 'Comprobante de estudios',
+                  recommendationP: 'Recomendaciones',
+                  nss: 'Número de Seguro Social',
+                  bills: 'Cuenta Bancaria',
+                  saving: 'Crédito INFONAVIT',
+                  data: 'Requisición de personal',
+                  recommendation: 'Referencia Laboral',
+                  conf: 'Autorizacion de contratación',
+                  medic: 'Certificado médico',
+                  driver: 'Licencia de conducir',
+                  fiscal: 'Constancia de situación fiscal',
+                  curp: 'CURP',
+                  contract: 'Contrato',
+                  annx: 'Hoja de control'
+                };
+                const updatedNots = nots.map((notification) => {
+                  const updatedFile = keyToLabelMap[notification.file] || notification.file;
+                  return { ...notification, file: updatedFile };
+                });
+                setNotifications(updatedNots);
+              })              
               .catch((error) => {
                 console.error("Error al consultar notificaciones", error);
               });
@@ -130,7 +156,7 @@ export default function TopNewMenuClientDashboard() {
             const response = await api.post('/user/time/getTime', {uuid});
             const time = response.data;
             if(time.code == 1 ){
-                showToast('warning', 'Hora límite de registro de entrada!');
+                showToast('warning', '¡Atención! Realiza el registro de entrada antes de que el tiempo expire.');
             }
             if(time.code == 2 ){
                 showToast('warning', 'No olvides registrar tu salida...');
@@ -291,7 +317,7 @@ export default function TopNewMenuClientDashboard() {
                                                                     <span className="min-h-[10px] min-w-[10px] rounded-full mr-2" style={{ backgroundColor: primary }}></span>
                                                                 )}
                                                                 <div>
-                                                                   <span>{getNotificationMessage(notification.type, notification.processName)}</span>
+                                                                   <span>{getNotificationMessage(notification.type, notification.processName, notification.file)}</span>
                                                                 <p className='text-[9px] text-black'>{new Date(notification.date).toLocaleString()}</p> 
                                                                 </div>
                                                             </div>

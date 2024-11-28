@@ -12,9 +12,7 @@ import { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import Search from "@/components/table/search";
 import Actions from "./actions";
-import { Button } from "@/components/form/button"; 
-import { colors } from "@/components/types/enums/colors"; 
-import AddUserForm from "@/components/forms/addUser"; 
+import VacationsForm from "@/components/forms/setVacations"; 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
 import { useColors } from '@/services/colorService';
@@ -159,7 +157,7 @@ const RhTable = () => {
             cell: (info) => {
                 const count = info.getValue();
                 if (count === 1) {
-                    return <span>Colborador con un equipo asignado</span>;
+                    return <span>Colaborador con un equipo asignado</span>;
                 } else if (count === 0) {
                     return <span>Sin equipo asignado</span>;
                 } else {
@@ -167,21 +165,6 @@ const RhTable = () => {
                 }
             },
             header: "Equipo asignado",
-        }),
-        columnHelper.accessor("actions", {
-            cell: (info) => (
-                permissions.Type === 1 ? (
-                    <Actions
-                        onActionClick={(id) => handleActionClick(id)}
-                        rowData={info.row.original} 
-                        onClose={() => {
-                            setRefreshTable(true);
-                        }} 
-                    />
-                ) : null
-            ),
-            header: "", 
-            enableSorting: false, 
         }),
     ];    
 
@@ -230,13 +213,11 @@ const RhTable = () => {
                 </div>
                 {permissions.Type === 1 && (
                     <div className="mt-[10px] mr-[120px]">
-                        <Button
-                            className="w-[126px]"
-                            color={colors.DARK_JUPITER_OUTLINE}
+                        <button className="w-[126px] text-black border-2 rounded-lg py-2"
                             onClick={handleButtonClick}>
-                            Añadir +
-                        </Button>
-                        {showForm && <AddUserForm onClose={handleCloseForm} />}
+                            Vacaciones
+                        </button>
+                        {showForm && <VacationsForm onClose={handleCloseForm} isOpen={showForm}/>}
                     </div>
                 )}
             </div>

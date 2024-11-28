@@ -15,6 +15,7 @@ const AddUserForm = ({ user, onClose }) => {
   const [userLast, setUserLast] = useState('');
   const [userMail, setUserMail] = useState('');
   const [userPass, setUserPass] = useState('');
+  const [userDate, setUserDate] = useState('');
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const effectMounted = useRef(false);
@@ -105,12 +106,14 @@ const AddUserForm = ({ user, onClose }) => {
               last: response.data.last,
               mail: response.data.mail,
               pass: response.data.pass,
+              date: response.data.date,
             };
             setData(fetchedData);
             setUserName(fetchedData.name);
             setUserLast(fetchedData.last);
             setUserMail(fetchedData.mail);
             setUserPass(fetchedData.pass);
+            setUserDate(fetchedData.date);
           })
           .catch((error) => {
             console.error("Error al consultar usuario:", error);
@@ -121,8 +124,8 @@ const AddUserForm = ({ user, onClose }) => {
   }, [user, departments]);
   
   const handleAddUser = () => {
-    if (!userName) {
-        showToast('error', "Por favor, nombre al usuario");
+    if (!userName || !userLast || !userMail || userPass || userDate) {
+        showToast('error', "Por favor, llene todos los campos");
         return;
     }
 
@@ -160,6 +163,7 @@ const AddUserForm = ({ user, onClose }) => {
       userLast,
       userMail,
       userPass,
+      userDate,
       department: selectedDepartments[0].department,
       role: roleName,
     };
@@ -209,6 +213,7 @@ const AddUserForm = ({ user, onClose }) => {
       userLast,
       userMail,
       userPass,
+      userDate,
       department: selectedDepartments[0].department,
       role: roleName,
       uuid,
@@ -312,11 +317,22 @@ const AddUserForm = ({ user, onClose }) => {
             )}
           </Listbox>
           <p className=" mt-[20px] mb-4 text-black w-[70%]">
+          <p className='mb-2'>Correo corporativo:</p>
             <input
               type="text"
               placeholder="Email"
               value={userMail}
               onChange={(e) => setUserMail(e.target.value)}
+              className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
+            />
+          </p>
+          <p className="mt-[20px] mb-4 text-black w-[70%]">
+            <p className='mb-2'>Fecha de ingreso:</p>
+            <input
+              type="date"
+              placeholder="Fecha de ingreso"
+              value={userDate ? userDate.split('T')[0] : ''} 
+              onChange={(e) => setUserDate(e.target.value)}
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </p>

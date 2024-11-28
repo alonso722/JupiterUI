@@ -24,6 +24,7 @@ const CustomCalendar = () => {
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
   const [type, setType] = useState('');
   const [time, setTime] = useState('');
+  const [days, setDays] = useState('');
   
   const showToast = (type, message) => {
     toast[type](message, {
@@ -140,7 +141,7 @@ const CustomCalendar = () => {
       return;
     }
     if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
-      showToast('warning', "Revise las fechas de inicio y término");
+      showToast('warning', "Revise las fechas de inicio y fin");
       return;
     }
 
@@ -163,39 +164,53 @@ const CustomCalendar = () => {
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
-      parsedPermissions = JSON.parse(storedPermissions);
+        parsedPermissions = JSON.parse(storedPermissions);
     }
     const uuid = parsedPermissions.uuid;
     let nType;
-    switch(type) {
-      case 'Permiso':
-          nType = 3;
-          break;
-      case 'Vacaciones':
-          nType = 4;
-          break;
-      case 'Incapacidad':
-          nType = 5;
-          break;
-      default:
-          nType = 3; 
-  }
-    if (!nType){
-      showToast('error',"Por favor, seleccione una opción...");
-      return;
+
+    switch (type) {
+        case 'permiso':
+            nType = 3;
+            break;
+        case 'vacaciones':
+            nType = 4;
+            break;
+        case 'incapacidad':
+            nType = 5;
+            break;
+        default:
+            nType = 3;
     }
+
+    if (!nType) {
+        showToast('error', "Por favor, seleccione una opción...");
+        return;
+    }
+    if (type === 'vacaciones') {
+        const eventStart = new Date(newEvent.start);
+        const eventEnd = new Date(newEvent.end);
+        const eventDuration = Math.ceil(
+            (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24) + 1
+        );
+        if (eventDuration > days) {
+            showToast('error', `No puedes solicitar ${eventDuration} días de vacaciones. Solo tienes ${days} disponibles.`);
+            return;
+        }
+    }
+
     try {
-      await api.post('/user/event/add', {
-        ...newEvent,
-        type: nType,
-        uuid: uuid
-      });
-      showToast('success',"Evento registrado");
-      setShowModalPer(false);
-  
-      fetchEvents();
+        await api.post('/user/event/add', {
+            ...newEvent,
+            type: nType,
+            uuid: uuid,
+        });
+        showToast('success', "Evento registrado");
+        setShowModalPer(false);
+
+        fetchEvents();
     } catch (error) {
-      console.error('Error al añadir el evento:', error);
+        console.error('Error al añadir el evento:', error);
     }
   };
 
@@ -295,6 +310,7 @@ const CustomCalendar = () => {
             value={view}>
             <option value='month'>Mes</option>
             <option value='week'>Semana</option>
+            <option value='day'>Día</option>
           </select>
           </div>
           <div className='flex text-[#777E90] justify-between px-11'>
@@ -320,6 +336,24 @@ const CustomCalendar = () => {
         </div>
       </div>
     );
+  };
+
+  const getAvailableVacationDays = () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions'); 
+    if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const organization = parsedPermissions.Organization;
+    const uuid = parsedPermissions.uuid;
+    api.post('/user/vacations/getVacations', {uuid})
+      .then((response) => {
+        setDays(response.data.days);
+        showToast('warning', `Tienes ${response.data.days} días de vacaciones disponibles.`);        
+      })
+      .catch((error) => {
+        console.error('Error al añadir el evento:', error);
+      });
   };
 
   const CustomEvent = ({ event }) => {
@@ -429,9 +463,9 @@ const CustomCalendar = () => {
                   style: {
                       backgroundColor: backgroundColor,
                       border: 'none', 
-                      borderRadius: '999px',
+                      borderRadius: '90px',
                       color: 'white',
-                      padding: '5px',
+                      padding: '30px',
                       margin: '2px',
                   },
                   };
@@ -486,18 +520,21 @@ const CustomCalendar = () => {
                     type='text'
                     placeholder='Título'
                     value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                />
-                <select
-                    value={type}  
-                    onChange={(e) => setType(e.target.value)} 
-                    className="mt-2 mb-4 w-full p-2 border rounded"
-                >
-                    <option value="" disabled>Seleccionar tipo de solicitud</option>
-                    <option value="vacaciones">Vacaciones</option>
-                    <option value="incapacidad">Incapacidad</option>
-                    <option value="permiso">Permiso</option>
-                </select>
+                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}/>
+                  <select
+                      value={type}
+                      onChange={(e) => {
+                          setType(e.target.value);
+                          if (e.target.value === "vacaciones") {
+                              getAvailableVacationDays();
+                          }
+                      }}
+                      className="mt-2 mb-4 w-full p-2 border rounded">
+                      <option value="" disabled>Seleccionar tipo de solicitud</option>
+                      <option value="vacaciones">Vacaciones</option>
+                      <option value="incapacidad">Incapacidad</option>
+                      <option value="permiso">Permiso</option>
+                  </select>
                 <div>
                     <input
                     type='datetime-local'

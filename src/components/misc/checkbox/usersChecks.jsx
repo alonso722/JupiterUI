@@ -106,20 +106,24 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
       </div>
       {showOptions && (
         <div className="mt-2 max-h-[100px] overflow-x-auto">
-          {options.filter(option => !selectedOptions.some(selected => selected.uuid === option.uuid)).map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
-              <span
-                className='max-w-[300px] w-auto truncate'
-                title={option.name}>
-                {option.name} {option.last}
-              </span>
-              <button
-                className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
-                onClick={() => handleAddOption(option)}>
-                +
-              </button>
-            </div>
-          ))}
+          {options
+            .filter(option => 
+              !(Array.isArray(selectedOptions) && selectedOptions.some(selected => selected.uuid === option.uuid))
+            )
+            .map((option, index) => (
+              <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
+                <span
+                  className='max-w-[300px] w-auto truncate'
+                  title={option.name}>
+                  {option.name} {option.last}
+                </span>
+                <button
+                  className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
+                  onClick={() => handleAddOption(option)}>
+                  +
+                </button>
+              </div>
+            ))}
         </div>
       )}
       <div className='border mt-3 p-2 max-h-[170px]'>
@@ -127,7 +131,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
           <b>Usuarios seleccionados:</b>
         </h3>
         <div className='max-h-[200px] flex overflow-x-auto'>
-          {selectedOptions.map((option, index) => (
+          {(Array.isArray(selectedOptions) ? selectedOptions : []).map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
               <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
                 {option.name && option.name.length > 0 ? `${option.name} ${option.last}` : `${option.name} ${option.last}`}

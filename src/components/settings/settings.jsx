@@ -155,7 +155,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                 primary: priColor,
                 secondary: secColor,
                 values: values,
-                users : selectedUsers.map(user =>  user.uuid )
+                users: Array.isArray(selectedUsers) ? selectedUsers.map(user => user.uuid) : []
 
             };
             const response = await api.post('/user/organization/setSets', { sets });

@@ -158,7 +158,7 @@ const CustomCalendar = () => {
       return;
     }
     if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
-      showToast('warning', "Revise las fechas de inicio y término");
+      showToast('warning', "Revise las fechas de inicio y fin");
       return;
     }
 
@@ -197,14 +197,18 @@ const CustomCalendar = () => {
             title: 'Entrada',
             orga: organization, 
             uuid: uuid  
-          })
+        })
             .then((response) => {
-              getChecks();
-              showToast('success',"Entrada registrada");
+                getChecks();
+                showToast('success', "Entrada registrada");
             })
             .catch((error) => {
-              console.error('Error al añadir el evento:', error);
-            });
+                const errorMessage = error.response && error.response.data
+                    ? `Entrada no registrada: ${error.response.data}`
+                    : "Entrada no registrada: Error desconocido";
+                showToast('warning', errorMessage);
+                console.error('Error al añadir el evento:', error);
+            });        
   
           setEvents([...events, { 
             ...newEvent,

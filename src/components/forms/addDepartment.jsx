@@ -178,13 +178,13 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
             <h2 className="text-2xl mt-[15px] mb-4 text-black">
               <input
                 type="text"
-                placeholder="Nombre del area o departamento"
+                placeholder="Nombre del área o departamento"
                 value={departmentName}
                 onChange={(e) => setDepartmentName(e.target.value)}
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
               />
             </h2>
-            <p className="mb-4 text-black mt-3">Detalles del area o departamento:</p>
+            <p className="mb-4 text-black mt-3">Detalles del área o departamento:</p>
             {rowData && (
               <>
                 {users.length > 0 ? (
@@ -255,7 +255,7 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
                   <Listbox value={selected} onChange={handleDepartmentChange} className=" w-[200px] max-w-[200px] text-black">
                     {({ open }) => (
                       <>
-                        <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Seleccione qué es su area superior:</Listbox.Label>
+                        <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Seleccione qué es su área superior:</Listbox.Label>
                         <div className="relative mt-2">
                           <Listbox.Button className="relative w-auto cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
                             <span className="flex items-center">
@@ -307,7 +307,7 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
                       <Listbox value={selectedSubDepartment} onChange={handleSubDepartmentChange} className="max-w-[100px] text-black">
                         {({ open }) => (
                           <>
-                            <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Seleccione un area:</Listbox.Label>
+                            <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Seleccione un área:</Listbox.Label>
                             <div className="relative mt-2">
                               <Listbox.Button className="relative w-auto cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
                                 <span className="flex items-center">

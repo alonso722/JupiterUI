@@ -220,6 +220,9 @@ export const Profile = ({ departmentFilter, userFilter }) => {
           let filems = response.data.data;
           filems.type = fileType;
           filems.uuid = uuid;
+          if(userFilter){
+            filems.uuid = userFilter;
+          }
           let path = response.data.path;
           if (response) {
             api.post('/user/users/store', filems)
@@ -259,6 +262,9 @@ export const Profile = ({ departmentFilter, userFilter }) => {
           let filems = response.data.data;
           filems.type = fileType;
           filems.uuid = uuid;
+          if(userFilter){
+            filems.uuid = userFilter;
+          }
           let path = response.data.path;
   
           if (response) {
