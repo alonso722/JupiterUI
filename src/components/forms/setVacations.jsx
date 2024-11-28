@@ -49,7 +49,8 @@ const VacationsForm = ({ isOpen, onClose }) => {
   };
 
   const handleAddYear = () => {
-    if(yearStart>yearEnd){
+    console.log(yearStart, yearEnd)
+    if(yearEnd && yearStart>yearEnd){
       showToast('warning', "La año de termino del bloque no debe ser previo al de inicio");
       return;
     }
@@ -169,15 +170,13 @@ const VacationsForm = ({ isOpen, onClose }) => {
                 )}
                 <input
                   type="number"
-                  placeholder="Período"
+                  placeholder="Días asignados"
                   value={yearsDays}
                   onChange={(e) => setYearsDays(e.target.value)}
-                  className="p-2 text-black border-b-2 border-gray-300 focus:border-grey-500 outline-none ml-2"
-                />
+                  className="p-2 text-black border-b-2 border-gray-300 focus:border-grey-500 outline-none ml-2"/>
                 <button
                   onClick={handleAddYear}
-                  className="ml-2 bg-gray-300 text-black px-2 py-1 rounded"
-                >
+                  className="ml-2 bg-gray-300 text-black px-2 py-1 rounded">
                   +
                 </button>
               </div>

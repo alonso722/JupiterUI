@@ -531,8 +531,9 @@ const Details = ({ card, onClose }) => {
   };
 
   const isListboxDisabled = () => {
-    if (permissions.Type === 1 || permissions.Type === 6) {
-      return false;
+    let isDisabled = true;
+    if (permissions.Type == 1 || permissions.Type == 6) {
+      return isDisabled;
     }
   
     let parsedWorkflows;
@@ -541,27 +542,30 @@ const Details = ({ card, onClose }) => {
       parsedWorkflows = JSON.parse(storedWorkflows);
     }
   
-    let isDisabled = true;
-  
     if (parsedWorkflows && card) {
       if (parsedWorkflows.coordinator === 0) {
         return true; 
       }
   
       const cardId = Number(card.id);
-      if (card.column === "Edición") {
-        isDisabled = !parsedWorkflows.editorOf.includes(cardId);
-      } else if (card.column === "Revisión") {
-        isDisabled = !parsedWorkflows.revisorOf.includes(cardId);
-      } else if (card.column === "Aprobación") {
-        isDisabled = !parsedWorkflows.aprobatorOf.includes(cardId);
-      } else if (card.column === "Aprobado") {
-        isDisabled = true; 
-      } else {
-        isDisabled = false; 
-      }
+      switch (card.column) {
+        case "Edición":
+            isDisabled = !parsedWorkflows.editorOf.includes(cardId);
+            break;
+        case "Revisión":
+            isDisabled = !parsedWorkflows.revisorOf.includes(cardId);
+            break;
+        case "Aprobación":
+            isDisabled = !parsedWorkflows.aprobatorOf.includes(cardId);
+            break;
+        case "Aprobado":
+            isDisabled = true;
+            break;
+        default:
+            isDisabled = false;
+            break;
+    }    
     }
-  
     return isDisabled;
   };
   
@@ -848,7 +852,7 @@ const Details = ({ card, onClose }) => {
               </Listbox>
               </div>
               <div className="flex items-center pl-7">
-              {!isListboxDisabled() && card.column == "Aprobación" && card.column == "Revisión" && (
+              {!isListboxDisabled() && (card.column == "Aprobación" || card.column == "Revisión") && (
                 <button
                   className="bg-red-500 text-white px-4 py-2 rounded"
                   onClick={handleReject}>
