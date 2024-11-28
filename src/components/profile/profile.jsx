@@ -376,13 +376,14 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                                     <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden mt-4'>
                                       <ul className='w-full '>
                                         {[
-                                          { label: 'Currículum', key: 'cv', file: infoLI.cv },
                                           { label: 'Acta de nacimiento', key: 'birth', file: info.birth },
                                           { label: 'Comp. de domicilio', key: 'address', file: info.address },
                                           { label: 'Ident. Oficial', key: 'dni', file: info.dni },
-                                          { label: 'Cartilla', key: 'socio', file: infoLI.socio },
+                                          { label: 'Certificado médico', key: 'medic', file: info.medic },
+                                          { label: 'Licencia de conducir', key: 'driver', file: info.driver },
                                           { label: 'Comprobante de estudios', key: 'studies', file: info.studies },
-                                          { label: 'Recomendaciones', key: 'recommendationP', file: infoLI.recommendationP },
+                                          { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal }, 
+                                          { label: 'CURP', key: 'curp', file: info.curp },
                                           { label: 'Número de Seguro Social', key: 'nss', file: info.nss },
                                           { label: 'Cuenta Bancaria', key: 'bills', file: info.bills },
                                           { label: 'Crédito INFONAVIT', key: 'saving', file: info.saving },
@@ -490,13 +491,12 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                             <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden my-4'>
                               <ul className='w-full '>
                                 {[
+                                  { label: 'Currículum', key: 'cv', file: infoLI.cv },
                                   { label: 'Requisición de personal', key: 'data', file: infoLI.data },
                                   { label: 'Referencia Laboral', key: 'recommendation', file: infoLI.recommendation },
                                   { label: 'Autorizacion de contratación', key: 'conf', file: infoLI.conf },
-                                  { label: 'Certificado médico', key: 'medic', file: info.medic },
-                                  { label: 'Licencia de conducir', key: 'driver', file: info.driver },
-                                  { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal }, 
-                                  { label: 'CURP', key: 'curp', file: info.curp },
+                                  { label: 'Cartilla', key: 'socio', file: infoLI.socio },
+                                  { label: 'Recomendaciones', key: 'recommendationP', file: infoLI.recommendationP },
                                   { label: 'Contrato', key: 'contract', file: infoLI.contract },                                         
                                   { label: 'Hoja de control', key: 'annx', file: infoLI.annx }
                                 ].map(({ label, key, file }) => (

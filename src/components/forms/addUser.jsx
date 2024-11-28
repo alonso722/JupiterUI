@@ -124,7 +124,7 @@ const AddUserForm = ({ user, onClose }) => {
   }, [user, departments]);
   
   const handleAddUser = () => {
-    if (!userName || !userLast || !userMail || userPass || userDate) {
+    if (!userName || !userLast || !userMail || !userPass || !userDate) {
         showToast('error', "Por favor, llene todos los campos");
         return;
     }
