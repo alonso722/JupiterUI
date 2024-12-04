@@ -267,7 +267,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
             {isDeleteModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
-                        <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar el usuario?</h1>
+                    <p className="mb-[20px] text-center text-black" style={{ textTransform: 'none' }}>¿Estás seguro que deseas eliminar el usuario?</p>
                         <div className="flex justify-between w-full px-8">
                             <button
                                 className="text-white p-3 rounded-lg flex-grow mx-4"

@@ -35,17 +35,21 @@ export default function TopNewMenuClientDashboard() {
         });
     };
 
-    const getNotificationMessage = (type, process, file) => {
+    const getNotificationMessage = (type, process, file, requester) => {
         switch (type) {
-          case 1:
-            return `Se te asignó un rol en el proceso: ${process}`;
-          case 2:
-            return `Se actualizó el estado del proceso: ${process}`;
-          case 3:
-            return `Se realizó un comentario en el proceso: ${process}`;
-          case 4:
-            return `Se necesita una actualizacion de tu: ${file}`;
-          default:
+            case 1:
+                return `Se te asignó un rol en el proceso: ${process}`;
+            case 2:
+                return `Se actualizó el estado del proceso: ${process}`;
+            case 3:
+                return `Se realizó un comentario en el proceso: ${process}`;
+            case 4:
+                return `Se necesita una actualizacion de tu: ${file}`;
+            case 5:
+                return `Se necesita tu aprobación en una solicitud de vacaciones`;
+            case 6:
+                return `Hubo un cambio en el estatus de tu solicitud de vacaciones`;
+        default:
             return `Notificación relacionada con el ${process}`;
         }
       };
@@ -244,6 +248,8 @@ export default function TopNewMenuClientDashboard() {
         let path = '';
         if (notification.type === 1 || notification.type === 2|| notification.type === 3) {
             path = `/dashboard/kanban?processId=${process.id}&processName=${encodeURIComponent(process.name)}`;
+        } else if(notification.type === 5 || notification.type === 6){
+            path = `/dashboard/home/calendar`;
         }
         if (path) {
             window.location.href = path;
@@ -317,7 +323,7 @@ export default function TopNewMenuClientDashboard() {
                                                                     <span className="min-h-[10px] min-w-[10px] rounded-full mr-2" style={{ backgroundColor: primary }}></span>
                                                                 )}
                                                                 <div>
-                                                                   <span>{getNotificationMessage(notification.type, notification.processName, notification.file)}</span>
+                                                                   <span>{getNotificationMessage(notification.type, notification.processName, notification.file, notification.requester)}</span>
                                                                 <p className='text-[9px] text-black'>{new Date(notification.date).toLocaleString()}</p> 
                                                                 </div>
                                                             </div>

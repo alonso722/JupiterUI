@@ -49,9 +49,11 @@ const VacationsForm = ({ isOpen, onClose }) => {
   };
 
   const handleAddYear = () => {
-    console.log(yearStart, yearEnd)
-    if(yearEnd && yearStart>yearEnd){
-      showToast('warning', "La año de termino del bloque no debe ser previo al de inicio");
+    const start = Number(yearStart);
+    const end = Number(yearEnd);
+    
+    if (end && start > end) {
+      showToast('warning', "El año de término del bloque no debe ser previo al de inicio");
       return;
     }
     const newEntry = {
@@ -77,36 +79,58 @@ const VacationsForm = ({ isOpen, onClose }) => {
       return;
     }
   
-    const hasInvalidDays = days.some((entry) => entry.days < 12);
+    const minDaysByYears = [
+      { minYears: 1, maxYears: 1, minDays: 12 },
+      { minYears: 2, maxYears: 2, minDays: 14 },
+      { minYears: 3, maxYears: 3, minDays: 16 },
+      { minYears: 4, maxYears: 4, minDays: 18 },
+      { minYears: 5, maxYears: 5, minDays: 20 },
+      { minYears: 6, maxYears: 10, minDays: 22 },
+      { minYears: 11, maxYears: 15, minDays: 24 },
+      { minYears: 16, maxYears: 20, minDays: 26 },
+      { minYears: 21, maxYears: 25, minDays: 28 },
+      { minYears: 26, maxYears: 30, minDays: 30 },
+    ];
+  
+    const hasInvalidDays = days.some((entry) => {
+      const upperYearsWorking = entry.end; 
+      const range = minDaysByYears.find(
+        (r) => upperYearsWorking >= r.minYears && upperYearsWorking <= r.maxYears
+      );
+
+      const isValid = range ? entry.days >= range.minDays : true;
+  
+      return !isValid;
+    });
   
     if (hasInvalidDays) {
-      showToast('error', "Los días asignados deben ser más de 12");
+      showToast('error', "Los días asignados no pueden ser menores al mínimo permitido según los años trabajados");
       return;
     }
+  
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
       parsedPermissions = JSON.parse(storedPermissions);
     }
     const orga = parsedPermissions?.Organization;
-    let adjustment = {};
-    adjustment.days = days;
-    adjustment.orga = orga;
-
-    api.post('/user/vacations/adjustment', adjustment)
-      .then((response) => {
-        if(response.status == 200){
-          showToast('success', "Asignaciones ajustadas");
-          onClose();
-        }
-      })
-      .catch((error) => {
-        console.error("Error al consultar procesos:", error);
-      });
-
+  
+    let adjustment = {
+      days: days,
+      orga: orga,
+    };
+  
+    try {
+      const response = await api.post('/user/vacations/adjustment', adjustment);
+      if (response.status === 200) {
+        showToast('success', "Asignaciones ajustadas");
+        onClose();
+      }
+    } catch (error) {
+      console.error("Error al consultar procesos:", error);
+    }
   };
   
-
   if (!isOpen) return null;
 
   return (

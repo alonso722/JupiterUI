@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useColors } from '@/services/colorService';
@@ -13,18 +13,23 @@ moment.locale('es');
 const localizer = momentLocalizer(moment);
 
 const CustomCalendar = () => {
+  const effectMounted = useRef(false);
+  const [permissions, setPermissions] = useState({});
   const { primary, secondary } = useColors();
   const api = useApi();
   const [view, setView] = useState('month');
   const [date, setDate] = useState(new Date());
   const [isChecked, setIsChecked] = useState(false);
   const [events, setEvents] = useState([]);
+  const [requests, setReqs] = useState([]);
+  const [owns, setOwns] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showModalPer, setShowModalPer] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
   const [type, setType] = useState('');
   const [time, setTime] = useState('');
   const [days, setDays] = useState('');
+  const [manager, setManager] = useState('');
   
   const showToast = (type, message) => {
     toast[type](message, {
@@ -34,20 +39,31 @@ const CustomCalendar = () => {
   };
 
   useEffect(() => {
-    const updateTime = () => {
-        const currentTime = new Date().toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false, 
-        });
-        setTime(currentTime);
-    };
+    let parsedPermissions;
+    if (effectMounted.current === false) {
 
-    updateTime(); 
+      const storedToken = localStorage.getItem('token');
+      const storedPermissions = localStorage.getItem('permissions'); 
+      if (storedPermissions) {
+          parsedPermissions = JSON.parse(storedPermissions);
+          setPermissions(parsedPermissions);
+      }
+      const updateTime = () => {
+          const currentTime = new Date().toLocaleTimeString('es-ES', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false, 
+          });
+          setTime(currentTime);
+      };
 
-    const intervalId = setInterval(updateTime, 60000); 
+      updateTime(); 
 
-    return () => clearInterval(intervalId); 
+      const intervalId = setInterval(updateTime, 60000); 
+
+      return () => clearInterval(intervalId); 
+      effectMounted.current = true;
+    }
 }, []);
 
   const handleNavigate = (action) => {
@@ -123,10 +139,44 @@ const CustomCalendar = () => {
       console.error("Error al consultar eventos:", error);
     }
   };
+
+  const getReqs = async () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+      parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const uuid = parsedPermissions.uuid;
+    try {
+      const response = await api.post('/user/vacations/getReqs', { uuid });
+      const events = response.data;
+      setReqs(events);
+    } catch (error) {
+      console.error("Error al consultar eventos:", error);
+    }
+  };
+
+  const getOwns = async () => {
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+      parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const uuid = parsedPermissions.uuid;
+    try {
+      const response = await api.post('/user/vacations/getOwns', { uuid });
+      const events = response.data;
+      setOwns(events);
+    } catch (error) {
+      console.error("Error al consultar eventos:", error);
+    }
+  };
   
   useEffect(() => {
     getChecks();
     fetchEvents();
+    getReqs();
+    getOwns();
   }, []);
   
   const handleAddEvent = async () => {
@@ -161,6 +211,10 @@ const CustomCalendar = () => {
   
 
   const handleAddPerm = async () => {
+    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
+      showToast('warning', "Revise las fechas de inicio y fin");
+      return;
+    }
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
@@ -171,12 +225,15 @@ const CustomCalendar = () => {
 
     switch (type) {
         case 'permiso':
+            newEvent.title = 'Permiso';
             nType = 3;
             break;
         case 'vacaciones':
+            newEvent.title = 'Vacaciones';
             nType = 4;
             break;
         case 'incapacidad':
+            newEvent.title = 'Incapacidad';
             nType = 5;
             break;
         default:
@@ -194,12 +251,31 @@ const CustomCalendar = () => {
             (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24) + 1
         );
         if (eventDuration > days) {
+          if (days === 0) {
+            showToast('error', 'No puedes solicitar vacaciones porque no tienes días disponibles.');
+          } else {
             showToast('error', `No puedes solicitar ${eventDuration} días de vacaciones. Solo tienes ${days} disponibles.`);
+          }          
             return;
         }
     }
 
     try {
+      const verify =  await api.post('/user/vacations/add', {
+        ...newEvent,
+        type: nType,
+        uuid: uuid,
+        manager: manager,
+      });
+
+      if(verify.data?.message){
+        showToast('error', 'Ya hay una solicitud en revision...');
+      }
+
+      await api.post('/user/notifications/addByVacations', {
+        uuid: uuid,
+        manager: manager
+      });
         await api.post('/user/event/add', {
             ...newEvent,
             type: nType,
@@ -298,6 +374,38 @@ const CustomCalendar = () => {
     }
   };
 
+  const handleApprove = async (request) => {
+    let update = {};
+    update.id = request.id;
+    update.status = 1;
+    await api.post('/user/vacations/updateReq', update);
+    const response = await api.post('/user/notifications/addByVacationsStatus', {
+      uuid: permissions.uuid
+    });
+    if(response.status == 200){
+      showToast('success', "Respuesta enviada");
+    }
+    getReqs();
+    getOwns();
+  };
+
+  const handleReject = async (request) => {
+    let update = {};
+    update.id = request.id;
+    update.status = 0;
+    await api.post('/user/vacations/updateReq', update);
+    const response = await api.post('/user/notifications/addByVacationsStatus', {
+      uuid: permissions.uuid,
+      manager: manager
+    });
+    if(response.status == 200){
+      showToast('success', "Respuesta enviada");
+    }
+    
+    getReqs();
+    getOwns();
+  };
+  
   const CustomToolbar = ({ label, onNavigate, onView, view }) => {
     return (
       <div className='mb-1'>
@@ -348,8 +456,17 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
     api.post('/user/vacations/getVacations', {uuid})
       .then((response) => {
+        setManager(response.data.manager)
+        if(response.data == 403){
+          showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
+          return;  
+        }
         setDays(response.data.days);
-        showToast('warning', `Tienes ${response.data.days} días de vacaciones disponibles.`);        
+        if (response.data.days === 0) {
+          showToast('warning', 'No tienes vacaciones disponibles.');
+        } else {
+          showToast('warning', `Tienes ${response.data.days} días de vacaciones disponibles.`);
+        }               
       })
       .catch((error) => {
         console.error('Error al añadir el evento:', error);
@@ -424,64 +541,70 @@ const CustomCalendar = () => {
                 />
             </div>
         <div className='mt-[110px] ml-[1%] py-2 w-[55%] h-[500px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
-            <Calendar
-              localizer={localizer}
-              events={events}
-              startAccessor="start"
-              endAccessor="end"
-              style={{ 
-                  height: '90%', 
-                  fontSize: '10px',
-                  border: '2px solid white', 
-                  boxShadow: 'none', 
-              }}
-              views={['month', 'week', 'day']}
-              view={view}
-              onView={setView}
-              date={date}
-              onSelectEvent={(event) => alert(event.title)}
-              messages={{
-                  today: 'Hoy',
-                  previous: '<',
-                  next: '>',
-                  month: 'Mes',
-                  week: 'Semana',
-                  day: 'Día',
-                  agenda: 'Agenda',
-                  allDay: 'Todo el día',
-                  showMore: (total) => (
-                  <span className="underline" style={{ color: secondary }}>
-                      ({total}) más ...
-                  </span>
-                  ),
-              }}
-              eventPropGetter={(event, start, end, isSelected) => {
-                  const index = events.indexOf(event);
-                  const backgroundColor = index % 2 === 0 ? primary : secondary;
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{
+              height: '90%',
+              fontSize: '10px',
+              border: '2px solid white',
+              boxShadow: 'none',
+            }}
+            views={['month', 'week', 'day']}
+            view={view}
+            onView={setView}
+            date={date}
+            onNavigate={setDate}
+            onSelectEvent={(event) => alert(event.title)}
+            popup 
+            messages={{
+              today: 'Hoy',
+              previous: '<',
+              next: '>',
+              month: 'Mes',
+              week: 'Semana',
+              day: 'Día',
+              agenda: 'Agenda',
+              allDay: 'Todo el día',
+              showMore: (total) => (
+                <span className="underline" style={{ color: secondary || '#007bff' }}>
+                  ({total}) más...
+                </span>
+              ),
+            }}
+            eventPropGetter={(event) => {
+              const index = events.indexOf(event);
+              const backgroundColor = index % 2 === 0 ? primary || '#4caf50' : secondary || '#007bff';
 
-                  return {
-                  style: {
-                      backgroundColor: backgroundColor,
-                      border: 'none', 
-                      borderRadius: '90px',
-                      color: 'white',
-                      padding: '30px',
-                      margin: '2px',
-                  },
-                  };
-              }}
-              components={{
-                event: CustomEvent,
-                  toolbar: (props) => (
-                  <CustomToolbar
-                      label={props.label}
-                      onNavigate={handleNavigate}
-                      onView={setView}
-                      view={view}
-                  />
-                  ),
-              }}
-            />
+              return {
+                style: {
+                  backgroundColor,
+                  border: 'none',
+                  borderRadius: '4px',
+                  color: 'white',
+                  padding: '5px',
+                  margin: '2px',
+                },
+              };
+            }}
+            components={{
+              event: (props) => (
+                <div title={props.event.title} style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                  {props.event.title}
+                </div>
+              ),
+              toolbar: (props) => (
+                <CustomToolbar
+                    label={props.label}
+                    onNavigate={handleNavigate}
+                    onView={setView}
+                    view={view}
+                />
+                ),
+            }}
+          />
             {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] h-[32%] relative">
@@ -516,11 +639,6 @@ const CustomCalendar = () => {
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
                 <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] h-[32%] relative">
                 <h3 className='mt-2'>Indique las fechas a solicitar</h3>
-                <input
-                    type='text'
-                    placeholder='Título'
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}/>
                   <select
                       value={type}
                       onChange={(e) => {
@@ -536,16 +654,14 @@ const CustomCalendar = () => {
                       <option value="permiso">Permiso</option>
                   </select>
                 <div>
-                    <input
-                    type='datetime-local'
-                    value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
-                    onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}
-                    />
-                    <input
-                    type='datetime-local'
-                    value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
-                    onChange={(e) => setNewEvent({ ...newEvent, end: new Date(e.target.value) })}
-                    />
+                  <input
+                    type="date"
+                    value={moment(newEvent.start).format('YYYY-MM-DD')}
+                    onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}/>
+                  <input
+                    type="date"
+                    value={moment(newEvent.end).format('YYYY-MM-DD')}
+                    onChange={(e) => setNewEvent({ ...newEvent, end: new Date(e.target.value) })}/>
                 </div>
                 <button className='rounded text-white p-1' onClick={handleAddPerm} style={{ backgroundColor: primary }}>
                     Añadir
@@ -562,35 +678,117 @@ const CustomCalendar = () => {
             </button>
             </div>
         </div>
-        <div className='text-black w-[20%] max-h-[100px] shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
-          <div>
+        <div>
+          <div className='text-black ml-5 max-h-[100px] max-w-[90%] shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
             <div>
-              <strong>Checador</strong>
+              <div>
+                <strong>Checador</strong>
+              </div>
+              <div className='mr-3 text-[30px] text-[#777E90]'>
+                {time}
+              </div>
             </div>
-            <div className='mr-3 text-[30px] text-[#777E90]'>
-              {time}
+            <div className='flex mt-9 ml-4'>
+              <div>
+                {isChecked ? (
+                  <div
+                    className="mr-2 rounded-lg flex items-center justify-center px-4 py-1 "
+                    style={{ backgroundColor: `${primary}90`, textAlign: 'center' }} >
+                    <span className="text-white text-[10px] font-semibold text-center">Entrada registrada</span>
+                  </div>
+                  ) : (
+                  <button className='px-2 py-1 pointer rounded-lg text-white mb-2 mr-2'
+                    style={{ backgroundColor: primary }}
+                    onClick={handleAddEntrace}>
+                    Entrada
+                  </button>
+                )}
+              </div>
+              <div>
+                <button className='px-2 py-1 pointer rounded-lg text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
+                  Salida
+                </button>
+              </div>
             </div>
           </div>
-          <div className='flex mt-9 ml-4'>
-            <div>
-              {isChecked ? (
-                <div
-                  className="mr-2 rounded-lg flex items-center justify-center px-4 py-1 "
-                  style={{ backgroundColor: `${primary}90`, textAlign: 'center' }} >
-                  <span className="text-white text-[10px] font-semibold text-center">Entrada registrada</span>
+          <div
+            className={`text-black ml-5 mt-6 max-w-[90%] max-h-[485px] shadow-lg px-6 pt-5 pb-2 flex flex-col ${
+              permissions.isManager === 1 ? 'divide-y divide-gray-300' : ''
+            }`}
+          >
+            {permissions.isManager === 1 && (
+              <div className="flex-1 flex flex-col ">
+                <h3 className="text-lg mb-2 justify-center items-center">Solicitudes de vacaciones:</h3>
+                <div className="max-h-[200px] overflow-y-auto">
+                  <ul>
+                    {requests.map((request, index) => (
+                      <li key={index} className="mb-4 border-b pb-2">
+                        <div>
+                          <strong>Solicitante:</strong> {request.reqName}
+                        </div>
+                        <div>
+                          <strong>Inicio:</strong> {new Date(request.start).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <strong>Final:</strong> {new Date(request.end).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <strong>Estatus:</strong>{' '}
+                          {request.status === 0
+                            ? 'Rechazadas'
+                            : request.status === 1
+                            ? 'Pendiente'
+                            : request.status === 2
+                            ? 'Aprobadas'
+                            : 'Unknown'}
+                        </div>
+                        {request.status === 1 && (
+                          <div className='flex justify-between'>                          
+                            <button
+                            className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                            onClick={() => handleApprove(request)}>
+                            Aprobar
+                            </button>
+                            <button
+                            className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                            onClick={() => handleReject(request)}>
+                            Rechazar
+                            </button>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                ) : (
-                <button className='px-2 py-1 pointer rounded-lg text-white mb-2 mr-2'
-                  style={{ backgroundColor: primary }}
-                  onClick={handleAddEntrace}>
-                  Entrada
-                </button>
-              )}
-            </div>
-            <div>
-              <button className='px-2 py-1 pointer rounded-lg text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
-                Salida
-              </button>
+              </div>
+            )}
+
+            <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
+              <h3 className="text-lg mb-2">Mis vacaciones</h3>
+              <div className="max-h-[200px] overflow-y-auto">
+                  <ul>
+                    {owns.map((request, index) => (
+                      <li key={index} className="mb-4 border-b pb-2">
+                        <div>
+                          <strong>Inicio:</strong> {new Date(request.start).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <strong>Final:</strong> {new Date(request.end).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <strong>Estatus:</strong>{' '}
+                          {request.status === 0
+                            ? 'Rechazadas'
+                            : request.status === 1
+                            ? 'Pendiente'
+                            : request.status === 2
+                            ? 'Aprobadas'
+                            : 'Unknown'}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
             </div>
           </div>
         </div>

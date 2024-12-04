@@ -25,12 +25,14 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const [newValue, setNewValue] = useState("");
 
     const handleAddValue = () => {
-      if (newValue.trim()) {
-        setValues([...values, newValue]);
-        setNewValue("");
-      }
+        let updatedValues = Array.isArray(values) ? values : []; 
+        
+        if (newValue.trim()) {
+            setValues([...updatedValues, newValue]);
+            setNewValue("");
+        }
     };
-  
+    
     const handleRemoveValue = (index) => {
       const updatedValues = values.filter((_, i) => i !== index);
       setValues(updatedValues);
@@ -160,7 +162,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
             };
             const response = await api.post('/user/organization/setSets', { sets });
             if (response.status === 200) {
-                showToast('success', 'Colores actualizados exitosamente');
+                showToast('success', 'Personalización actualizada');
                 setTimeout(() => {
                     window.location.reload();
                 }, 2000);  
