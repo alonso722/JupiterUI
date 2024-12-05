@@ -50,19 +50,24 @@ export const ECarousel = () => {
         api.post('/user/organization/fetchInfo', { orga })
         .then((response) => {
             const data = response.data;
-            const valuesArray = JSON.parse(data.values);
+            let valuesArray = [];
+            if(data.values){
+                valuesArray = JSON.parse(data.values);
+            }
             const fetchedCards = [
                 { id: 1, title: "Historia", description: data.history },
                 { id: 2, title: "Misión", description: data.mision },
                 { id: 3, title: "Visión", description: data.vision },
             ];
+            if(valuesArray.length > 0){
             valuesArray.forEach((valueObj, index) => {
                 fetchedCards.push({
                     id: 4 + index,
                     title: valueObj.value, 
                     description: valueObj.description 
                 });
-            });                    
+            });   
+            }                
             setCards(fetchedCards);
         })
         .catch((error) => {
