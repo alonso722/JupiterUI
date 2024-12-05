@@ -76,8 +76,8 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     setVision(data.t01_organization_vision)
                     setMision(data.t01_organization_mision)
                     const valuesString = data.t01_organization_values; 
-                    //const valuesArray = JSON.parse(valuesString);
-                    setValues(valuesString);        
+                    const valuesArray = JSON.parse(valuesString);
+                    setValues(valuesArray);        
                     setSelectedUsers(data.users)     
                     if (imageData?.data) { 
                         const arrayBuffer = imageData.data;  
