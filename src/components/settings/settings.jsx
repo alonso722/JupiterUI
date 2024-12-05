@@ -23,14 +23,27 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const effectMounted = useRef(false);
     const api = useApi();
     const [newValue, setNewValue] = useState("");
+    const [newDescription, setNewDescription] = useState("");
 
     const handleAddValue = () => {
-        let updatedValues = Array.isArray(values) ? values : []; 
-        
-        if (newValue.trim()) {
-            setValues([...updatedValues, newValue]);
+        let updatedValues = Array.isArray(values) ? values : [];
+    
+        if (newValue.trim() && newDescription.trim()) {
+            setValues([...updatedValues, { value: newValue, description: newDescription }]);
             setNewValue("");
+            setNewDescription("");
         }
+    };
+
+    const handleEditValue = (index, field, value) => {
+        setValues((prevValues) => {
+            const updatedValues = [...prevValues];
+            updatedValues[index] = {
+                ...updatedValues[index],
+                [field]: value,
+            };
+            return updatedValues;
+        });
     };
     
     const handleRemoveValue = (index) => {
@@ -63,17 +76,15 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     setVision(data.t01_organization_vision)
                     setMision(data.t01_organization_mision)
                     const valuesString = data.t01_organization_values; 
-                    const valuesArray = JSON.parse(valuesString);
-                    setValues(valuesArray);        
+                    //const valuesArray = JSON.parse(valuesString);
+                    setValues(valuesString);        
                     setSelectedUsers(data.users)     
                     if (imageData?.data) { 
                         const arrayBuffer = imageData.data;  
                         const blob = new Blob([new Uint8Array(arrayBuffer)], { type: data.t01_logo_mimetype });
                         const url = URL.createObjectURL(blob);
                         setLogoUrl(url);
-                    } else {
-                        console.log("No hay logo disponible"); 
-                    }
+                    } 
             
                     setPriColor(data.t01_primary_color || initialPrimaryColor);
                     setSecColor(data.t01_secondary_color || initialSecondaryColor);
@@ -259,19 +270,30 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 className="w-full py-1 px-3 rounded border-gray-300 focus:border-purple-500 outline-none"
                                 style={{
                                     backgroundColor: `${secondary}60`, 
-                                }}/>
+                                }}
+                            />
                         </p>
-                        <div className="flex">
+                        <div className="flex justify-between">
                             <div className="max-h-[200px] overflow-y-auto">
                                 <h2 className="mb-4">Valores de la organización</h2>
-                                {(values ?? []).map((value, index) => (
-                                    <div key={index} className="flex items-center mb-2">
-                                        <input
-                                            type="text"
-                                            value={value}
-                                            readOnly
-                                            className="border p-2 mr-2"
-                                        />
+                                {(values ?? []).map((item, index) => (
+                                    <div key={index} className="flex items-center border-2 mb-2">
+                                        <div className="m-2">
+                                            <div>
+                                                <input
+                                                    type="text"
+                                                    value={item.value}
+                                                    onChange={(e) => handleEditValue(index, 'value', e.target.value)}
+                                                    className="p-2 mr-2 font-bold"
+                                                />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={item.description}
+                                                onChange={(e) => handleEditValue(index, 'description', e.target.value)}
+                                                className="p-2 mr-2"
+                                            />
+                                        </div>
                                         <button
                                             className="bg-red-500 text-white px-1 py-1 rounded"
                                             onClick={() => handleRemoveValue(index)}>
@@ -279,16 +301,27 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                         </button>
                                     </div>
                                 ))}
-                                <div className="flex items-center mt-4 mr-5">
-                                    <input
-                                        type="text"
-                                        value={newValue}
-                                        onChange={(e) => setNewValue(e.target.value)}
-                                        className="p-2 mr-2"
-                                        placeholder="Agregar nuevo valor"
-                                    />
+                                <div className="flex items-center mt-4 mr-5 border-2 rounded">
+                                    <div className="m-2">
+                                        <div>
+                                            <input
+                                                type="text"
+                                                value={newValue}
+                                                onChange={(e) => setNewValue(e.target.value)}
+                                                className="p-2 mr-2 font-bold"
+                                                placeholder="Agregar nuevo valor"
+                                            />
+                                        </div>
+                                        <input
+                                            type="text"
+                                            value={newDescription}
+                                            onChange={(e) => setNewDescription(e.target.value)}
+                                            className="p-2 mr-2"
+                                            placeholder="Agregar descripción"
+                                        />
+                                    </div>
                                     <button
-                                        className="bg-blue-500 text-white px-1 py-1 rounded"
+                                        className="bg-blue-500 text-white px-1 py-1 mr-2 rounded"
                                         onClick={handleAddValue}>
                                         +
                                     </button>

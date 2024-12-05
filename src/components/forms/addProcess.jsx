@@ -213,7 +213,7 @@ const AddProcessForm = ({ card, onClose }) => {
 
   
   if (hasDuplicateRoles()) {
-      showToast('error', "Los usuarios no pueden tener más de dos roles por proceso.");
+      showToast('error', "Los usuarios no pueden tener más de un rol por proceso.");
       return;
   }
       
@@ -298,7 +298,7 @@ const AddProcessForm = ({ card, onClose }) => {
   };
     
     if (hasDuplicateRoles()) {
-        showToast('error', "Los usuarios no pueden tener más de dos roles por proceso.");
+        showToast('error', "Los usuarios no pueden tener más de un rol por proceso.");
         return;
     }
       if (fileInfo) {

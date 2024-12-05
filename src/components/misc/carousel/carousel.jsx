@@ -50,26 +50,27 @@ export const ECarousel = () => {
         api.post('/user/organization/fetchInfo', { orga })
         .then((response) => {
             const data = response.data;
-            const valuesArray = JSON.parse(data.values);
+            const valuesArray = data.values;
             const fetchedCards = [
                 { id: 1, title: "Historia", description: data.history },
                 { id: 2, title: "Misión", description: data.mision },
                 { id: 3, title: "Visión", description: data.vision },
-                { id: 4, title: "Valores", description: (
-                    <span className="p-4">
-                        {Array.isArray(valuesArray) && valuesArray.length > 0 ? (
-                            valuesArray.map((value, index) => (
-                                <span key={`value-${index}`} className="mr-4">
-                                    {index > 0 && <span> • </span>}
-                                    {value}
-                                </span>
-                            ))
-                        ) : (
-                            <span>No hay valores disponibles</span>
-                        )}
-                    </span>
-                )}                                                         
-            ];
+                ...Array.isArray(valuesArray) && valuesArray.length > 0 
+                    ? valuesArray.map((value, index) => ({
+                        id: 4 + index,
+                        title: value.value, 
+                        description: (
+                            <div className="carousel-slide">
+                                {value.description}
+                            </div>
+                        )
+                    }))
+                    : [{
+                        id: 4,
+                        title: "Valores",
+                        description: <div>No hay valores disponibles</div>
+                    }]
+            ];                                 
             setCards(fetchedCards);
         })
         .catch((error) => {

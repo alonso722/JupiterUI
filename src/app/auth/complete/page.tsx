@@ -64,12 +64,16 @@ export default function CompleteAuth({
                         }
                         if(permissions.isManager == 1){
                             try {
-                                const response = await api.post('/user/vacations/getReqs', { uuid:permissions.uuid });
-                                if (response.data  && response.data.length > 0) {
-                                    await api.post('/user/notifications/addByResend', {
-                                        uuid: permissions.uuid
-                                    });
-                                } 
+                                const response = await api.post('/user/vacations/getReqs', { uuid: permissions.uuid });
+                                if (response.data && response.data.length > 0) {
+                                    const hasPendingRequests = response.data.some((req: { status: number; }) => req.status === 1);
+                                
+                                    if (hasPendingRequests) {
+                                        await api.post('/user/notifications/addByResend', {
+                                            uuid: permissions.uuid
+                                        });
+                                    }
+                                }                                
                             } catch (error) {
                                 console.error('Error al obtener datos:', error);
                             }

@@ -654,11 +654,17 @@ const CustomCalendar = () => {
                   <input
                     type="date"
                     value={moment(newEvent.start).format('YYYY-MM-DD')}
-                    onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}/>
+                    onChange={(e) => {
+                      const newStartDate = moment(e.target.value).toDate(); 
+                      setNewEvent({ ...newEvent, start: newStartDate });
+                    }}/>
                   <input
                     type="date"
                     value={moment(newEvent.end).format('YYYY-MM-DD')}
-                    onChange={(e) => setNewEvent({ ...newEvent, end: new Date(e.target.value) })}/>
+                    onChange={(e) => {
+                      const newEndDate = moment(e.target.value).toDate(); 
+                      setNewEvent({ ...newEvent, end: newEndDate });
+                    }}/>
                 </div>
                 <button className='rounded text-white p-1' onClick={handleAddPerm} style={{ backgroundColor: primary }}>
                     Añadir

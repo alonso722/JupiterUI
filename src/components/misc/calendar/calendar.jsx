@@ -219,11 +219,12 @@ const CustomCalendar = () => {
           setNewEvent({ title: '', start: new Date(), end: new Date() });
         },
         (error) => {
+          showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
           console.error('Error al obtener la ubicación:', error);
         }
       );
     } else {
-      showToast('warning', 'Su organizacion necesita acceso a su ubicacion, por favor, permita el acceso.');
+      showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
       console.error('Geolocalización no es soportada por este navegador.');
     }
   };
@@ -260,10 +261,12 @@ const CustomCalendar = () => {
           setNewEvent({ title: '', start: new Date(), end: new Date() });
         },
         (error) => {
+          showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
           console.error('Error al obtener la ubicación:', error);
         }
       );
     } else {
+      showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
       console.error('Geolocalización no es soportada por este navegador.');
     }
   };
