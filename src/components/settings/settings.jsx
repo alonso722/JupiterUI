@@ -28,12 +28,18 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const handleAddValue = () => {
         let updatedValues = Array.isArray(values) ? values : [];
     
-        if (newValue.trim() && newDescription.trim()) {
-            setValues([...updatedValues, { value: newValue, description: newDescription }]);
+        if (newValue.trim()) {
+            setValues([
+                ...updatedValues, 
+                { 
+                    value: newValue, 
+                    description: newDescription.trim() || "" 
+                }
+            ]);
             setNewValue("");
             setNewDescription("");
         }
-    };
+    };    
 
     const handleEditValue = (index, field, value) => {
         setValues((prevValues) => {
