@@ -47,6 +47,7 @@ const DepartmentsTable = () => {
             const departments = response.data.data;
             const filteredDepartments = departments.filter(dept => dept.type !== 41);
             setDepartments(filteredDepartments);
+            console.log(filteredDepartments)
             const fetchedData = filteredDepartments.map(item => ({
                 id: item.id,
                 department: item.department,

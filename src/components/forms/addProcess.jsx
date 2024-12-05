@@ -559,7 +559,7 @@ const getAnnexesIcon = (extension) => {
             </div>
           </div>
         ) : (
-          <div className='ml-3 rounded border-2 mt-[20px] max-h-[700px] overflow-y-auto w-[500px] '>
+          <div className='ml-3 rounded border-2 mt-[20px] max-h-[600px] overflow-y-auto w-[500px] '>
             <div className='mb-2 px-5 mt-[10px] text-black'>
               <Listbox 
                 value={selectedEditor} 
@@ -632,7 +632,7 @@ const getAnnexesIcon = (extension) => {
                 <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
               </div>
             </div>
-            <div className='max-h-[300px] h-[200px] max-w-[200px] ml-5 pt-[60px]'>
+            <div className='mt-[110px] max-h-[300px] h-[200px] max-w-[200px] ml-5 pt-[60px]'>
               <p className="block text-sm font-medium leading-6 text-black">Consultores</p>
               <UsersChecks selectedOptions={selectedConsultor} setSelectedOptions={setSelectedConsultor} selectedOrgId={selectedOrgId} />
             </div>
