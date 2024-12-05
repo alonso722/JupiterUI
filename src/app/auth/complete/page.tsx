@@ -62,6 +62,18 @@ export default function CompleteAuth({
                         } catch (error) {
                             console.error('Error al obtener datos:', error);
                         }
+                        if(permissions.isManager == 1){
+                            try {
+                                const response = await api.post('/user/vacations/getReqs', { uuid:permissions.uuid });
+                                if (response.data  && response.data.length > 0) {
+                                    await api.post('/user/notifications/addByResend', {
+                                        uuid: permissions.uuid
+                                    });
+                                } 
+                            } catch (error) {
+                                console.error('Error al obtener datos:', error);
+                            }
+                        }
                         
                         if (permissions.ISO === 0) {
                             router.push('/auth/login');

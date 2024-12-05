@@ -223,6 +223,7 @@ const CustomCalendar = () => {
         }
       );
     } else {
+      showToast('warning', 'Su organizacion necesita acceso a su ubicacion, por favor, permita el acceso.');
       console.error('Geolocalización no es soportada por este navegador.');
     }
   };

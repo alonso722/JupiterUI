@@ -377,11 +377,10 @@ const CustomCalendar = () => {
   const handleApprove = async (request) => {
     let update = {};
     update.id = request.id;
-    update.status = 1;
-    await api.post('/user/vacations/updateReq', update);
-    const response = await api.post('/user/notifications/addByVacationsStatus', {
-      uuid: permissions.uuid
-    });
+    update.status = 2;
+    const requester = await api.post('/user/vacations/updateReq', update);
+    const uuid = requester.data.uuid;
+    const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
     if(response.status == 200){
       showToast('success', "Respuesta enviada");
     }
@@ -393,11 +392,9 @@ const CustomCalendar = () => {
     let update = {};
     update.id = request.id;
     update.status = 0;
-    await api.post('/user/vacations/updateReq', update);
-    const response = await api.post('/user/notifications/addByVacationsStatus', {
-      uuid: permissions.uuid,
-      manager: manager
-    });
+    const requester = await api.post('/user/vacations/updateReq', update);
+    const uuid = requester.data.uuid;
+    const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
     if(response.status == 200){
       showToast('success', "Respuesta enviada");
     }
@@ -722,7 +719,8 @@ const CustomCalendar = () => {
                 <div className="max-h-[200px] overflow-y-auto">
                   <ul>
                     {requests.map((request, index) => (
-                      <li key={index} className="mb-4 border-b pb-2">
+                      <li key={index} className="mb-4 border-b pb-2 rounded p-2 text-[13px]"
+                      style={{ backgroundColor: request.status === 1 ? '#EDF2F7' : `#ffffff` }}>
                         <div>
                           <strong>Solicitante:</strong> {request.reqName}
                         </div>
@@ -734,13 +732,15 @@ const CustomCalendar = () => {
                         </div>
                         <div>
                           <strong>Estatus:</strong>{' '}
-                          {request.status === 0
-                            ? 'Rechazadas'
-                            : request.status === 1
-                            ? 'Pendiente'
-                            : request.status === 2
-                            ? 'Aprobadas'
-                            : 'Unknown'}
+                          {request.status === 0 ? (
+                            <span style={{ color: 'red' }}>Rechazadas</span>
+                          ) : request.status === 2 ? (
+                            <span style={{ color: 'green' }}>Aprobadas</span>
+                          ) : request.status === 1 ? (
+                            'Pendiente'
+                          ) : (
+                            'Desconocido'
+                          )}
                         </div>
                         {request.status === 1 && (
                           <div className='flex justify-between'>                          
@@ -764,11 +764,11 @@ const CustomCalendar = () => {
             )}
 
             <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
-              <h3 className="text-lg mb-2">Mis vacaciones</h3>
-              <div className="max-h-[200px] overflow-y-auto">
+              <h3 className="text-lg mb-2">Mis vacaciones:</h3>
+              <div className="max-h-[167px] overflow-y-auto">
                   <ul>
                     {owns.map((request, index) => (
-                      <li key={index} className="mb-4 border-b pb-2">
+                      <li key={index} className="mb-4 border-b p-2 text-[13px]">
                         <div>
                           <strong>Inicio:</strong> {new Date(request.start).toLocaleDateString()}
                         </div>
@@ -777,13 +777,15 @@ const CustomCalendar = () => {
                         </div>
                         <div>
                           <strong>Estatus:</strong>{' '}
-                          {request.status === 0
-                            ? 'Rechazadas'
-                            : request.status === 1
-                            ? 'Pendiente'
-                            : request.status === 2
-                            ? 'Aprobadas'
-                            : 'Unknown'}
+                          {request.status === 0 ? (
+                            <span style={{ color: 'red' }}>Rechazadas</span>
+                          ) : request.status === 2 ? (
+                            <span style={{ color: 'green' }}>Aprobadas</span>
+                          ) : request.status === 1 ? (
+                            'Pendiente'
+                          ) : (
+                            'Desconocido'
+                          )}
                         </div>
                       </li>
                     ))}

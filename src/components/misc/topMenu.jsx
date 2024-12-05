@@ -49,6 +49,8 @@ export default function TopNewMenuClientDashboard() {
                 return `Se necesita tu aprobación en una solicitud de vacaciones`;
             case 6:
                 return `Hubo un cambio en el estatus de tu solicitud de vacaciones`;
+            case 7:
+                return `Aún hay solicitudes de vacaciones que requiren su atención...`;
         default:
             return `Notificación relacionada con el ${process}`;
         }
@@ -248,7 +250,7 @@ export default function TopNewMenuClientDashboard() {
         let path = '';
         if (notification.type === 1 || notification.type === 2|| notification.type === 3) {
             path = `/dashboard/kanban?processId=${process.id}&processName=${encodeURIComponent(process.name)}`;
-        } else if(notification.type === 5 || notification.type === 6){
+        } else if(notification.type === 5 || notification.type === 6 || notification.type === 7){
             path = `/dashboard/home/calendar`;
         }
         if (path) {
