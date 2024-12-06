@@ -276,11 +276,16 @@ const CustomCalendar = () => {
         uuid: uuid,
         manager: manager
       });
-        await api.post('/user/event/add', {
-            ...newEvent,
-            type: nType,
-            uuid: uuid,
-        });
+      const adjustedEvent = {
+          ...newEvent,
+          start: new Date(newEvent.start).setDate(new Date(newEvent.start).getDate() - 1),
+          end: new Date(newEvent.end).setDate(new Date(newEvent.end).getDate() - 1),
+      };
+      await api.post('/user/event/add', {
+          ...adjustedEvent,
+          type: nType,
+          uuid: uuid,
+      });
         showToast('success', "Evento registrado");
         setShowModalPer(false);
 
@@ -375,17 +380,18 @@ const CustomCalendar = () => {
   };
 
   const handleApprove = async (request) => {
+    console.log(request)
     let update = {};
     update.id = request.id;
     update.status = 2;
-    const requester = await api.post('/user/vacations/updateReq', update);
-    const uuid = requester.data.uuid;
-    const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
-    if(response.status == 200){
-      showToast('success', "Respuesta enviada");
-    }
-    getReqs();
-    getOwns();
+    // const requester = await api.post('/user/vacations/updateReq', update);
+    // const uuid = requester.data.uuid;
+    // const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
+    // if(response.status == 200){
+    //   showToast('success', "Respuesta enviada");
+    // }
+    // getReqs();
+    // getOwns();
   };
 
   const handleReject = async (request) => {
