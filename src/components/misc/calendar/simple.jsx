@@ -260,6 +260,8 @@ const CustomCalendar = () => {
         }
     }
 
+    console.log("fecha enviada a vacaciones:::::::",newEvent)
+
     try {
       const verify =  await api.post('/user/vacations/add', {
         ...newEvent,
@@ -276,7 +278,8 @@ const CustomCalendar = () => {
         uuid: uuid,
         manager: manager
       });
-        await api.post('/user/event/add', {
+      console.log("fecha enviada a calendario2222222222222",newEvent)
+      await api.post('/user/event/add', {
             ...newEvent,
             type: nType,
             uuid: uuid,
@@ -379,14 +382,14 @@ const CustomCalendar = () => {
     let update = {};
     update.id = request.id;
     update.status = 2;
-    // const requester = await api.post('/user/vacations/updateReq', update);
-    // const uuid = requester.data.uuid;
-    // const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
-    // if(response.status == 200){
-    //   showToast('success', "Respuesta enviada");
-    // }
-    // getReqs();
-    // getOwns();
+    const requester = await api.post('/user/vacations/updateReq', update);
+    const uuid = requester.data.uuid;
+    const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
+    if(response.status == 200){
+      showToast('success', "Respuesta enviada");
+    }
+    getReqs();
+    getOwns();
   };
 
   const handleReject = async (request) => {
