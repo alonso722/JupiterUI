@@ -111,9 +111,11 @@ const CustomCalendar = () => {
       const formattedEvents = events.map(event => ({
         title: event.title,
         start: new Date(event.start),  
-        end: new Date(event.end),      
+        end: new Date(event.end),
       }));
 
+      console.log(formattedEvents)
+      
       setEvents(formattedEvents);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
