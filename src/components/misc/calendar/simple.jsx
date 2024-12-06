@@ -276,16 +276,11 @@ const CustomCalendar = () => {
         uuid: uuid,
         manager: manager
       });
-      const adjustedEvent = {
-          ...newEvent,
-          start: new Date(newEvent.start).setDate(new Date(newEvent.start).getDate() - 1),
-          end: new Date(newEvent.end).setDate(new Date(newEvent.end).getDate() - 1),
-      };
-      await api.post('/user/event/add', {
-          ...adjustedEvent,
-          type: nType,
-          uuid: uuid,
-      });
+        await api.post('/user/event/add', {
+            ...newEvent,
+            type: nType,
+            uuid: uuid,
+        });
         showToast('success', "Evento registrado");
         setShowModalPer(false);
 
