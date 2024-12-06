@@ -106,16 +106,23 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/event/fetch', { uuid });
       const events = response.data;
-      console.log("los eventos ",events)
+      console.log("los eventos ", events);
   
-      const formattedEvents = events.map(event => ({
-        title: event.title,
-        start: new Date(event.start),  
-        end: new Date(event.end),
-      }));
+      const formattedEvents = events.map(event => {
+        const start = new Date(event.start);
+        const end = new Date(event.end);
 
-      console.log(formattedEvents)
-      
+        if (end.getHours() === 0 && end.getMinutes() === 0 && end.getSeconds() === 0) {
+          end.setDate(end.getDate() + 1); 
+        }
+  
+        return {
+          title: event.title,
+          start: start,
+          end: end,
+        };
+      });
+  
       setEvents(formattedEvents);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
