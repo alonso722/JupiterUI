@@ -221,8 +221,10 @@ const CustomCalendar = () => {
         parsedPermissions = JSON.parse(storedPermissions);
     }
     const uuid = parsedPermissions.uuid;
+    console.log("evento antes de ajuste",newEvent)
     newEvent.start = new Date(newEvent.start).toISOString(); 
     newEvent.end = new Date(newEvent.end).toISOString(); 
+    console.log("evento despues de ajuste",newEvent)
     let nType;
 
     switch (type) {
