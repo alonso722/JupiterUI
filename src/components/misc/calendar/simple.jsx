@@ -106,6 +106,7 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/event/fetch', { uuid });
       const events = response.data;
+      console.log("los eventos ",events)
   
       const formattedEvents = events.map(event => ({
         title: event.title,
