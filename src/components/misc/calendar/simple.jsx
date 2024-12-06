@@ -212,35 +212,88 @@ const CustomCalendar = () => {
 
   const handleAddPerm = async () => {
     if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
-        showToast('warning', "Revise las fechas de inicio y fin");
-        return;
+      showToast('warning', "Revise las fechas de inicio y fin");
+      return;
+    }
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const uuid = parsedPermissions.uuid;
+    newEvent.start = new Date(newEvent.start).toISOString(); 
+    newEvent.end = new Date(newEvent.end).toISOString(); 
+    let nType;
+
+    switch (type) {
+        case 'permiso':
+            newEvent.title = 'Permiso';
+            nType = 3;
+            break;
+        case 'vacaciones':
+            newEvent.title = 'Vacaciones';
+            nType = 4;
+            break;
+        case 'incapacidad':
+            newEvent.title = 'Incapacidad';
+            nType = 5;
+            break;
+        default:
+            nType = 3;
     }
 
-    newEvent.start = new Date(newEvent.start).toISOString(); 
-    newEvent.end = new Date(newEvent.end).toISOString();     
+    if (!nType) {
+        showToast('error', "Por favor, seleccione una opción...");
+        return;
+    }
+    if (type === 'vacaciones') {
+        const eventStart = new Date(newEvent.start);
+        const eventEnd = new Date(newEvent.end);
+        const eventDuration = Math.ceil(
+            (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24) + 1
+        );
+        if (eventDuration > days) {
+          if (days === 0) {
+            showToast('error', 'No puedes solicitar vacaciones porque no tienes días disponibles.');
+          } else {
+            showToast('error', `No puedes solicitar ${eventDuration} días de vacaciones. Solo tienes ${days} disponibles.`);
+          }          
+            return;
+        }
+    }
 
-    console.log("fecha enviada a vacaciones:::::::", newEvent);
+    console.log("fecha enviada a vacaciones:::::::",newEvent)
 
     try {
-        await api.post('/user/vacations/add', {
-            ...newEvent,
-            type: nType,
-            uuid: uuid,
-            manager: manager,
-        });
-        console.log("fecha enviada a calendario2222222222222", newEvent);
-        await api.post('/user/event/add', {
+      const verify =  await api.post('/user/vacations/add', {
+        ...newEvent,
+        type: nType,
+        uuid: uuid,
+        manager: manager,
+      });
+
+      if(verify.data?.message){
+        showToast('error', 'Ya hay una solicitud en revision...');
+      }
+
+      await api.post('/user/notifications/addByVacations', {
+        uuid: uuid,
+        manager: manager
+      });
+      console.log("fecha enviada a calendario2222222222222",newEvent)
+      await api.post('/user/event/add', {
             ...newEvent,
             type: nType,
             uuid: uuid,
         });
         showToast('success', "Evento registrado");
         setShowModalPer(false);
+
         fetchEvents();
     } catch (error) {
         console.error('Error al añadir el evento:', error);
     }
-};
+  };
 
   const handleAddEntrace = () => {
     let parsedPermissions;
