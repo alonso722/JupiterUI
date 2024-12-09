@@ -106,8 +106,6 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/event/fetch', { uuid });
       const events = response.data;
-      console.log("los eventos ", events);
-  
       const formattedEvents = events.map(event => {
         const start = new Date(event.start);
         const end = new Date(event.end);
@@ -231,10 +229,8 @@ const CustomCalendar = () => {
         parsedPermissions = JSON.parse(storedPermissions);
     }
     const uuid = parsedPermissions.uuid;
-    console.log("evento antes de ajuste",newEvent)
     newEvent.start = new Date(newEvent.start).toISOString(); 
-    newEvent.end = new Date(newEvent.end).toISOString(); 
-    console.log("evento despues de ajuste",newEvent)
+    newEvent.end = new Date(newEvent.end).toISOString(); s
     let nType;
 
     switch (type) {
@@ -273,9 +269,6 @@ const CustomCalendar = () => {
             return;
         }
     }
-
-    console.log("fecha enviada a vacaciones:::::::",newEvent)
-
     try {
       const verify =  await api.post('/user/vacations/add', {
         ...newEvent,
@@ -292,7 +285,6 @@ const CustomCalendar = () => {
         uuid: uuid,
         manager: manager
       });
-      console.log("fecha enviada a calendario2222222222222",newEvent)
       await api.post('/user/event/add', {
             ...newEvent,
             type: nType,
@@ -392,10 +384,19 @@ const CustomCalendar = () => {
   };
 
   const handleApprove = async (request) => {
-    console.log(request)
+
+    const startDate = new Date(request.start);
+    const endDate = new Date(request.end);
+
+    const normalizedStart = new Date(startDate.getUTCFullYear(), startDate.getUTCMonth(), startDate.getUTCDate());
+    const normalizedEnd = new Date(endDate.getUTCFullYear(), endDate.getUTCMonth(), endDate.getUTCDate());
+
+    const differenceInDays = (normalizedEnd - normalizedStart) / (1000 * 60 * 60 * 24) + 1;
+
     let update = {};
     update.id = request.id;
-    update.status = 2;
+    update.status = 1;
+    update.days = differenceInDays;
     const requester = await api.post('/user/vacations/updateReq', update);
     const uuid = requester.data.uuid;
     const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
@@ -404,7 +405,7 @@ const CustomCalendar = () => {
     }
     getReqs();
     getOwns();
-  };
+};
 
   const handleReject = async (request) => {
     let update = {};

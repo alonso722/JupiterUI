@@ -59,7 +59,7 @@ export default function Sidebar() {
         { path: '/dashboard/table', icon: FaTableCells, label: 'Tabla de procesos',  condition: permissions?.Type === 1 || permissions?.Type === 6 || workflows?.coordinator !== 0 },
         { path: '/organizations', icon: FaBuilding, label: 'Organizacioness', condition: permissions?.Type === 6 },
         { path: '/departments', icon: FaSitemap, label: 'Departamentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/HHRR', icon: TbUserShield, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh=== 1 },
+        { path: '/HHRR', icon: TbUserShield, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory', icon: MdOutlineInventory, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory/assigned', icon:  FaListCheck, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
