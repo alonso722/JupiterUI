@@ -559,7 +559,7 @@ const getAnnexesIcon = (extension) => {
             </div>
           </div>
         ) : (
-          <div className='ml-3 rounded border-2 mt-[20px] max-h-[600px] overflow-y-auto w-[500px] '>
+          <div className='ml-3 rounded border-2 mt-[20px] max-h-[500px] overflow-y-auto w-[500px]'>
             <div className='mb-2 px-5 mt-[10px] text-black'>
               <Listbox 
                 value={selectedEditor} 

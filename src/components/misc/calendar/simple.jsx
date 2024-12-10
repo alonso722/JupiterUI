@@ -230,7 +230,7 @@ const CustomCalendar = () => {
     }
     const uuid = parsedPermissions.uuid;
     newEvent.start = new Date(newEvent.start).toISOString(); 
-    newEvent.end = new Date(newEvent.end).toISOString(); s
+    newEvent.end = new Date(newEvent.end).toISOString(); 
     let nType;
 
     switch (type) {
@@ -269,6 +269,24 @@ const CustomCalendar = () => {
             return;
         }
     }
+    if (type !== 'permiso') {
+      if (newEvent?.start && newEvent?.end) {
+        const today = new Date();
+        const startDate = new Date(newEvent.start);
+        const endDate = new Date(newEvent.end);
+    
+        today.setHours(0, 0, 0, 0);
+        if (endDate < startDate) {
+            showToast('warning', "Revise las fechas de inicio y fin");
+            return;
+        }
+        if (startDate.toDateString() === today.toDateString() || endDate.toDateString() === today.toDateString()) {
+            showToast('warning', "No se puede registrar un evento para el día de hoy");
+            return;
+        }
+    }
+    
+  }
     try {
       const verify =  await api.post('/user/vacations/add', {
         ...newEvent,
@@ -384,7 +402,6 @@ const CustomCalendar = () => {
   };
 
   const handleApprove = async (request) => {
-
     const startDate = new Date(request.start);
     const endDate = new Date(request.end);
 
@@ -408,16 +425,20 @@ const CustomCalendar = () => {
 };
 
   const handleReject = async (request) => {
+    console.log(request)
     let update = {};
     update.id = request.id;
+    update.start = request.start;
+    update.end = request.end;
     update.status = 0;
+    update.uuid = request.requester;
     const requester = await api.post('/user/vacations/updateReq', update);
     const uuid = requester.data.uuid;
     const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
     if(response.status == 200){
       showToast('success', "Respuesta enviada");
     }
-    
+    fetchEvents();
     getReqs();
     getOwns();
   };
@@ -473,8 +494,9 @@ const CustomCalendar = () => {
     api.post('/user/vacations/getVacations', {uuid})
       .then((response) => {
         setManager(response.data.manager)
-        if(response.data == 403){
+        if(response.data === 203){
           showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
+          setShowModalPer(false)
           return;  
         }
         setDays(response.data.days);
