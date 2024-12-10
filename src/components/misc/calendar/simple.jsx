@@ -288,11 +288,17 @@ const CustomCalendar = () => {
     
   }
     try {
+        const id = await api.post('/user/event/add', {
+          ...newEvent,
+          type: nType,
+          uuid: uuid,
+      });
       const verify =  await api.post('/user/vacations/add', {
         ...newEvent,
         type: nType,
         uuid: uuid,
         manager: manager,
+        eventId: id.data
       });
 
       if(verify.data?.message){
@@ -303,11 +309,6 @@ const CustomCalendar = () => {
         uuid: uuid,
         manager: manager
       });
-      await api.post('/user/event/add', {
-            ...newEvent,
-            type: nType,
-            uuid: uuid,
-        });
         showToast('success', "Evento registrado");
         setShowModalPer(false);
 
@@ -412,7 +413,7 @@ const CustomCalendar = () => {
 
     let update = {};
     update.id = request.id;
-    update.status = 1;
+    update.status = 2;
     update.days = differenceInDays;
     const requester = await api.post('/user/vacations/updateReq', update);
     const uuid = requester.data.uuid;
@@ -425,11 +426,9 @@ const CustomCalendar = () => {
 };
 
   const handleReject = async (request) => {
-    console.log(request)
     let update = {};
     update.id = request.id;
-    update.start = request.start;
-    update.end = request.end;
+    update.eventId = request.eventId;
     update.status = 0;
     update.uuid = request.requester;
     const requester = await api.post('/user/vacations/updateReq', update);
