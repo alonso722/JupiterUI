@@ -213,7 +213,6 @@ const AddUserForm = ({ user, onClose }) => {
       userLast,
       userMail,
       userPass,
-      userDate,
       department: selectedDepartments[0].department,
       role: roleName,
       uuid,
@@ -326,6 +325,7 @@ const AddUserForm = ({ user, onClose }) => {
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </p>
+          {!user && (
           <p className="mt-[20px] mb-4 text-black w-[70%]">
             <p className='mb-2'>Fecha de ingreso:</p>
             <input
@@ -336,6 +336,7 @@ const AddUserForm = ({ user, onClose }) => {
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </p>
+          )}
           {!user && (
             <p className="mt-[20px] mb-4 text-black w-[70%]">
               <input
