@@ -31,6 +31,14 @@ const Annexes = ({ onClose, department }) => {
           const deptId = responseDep.data.data;
           const deptInfo = await api.post('/user/departments/getDeptInfo', { id:deptId });
           const info = deptInfo.data;
+          const managerUser = info.users.find(user => user.uuid === info.t02_department_manager);
+          if (managerUser) {
+              info.t02_department_manager = `${managerUser.userName} ${managerUser.userLast}`;
+          }
+          
+          console.log(info.t02_department_manager); 
+          
+          console.log(info)
           setInfo(info);
         } catch (error) {
           console.error("Error al consultar procesos:", error);
