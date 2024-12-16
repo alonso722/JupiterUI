@@ -46,11 +46,7 @@ const UserInfoModal = ({ isOpen, uuid, onClose }) => {
 
     api.post('/user/users/getArchive', { uuid })
         .then((response) => {
-            const transformedData = response.data.map(item => ({
-                ...item,
-                type: typeMapping[item.type] || item.type 
-            }));
-            setFiles(transformedData);
+            setFiles(response.data);
         })
         .catch((error) => {
             console.error("Error al consultar el perfil del usuario:", error);
@@ -75,11 +71,25 @@ const UserInfoModal = ({ isOpen, uuid, onClose }) => {
         </button>
         <h2 className="text-xl mb-4 mt-4 text-black">Documentos</h2>
         <div className='rounded border-2 px-5 max-h-[300px] overflow-y-auto'>
-          <ul className='w-full max-w-[550px] list-disc'>
+         <ul className='max-w-[550px] list-disc'>
             {files.map((item) => (
-              <li className='underline cursor-pointer'
-              key={item.file}
-              onClick={ () => openViewer(item.file)}>{item.type}</li>
+              <li key={item.file + item.docName} className="list-item">
+                {!item.docName ? (
+                  <p
+                    className='inline underline cursor-pointer'
+                    onClick={() => openViewer(item.file)}
+                  >
+                    Archivo desconocido
+                  </p>
+                ) : (
+                  <span
+                    className='inline underline cursor-pointer'
+                    onClick={() => openViewer(item.file)}
+                  >
+                    {item.docName}
+                  </span>
+                )}
+              </li>
             ))}
           </ul>
         </div>

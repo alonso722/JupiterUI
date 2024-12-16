@@ -40,11 +40,11 @@ export default function TopNewMenuClientDashboard() {
             case 1:
                 return `Se te asignó un rol en el proceso: ${process}`;
             case 2:
-                return `Se actualizó el estado del proceso: ${process}`;
+                return `Se actualizó el estado del proceso: ${prcess}`;
             case 3:
                 return `Se realizó un comentario en el proceso: ${process}`;
             case 4:
-                return `Se necesita una actualizacion de tu: ${file}`;
+                return `Se solicitó una actulizacion de un documento en tu perfil.`;
             case 5:
                 return `Se necesita tu aprobación en una solicitud de vacaciones`;
             case 6:
@@ -104,7 +104,6 @@ export default function TopNewMenuClientDashboard() {
               .then((response) => {
                 const nots = response.data;
               
-                // Mapeo entre key y label
                 const keyToLabelMap = {
                   cv: 'Currículum',
                   birth: 'Acta de nacimiento',
