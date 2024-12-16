@@ -23,7 +23,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
     const [profesionalInfo, setPInfo] = useState({});
     const [uuid, setUuid] = useState(null)
     const [editMode, setEditMode] = useState(false); 
-    const [infoLI, setInfoLI] = useState({});
+    const [documents, setDocuments] = useState({});
     const [editModeLI, setEditModeLI] = useState(false);
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     const [urlToView, setFileUrl] = useState(null);
@@ -74,8 +74,8 @@ export const Profile = ({ departmentFilter, userFilter }) => {
             setInfo(profileResponse.data, parsedPermissions);
 
             if (userType) {
-                const profilePResponse = await api.post('/user/users/profileP', userType);
-                setInfoLI(profilePResponse.data);
+                const docList = await api.post('/user/users/getDocuments', userType);
+                setDocuments(docList.data);
             } else {
                 console.error("UUID is not defined");
             }
@@ -116,8 +116,11 @@ export const Profile = ({ departmentFilter, userFilter }) => {
     };
 
     useEffect(() => {
+      if (!effectMounted.current) {
       fetchData();
       fetchInventory();
+      effectMounted.current = true;
+    }
     }, []);
     
     const enableEditMode = () => {
@@ -132,22 +135,8 @@ export const Profile = ({ departmentFilter, userFilter }) => {
       let filecom = {};
       filecom.file = file;
       filecom.type = key;
-      switch (key) {          
-        case 'cv':
-        case 'socio':
-        case 'recommendationP':
-        case 'data':
-        case 'recommendation':
-        case 'conf':
-        case 'contract':
-        case 'annx':
-            replaceLI(filecom);
-            break;
 
-        default:
-            replace(filecom);
-            break;
-      }
+      replace(filecom);
     };
 
     const replace = (filecom) => { 
@@ -168,40 +157,8 @@ export const Profile = ({ departmentFilter, userFilter }) => {
       });
     }
 
-    const replaceLI = (filecom) => {    
-      let update ={};
-      update.uuid = userFilter;
-      update.file= filecom.file;
-      update.type = filecom.type;
-      api.post('/user/users/replaceFileLI', update)
-      .then((response) => {
-        if (response.status === 200) {
-          fetchData();
-          fetchInventory();
-          showToast('success', 'Archivo retirado.');
-        }
-      })
-      .catch((error) => {
-        console.error("Error al consultar procesos:", error);
-      });
-    }
-
     const handleFileUploadSwitch = (e, fileType) => {
-      switch (fileType) {          
-          case 'cv':
-          case 'socio':
-          case 'recommendationP':
-          case 'data':
-          case 'recommendation':
-          case 'conf':
-          case 'contract':
-          case 'annx':
-              handleFileUploadLI(e, fileType);
-              break;
-          default:
-              handleFileUpload(e, fileType);
-              break;
-      }
+      handleFileUpload(e, fileType);
     };
     
     const handleFileUpload = async (e, fileType) => {
@@ -225,7 +182,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
           }
           let path = response.data.path;
           if (response) {
-            api.post('/user/users/store', filems)
+            api.post('/user/users/upload', filems)
               .then((response) => {
                 if (response.status === 200) {
                   showToast('success', 'Archivo cargado con éxito.');
@@ -245,49 +202,6 @@ export const Profile = ({ departmentFilter, userFilter }) => {
           }
         }
     };
-
-    const handleFileUploadLI = async (e, fileType) => {
-      const selectedFile = e.target.files[0];
-      if (!selectedFile) {
-        showToast('error', 'Por favor, seleccione un archivo para cargar.');
-        return;
-      }
-      if (selectedFile.type !== 'application/pdf') {
-        showToast('error', 'Solo se permiten archivos PDF.');
-      } else {
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-        try {
-          const response = await api.post('/user/file/store', formData);
-          let filems = response.data.data;
-          filems.type = fileType;
-          filems.uuid = uuid;
-          if(userFilter){
-            filems.uuid = userFilter;
-          }
-          let path = response.data.path;
-  
-          if (response) {
-            api.post('/user/users/storeP', filems)
-              .then((response) => {
-                if (response.status === 200) {
-                  showToast('success', 'Archivo cargado con éxito.');
-                  fetchData();
-                }
-              })
-              .catch((error) => {
-                console.error("Error al almacenar el archivo:", error);
-              });
-          } else {
-            console.error('Error al cargar el archivo:', response.statusText);
-            alert('Error al cargar el archivo');
-          }
-        } catch (error) {
-          console.error('Error en la solicitud:', error);
-          alert('Error en la solicitud');
-        }
-      }
-  };
     
     const enableEditModeLI = () => {
         setEditModeLI(true); 
@@ -315,11 +229,11 @@ export const Profile = ({ departmentFilter, userFilter }) => {
 
     return (
         <div className="mt-[60px] ml-[100px] w-[100%] text-neutral-50 rounded flex">
-            <div className="mt-8 text-black  ">
+            <div className="mt-8 text-black w-[40%]">
               <div className="mb-5">
                 <div className="flex">
                     <h1 className="text-black text-xl mb-5 ">
-                        <strong>Información personal</strong>
+                        <strong>Información</strong>
                     </h1>
                     {userFilter ? (
                       <p className="text-black text-xl mb-5 ml-2">
@@ -329,33 +243,29 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                       <p></p>
                     )}
                   </div>
-                    <div className="ml-3 flex">
-                        <div className="">
-                            <div className="flex justify-between">
-                              <div className="relative">
-                                <p className="text-[#B1B5C3]">
-                                  <strong>Teléfono:</strong>
-                                </p>
-                                <input
-                                  type="text"
-                                  placeholder="Teléfono celular"
-                                  value={phone ?? ""}
-                                  onChange={(e) => setPhone(e.target.value)}
-                                  disabled={!isEditable}
-                                  className={`w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
-                                    isEditable ? "cursor-text" : "cursor-not-allowed"
-                                  }`}
-                                />
-                                {isEditable ? (
-                                  <CiSaveDown2
-                                    className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
-                                    onClick={handleSaveClick} style={{  color: primary }} 
-                                  />
-                                ) : (
-                                  <CiEdit
-                                    className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
-                                    onClick={handleSaveClick} style={{  color: primary }} 
-                                  />
+                  <div className="">
+                    <div className="flex w-full justify-between">
+                      <div className=" mr-5">
+                        <p className="text-[#B1B5C3]">
+                          <strong>Teléfono:</strong>
+                        </p>
+                      <input
+                        type="text"
+                        placeholder="Teléfono celular"
+                        value={phone ?? ""}
+                        onChange={(e) => setPhone(e.target.value)}
+                        disabled={!isEditable}
+                        className={`w-[130px] rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
+                          isEditable ? "cursor-text" : "cursor-not-allowed"
+                        }`}/>
+                      {isEditable ? (
+                        <CiSaveDown2
+                          className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
+                          onClick={handleSaveClick} style={{  color: primary }} />
+                      ) : (
+                        <CiEdit
+                          className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
+                          onClick={handleSaveClick} style={{  color: primary }}/>
                                 )}
                               </div>
                               <div>
@@ -371,198 +281,66 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                                 </button>
                               )}
                             </div>
-                            <div className="">
-                                <div className="bg-white overflow-auto relative">
-                                    <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden mt-4'>
-                                      <ul className='w-full '>
-                                        {[
-                                          { label: 'Acta de nacimiento', key: 'birth', file: info.birth },
-                                          { label: 'Comp. de domicilio', key: 'address', file: info.address },
-                                          { label: 'Ident. Oficial', key: 'dni', file: info.dni },
-                                          { label: 'Certificado médico', key: 'medic', file: info.medic },
-                                          { label: 'Licencia de conducir', key: 'driver', file: info.driver },
-                                          { label: 'Comprobante de estudios', key: 'studies', file: info.studies },
-                                          { label: 'Constancia de situación fiscal', key: 'fiscal', file: info.fiscal }, 
-                                          { label: 'CURP', key: 'curp', file: info.curp },
-                                          { label: 'Número de Seguro Social', key: 'nss', file: info.nss },
-                                          { label: 'Cuenta Bancaria', key: 'bills', file: info.bills },
-                                          { label: 'Crédito INFONAVIT', key: 'saving', file: info.saving },
-                                        ].map(({ label, key, file }) => (
-                                          <li
-                                            key={key}
-                                            className={`my-2 rounded-lg p-2 flex items-center justify-between ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}>
-                                            <div className="flex">
-                                              <div
-                                                className="w-4 h-4 mr-2 mt-1 rounded-full mt-2"
-                                                style={{
-                                                  backgroundColor: file ? primary : 'white',
-                                                  borderWidth: '1px',
-                                                  borderStyle: 'solid',
-                                                  borderColor: secondary,
-                                                }}
-                                              />
-                                              <IoMdDocument
-                                                className="w-[15px] h-[18px] mr-1 mt-2"
-                                                style={{ color: secondary, width: '15px', height: '18px' }}
-                                              />
-                                              <p
-                                                className={`text-center ${file ? 'underline cursor-pointer' : ''}`}
-                                                onClick={file ? () => openViewer(file) : undefined}>
-                                                {label}
-                                              </p>
-                                              {userFilter && file && (
-                                                <button
-                                                  onClick={() => handleReplace(file, key)}
-                                                  className="p-2 rounded text-white text-[10px] ml-3 mr-[20px]"
-                                                  style={{ backgroundColor: secondary }}>
-                                                  Solicitar actualización
-                                                </button>
-                                              )}
-                                            </div>
-                                            {!file || editMode ? (
-                                              <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[40%]">
-                                                <img
-                                                  src="/icons/addoc.png"
-                                                  alt="Icono"
-                                                  className="absolute h-[16px] w-[13px] right-[220px]"
-                                                />
-                                                <input
-                                                  type="file"
-                                                  onChange={(e) => handleFileUploadSwitch(e, key)}
-                                                  className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
-                                                  style={{ paddingLeft: '30px' }}
-                                                />
-                                              </div>
-                                            ) : (
-                                              <p className='ml-4 pr-3 underline'>Archivo cargado</p>
-                                            )}
-                                            {editMode && (
-                                              <button
-                                                onClick={enableEditMode}
-                                                className="flex items-center justify-center w-8 h-8 ml-4">
-                                                <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
-                                              </button>
-                                            )}
-                                          </li>
-                                        ))}
-                                      </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div>
-                  <div className="flex">
-                    <h1 className="text-black text-xl mb-5 ">
-                        <strong>Información laboral</strong>
-                    </h1>
-                    {userFilter ? (
-                      <p className="text-black text-xl mb-5 ml-2">
-                        <strong>de {name}</strong> 
-                      </p>
-                    ) : (
-                      <p></p>
-                    )}
-                  </div>
-                  <div className="ml-3 flex">
-                    <div className=" flex">
-                      <div className="bg-white  overflow-auto">
-                        <div className="flex justify-between">
-                          <div>
-                            <p className="text-[#B1B5C3]"><strong>Departamento:</strong></p>
-                            <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2">{infoLI.departmentName || 'N/A'}</p>
-                          </div>
-                          <div>
-                            <p className="mr-9 text-[#B1B5C3]"><strong>Dirección:</strong></p>
-                            <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2">                                        
-                              {[
-                                infoLI.contact?.t13_contact_street + 
-                                (infoLI.contact?.t13_contact_int ? ` #${infoLI.contact.t13_contact_int}` : ''),
-                                infoLI.contact?.t13_contact_colony,
-                                infoLI.contact?.t13_contact_del,
-                                infoLI.contact?.t13_contact_state
-                              ].filter(Boolean).join(', ')}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="">
-                          <div className="bg-white overflow-auto relative">
-                            <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-hidden my-4'>
-                              <ul className='w-full '>
-                                {[
-                                  { label: 'Currículum', key: 'cv', file: infoLI.cv },
-                                  { label: 'Requisición de personal', key: 'data', file: infoLI.data },
-                                  { label: 'Referencia Laboral', key: 'recommendation', file: infoLI.recommendation },
-                                  { label: 'Autorizacion de contratación', key: 'conf', file: infoLI.conf },
-                                  { label: 'Cartilla', key: 'socio', file: infoLI.socio },
-                                  { label: 'Recomendaciones', key: 'recommendationP', file: infoLI.recommendationP },
-                                  { label: 'Contrato', key: 'contract', file: infoLI.contract },                                         
-                                  { label: 'Hoja de control', key: 'annx', file: infoLI.annx }
-                                ].map(({ label, key, file }) => (
-                                  <li
-                                    key={key}
-                                    className={`my-2 rounded-lg  p-2 flex items-center justify-between ${file ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}
-                                    >
-                                    <div className="flex">
-                                      <div
-                                        className="w-4 h-4 mr-2 mt-1 rounded-full ml-4"
-                                        style={{  
-                                          backgroundColor: file ? primary : 'white',
-                                          borderWidth: '1px',
-                                          borderStyle: 'solid',
-                                          borderColor: secondary 
-                                        }}
-                                      />
-                                      <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }} />
-                                        <p 
-                                          className={`text-center ${file ? 'underline cursor-pointer' : ''}`} 
-                                          onClick={file ? () => openViewer(file) : undefined}>
-                                          {label}
+                            <div className=" overflow-auto relative">
+                              <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-auto mt-4'>
+                                <ul className='w-full '>
+                                  {(Array.isArray(documents) ? documents : []).map(({ docId, document, userDoc }) => (
+                                    <li
+                                      key={docId}
+                                      className={`my-2 rounded-lg p-2 flex items-center justify-between ${userDoc ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}>
+                                      <div className="flex">
+                                        <div
+                                          className="w-4 h-4 mr-2 mt-1 rounded-full  mt-2"
+                                          style={{
+                                            backgroundColor: userDoc ? primary : 'white',
+                                            borderWidth: '1px',
+                                            borderStyle: 'solid',
+                                            borderColor: secondary,
+                                        }}/>
+                                        <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-2" style={{ color: secondary, width: '15px', height: '18px' }}/>
+                                        <p
+                                          className={`text-center ${userDoc ? 'underline cursor-pointer' : ''}`}
+                                          onClick={userDoc ? () => openViewer(userDoc) : undefined}>
+                                          {document}
                                         </p>
-                                        {userFilter && file && (
-                                                <button
-                                                  onClick={() => handleReplace(file, key)}
-                                                  className="p-2 rounded text-white text-[10px] ml-3 mr-[20px]"
-                                                  style={{ backgroundColor: secondary }}>
-                                                  Solicitar actualización
-                                                </button>
-                                              )}
-                                    </div>
-                                    {!file || editMode ? (
-                                      <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[40%]">
-                                        <img
-                                          src="/icons/addoc.png"
-                                          alt="Icono"
-                                          className="absolute h-[16px] w-[13px] right-[220px]"
-                                        />
-                                        <input
-                                          type="file"
-                                          onChange={(e) => handleFileUploadSwitch(e, key)}
-                                          className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
-                                          style={{ paddingLeft: '30px' }}
-                                        />
+                                        {userFilter && userDoc && (
+                                          <button
+                                            onClick={() => handleReplace(userDoc, docId)}
+                                            className="p-2 rounded text-white text-[10px] ml-3 mr-[20px]"
+                                            style={{ backgroundColor: secondary }}>
+                                            Solicitar actualización
+                                          </button>
+                                        )}
                                       </div>
-                                    ) : (
-                                      <p className='ml-4  pr-3 underline'>Archivo cargado</p>
-                                    )}
-                                    {editMode && (
-                                      <button
-                                        onClick={enableEditMode}
-                                        className="flex items-center justify-center w-8 h-8 ml-4">
-                                        <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
-                                      </button>
-                                    )}
-                                  </li>
-                                ))}
+                                      {!userDoc ? (
+                                        <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[250px]">
+                                          <img
+                                            src="/icons/addoc.png"
+                                            alt="Icono"
+                                            className="absolute h-[16px] w-[13px] right-[220px]"/>
+                                            <input
+                                              type="file"
+                                              onChange={(e) => handleFileUploadSwitch(e, docId)}
+                                              className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
+                                              style={{ paddingLeft: '30px' }}/>
+                                        </div>
+                                      ) : (
+                                        <p className='ml-4 pr-3 underline'>Archivo cargado</p>
+                                      )}
+                                      {editMode && (
+                                        <button
+                                          onClick={enableEditMode}
+                                          className="flex items-center justify-center w-8 h-8 ml-4">
+                                          <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
+                                        </button>
+                                      )}
+                                    </li>
+                                  ))}
                               </ul>
                             </div>
-                          </div>
-                        </div>
                       </div>
-                    </div>
+                  </div>
                 </div>
-              </div> 
               {isModalOpen && <UserInfoModal isOpen={isModalOpen} uuid={userFilter} onClose={() => setIsModalOpen(false)} />}
               {isModalOpen2 && <LaboralInfoModal isOpen={isModalOpen2} uuid={permissions} onClose={() => setIsModalOpen2(false)} />}
               {isViewerOpen && (

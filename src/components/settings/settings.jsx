@@ -14,6 +14,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [files, setFile] = useState([]);
     const [values, setValues] = useState([]);
+    const [documents, setDocuments] = useState([]);
     const [logoUrl, setLogoUrl] = useState('');
     const [history, setHistory] = useState('');
     const [vision, setVision] = useState('');
@@ -23,7 +24,15 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const effectMounted = useRef(false);
     const api = useApi();
     const [newValue, setNewValue] = useState("");
+    const [newDocument, setNewDocument] = useState("");
     const [newDescription, setNewDescription] = useState("");
+
+    const showToast = (type, message) => {
+        toast[type](message, {
+            position: 'top-center',
+            autoClose: 2000,
+        });
+    };
 
     const handleAddValue = () => {
         let updatedValues = Array.isArray(values) ? values : [];
@@ -57,13 +66,18 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
       setValues(updatedValues);
     };
 
-    const showToast = (type, message) => {
-        toast[type](message, {
-          position: 'top-center',
-          autoClose: 2000,
-        });
-    };
+    const handleAddDocument = () => {
+        if (newDocument.trim() !== "") {
+            setDocuments([...documents, newDocument]);
+            setNewDocument(""); 
+        }
+    }; 
 
+    const handleRemoveDocument = (index) => {
+        const updatedDocuments = documents.filter((_, i) => i !== index);
+        setDocuments(updatedDocuments);
+      };
+  
     useEffect(() => {
         if (!effectMounted.current) {
             const fetchData = async () => {
@@ -81,6 +95,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     setHistory(data.t01_organization_history)
                     setVision(data.t01_organization_vision)
                     setMision(data.t01_organization_mision)
+                    setDocuments(data.documents)
                     const valuesString = data.t01_organization_values; 
                     const valuesArray = JSON.parse(valuesString);
                     setValues(valuesArray);        
@@ -174,6 +189,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                 primary: priColor,
                 secondary: secColor,
                 values: values,
+                documents: documents,
                 users: Array.isArray(selectedUsers) ? selectedUsers.map(user => user.uuid) : []
 
             };
@@ -200,7 +216,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
             <div className="mt-8 text-black">
                 <div className="mb-5">
                     <h1 className="text-black text-xl mb-5">
-                        <strong>Personalización</strong>
+                        <strong>Personalización de la empresa</strong>
                     </h1>
                 </div>
                 <div className="flex w-full"> 
@@ -225,24 +241,26 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 </button>
                             </div> 
                         </div>
-                        <div>
+                        <div className="max-w-[450px] ">
                             <div className="flex ">
-                                <div className="mb-5 mr-20">
+                                <div className="mb-5 mr-2">
                                     <h2 className="text-[15px] mb-3">Selecciona un color primario:</h2>
                                     <SketchPicker 
+                                        className="max-w-[70%] "
                                         color={priColor} 
                                         onChangeComplete={handlePrimaryColorChange} />
                                 </div>
                                 <div className="mb-5">
                                     <h2 className="text-[15px] mb-3">Selecciona un color secundario:</h2>
                                     <SketchPicker 
+                                    className="max-w-[70%] "
                                         color={secColor} 
                                         onChangeComplete={handleSecondaryColorChange} />
                                 </div> 
                             </div>
                         </div>
                     </div>
-                    <div className="border-l-2  pl-5 w-[60%]">
+                    <div className="border-l-2  pl-5 w-[65%]">
                         <p className="text-xl mb-4 text-black">
                             <textarea
                                 type="text"
@@ -333,6 +351,38 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     </button>
                                 </div>
                             </div>
+                            <div className="max-h-[200px] mx-[5%] overflow-y-auto">
+                                <h2 className="mb-4">Documentos requeridos</h2>
+                                {(documents ?? []).map((document, index) => (
+                                    <div key={index} className="flex items-center mb-2">
+                                        <input
+                                            type="text"
+                                            value={document} 
+                                            readOnly
+                                            className="border p-2 mr-2"
+                                        />
+                                        <button
+                                            className="bg-red-500 text-white px-1 py-1 rounded"
+                                            onClick={() => handleRemoveDocument(index)}>
+                                            -
+                                        </button>
+                                    </div>
+                                ))}
+                                <div className="flex items-center mt-4 mr-5">
+                                    <input
+                                        type="text"
+                                        value={newDocument} 
+                                        onChange={(e) => setNewDocument(e.target.value)} 
+                                        className="p-2 mr-2"
+                                        placeholder="Agregar documento"
+                                    />
+                                    <button
+                                        className="bg-blue-500 text-white px-1 py-1 mr-2 rounded"
+                                        onClick={handleAddDocument}>
+                                        +
+                                    </button>
+                                </div>
+                            </div>
                             <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
                                 <p className="block text-sm font-medium leading-6 text-black">Encargados de RH</p>
                                 <UsersChecks selectedOptions={selectedUsers} setSelectedOptions={setSelectedUsers}/>
@@ -340,7 +390,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                         </div>
                     </div>
                 </div>
-                <div className="flex w-[90%] justify-center mt-5">
+                <div className="flex w-[90%] justify-center mt-8">
                     <button 
                         className="text-white py-2 px-4 rounded"
                         onClick={handleUpdateSets}
