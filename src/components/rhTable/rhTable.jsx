@@ -211,6 +211,13 @@ const RhTable = () => {
                         className="p-2 bg-transparent outline-none border-b-2 w-[200px] focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
+                {/* <div className="mt-[10px] mr-[120px]">
+                        <button className="w-[126px] text-black border-2 rounded-lg py-2"
+                            onClick={handleButtonClick}>
+                            Reportes
+                        </button>
+                        {showForm && <VacationsForm onClose={handleCloseForm} isOpen={showForm}/>}
+                    </div> */}
                 {permissions.Type === 1 && (
                     <div className="mt-[10px] mr-[120px]">
                         <button className="w-[126px] text-black border-2 rounded-lg py-2"
