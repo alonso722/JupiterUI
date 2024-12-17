@@ -40,7 +40,7 @@ export default function TopNewMenuClientDashboard() {
             case 1:
                 return `Se te asignó un rol en el proceso: ${process}`;
             case 2:
-                return `Se actualizó el estado del proceso: ${prcess}`;
+                return `Se actualizó el estado del proceso: ${process}`;
             case 3:
                 return `Se realizó un comentario en el proceso: ${process}`;
             case 4:
