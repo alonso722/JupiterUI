@@ -300,9 +300,9 @@ const CustomCalendar = () => {
         manager: manager,
         eventId: id.data
       });
-
       if(verify.data?.message){
-        showToast('error', 'Ya hay una solicitud en revision...');
+        showToast('error', 'Fechas empalmadas');
+        return;
       }
 
       await api.post('/user/notifications/addByVacations', {
@@ -493,6 +493,11 @@ const CustomCalendar = () => {
     api.post('/user/vacations/getVacations', {uuid})
       .then((response) => {
         setManager(response.data.manager)
+        if(response.status === 207){
+          showToast('warning', `Tienes  ${response.data} días resantes del año pasado`); 
+          setShowModalPer(false)
+          return;  
+        }
         if(response.data === 203){
           showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
           setShowModalPer(false)

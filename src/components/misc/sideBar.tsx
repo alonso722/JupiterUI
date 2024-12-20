@@ -6,6 +6,7 @@ import { FaTableCells, FaMapLocationDot, FaListCheck } from "react-icons/fa6";
 import { MdOutlineInventory } from "react-icons/md";
 import { useColors } from '@/services/colorService';
 import { TbUserShield } from "react-icons/tb";
+import { RiArchiveDrawerLine } from "react-icons/ri";
 
 interface Permissions {
     Type: number;
@@ -27,6 +28,7 @@ export default function Sidebar() {
         if (storedPermissions) {
             try {
                 const parsedPermissions: Permissions = JSON.parse(storedPermissions);
+                console.log(parsedPermissions)
                 setPermissions(parsedPermissions);
             } catch (error) {
                 console.error('Error parsing permissions:', error);
@@ -60,6 +62,7 @@ export default function Sidebar() {
         { path: '/organizations', icon: FaBuilding, label: 'Organizacioness', condition: permissions?.Type === 6 },
         { path: '/departments', icon: FaSitemap, label: 'Departamentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/HHRR', icon: TbUserShield, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
+        { path: '/reports', icon: RiArchiveDrawerLine, label: 'Reportes', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory', icon: MdOutlineInventory, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/inventory/assigned', icon:  FaListCheck, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
@@ -108,7 +111,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 2.10.14
+                    V 3.10.14
                 </div>
             </div>
         </div>

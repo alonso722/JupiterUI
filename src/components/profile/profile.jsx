@@ -299,7 +299,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                                         }}/>
                                         <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-2" style={{ color: secondary, width: '15px', height: '18px' }}/>
                                         <p
-                                          className={`text-center ${userDoc ? 'underline cursor-pointer' : ''}`}
+                                          className={`${userDoc ? 'underline cursor-pointer' : ''}`}
                                           onClick={userDoc ? () => openViewer(userDoc) : undefined}>
                                           {document}
                                         </p>
