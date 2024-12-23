@@ -97,7 +97,7 @@ export const ReportsMenu = () => {
       { header: "Entrada", dataKey: "entrada" },
       { header: "Salida", dataKey: "salida" },
       { header: "Entrada (mts)", dataKey: "distanciaEntrada" },
-      { header: "Distancia (mts)", dataKey: "distanciaSalida" },
+      { header: "Salida (mts)", dataKey: "distanciaSalida" },
       { header: "Corp. Entrada", dataKey: "corporativoEntrada" },
       { header: "Corp. Salida", dataKey: "corporativoSalida" },
     ];
