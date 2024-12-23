@@ -313,7 +313,7 @@ export const ReportsMenu = () => {
             <p className="text-black">Se encontraron {data.length} registros a reportar.</p>
             <button
               onClick={downloadPdf}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-black rounded"
+              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded"
               style={{
                 backgroundColor: secondary,
               }}

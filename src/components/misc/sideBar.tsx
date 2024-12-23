@@ -110,7 +110,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 3.10.14
+                    V 3.11.14
                 </div>
             </div>
         </div>
