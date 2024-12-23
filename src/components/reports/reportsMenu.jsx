@@ -63,7 +63,7 @@ export const ReportsMenu = () => {
     reque.department = selectedDepartments[0]?.id;
     if (!orga) return;
 
-    const endpoints = ["/user/reports/getDaily", "/user/reports/getDaily"];
+    const endpoints = ["/user/reports/getDaily", "/user/reports/getVacations"];
     const endpoint = endpoints[index];
 
     try {
@@ -84,39 +84,81 @@ export const ReportsMenu = () => {
       alert("No hay datos para exportar a PDF");
       return;
     }
-  
     const doc = new jsPDF();
     
     const today = new Date();
     const formattedDate = today.toLocaleDateString(); 
-  
-    doc.text(`Registro de asistencia - ${formattedDate}`, 14, 10);
     
-    const columns = [
-      { header: "Colaborador", dataKey: "colaborador" },
-      { header: "Entrada", dataKey: "entrada" },
-      { header: "Salida", dataKey: "salida" },
-      { header: "Entrada (mts)", dataKey: "distanciaEntrada" },
-      { header: "Salida (mts)", dataKey: "distanciaSalida" },
-      { header: "Corp. Entrada", dataKey: "corporativoEntrada" },
-      { header: "Corp. Salida", dataKey: "corporativoSalida" },
-    ];
-    const formattedData = data.map(row => ({
-      colaborador: `${row.name} ${row.last}`,
-      entrada: row.entrance ? new Date(row.entrance).toLocaleTimeString() : "", 
-      salida: row.leave ? new Date(row.leave).toLocaleTimeString() : "",
-      distanciaEntrada: row.distanceEnt || "",
-      distanciaSalida: row.distanceLeave || "",
-      corporativoEntrada: row.locationEntName || "", 
-      corporativoSalida: row.locationLeaveName || "", 
-    }));
-  
-    doc.autoTable({
-      head: [columns.map(col => col.header)],
-      body: formattedData.map(row => Object.values(row)),
-      startY: 20,
-    });
-    doc.save(`Asistencia - ${formattedDate}.pdf`);
+    doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
+        
+    if (selectedButton === 0) {
+    doc.text(`\nReporte de asistencia del día ${new Date(Date.now() - 86400000).toLocaleDateString()} \n\n`, 14, 30);
+      const columns = [
+        { header: "Colaborador", dataKey: "colaborator" },
+        { header: "Entrada", dataKey: "entrace" },
+        { header: "Salida", dataKey: "leave" },
+        { header: "Entrada (mts)", dataKey: "distanceEnt" },
+        { header: "Salida (mts)", dataKey: "distanceLeave" },
+        { header: "Corp. Entrada", dataKey: "entraceLoc" },
+        { header: "Corp. Salida", dataKey: "entraceLeave" },
+      ];
+      
+      const formattedData = data.map(row => {
+        const adjustTime = (date) => {
+          if (!date) return ""; 
+          const adjustedDate = new Date(date);
+          adjustedDate.setHours(adjustedDate.getHours() + 6); 
+          return adjustedDate.toLocaleTimeString();
+        };
+      
+        return {
+          colaborator: `${row.name} ${row.last}`,
+          entrace: adjustTime(row.entrance),
+          leave: adjustTime(row.leave),
+          distanceEnt: row.distanceEnt || "",
+          distanceLeave: row.distanceLeave || "",
+          entraceLoc: row.locationEntName || "",
+          entraceLeave: row.locationLeaveName || "",
+        };
+      });
+      
+      doc.autoTable({
+        head: [columns.map(col => col.header)],
+        body: formattedData.map(row => Object.values(row)),
+        startY: 50, 
+      });
+      
+      doc.save(`Asistencia - ${formattedDate}.pdf`);
+    } else {
+      const columns = [
+        { header: "Colaborador", dataKey: "colaborator" },
+        { header: "Aprobador", dataKey: "aprobator" },
+        { header: "Inicio", dataKey: "start" },
+        { header: "Fin", dataKey: "end" },
+        { header: "Estatus", dataKey: "status" },
+      ];
+      
+      const formattedData = data.map(row => ({
+        colaborator: `${row.name} ${row.last}`,
+        aprobator: row.aprobatorName || "N/A",
+        start: row.start ? new Date(row.start).toLocaleDateString() : "N/A", 
+        end: row.end ? new Date(row.end).toLocaleDateString() : "N/A", 
+        status: row.status === 0 
+          ? "Rechazado" 
+          : row.status === 1 
+          ? "En revisión" 
+          : row.status === 2 
+          ? "Aprobado" 
+          : "Desconocido",
+      }));
+      
+      doc.autoTable({
+        head: [columns.map(col => col.header)],
+        body: formattedData.map(row => Object.values(row)),
+        startY: 50,
+      });
+      doc.save(`Vacaciones generadas ${formattedDate}.pdf`);
+    }
   };
   
   return (
@@ -268,10 +310,13 @@ export const ReportsMenu = () => {
       <div className="mt-5 p-4 bg-gray-100 rounded">
         {data ? (
           <>
-            <p className="text-black">Se encontraron {data.length} registros de asistencia de ayer.</p>
+            <p className="text-black">Se encontraron {data.length} registros a reportar.</p>
             <button
               onClick={downloadPdf}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-800"
+              className="mt-4 px-4 py-2 bg-indigo-600 text-black rounded"
+              style={{
+                backgroundColor: secondary,
+              }}
             >
               Descargar PDF
             </button>

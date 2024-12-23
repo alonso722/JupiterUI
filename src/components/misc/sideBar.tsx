@@ -28,7 +28,6 @@ export default function Sidebar() {
         if (storedPermissions) {
             try {
                 const parsedPermissions: Permissions = JSON.parse(storedPermissions);
-                console.log(parsedPermissions)
                 setPermissions(parsedPermissions);
             } catch (error) {
                 console.error('Error parsing permissions:', error);
