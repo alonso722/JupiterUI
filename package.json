@@ -60,6 +60,8 @@
     "geolib": "^3.3.4",
     "jquery": "^3.7.1",
     "jsonwebtoken": "^9.0.2",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
     "jstree": "^3.3.17",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.378.0",

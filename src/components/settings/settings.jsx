@@ -200,11 +200,11 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     window.location.reload();
                 }, 2000);  
             } else {
-                showToast('error', 'Error al actualizar los colores');
+                showToast('error', 'Error al actualizar las personalizaciones');
             }
         } catch (error) {
-            console.error('Error al actualizar los colores:', error);
-            showToast('error', 'Error al actualizar los colores');
+            console.error('Error al actualizar las personalizaciones:', error);
+            showToast('error', 'Error al actualizar las personalizaciones');
         }
     };
 
