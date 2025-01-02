@@ -133,6 +133,7 @@ const CustomCalendar = () => {
       const entranceDate = new Date(events.entrance);
       const currentDate = new Date();
       const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
+      console.log(differenceInHours)
       if (differenceInHours < 8) {
         setIsChecked(true);
       }
