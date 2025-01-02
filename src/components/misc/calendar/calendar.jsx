@@ -130,11 +130,9 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/event/getChecks', { uuid });
       const events = response.data;
-      const entranceDate = new Date(events.entrance);
+      const entranceDate = new Date(new Date(events.entrance).getTime() + 6 * 60 * 60 * 1000);
       const currentDate = new Date();
       const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
-      console.log("horas:",currentDate, "------", entranceDate)
-      console.log(differenceInHours)
       if (differenceInHours < 8) {
         setIsChecked(true);
       }
