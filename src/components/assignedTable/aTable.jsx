@@ -101,7 +101,7 @@ const AssignedTable = () => {
                 const user = info.getValue();
                 return (
                     <p className="overflow-y-auto max-h-[70px]">
-                        {user.name} {user.last}
+                        {user?.name ?? ''} {user?.last ?? ''}
                     </p>
                 );
             },
