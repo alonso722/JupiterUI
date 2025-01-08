@@ -217,16 +217,15 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
                       </button>
                     </div>
                     {links.map((link, index) => (
-                      <div className='flex'>
+                      <div className="flex" key={index}>
                         <div
-                          key={index}
                           className="bg-gray-200 text-black p-2 m-1 rounded flex items-center max-h-[40px] max-w-[350px] overflow-hidden whitespace-nowrap"
                           title={link}>
                           <span className="truncate">{link}</span>
                           <button
-                          onClick={() => handleLinkRemove(index)}
-                          className="ml-2 text-red-500">
-                          &times;
+                            onClick={() => handleLinkRemove(index)}
+                            className="ml-2 text-red-500">
+                            &times;
                           </button>
                         </div>
                       </div>
