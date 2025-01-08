@@ -140,7 +140,6 @@ const CustomCalendar = () => {
       const entranceDate = new Date(new Date(events.entrance).getTime() + 6 * 60 * 60 * 1000);
       const currentDate = new Date();
       const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
-      console.log(differenceInHours, "de", currentDate, "y", entranceDate)
       if (differenceInHours < 10) {
         setIsChecked(true);
       }
@@ -888,12 +887,7 @@ const CustomCalendar = () => {
             {permissions.isManager === 1 && (
               <div className="flex-1 flex flex-col ">
                 <div className='flex min-w-[260px]'>
-                  <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3> 
-                  <div>                  
-                    <button className='px-2 py-1 mt-1 text-[13px] ml-3 pointer rounded text-white' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
-                      + Permisos
-                    </button>
-                  </div>            
+                  <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3>      
                 </div>
                 <div className="max-h-[200px] overflow-y-auto">
                   <ul>
@@ -943,7 +937,14 @@ const CustomCalendar = () => {
             )}
 
             <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
-            <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
+            <div className='flex min-w-[260px]'>
+                  <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
+                  <div>                  
+                    <button className='px-2 py-1 mt-1 text-[13px] ml-3 pointer rounded text-white' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
+                      + Permisos
+                    </button>
+                  </div>            
+                </div>
               <div className="max-h-[167px] overflow-y-auto">
                   <ul>
                     {owns.map((request, index) => (
