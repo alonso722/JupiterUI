@@ -127,19 +127,19 @@ const RhTable = () => {
             ),
             header: "Usuario",
         }),       
-        columnHelper.accessor("countRecord", {
-            cell: (info) => {
-                const count = info.getValue();
-                if (count === 8) {
-                    return <span>Sin archivos cargados</span>;
-                } else if (count === 0) {
-                    return <span>Todos los archivos cargados</span>;
-                } else {
-                    return <span>Faltan por cargar {count} archivos</span>;
-                }
-            },
-            header: "Documentos profesionales",
-        }),
+        // columnHelper.accessor("countRecord", {
+        //     cell: (info) => {
+        //         const count = info.getValue();
+        //         if (count === 8) {
+        //             return <span>Sin archivos cargados</span>;
+        //         } else if (count === 0) {
+        //             return <span>Todos los archivos cargados</span>;
+        //         } else {
+        //             return <span>Faltan por cargar {count} archivos</span>;
+        //         }
+        //     },
+        //     header: "Documentos profesionales",
+        // }),
         columnHelper.accessor("countDocs", {
             cell: (info) => {
                 const count = info.getValue();
@@ -151,7 +151,7 @@ const RhTable = () => {
                     return <span>Faltan por cargar {count} archivos</span>;
                 }
             },
-            header: "Documentos personales",
+            header: "Documentos ",
         }),
         columnHelper.accessor("assigned", {
             cell: (info) => {

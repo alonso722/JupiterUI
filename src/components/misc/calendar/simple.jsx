@@ -464,8 +464,7 @@ const CustomCalendar = () => {
                 onClick={() => onNavigate('PREV')}>
                 &lt;
             </button>
-            <span className='mt-2 text-[15px]'>{label}</span> 
-            
+            <span className='mt-2 text-[15px] text-black'><b>{label}</b></span> 
             <button 
             className='text-[#777E90] text-[20px] rounded px-2 pointer' 
             onClick={() => onNavigate('NEXT')}>
@@ -648,87 +647,192 @@ const CustomCalendar = () => {
                 ),
             }}
           />
-            {showModal && (
+          {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] h-[32%] relative">
-                <h3 className='mt-2'>Añadir Evento</h3>
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative">
+                <h3 className="my-[20px] ">Añadir Evento</h3>
                 <input
-                    type='text'
-                    placeholder='Título'
-                    value={newEvent.title}
-                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}/>
-                <div className='text-black'>
-                  <p className='mt-2'>Inicio:</p>
+                  type="text"
+                  placeholder="Título"
+                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                />
+                <div className="text-black mb-4">
+                  <div className='flex justify-between'> 
+                    <label className="block mt-2">Del:</label>
                     <input
-                    type='datetime-local'
-                    value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
-                    onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}/>
-                    <p className='mt-2'>Fin:</p>
-                    <input
-                    type='datetime-local'
-                    value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
-                    onChange={(e) => setNewEvent({ ...newEvent, end: new Date(e.target.value) })}/>
-                </div>
-                <button className='rounded text-white p-1' onClick={handleAddEvent} style={{ backgroundColor: primary}}>
-                    Añadir
-                </button>
-                <button className='bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700' onClick={() => setShowModal(false)}>
-                    &times;
-                </button>
-                </div>
-            </div>
-            )}
-            {showModalPer && (
-            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] h-[32%] relative">
-                <h3 className='mt-2'>Indique las fechas a solicitar</h3>
-                  <select
-                      value={type}
+                      type="date"
+                      className="mb-2 px-2 rounded"
+                      value={moment(newEvent.start).format('YYYY-MM-DD')}
                       onChange={(e) => {
-                          setType(e.target.value);
-                          if (e.target.value === "vacaciones") {
-                              getAvailableVacationDays();
-                          }
+                        const newDate = new Date(e.target.value);
+                        newDate.setHours(newEvent.start.getHours());
+                        newDate.setMinutes(newEvent.start.getMinutes());
+                        setNewEvent({ ...newEvent, start: newDate });
                       }}
-                      className="mt-2 mb-4 w-full p-2 border rounded">
-                      <option value="" disabled>Seleccionar tipo de solicitud</option>
-                      <option value="vacaciones">Vacaciones</option>
-                      <option value="incapacidad">Incapacidad</option>
-                      <option value="permiso">Permiso</option>
-                  </select>
-                <div>
-                  <input
-                    type="date"
-                    value={moment(newEvent.start).format('YYYY-MM-DD')}
-                    onChange={(e) => {
-                      const newStartDate = moment(e.target.value).toDate(); 
-                      setNewEvent({ ...newEvent, start: newStartDate });
-                    }}/>
-                  <input
-                    type="date"
-                    value={moment(newEvent.end).format('YYYY-MM-DD')}
-                    onChange={(e) => {
-                      const newEndDate = moment(e.target.value).toDate(); 
-                      setNewEvent({ ...newEvent, end: newEndDate });
-                    }}/>
+                    />
+                    <div className='flex'>
+                      <label className="block mt-2">al:</label>
+                      <input
+                        type="date"
+                        className="mb-2 p-2 rounded"
+                        value={moment(newEvent.end).format('YYYY-MM-DD')}
+                        onChange={(e) => {
+                          const newDate = new Date(e.target.value);
+                          newDate.setHours(newEvent.end.getHours());
+                          newDate.setMinutes(newEvent.end.getMinutes());
+                          setNewEvent({ ...newEvent, end: newDate });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div className='flex justify-between'>
+                    <label className="block">Horario:</label>
+                    <input
+                      type="time"
+                      className="px-2 rounded"
+                      value={moment(newEvent.start).format('HH:mm')}
+                      onChange={(e) => {
+                        const [hours, minutes] = e.target.value.split(':');
+                        const newDate = new Date(newEvent.start);
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+                        setNewEvent({ ...newEvent, start: newDate });
+                      }}
+                    /> 
+                    <label className="block ">hasta:</label>
+                    <input
+                      type="time"
+                      className="px-2  rounded"
+                      value={moment(newEvent.end).format('HH:mm')}
+                      onChange={(e) => {
+                        const [hours, minutes] = e.target.value.split(':');
+                        const newDate = new Date(newEvent.end);
+                        newDate.setHours(hours);
+                        newDate.setMinutes(minutes);
+                        setNewEvent({ ...newEvent, end: newDate });
+                      }}
+                    />
+                  </div>
+
                 </div>
-                <button className='rounded text-white p-1' onClick={handleAddPerm} style={{ backgroundColor: primary }}>
-                    Añadir
+                <button
+                  className="rounded text-white mt-2 py-2 px-3 mb-2"
+                  onClick={handleAddEvent}
+                  style={{ backgroundColor: primary }}
+                >
+                  Añadir
                 </button>
-                <button className='bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700' onClick={() => setShowModalPer(false)}>
-                    &times;
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setShowModal(false)}
+                >
+                  &times;
                 </button>
+              </div>
+            </div>
+          )}
+          {showModalPer && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-auto relative">
+                <h3 className="mt-2">Indique las fechas a solicitar</h3>
+                <select
+                  value={type}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                    if (e.target.value === "vacaciones") {
+                      getAvailableVacationDays();
+                    }
+                  }}
+                  className="mt-2 mb-4 w-full p-2 border rounded"
+                >
+                  <option value="" disabled>
+                    Selecciona tipo de solicitud
+                  </option>
+                  <option value="vacaciones">Vacaciones</option>
+                  <option value="incapacidad">Incapacidad</option>
+                  <option value="permiso">Permiso</option>
+                </select>
+                <div className="text-black mb-4">
+                  <div className="flex justify-between">
+                    <label className="block mt-2">Del:</label>
+                    <input
+                      type="date"
+                      className="mb-2 px-2 rounded"
+                      value={moment(newEvent.start).format("YYYY-MM-DD")}
+                      onChange={(e) => {
+                        const newDate = new Date(e.target.value);
+                        newDate.setHours(newEvent.start.getHours());
+                        newDate.setMinutes(newEvent.start.getMinutes());
+                        setNewEvent({ ...newEvent, start: newDate });
+                      }}
+                    />
+                    <div className="flex">
+                      <label className="block mt-2">al:</label>
+                      <input
+                        type="date"
+                        className="mb-2 p-2 rounded"
+                        value={moment(newEvent.end).format("YYYY-MM-DD")}
+                        onChange={(e) => {
+                          const newDate = new Date(e.target.value);
+                          newDate.setHours(newEvent.end.getHours());
+                          newDate.setMinutes(newEvent.end.getMinutes());
+                          setNewEvent({ ...newEvent, end: newDate });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {type === "permiso" && (
+                    <div className="flex justify-between mt-4">
+                      <label className="block">Horario:</label>
+                      <input
+                        type="time"
+                        className="px-2 rounded"
+                        value={moment(newEvent.start).format("HH:mm")}
+                        onChange={(e) => {
+                          const [hours, minutes] = e.target.value.split(":");
+                          const newDate = new Date(newEvent.start);
+                          newDate.setHours(hours);
+                          newDate.setMinutes(minutes);
+                          setNewEvent({ ...newEvent, start: newDate });
+                        }}
+                      />
+                      <label className="block">hasta:</label>
+                      <input
+                        type="time"
+                        className="px-2 rounded"
+                        value={moment(newEvent.end).format("HH:mm")}
+                        onChange={(e) => {
+                          const [hours, minutes] = e.target.value.split(":");
+                          const newDate = new Date(newEvent.end);
+                          newDate.setHours(hours);
+                          newDate.setMinutes(minutes);
+                          setNewEvent({ ...newEvent, end: newDate });
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
+                <button
+                  className="rounded text-white p-1"
+                  onClick={handleAddPerm}
+                  style={{ backgroundColor: primary }}
+                >
+                  Añadir
+                </button>
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setShowModalPer(false)}
+                >
+                  &times;
+                </button>
+              </div>
             </div>
-            )}
-            <div className='mt-2 text-black flex justify-between'>
-            <button className='px-2 py-1 pointer rounded text-white align-end' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
-                + Permisos
-            </button>
-            </div>
+          )}
         </div>
         <div>
-          <div className='text-black ml-5 max-h-[100px] max-w-[90%] shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
+          <div className='text-black ml-5 max-w-[90%] shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
             <div>
               <div>
                 <strong>Checador</strong>
@@ -737,25 +841,41 @@ const CustomCalendar = () => {
                 {time}
               </div>
             </div>
-            <div className='flex mt-9 ml-4'>
+            <div className='ml-4'>
               <div>
-                {isChecked ? (
-                  <div
-                    className="mr-2 rounded-lg flex items-center justify-center px-4 py-1 "
-                    style={{ backgroundColor: `${primary}90`, textAlign: 'center' }} >
-                    <span className="text-white text-[10px] font-semibold text-center">Entrada registrada</span>
-                  </div>
+                <button
+                  className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
+                  style={{
+                    backgroundColor: primary,
+                    opacity: isChecked ? 0.7 : 1, 
+                    cursor: isChecked ? 'not-allowed' : 'pointer', 
+                   }}
+                  onClick={!isChecked ? handleAddEntrace : undefined} 
+                  disabled={isChecked} 
+                >
+                  {isChecked ? (
+                    <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
                   ) : (
-                  <button className='px-2 py-1 pointer rounded-lg text-white mb-2 mr-2'
-                    style={{ backgroundColor: primary }}
-                    onClick={handleAddEntrace}>
-                    Entrada
-                  </button>
-                )}
+                    'Registrar entrada'
+                  )}
+                </button>
               </div>
               <div>
-                <button className='px-2 py-1 pointer rounded-lg text-white mr-2' style={{ backgroundColor: primary }} onClick={handleAddLeave}>
-                  Salida
+                <button
+                  className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
+                  style={{
+                    backgroundColor: primary,
+                    opacity: !isChecked ? 0.7 : 1, 
+                    cursor: !isChecked ? 'not-allowed' : 'pointer', 
+                   }}
+                  onClick={isChecked ? handleAddLeave : undefined} 
+                  disabled={!isChecked} 
+                >
+                  {!isChecked ? (
+                    <span className="text-[13px] font-semibold text-center">Sin entrada</span>
+                  ) : (
+                    'Registrar salida'
+                  )}
                 </button>
               </div>
             </div>
@@ -767,7 +887,14 @@ const CustomCalendar = () => {
           >
             {permissions.isManager === 1 && (
               <div className="flex-1 flex flex-col ">
-                <h3 className="text-lg mb-2 justify-center items-center">Solicitudes de vacaciones:</h3>
+                <div className='flex min-w-[260px]'>
+                  <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3> 
+                  <div>                  
+                    <button className='px-2 py-1 mt-1 text-[13px] ml-3 pointer rounded text-white' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
+                      + Permisos
+                    </button>
+                  </div>            
+                </div>
                 <div className="max-h-[200px] overflow-y-auto">
                   <ul>
                     {requests.map((request, index) => (
@@ -816,7 +943,7 @@ const CustomCalendar = () => {
             )}
 
             <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
-              <h3 className="text-lg mb-2">Mis vacaciones:</h3>
+            <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
               <div className="max-h-[167px] overflow-y-auto">
                   <ul>
                     {owns.map((request, index) => (

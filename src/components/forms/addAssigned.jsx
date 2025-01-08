@@ -224,12 +224,12 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[570px] relative">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[450px] relative">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
         <div>
-          <h2 className="text-2xl mb-4 text-black">Asignar a:</h2>
+          <h2 className="text-[25px] mb-4 text-black text-[#AEAEB7]"><b>Asignar a:</b></h2>
           <div className='flex'>
             <div>
               <Listbox value={selectedUser} onChange={handleSelectionUser} className="max-w-[100px] mb-4 text-black">
@@ -457,11 +457,11 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
           </Listbox> 
           </div>
         </div>
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex">
           {rowData ? (
             <button
               onClick={handleEditAssignation}
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              className="p-2 rounded text-white ml-5 mr-[20px]  mt-[30px]"
               style={{ backgroundColor: secondary }}
             >
               Editar asignación
@@ -469,10 +469,10 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
           ) : (
             <button
               onClick={handleAddAssignation}
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              className="p-2 rounded text-white ml-5 mr-[20px]  mt-[30px]"
               style={{ backgroundColor: secondary }}
             >
-              Añadir asignación
+            + Añadir asignación
             </button>
           )}
         </div>

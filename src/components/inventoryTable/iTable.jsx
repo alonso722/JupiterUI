@@ -95,7 +95,7 @@ const InventoryTable = () => {
         }),
         columnHelper.accessor("chars", {
             cell: (info) => (
-                <ul className="list-disc overflow-y-auto pl-8 max-h-[70px]">
+                <ul className="list-disc overflow-y-auto pl-8 max-h-[60px] overflow-y-auto">
                     {info.getValue().map((char, index) => (
                         <li key={index} className="list-disc">{char.characteristics}</li>
                     ))}

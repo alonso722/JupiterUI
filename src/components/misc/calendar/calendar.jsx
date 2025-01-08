@@ -287,32 +287,41 @@ return (
           {time}
         </div>
       </div>
-      <div className='flex mt-6 ml-4 justify-between'>
+      <div className='ml-4'>
         <div>
-          {isChecked ? (
-            <div
-              className="mr-2 rounded-lg flex items-center justify-center px-4 py-2"
-              style={{ backgroundColor: `${primary}90`, textAlign: 'center' }} 
-            >
-              <span className="text-white text-[10px] font-semibold text-center">Entrada registrada</span>
-            </div>
-          ) : (
-            <button
-              className='px-2 py-1 pointer rounded-lg text-white mt-2 mr-1'
-              style={{ backgroundColor: primary }}
-              onClick={handleAddEntrace}
-            >
-              Entrada
-            </button>
-          )}
+          <button
+            className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
+            style={{
+              backgroundColor: primary,
+              opacity: isChecked ? 0.7 : 1, 
+              cursor: isChecked ? 'not-allowed' : 'pointer', 
+            }}
+            onClick={!isChecked ? handleAddEntrace : undefined} 
+            disabled={isChecked} 
+          >
+            {isChecked ? (
+              <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
+            ) : (
+              'Registrar entrada'
+            )}
+          </button>
         </div>
         <div>
           <button
-            className='px-2 py-1 pointer rounded-lg text-white mt-2 mr-2'
-            style={{ backgroundColor: primary }}
-            onClick={handleAddLeave}
+            className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
+            style={{
+              backgroundColor: primary,
+              opacity: !isChecked ? 0.7 : 1, 
+              cursor: !isChecked ? 'not-allowed' : 'pointer', 
+            }}
+            onClick={isChecked ? handleAddLeave : undefined} 
+            disabled={!isChecked} 
           >
-            Salida
+            {!isChecked ? (
+              <span className="text-[13px] font-semibold text-center">Sin entrada</span>
+            ) : (
+              'Registrar salida'
+            )}
           </button>
         </div>
       </div>

@@ -156,15 +156,14 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
           &times;
         </button>
         <h2 className="text-2xl mb-4 text-black">Anexos</h2>
-        <input
+        <div className='flex '>
+            <div className='w-[400px]'>
+            <input
           type="text"
           placeholder="Título de la carpeta de anexos o del documento"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="mb-4 w-full p-2 border border-gray-300 rounded text-black"/>
-
-        <div className='flex '>
-            <div className='w-[400px]'>
+          className="mb-4 w-full p-2 border-b border-gray-300 rounded text-black mt-9"/>
                 <input type="file" multiple onChange={handleFileChange} className="mb-4" />
                 {files.length > 0 && (
                     <div className="mb-4 text-black max-h-[170px] overflow-y-auto">
@@ -193,51 +192,46 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
             </div>
 
             <div className="mb-4 ml-5 pl-5 border-l-2 border-gray-300 w-[400px]">
-                <h3 className="mb-2 text-black">Añadir link</h3>
-                <div className="flex flex-wrap h-[200px] overflow-y-auto border-b-2 border-gray-300">
-                    {links.map((link, index) => (
-                    <div
-                        key={index}
-                        className="bg-gray-200 text-black p-2 m-1 rounded flex items-center max-h-[40px] max-w-[350px] overflow-hidden whitespace-nowrap"
-                        title={link}>
-                        <span className="truncate">{link}</span>
-                        <button
-                        onClick={() => handleLinkRemove(index)}
-                        className="ml-2 text-red-500">
-                        &times;
-                        </button>
-                    </div>
-                    ))}
-                </div>
-                {isInputVisible && (
-                    <div className="items-center my-1">
+                <h3 className="mb-2 text-black text-[#AEAEB7]"><b>Añadir link</b></h3>
+                <div className=" flex-wrap h-[200px] overflow-y-auto border-b-2 border-gray-300">
+                  <div className="items-center my-1">
                     <input
-                        type="text"
-                        placeholder="Link"
-                        value={linkInput}
-                        onChange={(e) => setLinkInput(e.target.value)}
-                        onKeyDown={(e) => {
+                      type="text"
+                      placeholder="Link"
+                      value={linkInput}
+                      onChange={(e) => setLinkInput(e.target.value)}
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter') {
-                            handleLinkAddition();
-                            setIsInputVisible(false); 
+                          handleLinkAddition();
+                          setIsInputVisible(false); 
                         }
-                        }}
-                        className="p-2 text-black border-b-2 border-gray-300 focus:border-grey-500 outline-none"/>
-                    <button
+                      }}
+                      className="p-2 text-black border-b-2 border-gray-300 focus:border-grey-500 outline-none"/>
+                      <button
                         onClick={() => {
                         handleLinkAddition();
                         setIsInputVisible(false); 
                         }}
                         className="ml-2 bg-gray-300 text-black px-2 py-1 rounded">
                         +
-                    </button>
+                      </button>
                     </div>
-                )}
-                <button
-                    onClick={() => setIsInputVisible(true)}
-                    className="ml-2 bg-gray-300 text-black p-2 mt-1 rounded">
-                    Agregar
-                </button>
+                    {links.map((link, index) => (
+                      <div className='flex'>
+                        <div
+                          key={index}
+                          className="bg-gray-200 text-black p-2 m-1 rounded flex items-center max-h-[40px] max-w-[350px] overflow-hidden whitespace-nowrap"
+                          title={link}>
+                          <span className="truncate">{link}</span>
+                          <button
+                          onClick={() => handleLinkRemove(index)}
+                          className="ml-2 text-red-500">
+                          &times;
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
             </div>
         </div>
         <div className='flex justify-end'>

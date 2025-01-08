@@ -113,13 +113,12 @@ const AddInventoryForm = ({ onClose, rowData }) => {
                 placeholder="Equipo personal"
                 value={object}
                 onChange={(e) => setObject(e.target.value)}
-                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
+                className="w-full border-b-2 focus:border-purple-500 outline-none pb-2"/>
             </h2>
           </div>
         </div>
-        <div className="mb-4 ml-5 pl-5 border-l-2 border-gray-300 w-[90%]">
-          <h3 className="mb-2 text-black">Añadir especificación</h3>
-            <div className="flex flex-wrap h-[100px] overflow-y-auto border-b-2 border-gray-300">
+        <div className="mb-4 w-[90%]">
+            <div className="flex flex-wrap h-[100px] overflow-y-auto border-2 rounded-lg border-gray-300">
               {chars.map((char, index) => (
                 <div
                   key={index}
@@ -128,54 +127,49 @@ const AddInventoryForm = ({ onClose, rowData }) => {
                     <span className="truncate">{char}</span>
                     <button
                       onClick={() => handleCharRemove(index)}
-                      className="ml-2 text-red-500">
+                      className="ml-2 text-black">
                       &times;
                     </button>
                 </div>
               ))}
+            </div>   
+            <h3 className="my-2 text-black">Añadir especificación</h3>
+            <div className="flex items-center justify-between border-b-2 border-gray-300">
+              <input
+                type="text"
+                placeholder="Escribe la especificación"
+                value={charInput}
+                onChange={(e) => setCharInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleCharAdd();
+                    setIsInputVisible(false);
+                  }
+                }}
+                className="p-2 text-black  focus:border-grey-500 outline-none flex-grow"
+              />
+              <button
+                onClick={() => {
+                  handleCharAdd();
+                  setIsInputVisible(false);
+                }}
+                className=" text-black px-1">
+                +
+              </button>
             </div>
-                {isInputVisible && (
-                    <div className="items-center my-1">
-                    <input
-                        type="text"
-                        placeholder="Escribe la especificación"
-                        value={charInput}
-                        onChange={(e) => setCharInput(e.target.value)}
-                        onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            handleCharAdd();
-                            setIsInputVisible(false); 
-                        }
-                        }}
-                        className="p-2 text-black border-b-2 border-gray-300 focus:border-grey-500 outline-none"/>
-                    <button
-                        onClick={() => {
-                        handleCharAdd();
-                        setIsInputVisible(false); 
-                        }}
-                        className="ml-2 mt-2 bg-gray-300 text-black px-2 py-1 rounded">
-                        +
-                    </button>
-                    </div>
-                )}
-                <button
-                    onClick={() => setIsInputVisible(true)}
-                    className="ml-2 bg-gray-300 text-black p-2 mt-1 rounded">
-                    Agregar
-                </button>
-            </div>
+          </div>
         <div className="mt-4 flex justify-end">
           {data.id ? (
             <button 
               onClick={handleEditLocation} 
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[10px]"
+              className="p-2 rounded text-white ml-5 mr-[20px] mt-[10px]"
               style={{ backgroundColor: secondary }}>
               Editar equipo
             </button>
           ) : (
             <button 
               onClick={handleAddLocation} 
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[10px]"
+              className="p-2 rounded text-white ml-5 mr-[20px] mt-[10px]"
               style={{ backgroundColor: secondary }}>
               Añadir equipo
             </button>

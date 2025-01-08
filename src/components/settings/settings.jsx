@@ -214,62 +214,72 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     return (
         <div className="mt-[60px] ml-[100px] w-[90%] text-neutral-50 rounded items-center justify-center">
             <div className="mt-8 text-black">
-                <div className="mb-5">
-                    <h1 className="text-black text-xl mb-5">
+                <div className="mb-2 justify-between flex">
+                    <h1 className="text-black text-xl mb-3">
                         <strong>Personalización de la empresa</strong>
                     </h1>
+                    <div>                    
+                        <button 
+                        className="text-white py-1 px-4 text-[12px] rounded-full"
+                        onClick={handleUpdateSets}
+                        style={{ 
+                            backgroundColor: primary,
+                        }}>
+                        Actualizar cambios
+                    </button>
+                    </div>
                 </div>
                 <div className="flex w-full"> 
-                    <div className="px-5 mr-2">                    
-                        <div className="flex flex-col justify-center items-center ">
-                            <p className="text-lg mb-3">Logo actual:</p>
-                            <div className="flex items-center pb-4 pt-2">
-                                {logoUrl ? (
+                    <div className="px-5 mr-2 w-[40%]">                    
+                        <div className="flex flex-col">
+                            <div className="flex items-center justify-between w-full pb-4 pt-2">
+                                <p className="text-black text-[13px]"><b>Logo actual:</b></p>
+                                <div className="flex-1 flex justify-center">
+                                    {logoUrl ? (
                                     <Image
                                         src={logoUrl}
                                         alt="Logo"
                                         width={180}
                                         height={29}
                                     />
-                                ) : (
-                                    <p className="text-white">No hay logo disponible</p> 
-                                )}
+                                    ) : (
+                                    <p className="text-white">No hay logo disponible</p>
+                                    )}
+                                </div>
                                 <button
                                     onClick={openModal}
-                                    className="bg-white text-black ml-5 rounded-lg p-2 border-2">
-                                    <p>Cambiar logo</p>
+                                    className="bg-white text-black text-[13px] rounded-full p-2 border-2">
+                                    <p><b>Cambiar logo</b></p>
                                 </button>
                             </div> 
                         </div>
-                        <div className="max-w-[450px] ">
-                            <div className="flex ">
-                                <div className="mb-5 mr-2">
-                                    <h2 className="text-[15px] mb-3">Selecciona un color primario:</h2>
-                                    <SketchPicker 
-                                        className="max-w-[70%] "
-                                        color={priColor} 
-                                        onChangeComplete={handlePrimaryColorChange} />
-                                </div>
-                                <div className="mb-5">
-                                    <h2 className="text-[15px] mb-3">Selecciona un color secundario:</h2>
-                                    <SketchPicker 
-                                    className="max-w-[70%] "
-                                        color={secColor} 
-                                        onChangeComplete={handleSecondaryColorChange} />
-                                </div> 
+                        <div className=" flex w-full justify-between">
+                            <div className="mb-5 mr-2">
+                                <h2 className="text-[15px] mb-3">Selecciona un color primario:</h2>
+                                <SketchPicker 
+                                    className="w-[45%]"
+                                    color={priColor} 
+                                    onChangeComplete={handlePrimaryColorChange} />
                             </div>
+                            <div className="mb-5">
+                                <h2 className="text-[15px] mb-3">Selecciona un color secundario:</h2>
+                                <SketchPicker 
+                                className="w-[45%]"
+                                    color={secColor} 
+                                    onChangeComplete={handleSecondaryColorChange} />
+                            </div> 
                         </div>
                     </div>
-                    <div className="border-l-2  pl-5 w-[65%]">
+                    <div className=" pl-5 w-[60%]">
                         <p className="text-xl mb-4 text-black">
                             <textarea
                                 type="text"
                                 placeholder="Historia de la organizacion"
                                 value={history}
                                 onChange={(e) => setHistory(e.target.value)}
-                                className="w-full py-1 px-3 border-gray-300 rounded focus:border-purple-500 outline-none"
+                                className="w-full py-1 h-[90px] px-3 border-gray-300 rounded focus:border-purple-500 outline-none"
                                 style={{
-                                    backgroundColor: `${secondary}60` 
+                                    backgroundColor: `#EDF2F7` 
                                 }}
                             />
                         </p>
@@ -279,96 +289,76 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 placeholder="Misión de la organización"
                                 value={mision}
                                 onChange={(e) => setMision(e.target.value)}
-                                className="w-full py-1 px-3 border-gray-300  rounded focus:border-purple-500 outline-none"
+                                className="w-full h-[90px] py-1 px-3 border-gray-300  rounded focus:border-purple-500 outline-none"
                                 style={{
-                                    backgroundColor: `${primary}60`, 
+                                    backgroundColor: `#EDF2F7`, 
                                 }}
                             />
                         </p>
-                        <p className="text-xl mt-[15px] mb-4 text-black">
+                        <p className="text-xl mt-[15px] mb-2 text-black">
                             <textarea
                                 type="text"
                                 placeholder="Visión de la organización"
                                 value={vision}
                                 onChange={(e) => setVision(e.target.value)}
-                                className="w-full py-1 px-3 rounded border-gray-300 focus:border-purple-500 outline-none"
+                                className="w-full py-1 px-3 h-[90px] rounded border-gray-300 focus:border-purple-500 outline-none"
                                 style={{
-                                    backgroundColor: `${secondary}60`, 
+                                    backgroundColor: `#EDF2F7`, 
                                 }}
                             />
                         </p>
                         <div className="flex justify-between">
-                            <div className="max-h-[200px] overflow-y-auto">
-                                <h2 className="mb-4">Valores de la organización</h2>
-                                {(values ?? []).map((item, index) => (
-                                    <div key={index} className="flex items-center border-2 mb-2">
-                                        <div className="m-2">
-                                            <div>
-                                                <input
-                                                    type="text"
-                                                    value={item.value}
-                                                    onChange={(e) => handleEditValue(index, 'value', e.target.value)}
-                                                    className="p-2 mr-2 font-bold"
-                                                />
-                                            </div>
-                                            <input
-                                                type="text"
-                                                value={item.description}
-                                                onChange={(e) => handleEditValue(index, 'description', e.target.value)}
-                                                className="p-2 mr-2"
-                                            />
-                                        </div>
-                                        <button
-                                            className="bg-red-500 text-white px-1 py-1 rounded"
-                                            onClick={() => handleRemoveValue(index)}>
-                                            -
-                                        </button>
-                                    </div>
-                                ))}
-                                <div className="flex items-center mt-4 mr-5 border-2 rounded">
-                                    <div className="m-2">
+                            <div className="max-h-[180px]">
+                                <h2 className=" text-[12px]"><b>Valores</b></h2>
+                                <div className="flex items-center mt-2 mr-5 border-2 w-[250px] rounded-lg">
+                                    <div className="flex m-2">
                                         <div>
                                             <input
                                                 type="text"
                                                 value={newValue}
                                                 onChange={(e) => setNewValue(e.target.value)}
-                                                className="p-2 mr-2 font-bold"
+                                                className="p-2  font-bold w-[90%]"
                                                 placeholder="Agregar nuevo valor"
                                             />
-                                        </div>
                                         <input
                                             type="text"
                                             value={newDescription}
                                             onChange={(e) => setNewDescription(e.target.value)}
-                                            className="p-2 mr-2"
+                                            className="p-2 "
                                             placeholder="Agregar descripción"
                                         />
-                                    </div>
-                                    <button
-                                        className="bg-blue-500 text-white px-1 py-1 mr-2 rounded"
-                                        onClick={handleAddValue}>
-                                        +
-                                    </button>
-                                </div>
-                            </div>
-                            <div className="max-h-[200px] mx-[5%] overflow-y-auto">
-                                <h2 className="mb-4">Documentos requeridos</h2>
-                                {(documents ?? []).map((document, index) => (
-                                    <div key={index} className="flex items-center mb-2">
-                                        <input
-                                            type="text"
-                                            value={document} 
-                                            readOnly
-                                            className="border p-2 mr-2"
-                                        />
+
+                                        </div>
                                         <button
-                                            className="bg-red-500 text-white px-1 py-1 rounded"
-                                            onClick={() => handleRemoveDocument(index)}>
-                                            -
+                                            className=" text-black px-1 py-1 mr-2 rounded hover:bg-gray-300"
+                                            onClick={handleAddValue}>
+                                            +
                                         </button>
                                     </div>
-                                ))}
-                                <div className="flex items-center mt-4 mr-5">
+                                </div>
+                                <div className="mt-2 max-h-[100px] overflow-y-auto">
+                                    {(values ?? []).map((item, index) => (
+                                        <div key={index} className="flex items-center border-2 w-[250px] overflow-y-auto rounded-lg mt-[10px] mb-2">
+                                            <div className="m-2 w-full flex bg-[#EDF2F7] rounded-lg px-2">
+                                                <input
+                                                    type="text"
+                                                    value={item.value}
+                                                    onChange={(e) => handleEditValue(index, 'value', e.target.value)}
+                                                    className="w-full bg-[#EDF2F7] p-1 mr-2 font-bold rounded "
+                                                />
+                                                <button
+                                                    className=" text-black px-1 py-1 rounded"
+                                                    onClick={() => handleRemoveValue(index)}>
+                                                    x
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="max-h-[200px] mx-[1%]">
+                                <h2 className="mb-2 text-[12px]"><b>Documentos requeridos</b></h2>
+                                <div className="flex items-center mb-2 border-2 w-[230px] rounded-lg">
                                     <input
                                         type="text"
                                         value={newDocument} 
@@ -377,28 +367,36 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                         placeholder="Agregar documento"
                                     />
                                     <button
-                                        className="bg-blue-500 text-white px-1 py-1 mr-2 rounded"
+                                        className="text-black px-1 py-1 mr-2 rounded"
                                         onClick={handleAddDocument}>
                                         +
                                     </button>
                                 </div>
+                                <div className="overflow-y-auto h-[140px]">
+                                    {(documents ?? []).map((document, index) => (
+                                        <div key={index} className="my-2 w-full flex bg-[#EDF2F7] rounded-lg px-2">
+                                            <input
+                                                type="text"
+                                                value={document} 
+                                                readOnly
+                                                className="bg-[#EDF2F7]"
+                                                title={document}
+                                            />
+                                            <button
+                                                className="text-black px-1 py-1 rounded"
+                                                onClick={() => handleRemoveDocument(index)}>
+                                                x
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                             <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
-                                <p className="block text-sm font-medium leading-6 text-black">Encargados de RH</p>
+                                <p className="block mb-2 text-[12px] text-black"><b>Encargados de RH</b></p>
                                 <UsersChecks selectedOptions={selectedUsers} setSelectedOptions={setSelectedUsers}/>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div className="flex w-[90%] justify-center mt-8">
-                    <button 
-                        className="text-white py-2 px-4 rounded"
-                        onClick={handleUpdateSets}
-                        style={{ 
-                            backgroundColor: primary,
-                        }}>
-                        Actualizar información y Personalización
-                    </button>
                 </div>
                 {isModalOpen && (
                     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">

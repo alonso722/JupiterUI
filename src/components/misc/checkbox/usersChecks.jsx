@@ -93,60 +93,77 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
   };
 
   return (
-    <div className='text-black my-[5px]' ref={containerRef}> {/* Añadido ref aquí */}
+    <div className="text-black my-[5px]" ref={containerRef}>
       <div className="relative">
         <input
           type="text"
-          className="outline outline-1 outline-gray-300 text-black px-2 py-2 rounded"
+          className="outline outline-1 outline-gray-300 text-black px-2 py-2 rounded w-full"
           placeholder="Buscar usuarios"
           value={searchSearch}
           onChange={handleInputChange}
           onClick={handleClickInput}
         />
+        {showOptions && (
+          <div className="absolute top-full left-0 mt-1 w-full max-h-[150px] overflow-y-auto border border-gray-300 bg-white rounded shadow-lg z-10">
+            {options
+              .filter(option =>
+                !(Array.isArray(selectedOptions) && selectedOptions.some(selected => selected.uuid === option.uuid))
+              )
+              .map((option, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between px-3 py-2 border-b border-gray-200"
+                >
+                  <span
+                    className="max-w-[300px] w-auto truncate"
+                    title={option.name}
+                  >
+                    {option.name} {option.last}
+                  </span>
+                  <button
+                    className="text-black px-2 py-1 rounded hover:bg-gray-300"
+                    onClick={() => handleAddOption(option)}
+                  >
+                    +
+                  </button>
+                </div>
+              ))}
+          </div>
+        )}
       </div>
-      {showOptions && (
-        <div className="mt-2 max-h-[100px] overflow-x-auto">
-          {options
-            .filter(option => 
-              !(Array.isArray(selectedOptions) && selectedOptions.some(selected => selected.uuid === option.uuid))
-            )
-            .map((option, index) => (
-              <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
-                <span
-                  className='max-w-[300px] w-auto truncate'
-                  title={option.name}>
-                  {option.name} {option.last}
-                </span>
-                <button
-                  className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
-                  onClick={() => handleAddOption(option)}>
-                  +
-                </button>
-              </div>
-            ))}
-        </div>
-      )}
-      <div className='border mt-3 p-2 max-h-[170px]'>
-        <h3 className='text-black'>
+      <h3 className="mt-2 text-[13px] text-black">
           <b>Usuarios seleccionados:</b>
         </h3>
-        <div className='max-h-[200px] flex overflow-x-auto'>
-          {(Array.isArray(selectedOptions) ? selectedOptions : []).map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200">
-              <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
-                {option.name && option.name.length > 0 ? `${option.name} ${option.last}` : `${option.name} ${option.last}`}
-              </span>
-              <button
-                className="bg-red-500 text-white px-2 py-1 rounded ml-2"
-                onClick={() => handleRemoveOption(option)}>
-                -
-              </button>
-            </div>
-          ))}
+      <div className="mt-2 p-3 border border-gray-300 rounded bg-gray-50">
+        <div className="h-[80px] flex flex-wrap gap-2 overflow-y-auto">
+          {Array.isArray(selectedOptions) && selectedOptions.length > 0 ? (
+            selectedOptions.map((option, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between px-3 py-2 bg-[#EDF2F7] border border-gray-300 rounded-lg"
+              >
+                <span
+                  className="min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap"
+                >
+                  {option.name && option.name.length > 0
+                    ? `${option.name} ${option.last}`
+                    : `${option.name} ${option.last}`}
+                </span>
+                <button
+                  className="bg-[#EDF2F7] text-black px-2 rounded ml-2"
+                  onClick={() => handleRemoveOption(option)}
+                >
+                  x
+                </button>
+              </div>
+            ))
+          ) : (
+            <span className="text-gray-500"></span>
+          )}
         </div>
       </div>
     </div>
-  );
+  );  
 };
 
 export default UsersChecks;

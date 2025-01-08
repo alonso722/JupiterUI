@@ -381,7 +381,7 @@ const getAnnexesIcon = (extension) => {
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
-      <div className='flex'>
+      <div className='flex h-full'>
         <div className=''>
           <div className='w-[400px]'>
           <p className='text-black'>
@@ -472,13 +472,12 @@ const getAnnexesIcon = (extension) => {
           </div>
           <div className='flex w-[400px] py-2 justify-center'>
             {fileInfo && (
-              <div className="text-black flex flex-col items-center">
+              <div className="text-black mt-[15px] flex flex-col items-center">
                 <h2 className="mt-1">Documento cargado:</h2>
                 <img src={getFileIcon(fileInfo.extension)} alt="File Icon" className="w-[80px] h-[80px] mb-2" />
                 <p className='w-[150px] text-black text-center mx-[5px] overflow-hidden text-ellipsis whitespace-nowrap' title={fileInfo.name}>
                   {fileInfo.name}
-                </p>
-                
+                </p> 
               </div>
             )}
             {annexesInfo && (
@@ -559,7 +558,7 @@ const getAnnexesIcon = (extension) => {
             </div>
           </div>
         ) : (
-          <div className='ml-3 rounded border-2 mt-[20px] max-h-[500px] overflow-y-auto w-[500px]'>
+          <div className='ml-3 rounded border-2 mt-[20px] max-h-[600px] overflow-y-auto w-[500px]'>
             <div className='mb-2 px-5 mt-[10px] text-black'>
               <Listbox 
                 value={selectedEditor} 
@@ -632,7 +631,7 @@ const getAnnexesIcon = (extension) => {
                 <UsersChecks selectedOptions={selectedAprobator} setSelectedOptions={setSelectedAprobator} selectedOrgId={selectedOrgId} />
               </div>
             </div>
-            <div className='mt-[110px] max-h-[300px] h-[200px] max-w-[200px] ml-5 pt-[60px]'>
+            <div className='mt-[20px] max-h-[300px] h-[200px] max-w-[200px] ml-5 '>
               <p className="block text-sm font-medium leading-6 text-black">Consultores</p>
               <UsersChecks selectedOptions={selectedConsultor} setSelectedOptions={setSelectedConsultor} selectedOrgId={selectedOrgId} />
             </div>

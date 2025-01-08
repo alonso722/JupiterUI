@@ -107,7 +107,7 @@ const LocationsTable = () => {
             cell: (info) => {
                 const inventoryList = JSON.parse(info.getValue() || '[]');
                 return (
-                    <ul className="list-disc">
+                    <ul className="list-disc pl-5 max-h-[57px] overflow-y-auto">
                         {inventoryList.map((item, index) => (
                             <li key={index}>{item}</li>
                         ))}
@@ -176,9 +176,9 @@ const LocationsTable = () => {
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                <div className="mt-[10px] mr-[120px]">
+                <div className="mt-[10px] mr-[20px]">
                     <Button
-                    className="w-[126px]"
+                    className="w-[126px] text-[12px] px-2"
                         color={colors.DARK_JUPITER_OUTLINE}
                         onClick={handleInventory}>
                         Caracteristicas de inventario

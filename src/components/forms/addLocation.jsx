@@ -138,18 +138,18 @@ const AddLocationForm = ({ onClose, rowData }) => {
         <div className='max-h-[300px] h-[200px]'>
           <InventoryChecks selectedOptions={selectedInventory} rowData={rowData} setSelectedOptions={setSelectedInventory} />
         </div>
-        <div className="mt-4 flex justify-end">
+        <div className="mt-2 flex ">
           {data.id ? (
             <button 
               onClick={handleEditLocation} 
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[10px]"
+              className="p-2 rounded text-white ml-5 mr-[20px] mt-[10px]"
               style={{ backgroundColor: secondary }}>
               Editar ubicación
             </button>
           ) : (
             <button 
               onClick={handleAddLocation} 
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[10px]"
+              className="px-2 py-1 rounded text-white ml-5 mr-[20px]  mt-[10px]"
               style={{ backgroundColor: secondary }}>
               Añadir ubicación
             </button>

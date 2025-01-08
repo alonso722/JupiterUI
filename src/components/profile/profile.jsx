@@ -245,42 +245,42 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                   </div>
                   <div className="">
                     <div className="flex w-full justify-between">
-                      <div className=" mr-5">
-                        <p className="text-[#B1B5C3]">
-                          <strong>Teléfono:</strong>
+                      <div className="w-full mr-5">
+                        <p className="text-[#B1B5C3] text-[10px]">
+                          <strong>TELÉFONO</strong>
                         </p>
-                      <input
-                        type="text"
-                        placeholder="Teléfono celular"
-                        value={phone ?? ""}
-                        onChange={(e) => setPhone(e.target.value)}
-                        disabled={!isEditable}
-                        className={`w-[130px] rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
-                          isEditable ? "cursor-text" : "cursor-not-allowed"
-                        }`}/>
-                      {isEditable ? (
-                        <CiSaveDown2
-                          className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
-                          onClick={handleSaveClick} style={{  color: primary }} />
-                      ) : (
-                        <CiEdit
-                          className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
-                          onClick={handleSaveClick} style={{  color: primary }}/>
-                                )}
-                              </div>
-                              <div>
-                                <p className="mr-9 text-[#B1B5C3]"><strong>Correo:</strong></p>
-                                <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
-                              </div>  
-                              {userFilter && (
-                                <button
-                                  onClick={() => viewArchive()}
-                                  className="p-2 rounded text-white h-[30px] text-[10px] mt-6 ml-3 mr-[20px]"
-                                  style={{ backgroundColor: primary }}>
-                                  Archivos anteriores
-                                </button>
-                              )}
-                            </div>
+                        <input
+                          type="text"
+                          placeholder="Teléfono celular"
+                          value={phone ?? ""}
+                          onChange={(e) => setPhone(e.target.value)}
+                          disabled={!isEditable}
+                          className={` w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
+                            isEditable ? "cursor-text" : "cursor-not-allowed"
+                          }`}/>
+                          {isEditable ? (
+                            <CiSaveDown2
+                            className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
+                            onClick={handleSaveClick} style={{  color: primary }} />
+                          ) : (
+                            <CiEdit
+                            className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
+                            onClick={handleSaveClick} style={{  color: primary }}/>
+                          )}
+                        </div>
+                        <div className="w-full">
+                          <p className="mr-9 text-[#B1B5C3] text-[10px]"><strong>CORREO ELECTRÓNICO</strong></p>
+                          <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
+                        </div>  
+                        {userFilter && (
+                          <button
+                            onClick={() => viewArchive()}
+                            className="p-2 rounded text-white h-[30px] text-[10px] mt-6 ml-3 mr-[20px]"
+                            style={{ backgroundColor: primary }}>
+                            Archivos anteriores
+                          </button>
+                        )}
+                      </div>
                             <div className=" overflow-auto relative">
                               <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-auto mt-4'>
                                 <ul className='w-full '>
@@ -325,7 +325,10 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                                               style={{ paddingLeft: '30px' }}/>
                                         </div>
                                       ) : (
-                                        <p className='ml-4 pr-3 underline'>Archivo cargado</p>
+                                        <p className='ml-4 pr-3 underline cursor-pointer'
+                                          onClick={userDoc ? () => openViewer(userDoc) : undefined}>
+                                          Archivo cargado
+                                        </p>
                                       )}
                                       {editMode && (
                                         <button
@@ -353,8 +356,8 @@ export const Profile = ({ departmentFilter, userFilter }) => {
               <p className="mb-4"><strong>Equipo asignado:</strong></p>
               {inventory.map((item, index) => (
                 <div key={index}>
-                  <p className="">-{item.object}:</p>
-                  <ul className="ml-4 list-disc">
+                  <p className="text-[#B1B5C3] "><b>{item.object}:</b></p>
+                  <ul className="ml-4 text-[#B1B5C3]">
                     {item.chars.map((char, charIndex) => (
                       <li key={charIndex}>
                         {char.characteristics}: {char.charValue || 'N/A'}

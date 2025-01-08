@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useApi from '@/hooks/useApi';
+import { IoIosSearch } from "react-icons/io";
 
 const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions, setSelectedOptions, selectedOrgId }) => {
   const [options, setOptions] = useState([]);
@@ -75,11 +76,15 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
   }, [selectedOrgId]);
 
   return (
-    <div className='text-black my-[5px]'>
+    <div className='text-black mb-[5px]'>
       <div className="relative">
+        <IoIosSearch 
+          className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500" 
+          size={20} 
+        />
         <input 
           type="text" 
-          className="outline outline-1 outline-gray-300 text-black px-2 py-2 rounded" 
+          className="outline outline-1 outline-gray-300 text-black pl-8 pr-2 py-2 rounded w-full" 
           placeholder="Buscar departamentos"
           value={searchSearch}
           onChange={handleInputChange}
@@ -88,14 +93,14 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
       {searchSearch && (
         <div className="flex mt-2 max-h-[100px] overflow-x-auto">
           {options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
+            <div key={index} className="flex items-center justify-between px-2 border-2 rounded-lg border-gray-200 mr-4">
               <span 
                 className='max-w-[300px] w-auto truncate' 
                 title={option.department} >
                 {option.department}
               </span>
               <button 
-                className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
+                className=" text-black px-2 py-1 rounded ml-2"
                 onClick={() => handleAddOption(option)}>
                 +
               </button>
@@ -103,11 +108,11 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
           ))}
         </div>
       )}
-      <div className='border mt-3 p-2 max-h-[170px] '>
+      <div className='p-2 max-h-[170px] '>
         <h3 className='text-black'>
           <b>Departamentos seleccionados:</b>
         </h3>
-        <div className='max-h-[200px] flex overflow-x-auto'>
+        <div className='border-2 rounded-lg h-[100px] flex overflow-x-auto'>
           {selectedOptions.map((option, index) => (
             <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 ">
               <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>

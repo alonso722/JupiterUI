@@ -111,16 +111,6 @@ const AssignedTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Corporativo",
         }),
-        columnHelper.accessor("chars", {
-            cell: (info) => (
-                <ul className="list-disc overflow-y-auto pl-8 max-h-[70px]">
-                    {info.getValue().map((char, index) => (
-                        <li key={index} className="list-disc">{char.characteristics}: {char.charValue}</li>
-                    ))}
-                </ul>
-            ),
-            header: "Características",
-        }),
         columnHelper.accessor("status", {
             cell: (info) => {
               let label;
@@ -140,7 +130,17 @@ const AssignedTable = () => {
               return <span>{label}</span>;
             },
             header: "Estado",
-          }),                
+          }),
+        columnHelper.accessor("chars", {
+            cell: (info) => (
+                <ul className="list-disc overflow-y-auto pl-8 max-h-[60px]">
+                    {info.getValue().map((char, index) => (
+                        <li key={index} className="list-disc">{char.characteristics}: {char.charValue}</li>
+                    ))}
+                </ul>
+            ),
+            header: "Características",
+        }),                
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions

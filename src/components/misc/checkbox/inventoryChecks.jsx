@@ -85,14 +85,14 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
       <div className="flex mt-2 max-h-[100px] overflow-x-auto">
         {options.length > 0 ? (
           options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 mr-4">
+            <div key={index} className="flex items-center justify-between px-2 rounded-lg border-2 border-gray-200 mr-4">
               <span 
                 className='max-w-[300px] w-auto truncate' 
                 title={option.object} >
                 {option.object}
               </span>
               <button 
-                className="bg-blue-500 text-white px-2 py-1 rounded ml-2"
+                className="text-black px-2 py-1 rounded ml-2 "
                 onClick={() => handleAddOption(option)}>
                 +
               </button>
@@ -103,19 +103,19 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
         )}
       </div>
       <div className='border mt-3 p-2 max-h-[170px] '>
-        <h3 className='text-black'>
+        <h3 className='text-black mb-2'>
           <b>Equipos seleccionados:</b>
         </h3>
         <div className='max-h-[200px] flex overflow-x-auto'>
           {selectedOptions.map((option, index) => (
-            <div key={index} className="flex items-center justify-between p-2 border-b border-gray-200 ">
+            <div key={index} className="bg-[#EDF2F7] rounded-lg flex items-center justify-between px-2 border-2 mx-[2%] border-gray-200 ">
               <span className='min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap'>
                 {option.object}
               </span>
               <button 
-                className="bg-red-500 text-white px-2 py-1 rounded ml-2"
+                className=" bg-[#EDF2F7] text-black px-2 py-1 rounded ml-2"
                 onClick={() => handleRemoveOption(option)}>
-                -
+                x
               </button>
             </div>
           ))}

@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { IoMdHome } from "react-icons/io";
+import { MdOutlineHome } from "react-icons/md";
+import { ImOffice } from "react-icons/im";
 import { FaColumns, FaTable, FaUsers, FaBuilding, FaSitemap, FaBars } from "react-icons/fa";
-import { BsFillGrid3X2GapFill } from "react-icons/bs"; 
+import { BiCloudUpload } from "react-icons/bi";
 import { FaTableCells, FaMapLocationDot, FaListCheck } from "react-icons/fa6";
-import { MdOutlineInventory } from "react-icons/md";
+import { MdOutlineInventory2, MdOutlineComputer } from "react-icons/md";
 import { useColors } from '@/services/colorService';
-import { TbUserShield } from "react-icons/tb";
+import { RiFolderUserLine } from "react-icons/ri";
 import { RiArchiveDrawerLine } from "react-icons/ri";
+import { IoLocationOutline } from "react-icons/io5";
 
 interface Permissions {
     Type: number;
@@ -55,16 +57,16 @@ export default function Sidebar() {
     };
 
     const navItems = [
-        { path: '/dashboard/home', icon: IoMdHome, label: 'Inicio', condition: true },
-        { path: '/dashboard/kanban', icon: BsFillGrid3X2GapFill, label: 'Procesos', condition: true },
-        { path: '/dashboard/table', icon: FaTableCells, label: 'Tabla de procesos',  condition: permissions?.Type === 1 || permissions?.Type === 6 || workflows?.coordinator !== 0 },
+        { path: '/dashboard/home', icon: MdOutlineHome, label: 'Inicio', condition: true },
+        { path: '/dashboard/kanban', icon:  BiCloudUpload, label: 'Procesos', condition: true },
+        { path: '/dashboard/table', icon: FaListCheck, label: 'Tabla de procesos',  condition: permissions?.Type === 1 || permissions?.Type === 6 || workflows?.coordinator !== 0 },
         { path: '/organizations', icon: FaBuilding, label: 'Organizacioness', condition: permissions?.Type === 6 },
-        { path: '/departments', icon: FaSitemap, label: 'Departamentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/HHRR', icon: TbUserShield, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
+        { path: '/departments', icon: ImOffice, label: 'Departamentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/HHRR', icon: RiFolderUserLine, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/reports', icon: RiArchiveDrawerLine, label: 'Reportes', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
-        { path: '/locations', icon: FaMapLocationDot, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/inventory', icon: MdOutlineInventory, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/inventory/assigned', icon:  FaListCheck, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/locations', icon: IoLocationOutline, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/inventory', icon: MdOutlineInventory2, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/inventory/assigned', icon:  MdOutlineComputer, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/user', icon: FaUsers, label: 'Users', condition: true }
     ];
 
@@ -110,7 +112,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 3.11.15
+                    V 3.12.15
                 </div>
             </div>
         </div>
