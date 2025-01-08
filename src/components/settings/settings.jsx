@@ -255,14 +255,14 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                         </div>
                         <div className=" flex w-full justify-between">
                             <div className="mb-5 mr-2">
-                                <h2 className="text-[15px] mb-3">Selecciona un color primario:</h2>
+                                <h2 className="text-[15px] mb-3"><b>Selecciona un color primario:</b></h2>
                                 <SketchPicker 
                                     className="w-[45%]"
                                     color={priColor} 
                                     onChangeComplete={handlePrimaryColorChange} />
                             </div>
                             <div className="mb-5">
-                                <h2 className="text-[15px] mb-3">Selecciona un color secundario:</h2>
+                                <h2 className="text-[15px] mb-3"><b>Selecciona un color secundario:</b></h2>
                                 <SketchPicker 
                                 className="w-[45%]"
                                     color={secColor} 
@@ -271,37 +271,40 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                         </div>
                     </div>
                     <div className=" pl-5 w-[60%]">
-                        <p className="text-xl mb-4 text-black">
+                        <h2 className="text-[13px] mb-1"><b>Historia de la organizacion</b></h2>
+                        <p className="text-xl text-black">
                             <textarea
                                 type="text"
                                 placeholder="Historia de la organizacion"
                                 value={history}
                                 onChange={(e) => setHistory(e.target.value)}
-                                className="w-full py-1 h-[90px] px-3 border-gray-300 rounded focus:border-purple-500 outline-none"
+                                className="w-full py-1 h-[70px] px-3 border-gray-300 rounded focus:border-purple-500 outline-none"
                                 style={{
                                     backgroundColor: `#EDF2F7` 
                                 }}
                             />
                         </p>
-                        <p className="text-xl mt-[15px] mb-4 text-black">
+                        <p className="text-xl text-black">
+                        <h2 className="text-[13px] mb-1"><b>Misión de la organizacion</b></h2>
                             <textarea
                                 type="text"
                                 placeholder="Misión de la organización"
                                 value={mision}
                                 onChange={(e) => setMision(e.target.value)}
-                                className="w-full h-[90px] py-1 px-3 border-gray-300  rounded focus:border-purple-500 outline-none"
+                                className="w-full h-[70px] py-1 px-3 border-gray-300  rounded focus:border-purple-500 outline-none"
                                 style={{
                                     backgroundColor: `#EDF2F7`, 
                                 }}
                             />
                         </p>
-                        <p className="text-xl mt-[15px] mb-2 text-black">
+                        <p className="text-xl mt-[5px] mb-2 text-black">
+                        <h2 className="text-[13px] mb-1"><b>Visión de la organizacion</b></h2>
                             <textarea
                                 type="text"
                                 placeholder="Visión de la organización"
                                 value={vision}
                                 onChange={(e) => setVision(e.target.value)}
-                                className="w-full py-1 px-3 h-[90px] rounded border-gray-300 focus:border-purple-500 outline-none"
+                                className="w-full py-1 px-3 h-[70px] rounded border-gray-300 focus:border-purple-500 outline-none"
                                 style={{
                                     backgroundColor: `#EDF2F7`, 
                                 }}
