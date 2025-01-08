@@ -109,7 +109,9 @@ const CustomCalendar = () => {
       const formattedEvents = events.map(event => {
         const start = new Date(event.start);
         const end = new Date(event.end);
-
+        start.setHours(start.getHours() + 6);
+        end.setHours(end.getHours() + 6);
+    
         if (end.getHours() === 0 && end.getMinutes() === 0 && end.getSeconds() === 0) {
           end.setDate(end.getDate() + 1); 
         }
@@ -120,11 +122,11 @@ const CustomCalendar = () => {
           end: end,
         };
       });
-  
+    
       setEvents(formattedEvents);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
-    }
+    }    
   };
 
   const getChecks = async () => {
