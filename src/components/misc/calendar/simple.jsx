@@ -663,12 +663,14 @@ const CustomCalendar = () => {
                     <input
                       type="date"
                       className="mb-2 px-2 rounded"
-                      value={moment(newEvent.start).format('YYYY-MM-DD')}
+                      value={newEvent.start.toLocaleDateString('en-CA')}
                       onChange={(e) => {
-                        const newDate = new Date(e.target.value);
-                        newDate.setHours(newEvent.start.getHours());
-                        newDate.setMinutes(newEvent.start.getMinutes());
-                        setNewEvent({ ...newEvent, start: newDate });
+                        const [year, month, day] = e.target.value.split("-");
+                        const updatedDate = new Date(newEvent.start.getTime());
+                        updatedDate.setFullYear(year);
+                        updatedDate.setMonth(month - 1);
+                        updatedDate.setDate(day);
+                        setNewEvent({ ...newEvent, start: updatedDate });
                       }}
                     />
                     <div className='flex'>
@@ -676,12 +678,14 @@ const CustomCalendar = () => {
                       <input
                         type="date"
                         className="mb-2 p-2 rounded"
-                        value={moment(newEvent.end).format('YYYY-MM-DD')}
+                        value={newEvent.end.toLocaleDateString('en-CA')}
                         onChange={(e) => {
-                          const newDate = new Date(e.target.value);
-                          newDate.setHours(newEvent.end.getHours());
-                          newDate.setMinutes(newEvent.end.getMinutes());
-                          setNewEvent({ ...newEvent, end: newDate });
+                          const [year, month, day] = e.target.value.split("-");
+                          const updatedDate = new Date(newEvent.end);
+                          updatedDate.setFullYear(year);
+                          updatedDate.setMonth(month - 1);
+                          updatedDate.setDate(day);
+                          setNewEvent({ ...newEvent, end: updatedDate });
                         }}
                       />
                     </div>
@@ -759,12 +763,14 @@ const CustomCalendar = () => {
                     <input
                       type="date"
                       className="mb-2 px-2 rounded"
-                      value={moment(newEvent.start).format("YYYY-MM-DD")}
+                      value={newEvent.start.toLocaleDateString('en-CA')}
                       onChange={(e) => {
-                        const newDate = new Date(e.target.value);
-                        newDate.setHours(newEvent.start.getHours());
-                        newDate.setMinutes(newEvent.start.getMinutes());
-                        setNewEvent({ ...newEvent, start: newDate });
+                        const [year, month, day] = e.target.value.split("-");
+                        const updatedDate = new Date(newEvent.start.getTime());
+                        updatedDate.setFullYear(year);
+                        updatedDate.setMonth(month - 1);
+                        updatedDate.setDate(day);
+                        setNewEvent({ ...newEvent, start: updatedDate });
                       }}
                     />
                     <div className="flex">
@@ -772,12 +778,14 @@ const CustomCalendar = () => {
                       <input
                         type="date"
                         className="mb-2 p-2 rounded"
-                        value={moment(newEvent.end).format("YYYY-MM-DD")}
+                        value={newEvent.end.toLocaleDateString('en-CA')}
                         onChange={(e) => {
-                          const newDate = new Date(e.target.value);
-                          newDate.setHours(newEvent.end.getHours());
-                          newDate.setMinutes(newEvent.end.getMinutes());
-                          setNewEvent({ ...newEvent, end: newDate });
+                          const [year, month, day] = e.target.value.split("-");
+                          const updatedDate = new Date(newEvent.end);
+                          updatedDate.setFullYear(year);
+                          updatedDate.setMonth(month - 1);
+                          updatedDate.setDate(day);
+                          setNewEvent({ ...newEvent, end: updatedDate });
                         }}
                       />
                     </div>

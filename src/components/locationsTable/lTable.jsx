@@ -181,7 +181,7 @@ const LocationsTable = () => {
                     className="w-[126px] text-[12px] px-2"
                         color={colors.DARK_JUPITER_OUTLINE}
                         onClick={handleInventory}>
-                        Caracteristicas de inventario
+                        Características de inventario
                     </Button>
                 </div>
                 <div className="mt-[10px] mr-[120px]">
