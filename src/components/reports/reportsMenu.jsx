@@ -68,7 +68,6 @@ export const ReportsMenu = () => {
 
     try {
       const response = await api.post(endpoint, reque);
-      console.log(response.data)
       setData(response.data);
     } catch (error) {
       console.error(`Error al consultar ${endpoint}:`, error);

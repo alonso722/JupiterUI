@@ -307,7 +307,7 @@ const CustomCalendar = () => {
         return;
       }
 
-      await api.post('/user/notifications/addByVacations', {
+      const noti = await api.post('/user/notifications/addByVacations', {
         uuid: uuid,
         manager: manager
       });
@@ -665,10 +665,14 @@ const CustomCalendar = () => {
                     <input
                       type="date"
                       className="mb-2 px-2 rounded"
-                      value={newEvent.start.toLocaleDateString('en-CA')}
+                      value={
+                        newEvent.start instanceof Date
+                          ? newEvent.start.toISOString().split('T')[0] 
+                          : new Date(newEvent.start).toISOString().split('T')[0]
+                      }
                       onChange={(e) => {
                         const [year, month, day] = e.target.value.split("-");
-                        const updatedDate = new Date(newEvent.start.getTime());
+                        const updatedDate = new Date(newEvent.start || new Date());
                         updatedDate.setFullYear(year);
                         updatedDate.setMonth(month - 1);
                         updatedDate.setDate(day);
@@ -680,10 +684,14 @@ const CustomCalendar = () => {
                       <input
                         type="date"
                         className="mb-2 p-2 rounded"
-                        value={newEvent.end.toLocaleDateString('en-CA')}
+                        value={
+                          newEvent.end instanceof Date
+                          ? newEvent.end.toISOString().split('T')[0] 
+                          : new Date(newEvent.end).toISOString().split('T')[0]
+                        }
                         onChange={(e) => {
                           const [year, month, day] = e.target.value.split("-");
-                          const updatedDate = new Date(newEvent.end);
+                          const updatedDate = new Date(newEvent.end || new Date());
                           updatedDate.setFullYear(year);
                           updatedDate.setMonth(month - 1);
                           updatedDate.setDate(day);
@@ -765,10 +773,14 @@ const CustomCalendar = () => {
                     <input
                       type="date"
                       className="mb-2 px-2 rounded"
-                      value={newEvent.start.toLocaleDateString('en-CA')}
+                      value={
+                        newEvent.start && !isNaN(new Date(newEvent.start))
+                          ? new Date(newEvent.start).toISOString().split('T')[0] 
+                          : '' 
+                      }
                       onChange={(e) => {
                         const [year, month, day] = e.target.value.split("-");
-                        const updatedDate = new Date(newEvent.start.getTime());
+                        const updatedDate = new Date();
                         updatedDate.setFullYear(year);
                         updatedDate.setMonth(month - 1);
                         updatedDate.setDate(day);
@@ -780,10 +792,14 @@ const CustomCalendar = () => {
                       <input
                         type="date"
                         className="mb-2 p-2 rounded"
-                        value={newEvent.end.toLocaleDateString('en-CA')}
+                        value={
+                          newEvent.end instanceof Date
+                          ? newEvent.end.toISOString().split('T')[0] 
+                          : new Date(newEvent.end).toISOString().split('T')[0]
+                        }
                         onChange={(e) => {
                           const [year, month, day] = e.target.value.split("-");
-                          const updatedDate = new Date(newEvent.end);
+                          const updatedDate = new Date(newEvent.end || new Date());
                           updatedDate.setFullYear(year);
                           updatedDate.setMonth(month - 1);
                           updatedDate.setDate(day);
