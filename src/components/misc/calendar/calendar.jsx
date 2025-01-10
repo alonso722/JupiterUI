@@ -293,37 +293,45 @@ return (
         <div>
           <button
             className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-            style={{
-              backgroundColor: primary,
-              opacity: isChecked ? 0.7 : 1, 
-              cursor: isChecked ? 'not-allowed' : 'pointer', 
-            }}
-            onClick={!isChecked ? handleAddEntrace : undefined} 
-            disabled={isChecked} 
+            // style={{
+            //   backgroundColor: primary,
+            //   opacity: isChecked ? 0.7 : 1, 
+            //   cursor: isChecked ? 'not-allowed' : 'pointer', 
+            // }}
+            onClick={
+              //!isChecked ?
+               handleAddEntrace 
+              // : undefined
+              } 
+            //disabled={isChecked} 
           >
-            {isChecked ? (
+            {/* {isChecked ? (
               <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
             ) : (
               'Registrar entrada'
-            )}
+            )} */}
           </button>
         </div>
         <div>
           <button
             className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-            style={{
-              backgroundColor: primary,
-              opacity: !isChecked ? 0.7 : 1, 
-              cursor: !isChecked ? 'not-allowed' : 'pointer', 
-            }}
-            onClick={isChecked ? handleAddLeave : undefined} 
-            disabled={!isChecked} 
+            // style={{
+            //   backgroundColor: primary,
+            //   opacity: !isChecked ? 0.7 : 1, 
+            //   cursor: !isChecked ? 'not-allowed' : 'pointer', 
+            // }}
+            onClick={
+              //isChecked ? 
+              handleAddLeave 
+              // : undefined
+            } 
+            //disabled={!isChecked} 
           >
-            {!isChecked ? (
+            {/* {!isChecked ? (
               <span className="text-[13px] font-semibold text-center">Sin entrada</span>
             ) : (
               'Registrar salida'
-            )}
+            )} */}
           </button>
         </div>
       </div>
