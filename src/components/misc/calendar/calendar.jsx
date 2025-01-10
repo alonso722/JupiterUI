@@ -189,34 +189,35 @@ const CustomCalendar = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          api.post('/user/event/addEntrace', { 
-            ...newEvent,
-            latitude,
-            longitude,
-            type: 1,       
-            title: 'Entrada',
-            orga: organization, 
-            uuid: uuid  
-        })
-            .then((response) => {
-                getChecks();
-                showToast('success', "Entrada registrada");
-            })
-            .catch((error) => {
-                const errorMessage = error.response && error.response.data
-                    ? `Entrada no registrada: ${error.response.data}`
-                    : "Entrada no registrada: Error desconocido";
-                showToast('warning', errorMessage);
-                console.error('Error al añadir el evento:', error);
-            });        
+          console.log("coordenadas salida", latitude, longitude,)
+        //   api.post('/user/event/addEntrace', { 
+        //     ...newEvent,
+        //     latitude,
+        //     longitude,
+        //     type: 1,       
+        //     title: 'Entrada',
+        //     orga: organization, 
+        //     uuid: uuid  
+        // })
+        //     .then((response) => {
+        //         getChecks();
+        //         showToast('success', "Entrada registrada");
+        //     })
+        //     .catch((error) => {
+        //         const errorMessage = error.response && error.response.data
+        //             ? `Entrada no registrada: ${error.response.data}`
+        //             : "Entrada no registrada: Error desconocido";
+        //         showToast('warning', errorMessage);
+        //         console.error('Error al añadir el evento:', error);
+        //     });        
   
-          setEvents([...events, { 
-            ...newEvent,
-            type: 1,       
-            title: 'Entrada'  
-          }]);
-          setShowModal(false);
-          setNewEvent({ title: '', start: new Date(), end: new Date() });
+        //   setEvents([...events, { 
+        //     ...newEvent,
+        //     type: 1,       
+        //     title: 'Entrada'  
+        //   }]);
+        //   setShowModal(false);
+        //   setNewEvent({ title: '', start: new Date(), end: new Date() });
         },
         (error) => {
           showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
@@ -241,24 +242,25 @@ const CustomCalendar = () => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
           const { latitude, longitude } = position.coords;
-          api.post('/user/event/addLeave', { 
-            ...newEvent,
-            latitude,
-            longitude,
-            type: 1,       
-            title: 'Salida',
-            orga: organization, 
-            uuid: uuid  
-          })
-            .then((response) => {
-              getChecks();
-              showToast('success',"Salida registrada");
-            })
-            .catch((error) => {
-              console.error('Error al añadir el evento:', error);
-            });
-          setShowModal(false);
-          setNewEvent({ title: '', start: new Date(), end: new Date() });
+          console.log("coordenadas", latitude, longitude,)
+          // api.post('/user/event/addLeave', { 
+          //   ...newEvent,
+          //   latitude,
+          //   longitude,
+          //   type: 1,       
+          //   title: 'Salida',
+          //   orga: organization, 
+          //   uuid: uuid  
+          // })
+            // .then((response) => {
+            //   getChecks();
+            //   showToast('success',"Salida registrada");
+            // })
+            // .catch((error) => {
+            //   console.error('Error al añadir el evento:', error);
+            // });
+          // setShowModal(false);
+          // setNewEvent({ title: '', start: new Date(), end: new Date() });
         },
         (error) => {
           showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
