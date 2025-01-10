@@ -293,11 +293,11 @@ return (
         <div>
           <button
             className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-            // style={{
-            //   backgroundColor: primary,
-            //   opacity: isChecked ? 0.7 : 1, 
-            //   cursor: isChecked ? 'not-allowed' : 'pointer', 
-            // }}
+            style={{
+              backgroundColor: primary,
+              // opacity: isChecked ? 0.7 : 1, 
+              // cursor: isChecked ? 'not-allowed' : 'pointer', 
+            }}
             onClick={
               //!isChecked ?
                handleAddEntrace 
@@ -305,6 +305,7 @@ return (
               } 
             //disabled={isChecked} 
           >
+            entrada
             {/* {isChecked ? (
               <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
             ) : (
@@ -315,11 +316,11 @@ return (
         <div>
           <button
             className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-            // style={{
-            //   backgroundColor: primary,
-            //   opacity: !isChecked ? 0.7 : 1, 
-            //   cursor: !isChecked ? 'not-allowed' : 'pointer', 
-            // }}
+            style={{
+              backgroundColor: primary,
+              // opacity: !isChecked ? 0.7 : 1, 
+              // cursor: !isChecked ? 'not-allowed' : 'pointer', 
+            }}
             onClick={
               //isChecked ? 
               handleAddLeave 
@@ -327,6 +328,7 @@ return (
             } 
             //disabled={!isChecked} 
           >
+            salida
             {/* {!isChecked ? (
               <span className="text-[13px] font-semibold text-center">Sin entrada</span>
             ) : (
