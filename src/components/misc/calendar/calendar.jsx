@@ -185,50 +185,62 @@ const CustomCalendar = () => {
     }
     const organization = parsedPermissions.Organization;
     const uuid = parsedPermissions.uuid;
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log("coordenadas salida", latitude, longitude,)
-        //   api.post('/user/event/addEntrace', { 
-        //     ...newEvent,
-        //     latitude,
-        //     longitude,
-        //     type: 1,       
-        //     title: 'Entrada',
-        //     orga: organization, 
-        //     uuid: uuid  
-        // })
-        //     .then((response) => {
-        //         getChecks();
-        //         showToast('success', "Entrada registrada");
-        //     })
-        //     .catch((error) => {
-        //         const errorMessage = error.response && error.response.data
-        //             ? `Entrada no registrada: ${error.response.data}`
-        //             : "Entrada no registrada: Error desconocido";
-        //         showToast('warning', errorMessage);
-        //         console.error('Error al añadir el evento:', error);
-        //     });        
-  
-        //   setEvents([...events, { 
-        //     ...newEvent,
-        //     type: 1,       
-        //     title: 'Entrada'  
-        //   }]);
-        //   setShowModal(false);
-        //   setNewEvent({ title: '', start: new Date(), end: new Date() });
-        },
-        (error) => {
-          showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
-          console.error('Error al obtener la ubicación:', error);
-        }
-      );
+        // Configuración para alta precisión y manejo de tiempo
+        const options = {
+            enableHighAccuracy: true, // Solicitar alta precisión
+            timeout: 5000,           // Tiempo máximo para obtener la ubicación
+            maximumAge: 0            // No usar datos en caché
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+
+                console.log("Coordenadas entrada:", latitude, longitude);
+
+                // Código comentado para el envío de datos a la API
+                // api.post('/user/event/addEntrace', { 
+                //   ...newEvent,
+                //   latitude,
+                //   longitude,
+                //   type: 1,       
+                //   title: 'Entrada',
+                //   orga: organization, 
+                //   uuid: uuid  
+                // })
+                // .then((response) => {
+                //     getChecks();
+                //     showToast('success', "Entrada registrada");
+                // })
+                // .catch((error) => {
+                //     const errorMessage = error.response && error.response.data
+                //         ? `Entrada no registrada: ${error.response.data}`
+                //         : "Entrada no registrada: Error desconocido";
+                //     showToast('warning', errorMessage);
+                //     console.error('Error al añadir el evento:', error);
+                // });        
+
+                // setEvents([...events, { 
+                //   ...newEvent,
+                //   type: 1,       
+                //   title: 'Entrada'  
+                // }]);
+                // setShowModal(false);
+                // setNewEvent({ title: '', start: new Date(), end: new Date() });
+            },
+            (error) => {
+                showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+                console.error('Error al obtener la ubicación:', error);
+            },
+            options // Pasar opciones de configuración
+        );
     } else {
-      showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
-      console.error('Geolocalización no es soportada por este navegador.');
+        showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+        console.error('Geolocalización no es soportada por este navegador.');
     }
-  };
+};
 
   const handleAddLeave = () => {
     let parsedPermissions;
@@ -238,40 +250,52 @@ const CustomCalendar = () => {
     }
     const organization = parsedPermissions.Organization;
     const uuid = parsedPermissions.uuid;
+
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          console.log("coordenadas", latitude, longitude,)
-          // api.post('/user/event/addLeave', { 
-          //   ...newEvent,
-          //   latitude,
-          //   longitude,
-          //   type: 1,       
-          //   title: 'Salida',
-          //   orga: organization, 
-          //   uuid: uuid  
-          // })
-            // .then((response) => {
-            //   getChecks();
-            //   showToast('success',"Salida registrada");
-            // })
-            // .catch((error) => {
-            //   console.error('Error al añadir el evento:', error);
-            // });
-          // setShowModal(false);
-          // setNewEvent({ title: '', start: new Date(), end: new Date() });
-        },
-        (error) => {
-          showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
-          console.error('Error al obtener la ubicación:', error);
-        }
-      );
+        // Configuración para alta precisión y manejo de tiempo
+        const options = {
+            enableHighAccuracy: true, // Solicitar alta precisión
+            timeout: 5000,           // Tiempo máximo para obtener la ubicación
+            maximumAge: 0            // No usar datos en caché
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+
+                console.log("Coordenadas obtenidas:", latitude, longitude);
+
+                // Código comentado para el envío de datos a la API
+                // api.post('/user/event/addLeave', { 
+                //   ...newEvent,
+                //   latitude,
+                //   longitude,
+                //   type: 1,       
+                //   title: 'Salida',
+                //   orga: organization, 
+                //   uuid: uuid  
+                // })
+                // .then((response) => {
+                //   getChecks();
+                //   showToast('success',"Salida registrada");
+                // })
+                // .catch((error) => {
+                //   console.error('Error al añadir el evento:', error);
+                // });
+                // setShowModal(false);
+                // setNewEvent({ title: '', start: new Date(), end: new Date() });
+            },
+            (error) => {
+                showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+                console.error('Error al obtener la ubicación:', error);
+            },
+            options // Pasar opciones de configuración
+        );
     } else {
-      showToast('warning', 'Su organizacion necesita acceso a su ubicación, por favor, permita el acceso.');
-      console.error('Geolocalización no es soportada por este navegador.');
+        showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+        console.error('Geolocalización no es soportada por este navegador.');
     }
-  };
+};
 
   const handleNavigation = () => {
         const path = '/dashboard/home/calendar';
