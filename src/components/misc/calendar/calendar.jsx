@@ -190,7 +190,7 @@ const CustomCalendar = () => {
         // Configuración para alta precisión y manejo de tiempo
         const options = {
             enableHighAccuracy: true, // Solicitar alta precisión
-            timeout: 5000,           // Tiempo máximo para obtener la ubicación
+            timeout: 10000,           // Tiempo máximo para obtener la ubicación
             maximumAge: 0            // No usar datos en caché
         };
 
@@ -200,35 +200,34 @@ const CustomCalendar = () => {
 
                 console.log("Coordenadas entrada:", latitude, longitude);
 
-                // Código comentado para el envío de datos a la API
-                // api.post('/user/event/addEntrace', { 
-                //   ...newEvent,
-                //   latitude,
-                //   longitude,
-                //   type: 1,       
-                //   title: 'Entrada',
-                //   orga: organization, 
-                //   uuid: uuid  
-                // })
-                // .then((response) => {
-                //     getChecks();
-                //     showToast('success', "Entrada registrada");
-                // })
-                // .catch((error) => {
-                //     const errorMessage = error.response && error.response.data
-                //         ? `Entrada no registrada: ${error.response.data}`
-                //         : "Entrada no registrada: Error desconocido";
-                //     showToast('warning', errorMessage);
-                //     console.error('Error al añadir el evento:', error);
-                // });        
+                api.post('/user/event/addEntrace', { 
+                  ...newEvent,
+                  latitude,
+                  longitude,
+                  type: 1,       
+                  title: 'Entrada',
+                  orga: organization, 
+                  uuid: uuid  
+                })
+                .then((response) => {
+                    getChecks();
+                    showToast('success', "Entrada registrada");
+                })
+                .catch((error) => {
+                    const errorMessage = error.response && error.response.data
+                        ? `Entrada no registrada: ${error.response.data}`
+                        : "Entrada no registrada: Error desconocido";
+                    showToast('warning', errorMessage);
+                    console.error('Error al añadir el evento:', error);
+                });        
 
-                // setEvents([...events, { 
-                //   ...newEvent,
-                //   type: 1,       
-                //   title: 'Entrada'  
-                // }]);
-                // setShowModal(false);
-                // setNewEvent({ title: '', start: new Date(), end: new Date() });
+                setEvents([...events, { 
+                  ...newEvent,
+                  type: 1,       
+                  title: 'Entrada'  
+                }]);
+                setShowModal(false);
+                setNewEvent({ title: '', start: new Date(), end: new Date() });
             },
             (error) => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
@@ -255,7 +254,7 @@ const CustomCalendar = () => {
         // Configuración para alta precisión y manejo de tiempo
         const options = {
             enableHighAccuracy: true, // Solicitar alta precisión
-            timeout: 5000,           // Tiempo máximo para obtener la ubicación
+            timeout: 10000,           // Tiempo máximo para obtener la ubicación
             maximumAge: 0            // No usar datos en caché
         };
 
@@ -265,25 +264,24 @@ const CustomCalendar = () => {
 
                 console.log("Coordenadas obtenidas:", latitude, longitude);
 
-                // Código comentado para el envío de datos a la API
-                // api.post('/user/event/addLeave', { 
-                //   ...newEvent,
-                //   latitude,
-                //   longitude,
-                //   type: 1,       
-                //   title: 'Salida',
-                //   orga: organization, 
-                //   uuid: uuid  
-                // })
-                // .then((response) => {
-                //   getChecks();
-                //   showToast('success',"Salida registrada");
-                // })
-                // .catch((error) => {
-                //   console.error('Error al añadir el evento:', error);
-                // });
-                // setShowModal(false);
-                // setNewEvent({ title: '', start: new Date(), end: new Date() });
+                api.post('/user/event/addLeave', { 
+                  ...newEvent,
+                  latitude,
+                  longitude,
+                  type: 1,       
+                  title: 'Salida',
+                  orga: organization, 
+                  uuid: uuid  
+                })
+                .then((response) => {
+                  getChecks();
+                  showToast('success',"Salida registrada");
+                })
+                .catch((error) => {
+                  console.error('Error al añadir el evento:', error);
+                });
+                setShowModal(false);
+                setNewEvent({ title: '', start: new Date(), end: new Date() });
             },
             (error) => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
