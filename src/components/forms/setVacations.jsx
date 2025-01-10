@@ -11,7 +11,7 @@ const VacationsForm = ({ isOpen, onClose }) => {
   const [yearEnd, setYearEnd] = useState('');
   const [yearsDays, setYearsDays] = useState('');
   const [isBlockMode, setIsBlockMode] = useState(false);
-  const { secondary } = useColors();
+  const { primary, secondary } = useColors();
   const effectMounted = useRef(false);
   const api = useApi();
 
@@ -106,6 +106,19 @@ const VacationsForm = ({ isOpen, onClose }) => {
       return;
     }
   
+    const hasOverlappingBlocks = days.some((current, index) =>
+      days.some((other, otherIndex) =>
+        index !== otherIndex &&
+        current.start <= other.end &&
+        current.end >= other.start
+      )
+    );
+  
+    if (hasOverlappingBlocks) {
+      showToast('error', "Hay bloques de días que se solapan. Ajuste las fechas para evitar empalmes.");
+      return;
+    }
+  
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
@@ -128,7 +141,7 @@ const VacationsForm = ({ isOpen, onClose }) => {
       console.error("Error al consultar procesos:", error);
     }
   };
-  
+    
   if (!isOpen) return null;
 
   return (
@@ -178,7 +191,10 @@ const VacationsForm = ({ isOpen, onClose }) => {
                     />
                     <button
                       onClick={handleAddYear}
-                      className="ml-2 bg-gray-300 text-white px-2 py-1 rounded"
+                      className="ml-2 text-white px-2 py-1 rounded"
+                      style={{ 
+                        backgroundColor: primary,
+                    }}
                     >
                       + Agregar
                     </button>

@@ -276,7 +276,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                             <textarea
                                 type="text"
                                 placeholder="Historia de la organizacion"
-                                value={history}
+                                value={history || ""}
                                 onChange={(e) => setHistory(e.target.value)}
                                 className="w-full py-1 h-[70px] px-3 border-gray-300 rounded focus:border-purple-500 outline-none"
                                 style={{
@@ -284,12 +284,13 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 }}
                             />
                         </p>
-                        <p className="text-xl text-black">
                         <h2 className="text-[13px] mb-1"><b>Misión de la organizacion</b></h2>
+                        <p className="text-xl text-black">
+                        
                             <textarea
                                 type="text"
                                 placeholder="Misión de la organización"
-                                value={mision}
+                                value={mision || ""}
                                 onChange={(e) => setMision(e.target.value)}
                                 className="w-full h-[70px] py-1 px-3 border-gray-300  rounded focus:border-purple-500 outline-none"
                                 style={{
@@ -297,12 +298,12 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 }}
                             />
                         </p>
-                        <p className="text-xl mt-[5px] mb-2 text-black">
                         <h2 className="text-[13px] mb-1"><b>Visión de la organizacion</b></h2>
+                        <p className="text-xl mt-[5px] mb-2 text-black">
                             <textarea
                                 type="text"
                                 placeholder="Visión de la organización"
-                                value={vision}
+                                value={vision || ""}
                                 onChange={(e) => setVision(e.target.value)}
                                 className="w-full py-1 px-3 h-[70px] rounded border-gray-300 focus:border-purple-500 outline-none"
                                 style={{
