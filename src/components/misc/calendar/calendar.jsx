@@ -187,11 +187,10 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
 
     if (navigator.geolocation) {
-        // Configuración para alta precisión y manejo de tiempo
         const options = {
-            enableHighAccuracy: true, // Solicitar alta precisión
-            timeout: 10000,           // Tiempo máximo para obtener la ubicación
-            maximumAge: 0            // No usar datos en caché
+            enableHighAccuracy: true, 
+            timeout: 7000,           
+            maximumAge: 0            
         };
 
         navigator.geolocation.getCurrentPosition(
@@ -233,7 +232,7 @@ const CustomCalendar = () => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
                 console.error('Error al obtener la ubicación:', error);
             },
-            options // Pasar opciones de configuración
+            options 
         );
     } else {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
@@ -251,18 +250,17 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
 
     if (navigator.geolocation) {
-        // Configuración para alta precisión y manejo de tiempo
         const options = {
-            enableHighAccuracy: true, // Solicitar alta precisión
-            timeout: 10000,           // Tiempo máximo para obtener la ubicación
-            maximumAge: 0            // No usar datos en caché
+            enableHighAccuracy: true,
+            timeout: 7000,           
+            maximumAge: 0            
         };
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
 
-                console.log("Coordenadas obtenidas:", latitude, longitude);
+                console.log("Coordenadas salida:", latitude, longitude);
 
                 api.post('/user/event/addLeave', { 
                   ...newEvent,
@@ -287,7 +285,7 @@ const CustomCalendar = () => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
                 console.error('Error al obtener la ubicación:', error);
             },
-            options // Pasar opciones de configuración
+            options 
         );
     } else {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
