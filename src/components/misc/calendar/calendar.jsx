@@ -197,8 +197,6 @@ const CustomCalendar = () => {
             (position) => {
                 const { latitude, longitude } = position.coords;
 
-                console.log("Coordenadas entrada:", latitude, longitude);
-
                 api.post('/user/event/addEntrace', { 
                   ...newEvent,
                   latitude,
@@ -260,8 +258,6 @@ const CustomCalendar = () => {
             (position) => {
                 const { latitude, longitude } = position.coords;
 
-                console.log("Coordenadas salida:", latitude, longitude);
-
                 api.post('/user/event/addLeave', { 
                   ...newEvent,
                   latitude,
@@ -315,22 +311,21 @@ return (
             className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
             style={{
               backgroundColor: primary,
-              // opacity: isChecked ? 0.7 : 1, 
-              // cursor: isChecked ? 'not-allowed' : 'pointer', 
+              opacity: isChecked ? 0.7 : 1, 
+              cursor: isChecked ? 'not-allowed' : 'pointer', 
             }}
             onClick={
-              //!isChecked ?
-               handleAddEntrace 
-              // : undefined
+              !isChecked ?
+              handleAddEntrace 
+              : undefined
               } 
-            //disabled={isChecked} 
+            disabled={isChecked} 
           >
-            entrada
-            {/* {isChecked ? (
+            {isChecked ? (
               <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
             ) : (
               'Registrar entrada'
-            )} */}
+            )}
           </button>
         </div>
         <div>
@@ -338,22 +333,21 @@ return (
             className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
             style={{
               backgroundColor: primary,
-              // opacity: !isChecked ? 0.7 : 1, 
-              // cursor: !isChecked ? 'not-allowed' : 'pointer', 
+              opacity: !isChecked ? 0.7 : 1, 
+              cursor: !isChecked ? 'not-allowed' : 'pointer', 
             }}
             onClick={
-              //isChecked ? 
+              isChecked ? 
               handleAddLeave 
-              // : undefined
+               : undefined
             } 
-            //disabled={!isChecked} 
+            disabled={!isChecked} 
           >
-            salida
-            {/* {!isChecked ? (
+            {!isChecked ? (
               <span className="text-[13px] font-semibold text-center">Sin entrada</span>
             ) : (
               'Registrar salida'
-            )} */}
+            )}
           </button>
         </div>
       </div>
