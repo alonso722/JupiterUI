@@ -295,7 +295,7 @@ const CustomCalendar = () => {
           type: nType,
           uuid: uuid,
       });
-      console.log(manager)
+      console.log("datos vacciones:", newEvent,"managerrrrrrr:",manager)
       const verify =  await api.post('/user/vacations/add', {
         ...newEvent,
         type: nType,
