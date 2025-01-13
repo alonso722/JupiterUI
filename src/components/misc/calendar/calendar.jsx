@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { useColors } from '@/services/colorService';
@@ -19,6 +19,7 @@ const localizer = momentLocalizer(moment);
 const CustomCalendar = () => {
   const { primary, secondary } = useColors();
   const api = useApi();
+  const effectMounted = useRef(false);
   const [events, setEvents] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
@@ -142,8 +143,11 @@ const CustomCalendar = () => {
   };
 
   useEffect(() => {
+    if (effectMounted.current === false) {
     getChecks();
     fetchEvents();
+    effectMounted.current = true;
+  }
   }, [fetchEvents]);
   
   const handleAddEvent = async () => {
@@ -187,11 +191,11 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
 
     if (navigator.geolocation) {
-        const options = {
-            enableHighAccuracy: true, 
-            timeout: 7000,           
-            maximumAge: 0            
-        };
+        // const options = {
+        //     enableHighAccuracy: true, 
+        //     timeout: 7000,           
+        //     maximumAge: 0            
+        // };
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -230,7 +234,7 @@ const CustomCalendar = () => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
                 console.error('Error al obtener la ubicación:', error);
             },
-            options 
+            //options 
         );
     } else {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
@@ -248,11 +252,11 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
 
     if (navigator.geolocation) {
-        const options = {
-            enableHighAccuracy: true,
-            timeout: 7000,           
-            maximumAge: 0            
-        };
+        // const options = {
+        //     enableHighAccuracy: true,
+        //     timeout: 7000,           
+        //     maximumAge: 0            
+        // };
 
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -281,7 +285,7 @@ const CustomCalendar = () => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
                 console.error('Error al obtener la ubicación:', error);
             },
-            options 
+            //options 
         );
     } else {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
