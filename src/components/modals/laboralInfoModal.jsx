@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import useApi from '@/hooks/useApi';
 import DocsViewer from '../misc/docViewer/docViewer';
+import Image from 'next/image';
 
 const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
   const [file, setFile] = useState(null);
@@ -44,7 +45,7 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
       loadLaboralProfile();
       effectMounted.current = true;
     }
-  }, [uuid]);
+  }, [uuid, loadLaboralProfile]);
 
   const enableEditMode = () => {
     setEditMode(true); 
@@ -123,12 +124,15 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
                   <input type="file" onChange={(e) => handleFileUpload(e, 'cv')} className="mb-4" />
                   {file && (
                     <div className="mb-4 text-black flex flex-col items-center">
-                      <img
-                        onClick={() => document && openViewer(document.path)}
-                        src='/icons/pdf.png'
-                        alt="File Icon"
-                        className="w-[10%] h-auto mt-[10px] cursor-pointer"
-                      />
+                      <div className="relative w-[10%] h-auto mt-[10px] cursor-pointer">
+                        <Image
+                          onClick={() => document && openViewer(document.path)}
+                          src="/icons/pdf.png"
+                          alt="File Icon"
+                          layout="intrinsic"
+                          objectFit="contain"
+                        />
+                      </div>
                       <button
                         onClick={enableEditMode}
                         className=" flex items-center justify-center w-8 h-8 ">
@@ -141,12 +145,15 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
               </>
             ) : (
               <div className="mb-4 text-black flex flex-col items-center">
-                <img
-                  onClick={() => document && openViewer(info.cv)}
-                  src='/icons/pdf.png'
-                  alt="File Icon"
-                  className="w-[10%] h-auto cursor-pointer"
-                />
+                <div className="relative w-[10%] h-auto cursor-pointer">
+                  <Image
+                    onClick={() => document && openViewer(info.cv)}
+                    src="/icons/pdf.png"
+                    alt="File Icon"
+                    layout="intrinsic"
+                    objectFit="contain"
+                  />
+                </div>
                 <button
                   onClick={enableEditMode}
                   className=" flex items-center justify-center w-8 h-8 ">
@@ -163,12 +170,15 @@ const LaboralInfoModal = ({ isOpen, onClose, uuid }) => {
                   <input type="file" onChange={(e) => handleFileUpload(e, 'recommendation')} className="mb-4" />
                   {file && (
                     <div className="mb-4 text-black flex flex-col items-center">
-                      <img
-                        onClick={() => document && openViewer(document.path)}
-                        src='/icons/pdf.png'
-                        alt="File Icon"
-                        className="w-[10%] h-auto mt-[10px] cursor-pointer"
-                      />
+                      <div className="relative w-[10%] h-auto mt-[10px] cursor-pointer">
+                        <Image
+                          onClick={() => document && openViewer(document.path)}
+                          src="/icons/pdf.png"
+                          alt="File Icon"
+                          layout="intrinsic"
+                          objectFit="contain"
+                        />
+                      </div>
                       <p>Archivo seleccionado: {file.name}</p>
                     </div>
                   )}

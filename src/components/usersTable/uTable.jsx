@@ -144,7 +144,7 @@ const UsersTable = () => {
             fetchData();
             effectMounted.current = true;
         }
-    }, []);
+    }, [fetchData]);
     
     useEffect(() => {
         if (refreshTable) {
@@ -154,7 +154,7 @@ const UsersTable = () => {
                 fetchData(); 
             }
         }
-    }, [refreshTable, toggleOn]);
+    }, [refreshTable, toggleOn, fetchData]);
     
     const router = useRouter();
     const columns = [

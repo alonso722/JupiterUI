@@ -121,7 +121,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
       fetchInventory();
       effectMounted.current = true;
     }
-    }, []);
+    }, [fetchData]);
     
     const enableEditMode = () => {
       setEditMode(true); 

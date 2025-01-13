@@ -87,7 +87,7 @@ const RhTable = () => {
             fetchData();
             effectMounted.current = true;
         }
-    }, []);
+    }, [fetchData]);
     
     useEffect(() => {
         if (refreshTable) {
@@ -97,7 +97,7 @@ const RhTable = () => {
                 fetchData(); 
             }
         }
-    }, [refreshTable, toggleOn]);
+    }, [refreshTable, toggleOn, fetchData]);
     
     const router = useRouter();
     const columns = [

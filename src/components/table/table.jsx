@@ -94,7 +94,7 @@ const TanStackTable = () => {
         if (refreshTable) {
             fetchData();
         }
-    }, [refreshTable]);
+    }, [refreshTable, fetchData]);
 
     const convertStatusToColumn = (status) => {
         switch (status) {

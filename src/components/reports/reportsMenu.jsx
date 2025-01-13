@@ -43,7 +43,7 @@ export const ReportsMenu = () => {
 
       effectMounted.current = true;
     }
-  }, []);
+  }, [api]);
 
   const handleSelectionDepartment = (value) => {
     if (value === null) {

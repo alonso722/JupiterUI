@@ -85,13 +85,13 @@ const UsersTable = () => {
             fetchData();
             effectMounted.current = true;
         }
-    }, []);
+    }, [fetchData]);
 
     useEffect(() => {
         if (refreshTable) {
             fetchData();
         }
-    }, [refreshTable]);
+    }, [refreshTable, fetchData]);
 
     const router = useRouter();
     const columns = [

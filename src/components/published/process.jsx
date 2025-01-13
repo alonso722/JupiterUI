@@ -78,7 +78,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
                 });
             effectMounted.current = true;
         }
-    }, []);
+    }, [api]);
 
     const convertStatusToColumn = (status) => {
         switch(status) {
