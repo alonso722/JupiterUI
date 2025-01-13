@@ -200,7 +200,6 @@ const CustomCalendar = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-              console.log("ubiiiiiiiiiiiiiii",latitude, longitude)
                 api.post('/user/event/addEntrace', { 
                   ...newEvent,
                   latitude,
