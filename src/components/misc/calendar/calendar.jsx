@@ -134,7 +134,7 @@ const CustomCalendar = () => {
       const entranceDate = new Date(new Date(events.entrance).getTime() + 6 * 60 * 60 * 1000);
       const currentDate = new Date();
       const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
-      if (differenceInHours < 10) {
+      if (differenceInHours < 20) {
         setIsChecked(true);
       }
     } catch (error) {
