@@ -106,33 +106,34 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-    <div className="mt-12 md:mt-[80px] mx-4 md:ml-[110px] md:mr-0 text-neutral-50 rounded overflow-hidden">
-        <div className="flex md:z-10 md:flex-row bg-black">
-            <div className="text-black align-start text-[22px] md:text-[20px] mt-6 md:mt-2 flex-1 pt-5 ">
-                <p><b>¡Bienvenido de vuelta, {name}!</b></p>
+        <div className="md:w-full mt-12 md:mt-[80px] mx-4 md:ml-[110px] md:mr-0 text-neutral-50 rounded overflow-hidden relative">
+            <div className="flex md:flex-row">
+                <div className="text-black align-start text-[22px] md:text-[20px] mt-6 md:mt-2 flex-1 pt-5 z-10">
+                    <p><b>¡Bienvenido de vuelta, {name}!</b></p>
+                </div>
+                <div className="md:w-[350px] md:flex-shrink-0 mt-6 md:mt-0 md:ml-5 z-10">
+                    <Calendar className="md:absolute " /> 
+                </div>
             </div>
-            <div className="md:w-[350px] md:flex-shrink-0 mt-6 md:mt-0 md:ml-5">
-                <Calendar />
+            <div className="flex-1 md:mr-5 mt-6 md:mt-0 relative md:absolute md:top-[80px] left-0 right-0 md:max-w-[70%]"> 
+                <ECarousel />
             </div>
+            <div className="flex-1 md:mr-5 mt-6 md:mt-0 relative md:absolute md:top-[80px] left-0 right-0">
+                <Board 
+                    onCardClick={handleCardClick} 
+                    cards={cards} 
+                    setCards={setCards} 
+                    permissions={permissions} 
+                    primary={primary} 
+                    secondary={secondary}
+                />
+            </div>
+            {isModalOpen && selectedCard && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                    <Details card={selectedCard} onClose={handleCloseModal} />
+                </div>
+            )}
         </div>
-        <div className="flex-1 md:mr-5 mt-6 md:mt-0 md:z-0">
-            <ECarousel />
-        </div>
-        <Board 
-                onCardClick={handleCardClick} 
-                cards={cards} 
-                setCards={setCards} 
-                permissions={permissions} 
-                primary={primary} 
-                secondary={secondary}
-            />
-        {isModalOpen && selectedCard && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-                <Details card={selectedCard} onClose={handleCloseModal} />
-            </div>
-        )}
-    </div>
-
     );      
 };
 
@@ -140,7 +141,7 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
     const approvedCards = cards.filter(card => card.column === 'Aprobado');
 
     return (
-        <div className="flex w-[100%] border-t-4 mt-[30px] pt-2 flex-wrap justify-center">
+        <div className="flex w-[100%] border-t-4 md:mt-[180px] md:max-w-[70%] pt-2 flex-wrap justify-center">
             {approvedCards.map((card) => (
                 <Card
                     key={card.id}
