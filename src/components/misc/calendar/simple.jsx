@@ -262,6 +262,9 @@ const CustomCalendar = () => {
         const eventDuration = Math.ceil(
             (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24) + 1
         );
+        if(!days){
+          showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
+        }
         if (eventDuration > days) {
           if (days === 0) {
             showToast('error', 'No puedes solicitar vacaciones porque no tienes días disponibles.');
@@ -288,6 +291,10 @@ const CustomCalendar = () => {
         }
     }
     
+  }
+  if(!manager){
+    showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
+    return;
   }
     try {
         const id = await api.post('/user/event/add', {

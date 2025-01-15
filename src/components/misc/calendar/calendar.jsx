@@ -239,7 +239,7 @@ const CustomCalendar = () => {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
         console.error('Geolocalización no es soportada por este navegador.');
     }
-};
+  };
 
   const handleAddLeave = () => {
     let parsedPermissions;
@@ -252,7 +252,7 @@ const CustomCalendar = () => {
 
     if (navigator.geolocation) {
         // const options = {
-        //     enableHighAccuracy: true,
+        //     enableHighAccuracy: true, 
         //     timeout: 7000,           
         //     maximumAge: 0            
         // };
@@ -260,7 +260,6 @@ const CustomCalendar = () => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-
                 api.post('/user/event/addLeave', { 
                   ...newEvent,
                   latitude,
@@ -271,11 +270,15 @@ const CustomCalendar = () => {
                   uuid: uuid  
                 })
                 .then((response) => {
-                  getChecks();
-                  showToast('success',"Salida registrada");
+                    getChecks();
+                    showToast('success', "Salida registrada");
                 })
                 .catch((error) => {
-                  console.error('Error al añadir el evento:', error);
+                    const errorMessage = error.response && error.response.data
+                        ? `Salida no registrada: ${error.response.data}`
+                        : "Salida no registrada: Error desconocido";
+                    showToast('warning', errorMessage);
+                    console.error('Error al añadir el evento:', error);
                 });
                 setShowModal(false);
                 setNewEvent({ title: '', start: new Date(), end: new Date() });
@@ -290,7 +293,7 @@ const CustomCalendar = () => {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
         console.error('Geolocalización no es soportada por este navegador.');
     }
-};
+  };
 
   const handleNavigation = () => {
         const path = '/dashboard/home/calendar';
@@ -299,63 +302,63 @@ const CustomCalendar = () => {
 
 return (
   <>
-  <div className='ml-[70px]'>
-    <div className='text-black shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
-      <div>
-        <div><strong>Checador</strong>
-        </div>
-        <div className=' text-[30px] text-[#777E90]'>
-          {time}
-        </div>
-      </div>
-      <div className='ml-4'>
-        <div>
-          <button
-            className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-            style={{
-              backgroundColor: primary,
-              opacity: isChecked ? 0.7 : 1, 
-              cursor: isChecked ? 'not-allowed' : 'pointer', 
-            }}
-            onClick={
-              !isChecked ?
-              handleAddEntrace 
-              : undefined
-              } 
-            disabled={isChecked} 
-          >
-            {isChecked ? (
-              <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
-            ) : (
-              'Registrar entrada'
-            )}
-          </button>
-        </div>
-        <div>
-          <button
-            className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-            style={{
-              backgroundColor: primary,
-              opacity: !isChecked ? 0.7 : 1, 
-              cursor: !isChecked ? 'not-allowed' : 'pointer', 
-            }}
-            onClick={
-              isChecked ? 
-              handleAddLeave 
-               : undefined
-            } 
-            disabled={!isChecked} 
-          >
-            {!isChecked ? (
-              <span className="text-[13px] font-semibold text-center">Sin entrada</span>
-            ) : (
-              'Registrar salida'
-            )}
-          </button>
-        </div>
+  <div className='w-md:ml-[70px]'>
+    <div className='text-black shadow-lg px-2 md:px-6 pt-5 pb-2 md:flex rounded-2xl mx-auto w-full max-w-[95%] md:max-w-[600px]'>
+    <div className='flex md:block text-[12px] md:text-[30px] justify-between'>
+      <strong>Checador</strong>
+      <div className='text-[12px] md:text-[30px] text-[#777E90]'>
+        {time}
       </div>
     </div>
-    <div className='mt-[70px] ml-[1%]py-2 h-[350px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
+    <div className='ml-4 mt-1'>
+      <div>
+        <button
+          className={`px-2 py-1 pointer rounded-lg text-[8px] md:text-[13px] w-[86px] md:w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
+          style={{
+            backgroundColor: primary,
+            opacity: isChecked ? 0.7 : 1, 
+            cursor: isChecked ? 'not-allowed' : 'pointer', 
+          }}
+          onClick={
+            !isChecked ?
+            handleAddEntrace 
+            : undefined
+            } 
+          disabled={isChecked} 
+        >
+          {isChecked ? (
+            <span className="text-[8px] md:text-[13px] font-semibold text-center">Entrada registrada</span>
+          ) : (
+            'Registrar entrada'
+          )}
+        </button>
+      </div>
+      <div>
+        <button
+          className={`px-2 py-1 pointer rounded-lg text-[8px] md:text-[13px] w-[86px] md:w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
+          style={{
+            backgroundColor: primary,
+            opacity: !isChecked ? 0.7 : 1, 
+            cursor: !isChecked ? 'not-allowed' : 'pointer', 
+          }}
+          onClick={
+            isChecked ? 
+            handleAddLeave 
+            : undefined
+          } 
+          disabled={!isChecked} 
+        >
+          {!isChecked ? (
+            <span className="text-[8px] md:text-[13px] font-semibold text-center">Sin entrada</span>
+          ) : (
+            'Registrar salida'
+          )}
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <div className='hidden md:block mt-[70px] ml-[1%]py-2 h-[350px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
       <div className="">
         <div className="max-w-md px-4 mx-auto sm:px-7 md:max-w-4xl md:px-6">
           <div className="">

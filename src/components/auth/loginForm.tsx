@@ -109,75 +109,76 @@ export default function LoginForm({
 
     return (
         <>
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center min-h-screen px-4 py-5 md:py-[10px]">
                 <form
                     onSubmit={(e) => {
                     e.preventDefault();
                     validate();
                     }}
-                    className='h-[85%] w-[451px] bg-white rounded-md px-[40px] flex flex-col items-center'>
+                    className="w-full max-w-md bg-white rounded-md px-6 md:px-[40px] py-6 md:py-8 flex flex-col items-center shadow-md">
                     <Image
-                        src="/logos/Lg_JIso.svg"
-                        alt="Logo"
-                        width={217}
-                        height={48}
-                        className='mt-[30px]'
+                    src="/logos/Lg_JIso.svg"
+                    alt="Logo"
+                    width={217}
+                    height={48}
+                    className="mt-4 md:mt-[30px]"
                     />
-                    <p className='text-black mb-4 my-[16px] font-semibold'>
-                        Inicia sesión para acceder    
-                    </p>                    
-                    <div className="mb-3 w-[376px] flex flex-col items-center ">
-                        <label htmlFor="email" className="mb-2 w-full text-[#425466]">
-                            Correo electrónico
-                        </label>
-                        <Input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            error={errors.email}
-                            placeholder="Escribe tu correo electrónico"
-                            className="w-full bg-[#EDF2F7] text-[#7A828A]"
-                        />
+                    <p className="text-black text-center mb-4 mt-4 md:my-[16px] font-semibold">
+                    Inicia sesión para acceder
+                    </p>
+                    <div className="mb-4 w-full flex flex-col">
+                    <label htmlFor="email" className="mb-2 text-[#425466]">
+                        Correo electrónico
+                    </label>
+                    <Input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        error={errors.email}
+                        placeholder="Escribe tu correo electrónico"
+                        className="w-full bg-[#EDF2F7] text-[#7A828A]"
+                    />
                     </div>
-                    <div className="w-[376px] flex flex-col items-center">
-                        <label htmlFor="password" className="mb-2 text-[#425466] w-full">
-                            Contraseña
-                        </label>
-                        <PasswordInput
-                            password={password}
-                            setPassword={setPassword}
-                            onKeyDown={onPwdKeyDown}
-                            error={errors.password}
-                            placeholder="Escribe tu contraseña"
-                        />
+                    <div className="mb-4 w-full flex flex-col">
+                    <label htmlFor="password" className="mb-2 text-[#425466]">
+                        Contraseña
+                    </label>
+                    <PasswordInput
+                        password={password}
+                        setPassword={setPassword}
+                        onKeyDown={onPwdKeyDown}
+                        error={errors.password}
+                        placeholder="Escribe tu contraseña"
+                    />
                     </div>
-                    <div className="mr-[255px] flex mt-[8px] w-[120px]">
+                    <div className="flex justify-start w-full mt-1">
                         <button
                             type="button"
                             onClick={openForgotPasswordModal}
-                            className="mb-4 text-[11px] text-[#777E90] no-underline">
+                            className="text-xs text-[#777E90] hover:underline">
                             ¿Olvidó su contraseña?
                         </button>
                     </div>
-                    <div className="w-[376px] mt-[10px] flex justify-center">
+                    <div className="w-full mt-6">
                         <button
-                            type="submit" 
+                            type="submit"
                             onClick={validate}
-                            className="w-full outline-0 bg-[#FDD500] py-3 rounded-full ">
+                            className="w-full bg-[#FDD500] py-3 rounded-full text-black font-medium hover:bg-[#E5C200] transition">
                             Entrar
                         </button>
                     </div>
-                    {/* <p className='my-[17px] text-[#777E90]'>o accede mediante otra cuenta</p>
-                    <AuthOptions/> */}
-                    {/* <div className='flex font-semibold mt-[26px]'>
-                        <p className='text-[#777E90] mr-[5px]'>¿Aún no tienes una cuenta? </p>
-                        <p> Registrate gratis</p>
+                    {/* Si necesitas reactivar AuthOptions */}
+                    {/* <p className="my-4 text-center text-[#777E90]">o accede mediante otra cuenta</p>
+                    <AuthOptions /> */}
+                    {/* <div className="flex justify-center text-sm font-semibold mt-4">
+                    <p className="text-[#777E90] mr-2">¿Aún no tienes una cuenta?</p>
+                    <CLink href="/registro" className="text-black">
+                        Regístrate gratis
+                    </CLink>
                     </div> */}
                 </form>
             </div>
-            {isForgotPasswordOpen && (
-                <RecoveryForm onClose={closeForgotPasswordModal} />
-            )}
+            {isForgotPasswordOpen && <RecoveryForm onClose={closeForgotPasswordModal} />}
         </>
     );
 }

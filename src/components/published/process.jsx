@@ -106,31 +106,33 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="mt-[80px] ml-[110px] mr-[0px] text-neutral-50 rounded overflow-hidden">
-            <div className="flex w-full"> 
-                <div className="flex-1 mr-[20px] max-w-[calc(95%-320px)]"> 
-                    <p className="text-black text-[20px] mt-9"><b>¡Bienvenido de vuelta, {name}!</b></p>
-                    <ECarousel />
-                    <Board 
-                        onCardClick={handleCardClick} 
-                        cards={cards} 
-                        setCards={setCards} 
-                        permissions={permissions} 
-                        primary={primary} 
-                        secondary={secondary}
-                    />
-                </div>
-                <div className="w-[350px] flex-shrink-0">
-                    <Calendar />
-                </div>
+    <div className="mt-12 md:mt-[80px] mx-4 md:ml-[110px] md:mr-0 text-neutral-50 rounded overflow-hidden">
+        <div className="flex md:z-10 md:flex-row bg-black">
+            <div className="text-black align-start text-[22px] md:text-[20px] mt-6 md:mt-2 flex-1 pt-5 ">
+                <p><b>¡Bienvenido de vuelta, {name}!</b></p>
             </div>
-    
-            {isModalOpen && selectedCard && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center  bg-opacity-50">
-                    <Details card={selectedCard} onClose={handleCloseModal} />
-                </div>
-            )}
+            <div className="md:w-[350px] md:flex-shrink-0 mt-6 md:mt-0 md:ml-5">
+                <Calendar />
+            </div>
         </div>
+        <div className="flex-1 md:mr-5 mt-6 md:mt-0 md:z-0">
+            <ECarousel />
+        </div>
+        <Board 
+                onCardClick={handleCardClick} 
+                cards={cards} 
+                setCards={setCards} 
+                permissions={permissions} 
+                primary={primary} 
+                secondary={secondary}
+            />
+        {isModalOpen && selectedCard && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+                <Details card={selectedCard} onClose={handleCloseModal} />
+            </div>
+        )}
+    </div>
+
     );      
 };
 

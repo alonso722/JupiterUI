@@ -75,16 +75,16 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="ml-[0px] mt-[68px] flex h-full rounded fixed z-[100]" style={{ maxHeight: '91%', backgroundColor: '#FFFFFF' }}>
+        <div className="ml-[0px] md:mt-[68px] flex h-full rounded fixed z-[100]" style={{ maxHeight: '91%', backgroundColor: 'transparent md:#FFFFFF' }}>
             <div 
                 onMouseLeave={() => isExpanded && setIsExpanded(false)}
-                className={`transition-all duration-300 flex flex-col border-r-4 border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
-                style={{ backgroundColor: isExpanded ? secondary : '#FFFFFF' }}>
-                <button type="button" onClick={handleToggleExpand} className="flex ml-[25px] mt-[35px] focus:outline-none rounded">
-                    <FaBars size={23} color={primary} />
+                className={`transition-all duration-300 flex flex-col md:border-r-4 md:border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
+                style={{ backgroundColor: isExpanded ? secondary : 'transparent' }}>
+                <button type="button" onClick={handleToggleExpand} className="flex ml-[15px] md:ml-[25px] mt-[27px] md:mt-[35px] focus:outline-none rounded">
+                    <FaBars size={15} color={primary} />
                 </button>
                 {!isExpanded && (
-                    <div className="flex flex-col mt-[18px]">
+                    <div className="flex flex-col mt-[18px] w-[0px] md:w-20">
                         {navItems.map((item, index) => (
                             item.condition && (
                                 <button key={index} title={item.label} type="button" className="flex py-[15px] items-center justify-center hover:bg-opacity-75" style={{ backgroundColor: currentPath === item.path ? primary : 'transparent', color: currentPath === item.path ? secondary : primary }} onClick={() => handleNavigation(item.path)}>

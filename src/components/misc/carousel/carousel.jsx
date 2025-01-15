@@ -110,7 +110,7 @@ export const ECarousel = () => {
                     cards.map((card) => (
                         <div key={card.id} className="text-black p-3">
                             <div className="rounded-lg ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
-                                <h3 className="text-lg font-bold black">{card.title}</h3>
+                                <p className="text-lg font-bold black">{card.title}</p>
                                 <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>      
                             </div>
                         </div>

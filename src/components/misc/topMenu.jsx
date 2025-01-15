@@ -262,20 +262,23 @@ export default function TopNewMenuClientDashboard() {
 
     return (
         <>
-            <div className="flex items-center justify-between fixed bg-white w-full border-b-4 z-50">
+            <div className=" min-w-screen flex items-center justify-between fixed bg-white w-full border-b-4 z-50">
                 <div className="flex items-center pb-2 pt-5 ml-5">
-                    <div className="relative w-[200px] h-[40px] overflow-hidden">
+                    <div className="relative w-[100px] md:w-[200px] h-[40px]">
                         <Image
                         src={logoUrl || '/logos/Lg_JIso.svg'}
                         alt="Logo"
                         fill
-                        className="object-contain"
+                        className="object-contain ml-[20px]"
                         />
                     </div>
                 </div>
                 <div className="flex-1 flex justify-center">
-                    <p className="text-black text-center "><b>{name} {last}</b></p>
+                    <p className="text-black text-center ml-10 whitespace-nowrap overflow-hidden text-ellipsis">
+                        <b>{name} {last}</b>
+                    </p>
                 </div>
+
                 <div className="flex h-11 w-[346px] items-center justify-end pr-8">
                     {/* <div className="mr-[47px]">
                         <svg
@@ -291,7 +294,7 @@ export default function TopNewMenuClientDashboard() {
                     </div> */}
                     <Link
                         href={permissions?.Type === 5 ? "/dashboard/consultor" : "/dashboard/home"}
-                        className="mr-[38px] text-base font-bold leading-4"
+                        className="hidden md:block mr-[28px] text-base font-bold leading-4"
                         style={{ color: primary || "" }} >
                         Inicio
                     </Link>
