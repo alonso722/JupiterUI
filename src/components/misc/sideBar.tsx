@@ -75,7 +75,7 @@ export default function Sidebar() {
     }
 
     return (
-        <div className="ml-[0px] md:mt-[68px] flex h-full rounded fixed z-[100]" style={{ maxHeight: '91%', backgroundColor: 'transparent md:#FFFFFF' }}>
+        <div className="ml-[0px] md:mt-[68px] flex h-full rounded fixed z-[100] md:max-h-[91%] bg-transparent md:bg-white">
             <div 
                 onMouseLeave={() => isExpanded && setIsExpanded(false)}
                 className={`transition-all duration-300 flex flex-col md:border-r-4 md:border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
@@ -112,7 +112,7 @@ export default function Sidebar() {
                     </div>
                 )}
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 3.12.15
+                    V 3.12.16
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ const NextArrow = (props) => {
     const { onClick } = props;
     return (
         <button
-            className="custom-next-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
+            className="hidden md:block custom-next-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
             style={{ position: 'absolute', right: '-50px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
             onClick={onClick}
         >
@@ -22,7 +22,7 @@ const PrevArrow = (props) => {
     const { onClick } = props;
     return (
         <button
-            className="custom-prev-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
+            className="hidden md:block custom-prev-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
             style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
             onClick={onClick}
         >
@@ -48,32 +48,32 @@ export const ECarousel = () => {
         const orga = parsedPermissions.Organization;
 
         api.post('/user/organization/fetchInfo', { orga })
-        .then((response) => {
-            const data = response.data;
-            let valuesArray = [];
-            if(data.values){
-                valuesArray = JSON.parse(data.values);
-            }
-            const fetchedCards = [
-                { id: 1, title: "Historia", description: data.history },
-                { id: 2, title: "Misión", description: data.mision },
-                { id: 3, title: "Visión", description: data.vision },
-            ];
-            if(valuesArray.length > 0){
-            valuesArray.forEach((valueObj, index) => {
-                fetchedCards.push({
-                    id: 4 + index,
-                    title: valueObj.value, 
-                    description: valueObj.description 
-                });
-            });   
-            }                
-            setCards(fetchedCards);
-        })
-        .catch((error) => {
-            console.error("Error al consultar información:", error);
-        });
-    
+            .then((response) => {
+                const data = response.data;
+                let valuesArray = [];
+                if (data.values) {
+                    valuesArray = JSON.parse(data.values);
+                }
+                const fetchedCards = [
+                    { id: 1, title: "Historia", description: data.history },
+                    { id: 2, title: "Misión", description: data.mision },
+                    { id: 3, title: "Visión", description: data.vision },
+                ];
+                if (valuesArray.length > 0) {
+                    valuesArray.forEach((valueObj, index) => {
+                        fetchedCards.push({
+                            id: 4 + index,
+                            title: valueObj.value,
+                            description: valueObj.description
+                        });
+                    });
+                }
+                setCards(fetchedCards);
+            })
+            .catch((error) => {
+                console.error("Error al consultar información:", error);
+            });
+
     }, []);
 
     const settings = {
@@ -91,6 +91,7 @@ export const ECarousel = () => {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
+                    dots: false, 
                 }
             },
             {
@@ -98,20 +99,21 @@ export const ECarousel = () => {
                 settings: {
                     slidesToShow: 1,
                     slidesToScroll: 1,
+                    dots: true, 
                 }
             }
         ]
     };
 
     return (
-        <div className="mt-[30px]  ml-[45px] text-neutral-50 rounded">
-            <Slider {...settings} className="">
+        <div className="mt-[30px] md:ml-[45px] text-neutral-50 rounded">
+            <Slider {...settings}>
                 {cards && cards.length > 0 ? (
                     cards.map((card) => (
                         <div key={card.id} className="text-black p-3">
-                            <div className="rounded-lg ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
+                            <div className="rounded-lg md:ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
                                 <p className="text-lg font-bold black">{card.title}</p>
-                                <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>      
+                                <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>
                             </div>
                         </div>
                     ))

@@ -262,7 +262,7 @@ export default function TopNewMenuClientDashboard() {
 
     return (
         <>
-            <div className=" min-w-screen flex items-center justify-between fixed bg-white w-full border-b-4 z-50">
+            <div className="min-w-screen flex items-center justify-between fixed bg-white w-full border-b-4 z-50">
                 <div className="flex items-center pb-2 pt-5 ml-5">
                     <div className="relative w-[100px] md:w-[200px] h-[40px]">
                         <Image
@@ -273,8 +273,8 @@ export default function TopNewMenuClientDashboard() {
                         />
                     </div>
                 </div>
-                <div className="flex-1 flex justify-center">
-                    <p className="text-black text-center ml-10 whitespace-nowrap overflow-hidden text-ellipsis">
+                <div className="max-w-[150px] md:max-w-[300px] flex-1 flex justify-center">
+                    <p className="text-black text-[12px] mt-2 text-center ml-10 whitespace-nowrap overflow-hidden text-ellipsis">
                         <b>{name} {last}</b>
                     </p>
                 </div>

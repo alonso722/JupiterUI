@@ -249,9 +249,9 @@ const UsersTable = () => {
     }
 
     return (
-        <div className="mt-[100px] ml-[80px] w-[1590px] py-5 px-10 text-white fill-gray-400">
+        <div className="md:w-full mt-[100px] md:ml-[80px] md:py-5 px-3 md:px-10 text-white fill-gray-400 overflow-x-auto">
             <div className="flex justify-between mb-2">
-                <div className="flex items-center gap-1 text-black">
+                <div className="md:w-full w-[40%] flex items-center gap-1 md:ml-[30px] text-black">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
                         height="1em"
@@ -261,16 +261,16 @@ const UsersTable = () => {
                     <Search
                         value={globalFilter ?? ""}
                         onChange={(value) => setGlobalFilter(String(value))}
-                        className="p-2 bg-transparent outline-none border-b-2 w-[200px] focus:w-1/3 duration-300 border-purple-950 text-black"
+                        className="md:p-2  outline-none border-b-2 w-[80%] md:w-1/5 focus:md:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
                 {permissions.Type === 1 && (
-                    <div className="flex items-center">
+                    <div className="flex items-center mt-[10px] md:mr-[120px]">
                         <label htmlFor="toggle" className="relative inline-flex items-center cursor-pointer">
                             <input 
                                 id="toggle" 
                                 type="checkbox" 
-                                className="sr-only peer" 
+                                className="sr-only peer " 
                                 checked={toggleOn} 
                                 onChange={handleToggleChange} 
                             />
@@ -280,9 +280,9 @@ const UsersTable = () => {
                     </div>
                 )}
                 {permissions.Type === 1 && (
-                    <div className="mt-[10px] mr-[120px]">
+                    <div className="mt-[10px] md:mr-[120px]">
                         <Button
-                            className="w-[126px]"
+                            className="md:w-[126px] text-[13px] px-2 py-1"
                             color={colors.DARK_JUPITER_OUTLINE}
                             onClick={handleButtonClick}>
                             Añadir +
@@ -291,7 +291,8 @@ const UsersTable = () => {
                     </div>
                 )}
             </div>
-            <table className="w-[1150px] text-black text-left mt-[10px] rounded-lg mr-[120px]">
+            <div className="w-full overflow-y-auto">
+            <table className="md:w-[1150px] text-left text-black rounded-lg mt-[10px] md:ml-[30px] md:mr-[120px]">
                 <thead className="text-black rounded" style={{ backgroundColor: primary || '#F1CF2B' }}>
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -330,9 +331,10 @@ const UsersTable = () => {
                     ))}
                 </tbody>
             </table>
+            </div>
             {/* paginacion */}
             {table.getPageCount() > 0 && (
-                    <div className="flex items-center justify-end mt-2 gap-2 text-black mr-[200px]">
+                    <div className="pb-9 flex items-center justify-end mt-2 gap-2 text-black mr-[200px]">
                         <button
                             onClick={() => {
                                 table.previousPage();

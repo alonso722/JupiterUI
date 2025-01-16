@@ -66,9 +66,9 @@ export const Button: React.FC<ButtonProps> = (props) => {
             disabled={disabled}
             className={`
             ${rounded ? 'rounded-full' : 'rounded-md'} 
-            flex ${small ? 'h-10' : 'h-12'} items-center justify-center ${
+            flex ${small ? 'md:h-10' : 'md:h-12'} items-center justify-center ${
                 border ? 'border border-gray-600' : ''
-            } ${padding ? 'px-6 py-2' : ''} text-sm ${getColor()} ${className}`}
+            } ${padding ? 'md:px-6 md:py-2' : ''}  ${getColor()} ${className}`}
         >
             {children}
             {isLoading && (
