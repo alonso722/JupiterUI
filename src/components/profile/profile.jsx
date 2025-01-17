@@ -228,12 +228,12 @@ export const Profile = ({ departmentFilter, userFilter }) => {
     };
 
     return (
-        <div className="mt-[60px] ml-[100px] w-[100%] text-neutral-50 rounded flex">
-            <div className="mt-8 text-black w-[40%]">
+        <div className="mt-[60px] md:ml-5 md:ml-[100px] w-[100%] text-neutral-50 rounded md:flex px-5">
+            <div className="mt-8 text-black md:w-[40%]">
               <div className="mb-5">
                 <div className="flex">
                     <h1 className="text-black text-xl mb-5 ">
-                        <strong>Información</strong>
+                        <strong>Cuenta</strong>
                     </h1>
                     {userFilter ? (
                       <p className="text-black text-xl mb-5 ml-2">
@@ -244,7 +244,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                     )}
                   </div>
                   <div className="">
-                    <div className="flex w-full justify-between">
+                    <div className="md:flex w-full justify-between">
                       <div className="w-full mr-5">
                         <p className="text-[#B1B5C3] text-[10px]">
                           <strong>TELÉFONO</strong>
@@ -255,7 +255,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                           value={phone ?? ""}
                           onChange={(e) => setPhone(e.target.value)}
                           disabled={!isEditable}
-                          className={` w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
+                          className={`w-full rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-10 py-2 ${
                             isEditable ? "cursor-text" : "cursor-not-allowed"
                           }`}/>
                           {isEditable ? (
@@ -268,8 +268,8 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                             onClick={handleSaveClick} style={{  color: primary }}/>
                           )}
                         </div>
-                        <div className="w-full">
-                          <p className="mr-9 text-[#B1B5C3] text-[10px]"><strong>CORREO ELECTRÓNICO</strong></p>
+                        <div className="md:w-full">
+                          <p className="md:mr-9 text-[#B1B5C3] text-[10px]"><strong>CORREO ELECTRÓNICO</strong></p>
                           <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
                         </div>  
                         {userFilter && (
@@ -281,25 +281,27 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                           </button>
                         )}
                       </div>
-                            <div className=" overflow-auto relative">
-                              <div className='rounded  px-5 max-h-[200px] overflow-y-auto overflow-x-auto mt-4'>
-                                <ul className='w-full '>
+                            <div className=" md:overflow-auto relative">
+                              <div className='rounded px-5 max-h-[200px] overflow-y-auto md:overflow-x-auto mt-4'>
+                                <ul className='w-full'>
                                   {(Array.isArray(documents) ? documents : []).map(({ docId, document, userDoc }) => (
                                     <li
                                       key={docId}
                                       className={`my-2 rounded-lg p-2 flex items-center justify-between ${userDoc ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}>
-                                      <div className="flex">
-                                        <div
-                                          className="w-4 h-4 mr-2 mt-1 rounded-full  mt-2"
-                                          style={{
-                                            backgroundColor: userDoc ? primary : 'white',
-                                            borderWidth: '1px',
-                                            borderStyle: 'solid',
-                                            borderColor: secondary,
-                                        }}/>
-                                        <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-2" style={{ color: secondary, width: '15px', height: '18px' }}/>
+                                      <div className="flex w-full">
+                                        <div className="flex">
+                                          <div
+                                            className="w-4 h-4 mr-2 rounded-full mt-1"
+                                            style={{
+                                              backgroundColor: userDoc ? primary : 'white',
+                                              borderWidth: '1px',
+                                              borderStyle: 'solid',
+                                              borderColor: secondary,
+                                          }}/>
+                                          <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }}/>
+                                        </div>
                                         <p
-                                          className={`${userDoc ? 'underline cursor-pointer' : ''}`}
+                                          className={` mr-3 ${userDoc ? 'underline cursor-pointer' : ''}`}
                                           onClick={userDoc ? () => openViewer(userDoc) : undefined}>
                                           {document}
                                         </p>
@@ -313,7 +315,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                                         )}
                                       </div>
                                       {!userDoc ? (
-                                        <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[250px]">
+                                        <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[250px] ">
                                           <img
                                             src="/icons/addoc.png"
                                             alt="Icono"
@@ -352,7 +354,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                   onClose={closeViewer}/>
               )}
             </div>
-            <div className="text-black mt-[80px] ml-[5%] pl-[5%] border-l-4 w-[20%]">
+            <div className="text-black mt-[80px] ml-[5%] pl-[5%] border-l-4 w-full mb-8 md:w-[20%]">
               <p className="mb-4"><strong>Equipo asignado:</strong></p>
               {inventory.map((item, index) => (
                 <div key={index}>

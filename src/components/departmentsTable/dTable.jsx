@@ -247,7 +247,7 @@ const DepartmentsTable = () => {
             </div>
             {/* paginacion */}
             {table.getPageCount() > 0 && (
-                    <div className="pb-9 flex items-center justify-end mt-2 gap-2 text-black mr-[200px]">
+                    <div className="pb-9 flex items-center justify-end mt-2 gap-2 text-black md:mr-[200px]">
                         <button
                             onClick={() => {
                                 table.previousPage();

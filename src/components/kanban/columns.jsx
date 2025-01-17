@@ -94,7 +94,7 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
     };
 
     return (
-        <div className="mt-[110px] ml-[150px] mr-[250px]  w-[100%] text-neutral-50 rounded">
+        <div className="mt-[110px] md:ml-[150px] px-5 md:px-0 md:mr-[250px] text-neutral-50 rounded overflow-x-auto">
             <Board 
                 onCardClick={handleCardClick} 
                 cards={cards} 
@@ -113,7 +113,7 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
 const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }) => {
     return (
         <div style={{  zIndex: -1, }}
-        className="flex h-full w-full gap-3 pt-12 justify-between">
+        className="flex h-full gap-3 pt-12 justify-between overflow-x-auto">
             <Column
                 name="Edición"
                 column="Edición"

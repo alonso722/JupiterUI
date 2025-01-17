@@ -145,8 +145,8 @@ const VacationsForm = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[40%] max-h-[600px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
+      <div className="bg-white p-6 rounded-lg shadow-lg md:w-[40%] md:max-h-[600px] relative h-[83%] mt-[50px] overflow-y-auto">
         <button
           onClick={onClose}
           className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
@@ -167,9 +167,9 @@ const VacationsForm = ({ isOpen, onClose }) => {
                 className="h-4 w-4 rounded-full appearance-none bg-white border-2 p-1 checked:bg-gray-300 checked:border-transparent"
               />
             </div>
-            <div className="flex flex-col gap-4">
+            <div className="md:flex flex-col gap-4">
               {!isBlockMode ? (
-                <div className="flex items-center mb-2">
+                <div className="md:flex items-center mb-2">
                   <div className="text-black mr-4">
                     <p>Año a ajustar</p>
                     <input

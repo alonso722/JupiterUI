@@ -212,7 +212,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
     const closeModal = () => setIsModalOpen(false);
 
     return (
-        <div className="mt-[60px] ml-[100px] w-[90%] text-neutral-50 rounded items-center justify-center">
+        <div className="mt-[60px] ml-[20px] md:ml-[100px] w-[90%] text-neutral-50 rounded items-center justify-center">
             <div className="mt-8 text-black">
                 <div className="mb-2 justify-between flex">
                     <h1 className="text-black text-xl mb-3">
@@ -220,7 +220,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     </h1>
                     <div>                    
                         <button 
-                        className="text-white py-1 px-4 text-[12px] rounded-full"
+                        className="hidden md:block text-white py-1 px-4 text-[12px] rounded-full"
                         onClick={handleUpdateSets}
                         style={{ 
                             backgroundColor: primary,
@@ -229,48 +229,54 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     </button>
                     </div>
                 </div>
-                <div className="flex w-full"> 
-                    <div className="px-5 mr-2 w-[40%]">                    
-                        <div className="flex flex-col">
-                            <div className="flex items-center justify-between w-full pb-4 pt-2">
-                                <p className="text-black text-[13px]"><b>Logo actual:</b></p>
-                                <div className="flex-1 flex justify-center">
-                                    {logoUrl ? (
-                                    <Image
-                                        src={logoUrl}
-                                        alt="Logo"
-                                        width={180}
-                                        height={29}
-                                    />
-                                    ) : (
-                                    <p className="text-white">No hay logo disponible</p>
-                                    )}
+                <div className="md:flex w-full"> 
+                    <div className="md:px-5 md:mr-2 md:w-[40%] w-full">                    
+                        <div className="md:flex flex-col ">
+                            <div className="md:flex items-center justify-between w-full pb-4 pt-2 ">
+                                <div className="flex justify-between w-full">
+                                    <p className="text-black text-[13px] mt-1"><b>Logo actual:</b></p>
+                                    <div className="flex-1 flex justify-center ">
+                                        
+                                        {logoUrl ? (
+                                        <Image
+                                            src={logoUrl}
+                                            alt="Logo"
+                                            width={180}
+                                            height={29}
+                                        />
+                                        ) : (
+                                        <p className="text-white">No hay logo disponible</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={openModal}
-                                    className="bg-white text-black text-[13px] rounded-full p-2 border-2">
-                                    <p><b>Cambiar logo</b></p>
-                                </button>
+                                <div className="flex justify-end mr-[70px] mt-1">
+                                    <button
+                                        onClick={openModal}
+                                        className="bg-white text-black text-[13px] md:w-[110px] rounded-full p-2 border-2 ">
+                                        <p><b>Cambiar logo</b></p>
+                                    </button> 
+                                </div>
+
                             </div> 
                         </div>
-                        <div className=" flex w-full justify-between">
-                            <div className="mb-5 mr-2">
-                                <h2 className="text-[15px] mb-3"><b>Selecciona un color primario:</b></h2>
+                        <div className="pr-5 md:flex w-full md:justify-between">
+                            <div className="mb-5 md:mr-9 w-full">
+                                <h2 className="text-[15px] mb-3 "><b>Selecciona un color primario:</b></h2>
                                 <SketchPicker 
-                                    className="w-[45%]"
+                                    className="md:w-[45%] min-w-full"
                                     color={priColor} 
                                     onChangeComplete={handlePrimaryColorChange} />
                             </div>
-                            <div className="mb-5">
+                            <div className="mb-5 w-full">
                                 <h2 className="text-[15px] mb-3"><b>Selecciona un color secundario:</b></h2>
                                 <SketchPicker 
-                                className="w-[45%]"
+                                className="md:w-[35%] min-w-full"
                                     color={secColor} 
                                     onChangeComplete={handleSecondaryColorChange} />
                             </div> 
                         </div>
                     </div>
-                    <div className=" pl-5 w-[60%]">
+                    <div className="md:pl-5 md:w-[60%]">
                         <h2 className="text-[13px] mb-1"><b>Historia de la organizacion</b></h2>
                         <p className="text-xl text-black">
                             <textarea
@@ -311,10 +317,10 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 }}
                             />
                         </p>
-                        <div className="flex justify-between">
+                        <div className="md:flex justify-between">
                             <div className="max-h-[180px]">
                                 <h2 className=" text-[12px]"><b>Valores</b></h2>
-                                <div className="flex items-center mt-2 mr-5 border-2 w-[250px] rounded-lg">
+                                <div className="flex items-center mt-2 md:mr-5 md:border-2 border-b-2 w-[250px] md:rounded-lg">
                                     <div className="flex m-2">
                                         <div>
                                             <input
@@ -340,10 +346,10 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                         </button>
                                     </div>
                                 </div>
-                                <div className="mt-2 max-h-[100px] overflow-y-auto">
+                                <div className="mt-2 max-h-[100px] overflow-y-auto border-b-2 md:border-none">
                                     {(values ?? []).map((item, index) => (
-                                        <div key={index} className="flex items-center border-2 w-[250px] overflow-y-auto rounded-lg mt-[10px] mb-2">
-                                            <div className="m-2 w-full flex bg-[#EDF2F7] rounded-lg px-2">
+                                        <div key={index} className="flex items-center md:border-2 md:w-[250px] overflow-y-auto md:rounded-lg mt-[10px] mb-2">
+                                            <div className="m-2 w-full flex bg-[#EDF2F7] md:rounded-lg px-2">
                                                 <input
                                                     type="text"
                                                     value={item.value}
@@ -360,7 +366,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     ))}
                                 </div>
                             </div>
-                            <div className="max-h-[200px] mx-[1%]">
+                            <div className="max-h-[200px] md:mx-[1%] md:mt-0 mt-8">
                                 <h2 className="mb-2 text-[12px]"><b>Documentos requeridos</b></h2>
                                 <div className="flex items-center mb-2 border-2 w-[230px] rounded-lg">
                                     <input
@@ -378,16 +384,16 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                 </div>
                                 <div className="overflow-y-auto h-[140px]">
                                     {(documents ?? []).map((document, index) => (
-                                        <div key={index} className="my-2 w-full flex bg-[#EDF2F7] rounded-lg px-2">
+                                        <div key={index} className="my-2 w-full flex bg-[#EDF2F7] md:rounded-lg px-2">
                                             <input
                                                 type="text"
                                                 value={document} 
                                                 readOnly
-                                                className="bg-[#EDF2F7]"
+                                                className="bg-[#EDF2F7] w-full"
                                                 title={document}
                                             />
                                             <button
-                                                className="text-black px-1 py-1 rounded"
+                                                className="text-black px-1 py-1 md:rounded"
                                                 onClick={() => handleRemoveDocument(index)}>
                                                 x
                                             </button>
@@ -395,11 +401,21 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                                     ))}
                                 </div>
                             </div>
-                            <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3'>
-                                <p className="block mb-2 text-[12px] text-black"><b>Encargados de RH</b></p>
+                            <div className='max-h-[300px] md:h-[200px] md:max-w-[200px] md:mr-3 mt-8 md:mt-0'>
+                                <p className="block text-[12px] text-black"><b>Encargados de RH</b></p>
                                 <UsersChecks selectedOptions={selectedUsers} setSelectedOptions={setSelectedUsers}/>
                             </div>
                         </div>
+                    </div>
+                    <div className="w-full md:hidden flex justify-end mt-4">                    
+                        <button 
+                            className="text-white px-2 py-1 text-[12px] rounded-full mb-5"
+                            onClick={handleUpdateSets}
+                            style={{ 
+                                backgroundColor: primary,
+                            }}>
+                            Actualizar cambios
+                        </button>
                     </div>
                 </div>
                 {isModalOpen && (

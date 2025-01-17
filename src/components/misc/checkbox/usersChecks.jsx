@@ -135,12 +135,12 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
           <b>Usuarios seleccionados:</b>
         </h3>
       <div className="mt-2 p-3 border border-gray-300 rounded bg-gray-50">
-        <div className="h-[80px] flex flex-wrap gap-2 overflow-y-auto">
+        <div className="md:h-[80px] flex flex-wrap gap-2 overflow-y-auto">
           {Array.isArray(selectedOptions) && selectedOptions.length > 0 ? (
             selectedOptions.map((option, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between px-3 py-2 bg-[#EDF2F7] border border-gray-300 rounded-lg"
+                className="flex items-center justify-between px-3 md:py-2 bg-[#EDF2F7] border border-gray-300 md:rounded-lg"
               >
                 <span
                   className="min-w-[50px] max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap"
@@ -150,7 +150,7 @@ const UsersChecks = ({ handleCheckboxChange, onSelectionChange, selectedOptions,
                     : `${option.name} ${option.last}`}
                 </span>
                 <button
-                  className="bg-[#EDF2F7] text-black px-2 rounded ml-2"
+                  className="bg-[#EDF2F7] text-black px-2 md:rounded ml-2"
                   onClick={() => handleRemoveOption(option)}
                 >
                   x

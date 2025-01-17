@@ -147,8 +147,8 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[900px] max-h-[600px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
+      <div className="bg-white p-6 rounded-lg shadow-lg md:w-[900px] max-h-[600px] relative">
         <button
           onClick={onClose}
           className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
@@ -156,8 +156,8 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
           &times;
         </button>
         <h2 className="text-2xl mb-4 text-black">Anexos</h2>
-        <div className='flex '>
-            <div className='w-[400px]'>
+        <div className='md:flex '>
+            <div className='md:w-[400px]'>
             <input
           type="text"
           placeholder="Título de la carpeta de anexos o del documento"
@@ -191,7 +191,7 @@ const AnnexesUploadModal = ({ isOpen, onClose, onAnnexesUpload, onLinks, process
                 )}
             </div>
 
-            <div className="mb-4 ml-5 pl-5 border-l-2 border-gray-300 w-[400px]">
+            <div className="mb-4 ml-5 pl-5 border-l-2 border-gray-300 md:w-[400px]">
                 <h3 className="mb-2 text-black text-[#AEAEB7]"><b>Añadir link</b></h3>
                 <div className=" flex-wrap h-[200px] overflow-y-auto border-b-2 border-gray-300">
                   <div className="items-center my-1">
