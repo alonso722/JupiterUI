@@ -637,13 +637,15 @@ const getAnnexesIcon = (extension) => {
               </div>
             </div>
           )}
+          <div className="flex justify-end md:jusify-start">
             <button
               onClick={() => card ? handleEditProcess(selectedDepartments) : handleAddProcess(selectedDepartments)}
-              className=" md:hidden block py-1 rounded text-white ml-5 mr-[20px] h-[30px] w-[130px] my-[20px] mb-1"
+              className="md:hidden block py-1 rounded text-white ml-auto md:mr-[20px] h-[30px] w-[130px] my-[20px] mb-1"
               style={{ backgroundColor: secondary }}
             >
               {card ? 'Editar proceso' : 'Añadir proceso'}
             </button>
+          </div>
         </div>
         {isModalOpen && <DocumentUploadModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onFileUpload={handleFileUpload} />}
         {isModal2Open && <AnnexesUploadModal isOpen={isModal2Open} processId={card} onClose={() => setIsModal2Open(false)} onAnnexesUpload={handleAnnexesUpload} onLinks={handleSetLinks} />}

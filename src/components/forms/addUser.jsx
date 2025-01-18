@@ -230,13 +230,13 @@ const AddUserForm = ({ user, onClose }) => {
     });
   };
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[520px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
+      <div className="bg-white p-6 rounded-lg shadow-lg md:w-[500px] h-[520px] relative overflow-y-auto">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
         <div>
-          <div className='w-[400px]'>
+          <div className='md:w-[400px]'>
             <h2 className="text-2xl mb-4 text-black">Datos del usuario:</h2>
           </div>
           <p className=" mt-[15px] mb-4 text-black w-[70%]">
@@ -262,7 +262,7 @@ const AddUserForm = ({ user, onClose }) => {
               <>
                 <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Departamento</Listbox.Label>
                 <div className="relative mt-2">
-                  <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                  <Listbox.Button className="relative w-full md:max-w-[150px] cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
                     <span className="flex items-center">
                       <span className="ml-3 block truncate">
                         {selectedDepartments.length > 0 ? selectedDepartments[0].department : "Seleccionar departamento"}
@@ -316,7 +316,7 @@ const AddUserForm = ({ user, onClose }) => {
               </>
             )}
           </Listbox>
-          <p className=" mt-[20px] mb-4 text-black w-[70%]">
+          <div className=" mt-[20px] mb-4 text-black w-[70%]">
           <p className='mb-2'>Correo corporativo:</p>
             <input
               type="text"
@@ -325,7 +325,7 @@ const AddUserForm = ({ user, onClose }) => {
               onChange={(e) => setUserMail(e.target.value)}
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
-          </p>
+          </div>
           <p className="mt-[20px] mb-4 text-black w-[70%]">
             <p className='mb-2'>Fecha de ingreso:</p>
             <input
@@ -352,7 +352,7 @@ const AddUserForm = ({ user, onClose }) => {
           {user ? (
             <button 
               onClick={handleEditUser} 
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              className="p-2 rounded text-white ml-5 mr-[20px] md:h-[50px] md:w-[250px] mt-[15px]"
               style={{ backgroundColor: secondary }}
             >
               Editar usuario
@@ -360,7 +360,7 @@ const AddUserForm = ({ user, onClose }) => {
           ) : (
             <button 
               onClick={handleAddUser} 
-              className="p-2 rounded text-white ml-5 mr-[20px] h-[50px] w-[250px] mt-[30px]"
+              className="p-2 rounded text-white ml-5 mr-[20px] md:h-[50px] md:w-[250px] mt-[15px]"
               style={{ backgroundColor: secondary }}
             >
               Añadir usuario

@@ -629,13 +629,13 @@ const Details = ({ card, onClose }) => {
   };
 
   return (
-    <div className="fixed mt-7 inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg max-w-[80%] max-h-[80%] relative">
+    <div className="fixed mt-7 inset-0 flex items-center justify-center zIndex: 2 bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
+      <div className="bg-white md:p-6 px-2 mt-3 rounded-lg shadow-lg md:max-w-[80%] md:max-h-[80%] h-[85%] relative overflow-y-auto">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
-        <div className='flex'>
-          <div className='min-w-[55%] max-w-[70%] ml-2'>
+        <div className='md:flex pt-3 md:pt-0'>
+          <div className='min-w-[55%] md:max-w-[70%] w-full md:ml-2 px-2'>
             <div className="flex justify-between items-center">
             <p className="text-[#7A828A] text-[16px]" title={departmentNameF}>
               {typeof departmentNameF === 'string' && (departmentNameF.length > 50 ? departmentNameF.substring(0, 50) + "..." : departmentNameF)}
@@ -649,18 +649,20 @@ const Details = ({ card, onClose }) => {
             <div className='flex'>
               <div 
                 className=' h-[13px] w-[13px] mt-[20px] mr-2'
-                style={{ backgroundColor: primary }}>.</div>
+                style={{ backgroundColor: primary }}>.
+              </div>
               <h2 className="text-xl mt-[15px] mb-4 text-black">Proceso | {card.name}</h2>
             </div>
-            <div className='text-black border-2 mb-2 mr-2 p-1 overflow-y-auto  max-w-[450px] rounded h-[14%]'>
-              <p>{description}</p>
-            </div>
-            <div className=''>
+            {description ? (
+              <div className='text-black border-2 mb-2 md:mr-2 md:p-1 overflow-y-auto max-w-[450px] rounded h-[14%]'>
+                <p>{description}</p>
+              </div>
+            ) : (null)}
               {/* <div className='justify-between flex space-x-2 mb-[5px]'>
                 <p className="mt-[8px] text-black mb-2">Documentos asignados al proceso:</p>
               </div> */}
-              <div className='flex flex-col max-w-[95%]'>
-                <div className='w-full flex flex-col border-b-2 border-indigo-200/50 pb-1'>
+              <div className='md:flex flex-col md:max-w-[95%]'>
+                <div className='w-full flex flex-col border-b-2 border-indigo-200/50 pb-1 '>
                   <div className='flex flex-col'>
                     {document ? (
                       <div className='flex items-center'>
@@ -672,9 +674,10 @@ const Details = ({ card, onClose }) => {
                         />
                         <div className='flex-grow'>
                           <p 
-                            className="text-black mr-[20px] underline cursor-pointer" 
+                            className="text-black md:mr-[20px] underline cursor-pointer" 
                             onClick={() => document && openViewer(document.path)}>
-                            <strong>{document.title}</strong></p>
+                            <strong>{document.title}</strong>
+                          </p>
                           {/* <p className="text-black">{document.name}</p> */}
                         </div>
                         {privileges === 1 || privileges === 2 ? (
@@ -691,8 +694,7 @@ const Details = ({ card, onClose }) => {
                     )}
                   </div>
                 </div>
-                <div className='w-full flex flex-col max-h-[80px] overflow-y-auto'>
-                  <div className='flex flex-col'>
+                <div className='w-full flex flex-col max-h-[80px] overflow-y-auto '>
                     {documentsANX.length > 0 ? (
                       documentsANX.map((anx, index) => (
                         <div key={index} className='flex items-center pr-1 my-1'>
@@ -715,7 +717,6 @@ const Details = ({ card, onClose }) => {
                         </div>
                       ))
                     ) : null}
-                  </div>
                 </div>
                 <div className='w-full mb-2 flex flex-col border-b-2 max-h-[35px] overflow-y-auto border-indigo-200/50'>
                   <div className='flex flex-col'>
@@ -738,24 +739,23 @@ const Details = ({ card, onClose }) => {
                   </div>
                 </div>
               </div>
-            </div>
-            <div className=' text-black rounded-lg border-2 border-[#B5B5BD] p-2 w-[90%]'>
+            <div className='text-black rounded-lg border-2 border-[#B5B5BD] p-2 md:w-[90%]'>
               <textarea
                 type="text"
                 value={incident}
                 onChange={handleInputChange}
                 placeholder="Agrega un comentario o incidencia"
-                className="w-full border-none focus:outline-none h-[80%] " />
+                className="w-full border-none focus:outline-none h-[80%]" />
             </div>
             <div className="flex items-center mt-2">
-            <button 
-              onClick={handleSubmit} 
-              className={`p-2 rounded text-[#ffffff]`}
-              style={{ backgroundColor: primary }}
-            >
-              Enviar
-            </button>
-              <div className="ml-4 flex items-center space-x-4">
+              <button 
+                onClick={handleSubmit} 
+                className={`p-2 mr-2 md:mr-0 rounded text-[#ffffff]`}
+                style={{ backgroundColor: primary }}
+              >
+                Enviar
+              </button>
+              <div className="md:ml-4 flex items-center space-x-4">
                 <div className="flex items-center">
                   <label htmlFor="verificacion-lectura" className="text-black mr-2">Verificación de lectura</label>
                   <input
@@ -779,9 +779,9 @@ const Details = ({ card, onClose }) => {
               </div>
             </div>
           </div>
-          <div className='mt-10 border-l-4 px-3 max-w-[50%] overflow-y-auto pr-5'>
+          <div className='mt-10 md:border-l-4 px-3 md:max-w-[50%] overflow-y-auto pr-5'>
             <div className='flex'>
-              <div className='w-[60%]'>
+              <div className='md:w-[60%] w-full'>
               <Listbox
                 value={selected}
                 onChange={handleStatusUpdate}

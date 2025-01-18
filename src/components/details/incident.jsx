@@ -78,7 +78,7 @@ const Incident = ({ incident, onClose }) => {
             <p className='mr-[68px]'>Realizado por: </p>
             <p><strong>{incident.name}</strong></p>
           </div>  
-          <div className=' mx-[55px] flex mb-4'>
+          <div className=' mx-[55px] flex mb-4 overflow-y-auto h-[200px]'>
             <p className='mr-[100px]'>Incidente:</p>
             <p><strong>{details.content}</strong></p>
           </div>  

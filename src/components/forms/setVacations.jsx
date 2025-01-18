@@ -180,7 +180,7 @@ const VacationsForm = ({ isOpen, onClose }) => {
                       className="px-2 py-1 text-black rounded-lg border-2 border-gray-300 focus:border-grey-500"
                     />
                   </div>
-                  <div className="text-black ml-4">
+                  <div className="text-black md:ml-4">
                     <p>Días asignados</p>
                     <input
                       type="number"
@@ -202,7 +202,7 @@ const VacationsForm = ({ isOpen, onClose }) => {
                 </div>
               ) : (
                 <div className="flex flex-col">
-                  <div className="flex items-center gap-4">
+                  <div className="md:flex items-center gap-4">
                     <div className="text-black">
                       <p>Año inicial</p>
                       <input
@@ -231,11 +231,14 @@ const VacationsForm = ({ isOpen, onClose }) => {
                       placeholder="Días asignados"
                       value={yearsDays}
                       onChange={(e) => setYearsDays(e.target.value)}
-                      className=" mb-2 px-2 py-1 text-black rounded-lg border-2 border-gray-300 focus:border-grey-500"
+                      className="mb-2 px-2 py-1 text-black rounded-lg border-2 border-gray-300 focus:border-grey-500"
                     />
                     <button
                       onClick={handleAddYear}
-                      className="ml-2 bg-gray-300 text-white px-2 py-1 rounded"
+                      className="ml-2  text-white px-2 py-1 rounded"
+                      style={{ 
+                        backgroundColor: primary,
+                    }}
                     >
                       + Agregar
                     </button>

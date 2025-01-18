@@ -82,7 +82,7 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
           onChange={handleInputChange}
         />
       </div>
-      <div className="flex mt-2 max-h-[100px] overflow-x-auto">
+      <div className="flex mt-2 max-h-[100px] overflow-x-auto py-2">
         {options.length > 0 ? (
           options.filter(option => !selectedOptions.some(selected => selected.id === option.id)).map((option, index) => (
             <div key={index} className="flex items-center justify-between px-2 rounded-lg border-2 border-gray-200 mr-4">

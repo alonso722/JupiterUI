@@ -196,7 +196,7 @@ const AssignedTable = () => {
                         className="md:p-2  outline-none border-b-2 w-[80%] md:w-1/5 focus:md:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                <div className="mt-[10px] mr-[120px]">
+                <div className="mt-[10px] md:mr-[120px]">
                     <Button
                     className="md:w-[126px] md:mr-[130px] text-[13px] px-2 py-1"
                         color={colors.DARK_JUPITER_OUTLINE}

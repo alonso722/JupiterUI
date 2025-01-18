@@ -100,13 +100,13 @@ const AddInventoryForm = ({ onClose, rowData }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[60%] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5">
+      <div className="bg-white p-6 rounded-lg shadow-lg md:w-[500px] w-full h-[60%] relative">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
             &times;
         </button>
         <div className='flex'>
-          <div className='w-[400px]'>
+          <div className='md:w-[400px]'>
             <h2 className="text-xl mt-[15px] mb-4 text-black">
               <input
                 type="text"

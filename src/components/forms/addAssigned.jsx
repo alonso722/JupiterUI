@@ -223,21 +223,21 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
   ];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[450px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-[500px] md:h-[450px] relative">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
         <div>
           <h2 className="text-[25px] mb-4 text-black text-[#AEAEB7]"><b>Asignar a:</b></h2>
-          <div className='flex'>
+          <div className='md:flex w-full'>
             <div>
-              <Listbox value={selectedUser} onChange={handleSelectionUser} className="max-w-[100px] mb-4 text-black">
+              <Listbox value={selectedUser} onChange={handleSelectionUser} className="md:max-w-[100px] mb-4 text-black">
                 {({ open }) => (
                   <>
                     <Listbox.Label className="block text-sm font-medium leading-6 text-black">Colaborador:</Listbox.Label>
                     <div className="relative mt-2">
-                      <Listbox.Button className="relative w-full cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                      <Listbox.Button className="relative w-full md:max-w-[150px] cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 ">
                         <span className="flex items-center">
                           <span className="ml-3 block truncate">
                             {selectedUser.length > 0 ? selectedUser[0].name : "Seleccionar colaborador"}
@@ -276,13 +276,13 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
                 )}
               </Listbox>
             </div>
-          <div className='ml-7'>
-            <Listbox value={selectedLocation} onChange={handleSelectionLocation} className="max-w-[100px] mb-4 text-black">
+          <div className='md:ml-7 mt-5 md:mt-0 w-full '>
+            <Listbox value={selectedLocation} onChange={handleSelectionLocation} className="w-full md:w-[100px] mb-4 text-black">
               {({ open }) => (
                 <>
                   <Listbox.Label className="block text-sm font-medium leading-6 text-black">Corporativo:</Listbox.Label>
                   <div className="relative mt-2">
-                    <Listbox.Button className="relative w-full cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                    <Listbox.Button className="relative w-full md:max-w-[150px] cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
                       <span className="flex items-center">
                         <span className="ml-3 block truncate">
                           {selectedLocation.length > 0 ? selectedLocation[0].name : "Seleccionar colaborador"}
@@ -329,7 +329,7 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
                 <Listbox.Label className="block text-sm font-medium leading-6 text-black">Equipo de resguardo:</Listbox.Label>
                 <div className="relative mt-2">
                   <Listbox.Button
-                    className={`relative w-full cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
+                    className={`relative w-full md:max-w-[150px] cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 ${
                       rowData ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                     disabled={!!rowData} 
@@ -403,7 +403,7 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
                   Estado del equipo:
                 </Listbox.Label>
                 <div className="relative mt-2">
-                  <Listbox.Button className="relative w-full cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px]">
+                  <Listbox.Button className="relative w-full md:max-w-[150px] cursor-default rounded-md bg-white text-black py-1.5 pl-3 pr-10 text-left shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
                     <span className="block truncate">
                       {selectedStatus 
                         ? (options.find(option => option.id === selectedStatus.id)?.label || 'Seleccionar estado')
@@ -457,7 +457,7 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
           </Listbox> 
           </div>
         </div>
-        <div className="mt-4 flex">
+        <div className="mt-4 flex flex justify-end">
           {rowData ? (
             <button
               onClick={handleEditAssignation}

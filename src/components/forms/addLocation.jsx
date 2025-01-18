@@ -94,14 +94,13 @@ const AddLocationForm = ({ onClose, rowData }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[500px] relative">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
+      <div className="bg-white p-6 rounded-lg shadow-lg md:w-[500px] h-[500px] relative overflow-x-auto w-full">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
-        <div className='flex'>
-          <div className='w-[400px]'>
-            <h2 className="text-2xl mt-[15px] mb-4 text-black">
+          <div className='md:w-[400px] overflow-x-auto '>
+            <h2 className="text-xl mt-[15px] mb-4 text-black">
               <input
                 type="text"
                 placeholder="Nombre de la organización"
@@ -110,9 +109,7 @@ const AddLocationForm = ({ onClose, rowData }) => {
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
             </h2>
           </div>
-        </div>
-        <div className='flex'>
-          <div className='w-[400px]'>
+          <div className='md:w-[400px]'>
             <h2 className="text-xl mt-[15px] mb-4 text-black">
               <input
                 type="text"
@@ -122,9 +119,7 @@ const AddLocationForm = ({ onClose, rowData }) => {
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
             </h2>
           </div>
-        </div>
-        <div className='flex'>
-          <div className='w-[400px]'>
+          <div className='md:w-[400px]'>
             <h2 className="text-xl mt-[15px] mb-4 text-black">
               <input
                 type="text"
@@ -134,11 +129,10 @@ const AddLocationForm = ({ onClose, rowData }) => {
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"/>
             </h2>
           </div>
-        </div>
-        <div className='max-h-[300px] h-[200px]'>
+        <div className='max-h-[300px] h-[200px] mt-6'>
           <InventoryChecks selectedOptions={selectedInventory} rowData={rowData} setSelectedOptions={setSelectedInventory} />
         </div>
-        <div className="mt-2 flex ">
+        <div className="mt-2 flex justify-end">
           {data.id ? (
             <button 
               onClick={handleEditLocation} 
