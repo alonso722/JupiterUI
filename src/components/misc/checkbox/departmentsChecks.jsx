@@ -113,18 +113,16 @@ const DepartmentsChecks = ({ handleCheckboxChange, onSelectionChange, selectedOp
           <b>Departamentos seleccionados:</b>
         </h3>
         <div className='border-2 rounded-lg md:h-[100px] flex w-full overflow-x-auto p-1'>
-          {selectedOptions.map((option, index) => (
-            <div>
-                          <div key={index} className=" bg-[#EDF2F7] mx-1 flex items-center justify-between p-1 px-2 md:px-0 rounded-lg md:p-2 border-b border-gray-200 ">
+          {selectedOptions.map((option) => (
+            <div key={option.id} className="bg-[#EDF2F7] mx-1 flex items-center justify-between p-1 px-2 md:px-0 rounded-lg md:p-2 border-b border-gray-200">
               <span className='md:min-w-[50px] md:max-w-[300px] overflow-auto text-ellipsis md:whitespace-nowrap'>
                 {option.department}
               </span>
               <button 
-                className=" text-black px-2 py-1 rounded ml-2"
+                className="text-black px-2 py-1 rounded ml-2"
                 onClick={() => handleRemoveOption(option)}>
                 x
               </button>
-            </div>
             </div>
           ))}
         </div>

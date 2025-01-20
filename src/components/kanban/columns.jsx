@@ -8,6 +8,7 @@ import { useColors } from '@/services/colorService';
 import { permission } from "process";
 
 export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
+    const effectMounted = useRef(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCard, setSelectedCard] = useState(null);
     const [permissions, setPermissions] = useState([]);
@@ -40,7 +41,6 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
         const userType = parsedPermissions;
         const orga = parsedPermissions.Organization;
         userType.token = token;
-
         api.post('/user/process/fetchTab', { orga, userType, departmentFilter, processFilter, cooWorkflows })
             .then((response) => {
                 localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));
@@ -59,9 +59,12 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
     };
 
     useEffect(() => {
-        fetchData(); 
-        if(processIdNot?.id){
-            handleCardClick(processIdNot)
+        if (!effectMounted.current) {
+            fetchData(); 
+            if(processIdNot?.id){
+                handleCardClick(processIdNot)
+            }
+            effectMounted.current = true;
         }
     }, [departmentFilter, processFilter]); 
 
