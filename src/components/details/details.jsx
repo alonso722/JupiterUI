@@ -979,7 +979,7 @@ const Details = ({ card, onClose }) => {
                 )}
               </div>
             </div>
-            <div className="mt-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[150px] max-h-[33%] overflow-auto">
+            <div className="my-4 text-black rounded border-2 border-indigo-200/50 p-2 w-[100%] max-w-[630px] h-[150px] max-h-[33%] overflow-auto">
               <h1 className='text-[18px]'><strong>Registro de eventos:</strong></h1>
               {logsPrnt.length > 0 ? (
                 logsPrnt.map((log, index) => (
