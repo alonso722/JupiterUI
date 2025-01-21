@@ -145,7 +145,7 @@ const VacationsForm = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50 px-5 md:px-0">
       <div className="bg-white p-6 rounded-lg shadow-lg md:w-[40%] md:max-h-[600px] relative h-[83%] mt-[50px] overflow-y-auto">
         <button
           onClick={onClose}

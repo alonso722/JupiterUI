@@ -230,8 +230,8 @@ const AddUserForm = ({ user, onClose }) => {
     });
   };
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5 md:px-0">
-      <div className="bg-white p-6 rounded-lg shadow-lg md:w-[500px] h-[520px] relative overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50 px-5 md:px-0">
+      <div className="w-full bg-white p-6 rounded-lg shadow-lg md:w-[500px] h-[520px] relative overflow-y-auto">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
@@ -326,7 +326,7 @@ const AddUserForm = ({ user, onClose }) => {
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </div>
-          <p className="mt-[20px] mb-4 text-black w-[70%]">
+          <div className="mt-[20px] mb-4 text-black w-[70%]">
             <p className='mb-2'>Fecha de ingreso:</p>
             <input
               type="date"
@@ -335,7 +335,7 @@ const AddUserForm = ({ user, onClose }) => {
               onChange={(e) => setUserDate(e.target.value)}
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
-          </p>
+          </div>
           {!user && (
             <p className="mt-[20px] mb-4 text-black w-[70%]">
               <input

@@ -281,68 +281,68 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                           </button>
                         )}
                       </div>
-                            <div className=" md:overflow-auto relative">
-                              <div className='rounded px-5 max-h-[200px] overflow-y-auto md:overflow-x-auto mt-4'>
-                                <ul className='w-full'>
-                                  {(Array.isArray(documents) ? documents : []).map(({ docId, document, userDoc }) => (
-                                    <li
-                                      key={docId}
-                                      className={`my-2 rounded-lg p-2 flex items-center justify-between ${userDoc ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}>
-                                      <div className="flex w-full">
-                                        <div className="flex">
-                                          <div
-                                            className="w-4 h-4 mr-2 rounded-full mt-1"
-                                            style={{
-                                              backgroundColor: userDoc ? primary : 'white',
-                                              borderWidth: '1px',
-                                              borderStyle: 'solid',
-                                              borderColor: secondary,
-                                          }}/>
-                                          <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }}/>
-                                        </div>
-                                        <p
-                                          className={` mr-3 ${userDoc ? 'underline cursor-pointer' : ''}`}
-                                          onClick={userDoc ? () => openViewer(userDoc) : undefined}>
-                                          {document}
-                                        </p>
-                                        {userFilter && userDoc && (
-                                          <button
-                                            onClick={() => handleReplace(userDoc, docId)}
-                                            className="p-2 rounded text-white text-[10px] ml-3 mr-[20px]"
-                                            style={{ backgroundColor: secondary }}>
-                                            Solicitar actualización
-                                          </button>
-                                        )}
-                                      </div>
-                                      {!userDoc ? (
-                                        <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[250px] ">
-                                          <img
-                                            src="/icons/addoc.png"
-                                            alt="Icono"
-                                            className="absolute h-[16px] w-[13px] right-[220px]"/>
-                                            <input
-                                              type="file"
-                                              onChange={(e) => handleFileUploadSwitch(e, docId)}
-                                              className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
-                                              style={{ paddingLeft: '30px' }}/>
-                                        </div>
-                                      ) : (
-                                        <p className='ml-4 pr-3 underline cursor-pointer'
-                                          onClick={userDoc ? () => openViewer(userDoc) : undefined}>
-                                          Archivo cargado
-                                        </p>
-                                      )}
-                                      {editMode && (
-                                        <button
-                                          onClick={enableEditMode}
-                                          className="flex items-center justify-center w-8 h-8 ml-4">
-                                          <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
-                                        </button>
-                                      )}
-                                    </li>
-                                  ))}
-                              </ul>
-                            </div>
+                      <div className=" md:overflow-auto relative">
+                        <div className='rounded px-5 max-h-[200px] overflow-y-auto md:overflow-x-auto mt-4'>
+                          <ul className='w-full'>
+                            {(Array.isArray(documents) ? documents : []).map(({ docId, document, userDoc }) => (
+                              <li
+                                key={docId}
+                                className={`my-2 rounded-lg p-2 flex items-center justify-between ${userDoc ? 'bg-[#EDF2F7]' : 'bg-[#ffffff]'}`}>
+                                <div className="flex w-full">
+                                  <div className="flex">
+                                    <div
+                                      className="w-4 h-4 mr-2 rounded-full mt-1"
+                                      style={{
+                                        backgroundColor: userDoc ? primary : 'white',
+                                        borderWidth: '1px',
+                                        borderStyle: 'solid',
+                                        borderColor: secondary,
+                                      }}/>
+                                      <IoMdDocument className="w-[15px] h-[18px] mr-1 mt-1" style={{ color: secondary, width: '15px', height: '18px' }}/>
+                                    </div>
+                                    <p
+                                      className={`w-[70px] mr-3 ${userDoc ? 'underline cursor-pointer' : ''}`}
+                                      onClick={userDoc ? () => openViewer(userDoc) : undefined}>
+                                      {document}
+                                    </p>
+                                    {userFilter && userDoc && (
+                                      <button
+                                        onClick={() => handleReplace(userDoc, docId)}
+                                        className="p-2 rounded text-white text-[10px] ml-3 mr-[20px]"
+                                        style={{ backgroundColor: secondary }}>
+                                        Solicitar actualización
+                                      </button>
+                                    )}
+                                  </div>
+                                  {!userDoc ? (
+                                    <div className="relative flex py-[5px] items-center border-2 border-[#777E90] rounded-md w-[250px] ">
+                                      <img
+                                        src="/icons/addoc.png"
+                                        alt="Icono"
+                                        className="absolute h-[16px] w-[13px] right-[220px]"/>
+                                        <input
+                                          type="file"
+                                          onChange={(e) => handleFileUploadSwitch(e, docId)}
+                                          className="pl-8 text-black file:rounded-lg file:text-white file:bg-white file:border-none file:max-w-5 file:pl-9 file:mr-[-9%]"
+                                          style={{ paddingLeft: '30px' }}/>
+                                    </div>
+                                    ) : (
+                                      <p className='ml-4 pr-3 underline cursor-pointer'
+                                        onClick={userDoc ? () => openViewer(userDoc) : undefined}>
+                                        Archivo cargado
+                                      </p>
+                                    )}
+                                    {editMode && (
+                                      <button
+                                        onClick={enableEditMode}
+                                        className="flex items-center justify-center w-8 h-8 ml-4">
+                                        <i className="fas fa-edit text-gray-600" style={{ fontSize: '14px' }}></i>
+                                      </button>
+                                    )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
                       </div>
                   </div>
                 </div>

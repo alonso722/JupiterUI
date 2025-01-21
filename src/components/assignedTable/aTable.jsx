@@ -203,7 +203,11 @@ const AssignedTable = () => {
                         onClick={handleButtonClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddAssignedForm onClose={handleCloseForm} />}
+                    {showForm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <AddAssignedForm onClose={handleCloseForm} />
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="w-full overflow-y-auto">

@@ -117,9 +117,7 @@ const DepartmentsTable = () => {
                 <Actions
                     onActionClick={(id) => handleActionClick(id)}
                     rowData={info.row.original} 
-                    onClose={() => {
-                        setRefreshTable(true);
-                    }} />
+                    onClose={() => {setRefreshTable(true);}} />
             ),
             header: "", 
             enableSorting: false, 
@@ -191,7 +189,11 @@ const DepartmentsTable = () => {
                         onClick={handleButtonClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddDepartmentForm departments={departments} onClose={handleCloseForm} />}
+                    {showForm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <AddDepartmentForm departments={departments} onClose={handleCloseForm} />
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="w-full overflow-y-auto">

@@ -109,12 +109,15 @@ const InventoryTable = () => {
         // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
-                <Actions
-                    onActionClick={(id) => handleActionClick(id)}
-                    rowData={info.row.original} 
-                    onClose={() => {
-                        setRefreshTable(true);
-                    }} />
+                <div className="relative z-10">
+                    <Actions
+                        onActionClick={(id) => handleActionClick(id)}
+                        rowData={info.row.original} 
+                        onClose={() => {
+                            setRefreshTable(true);
+                        }}
+                    />
+                </div>
             ),
             header: "", 
             enableSorting: false, 
@@ -169,7 +172,13 @@ const InventoryTable = () => {
                         onClick={handleButtonClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddInventoryForm onClose={handleCloseForm} />}
+                    {showForm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <div className="relative bg-white p-6 rounded shadow-lg w-[90%] md:w-[50%] z-60">
+                                <AddInventoryForm onClose={handleCloseForm} />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="w-full overflow-y-auto">

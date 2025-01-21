@@ -191,7 +191,11 @@ const LocationsTable = () => {
                         onClick={handleButtonClick}>
                         Añadir +
                     </Button>
-                    {showForm && <AddLocationForm departments={departments} onClose={handleCloseForm} />}
+                    {showForm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <AddLocationForm departments={departments} onClose={handleCloseForm} />
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="w-full overflow-y-auto">

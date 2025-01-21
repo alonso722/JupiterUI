@@ -378,7 +378,7 @@ const getAnnexesIcon = (extension) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50 px-5">
       <div className="bg-white p-6 rounded-lg shadow-lg md:w-[1000px] md:h-[92%] h-[570px] relative md:mt-0 mt-[11%] overflow-y-auto">
-        <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
+        <button onClick={onClose} className="absolute top-2 right-2 bg-transparent text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>
         <div className='md:flex md:h-full md:pb-0'>

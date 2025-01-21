@@ -80,7 +80,7 @@ export default function Sidebar() {
                 onMouseLeave={() => isExpanded && setIsExpanded(false)}
                 className={`transition-all duration-300 flex flex-col md:border-r-4 md:border-b-4 ${isExpanded ? 'text-white w-200' : 'w-20'}`}
                 style={{ backgroundColor: isExpanded ? secondary : 'transparent' }}>
-                <button type="button" onClick={handleToggleExpand} className="flex ml-[15px] md:ml-[25px] mt-[27px] md:mt-[35px] focus:outline-none rounded">
+                <button type="button" onClick={handleToggleExpand} className="flex ml-[15px] md:ml-[25px] mt-[28px] md:mt-[35px] focus:outline-none rounded">
                     <FaBars size={15} color={primary} />
                 </button>
                 {!isExpanded && (

@@ -223,7 +223,7 @@ const AddAssignedForm = ({ assignation, onClose, rowData }) => {
   ];
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 px-5">
+    <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] z-50 bg-opacity-30 px-5">
       <div className="bg-white p-6 rounded-lg shadow-lg w-full md:w-[500px] md:h-[450px] relative">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;

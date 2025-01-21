@@ -287,7 +287,11 @@ const UsersTable = () => {
                             onClick={handleButtonClick}>
                             Añadir +
                         </Button>
-                        {showForm && <AddUserForm onClose={handleCloseForm} />}
+                        {showForm && (
+                            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                                <AddUserForm onClose={handleCloseForm} />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

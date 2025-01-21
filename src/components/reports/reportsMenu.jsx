@@ -162,7 +162,7 @@ export const ReportsMenu = () => {
   };
   
   return (
-    <div className="mt-[80px] ml-[110px] mr-[0px] text-neutral-50 rounded overflow-hidden">
+    <div className="mt-[80px] md:ml-[110px] px-5 md:px-0 mr-[0px] text-neutral-50 rounded overflow-hidden">
       <p className="text-[25px] text-black my-4">
         <b>Reportes</b>
       </p>
@@ -182,7 +182,7 @@ export const ReportsMenu = () => {
                   <span className="ml-3 block truncate">
                     {selectedDepartments.length > 0
                       ? selectedDepartments[0].department
-                      : "Seleccionar departamento"}
+                      : "Sin departamento"}
                   </span>
                 </span>
                 <span className="pointer-events-none absolute inset-y-0 right-0 ml-3 flex items-center pr-2">

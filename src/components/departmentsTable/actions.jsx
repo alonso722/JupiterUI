@@ -53,6 +53,17 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
         setIsModalOpen(false);
     };
 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     return (
         <div className="flex h-11 w-[20px] flex-row items-center">
             <div className="font-semibold text-[14px] text-darkJupiter">

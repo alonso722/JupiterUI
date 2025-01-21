@@ -181,11 +181,21 @@ const TanStackTable = () => {
                 const revisors = info.getValue();
                 return (
                     <ul className="list-disc pl-5">
-                    {revisors && revisors.length > 0 ? revisors.map((revisor, index) => (
-                        <li key={index}>
-                        {`${revisor.userName} ${revisor.last}`}
-                        </li>
-                    )) : <li>No Revisor</li>}
+                        {revisors && revisors.length > 1 ? (
+                            <ul className="list-disc pl-5">
+                                {revisors.map((revisor, index) => (
+                                    <li key={index}>
+                                        {`${revisor.userName} ${revisor.last}`}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>
+                                {revisors && revisors.length === 1
+                                    ? `${revisors[0].userName} ${revisors[0].last}`
+                                    : 'No Revisor'}
+                            </p>
+                        )}
                     </ul>
                 );
             },
@@ -196,11 +206,21 @@ const TanStackTable = () => {
                 const aprobators = info.getValue();
                 return (
                     <ul className="list-disc pl-5">
-                    {aprobators && aprobators.length > 0 ? aprobators.map((aprobator, index) => (
-                        <li key={index}>
-                        {`${aprobator.userName} ${aprobator.last}`}
-                        </li>
-                    )) : <li>No Aprobador</li>}
+                        {aprobators && aprobators.length > 1 ? (
+                            <ul className="list-disc pl-5">
+                                {aprobators.map((aprobator, index) => (
+                                    <li key={index}>
+                                        {`${aprobator.userName} ${aprobator.last}`}
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p>
+                                {aprobators && aprobators.length === 1
+                                    ? `${aprobators[0].userName} ${aprobators[0].last}`
+                                    : 'No Aprobador'}
+                            </p>
+                        )}
                     </ul>
                 );
             },
@@ -288,7 +308,11 @@ const TanStackTable = () => {
                             Añadir +
                         </Button>
                     ) : null}
-                    {showForm && <AddProcessForm onClose={handleCloseForm} />}
+                    {showForm && (
+                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                            <AddProcessForm onClose={handleCloseForm} />
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="w-full overflow-y-auto">
