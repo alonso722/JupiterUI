@@ -24,6 +24,7 @@ const CustomCalendar = () => {
   const [showModal, setShowModal] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
   const [isChecked, setIsChecked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [time, setTime] = useState('');
 
   let today = startOfToday();
@@ -134,6 +135,7 @@ const CustomCalendar = () => {
       const entranceDate = new Date(new Date(events.entrance).getTime() + 6 * 60 * 60 * 1000);
       const currentDate = new Date();
       const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
+      setIsLoading(false)
       if (differenceInHours < 20) {
         setIsChecked(true);
       }
@@ -182,6 +184,7 @@ const CustomCalendar = () => {
   };
 
   const handleAddEntrace = () => {
+    setIsLoading(true)
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions'); 
     if (storedPermissions) {
@@ -228,15 +231,18 @@ const CustomCalendar = () => {
                 }]);
                 setShowModal(false);
                 setNewEvent({ title: '', start: new Date(), end: new Date() });
+                setIsLoading(false)
             },
             (error) => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+                setIsLoading(false)
                 console.error('Error al obtener la ubicación:', error);
             },
             //options 
         );
     } else {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+        setIsLoading(false)
         console.error('Geolocalización no es soportada por este navegador.');
     }
   };
@@ -316,21 +322,17 @@ return (
           className={`px-2 py-1 pointer rounded-lg text-[8px] md:text-[13px] w-[86px] md:w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
           style={{
             backgroundColor: primary,
-            opacity: isChecked ? 0.7 : 1, 
-            cursor: isChecked ? 'not-allowed' : 'pointer', 
+            opacity: isChecked ? 0.7 : 1,
+            cursor: isChecked ? 'not-allowed' : 'pointer',
           }}
-          onClick={
-            !isChecked ?
-            handleAddEntrace 
-            : undefined
-            } 
-          disabled={isChecked} 
+          onClick={!isChecked && !isLoading ? handleAddEntrace : undefined}
+          disabled={isChecked || isLoading}
         >
-          {isChecked ? (
-            <span className="text-[8px] md:text-[13px] font-semibold text-center">Entrada registrada</span>
-          ) : (
-            'Registrar entrada'
-          )}
+          {isChecked
+            ? 'Entrada registrada'
+            : isLoading
+            ? 'Registrando entrada...'
+            : 'Registrar entrada'}
         </button>
       </div>
       <div>
