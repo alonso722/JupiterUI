@@ -388,6 +388,20 @@ export default function TopNewMenuClientDashboard() {
                                                 )}
                                             </Menu.Item>
                                         </form>
+                                        <form method="POST" action="#" className='md:hidden '>
+                                            <Menu.Item>
+                                                {({ active }) => (
+                                                    <Link href="/dashboard/home/calendar" passHref >
+                                                        <button
+                                                            type='button'
+                                                            className={`flex rounded mx-2 justify-center items-center mt-[13px] mb-[10px] w-[90%] min-h-[30px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'} hover:bg-gray-200`}>
+                                                            <img src="/icons/calendary.png" alt="Icono" className="h-5 w-5 mr-2 cursor-pointer" />
+                                                            <span>Calendario</span>
+                                                        </button>
+                                                    </Link>
+                                                )}
+                                            </Menu.Item>
+                                        </form>
                                         {(permissions.Type === 1 || permissions.Type === 6) && (
                                             <form method="POST" action="#">
                                                 <Menu.Item>

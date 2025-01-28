@@ -248,6 +248,7 @@ const CustomCalendar = () => {
   };
 
   const handleAddLeave = () => {
+    setIsLoading(true)
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions'); 
     if (storedPermissions) {
@@ -288,15 +289,18 @@ const CustomCalendar = () => {
                 });
                 setShowModal(false);
                 setNewEvent({ title: '', start: new Date(), end: new Date() });
+                setIsLoading(false)
             },
             (error) => {
                 showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+                setIsLoading(false)
                 console.error('Error al obtener la ubicación:', error);
             },
             //options 
         );
     } else {
         showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+        setIsLoading(false)
         console.error('Geolocalización no es soportada por este navegador.');
     }
   };
@@ -304,7 +308,7 @@ const CustomCalendar = () => {
   const handleNavigation = () => {
         const path = '/dashboard/home/calendar';
     window.location.href = path;
-};
+  };
 
 return (
   <>
@@ -331,7 +335,7 @@ return (
           {isChecked
             ? 'Entrada registrada'
             : isLoading
-            ? 'Registrando entrada...'
+            ? 'Registrando...'
             : 'Registrar entrada'}
         </button>
       </div>
@@ -343,18 +347,14 @@ return (
             opacity: !isChecked ? 0.7 : 1, 
             cursor: !isChecked ? 'not-allowed' : 'pointer', 
           }}
-          onClick={
-            isChecked ? 
-            handleAddLeave 
-            : undefined
-          } 
-          disabled={!isChecked} 
+          onClick={isChecked && !isLoading ? handleAddLeave : undefined} 
+          disabled={!isChecked || isLoading} 
         >
-          {!isChecked ? (
-            <span className="text-[8px] md:text-[13px] font-semibold text-center">Sin entrada</span>
-          ) : (
-            'Registrar salida'
-          )}
+          {!isChecked
+            ? 'Sin entrada'
+            : isLoading
+            ? 'Registrando...'
+            : 'Registrar salida'}
         </button>
       </div>
     </div>

@@ -53,8 +53,8 @@ const DocsViewer = ({ url, onClose }) => {
   }, [url]);
 
   return (
-    <div className="fixed mt-3 inset-0 flex items-center justify-center z-50 bg-[#2C1C47] bg-opacity-30">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[50%] h-[80%] relative flex flex-col text-black">
+    <div className="fixed mt-3 inset-0 flex items-center justify-center z-50 bg-[#2C1C47] bg-opacity-30 md:px-0">
+      <div className="bg-white mt-8 md:p-6 rounded-lg shadow-lg w-[90%] h-[85%] md:w-[50%] md:h-[80%] relative flex flex-col text-black">
         <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
           &times;
         </button>

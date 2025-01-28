@@ -24,6 +24,7 @@ const CustomCalendar = () => {
   const [requests, setReqs] = useState([]);
   const [owns, setOwns] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [showModalReq, setShowModalReq] = useState(false);
   const [showModalPer, setShowModalPer] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
   const [type, setType] = useState('');
@@ -456,7 +457,7 @@ const CustomCalendar = () => {
       <div className='mb-1'>
         <div className='px-5 mt-3' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className='flex'>
-          <img src="/icons/calendar.png" alt="Icono" className="h-3 w-3 mt-1" />
+          <img src="/icons/calendar.jpeg" alt="Icono" className="h-3 w-3 mt-1" />
           <select
             className='pointer p-1 rounded text-black'
             onChange={(e) => onView(e.target.value)}
@@ -468,22 +469,28 @@ const CustomCalendar = () => {
           </div>
           <div className='flex text-[#777E90] justify-between px-11'>
             <button
-                className='text-[#777E90] rounded text-[20px] py-1 px-2 pointer' 
+                className='text-[#777E90] rounded text-[20px] py-1 px-2 pointer hidden md:block' 
                 onClick={() => onNavigate('PREV')}>
                 &lt;
             </button>
-            <span className='mt-2 text-[15px] text-black'><b>{label}</b></span> 
+            <span className='mt-2 text-[15px] text-black w-[100px]'><b>{label}</b></span> 
             <button 
-            className='text-[#777E90] text-[20px] rounded px-2 pointer' 
+            className='text-[#777E90] text-[20px] rounded px-2 pointer hidden md:block' 
             onClick={() => onNavigate('NEXT')}>
             &gt;
             </button>
         </div>
           <button
-            className='pointer color-black px-2 py-1 rounded-lg text-white'
+            className='pointer color-black px-2 py-1 rounded-lg text-white hidden md:block'
             onClick={() => onNavigate('TODAY')}
             style={{ backgroundColor: primary }}>
             Hoy
+          </button>
+          <button
+            className='pointer color-black px-2 py-1 rounded-lg text-white md:hidden'
+            onClick={() => setShowModalReq(true)}
+            style={{ backgroundColor: primary }}>
+            Mis solicitudes
           </button>
         </div>
       </div>
@@ -539,58 +546,58 @@ const CustomCalendar = () => {
 
   return (
     <>
-    <div className='w-full mt-[70px] pl-[70px]'>
-        <div className='flex mt-[40px]'>
-            <div className="ml-[1%] border-white-2 w-[20%] h-[500px] rounded-lg  text-[12px] text-black">
-            <p className='text-black ml-9 text-[20px] mt-[50px] mb-[40px] '><strong>Calendario</strong></p>
-            <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white flex ml-9' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
-              <p className='text-[15px] mr-1'><strong>+</strong></p>
+    <div className='w-full md:mt-[70px] md:pl-[70px] px-2 md:px-0'>
+      <div className='md:flex md:mt-[40px] h-full '>
+        <div className="md:ml-[1%] border-white-2 w-[20%] h-[500px] rounded-lg text-[12px] text-black md:block hidden">
+          <p className='text-black ml-9 text-[20px] mt-[50px] mb-[40px] '><strong>Calendario</strong></p>
+          <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white flex ml-9' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
+            <p className='text-[15px] mr-1'><strong>+</strong></p>
             Agendar
           </button>
-            <Calendar
-            className='ml-9 mt-4'
-                localizer={localizer}
-                events={events}
-                startAccessor="start"
-                endAccessor="end"
-                view="day"
-                date={new Date()}
-                style={{
-                    height: '450px',
-                    fontSize: '10px',
-                    border: '2px solid white',
-                    boxShadow: 'none',
-                    backgroundColor: 'white !important',
-                }}
-                toolbar={false}
-                messages={{
-                    today: 'Hoy',
-                    previous: '<',
-                    next: '>',
-                    month: 'Mes',
-                    week: 'Semana',
-                    day: 'Día',
-                    agenda: 'Agenda',
-                    allDay: 'Todo el día',
-                    showMore: (total) => (
-                    <span className="underline" style={{ color: secondary }}>
-                        ({total}) más ...
-                    </span>
-                    ),
-                }}
-                eventPropGetter={(event, start, end, isSelected) => {
-                  const backgroundColor = '#ffffff';
+          <Calendar
+            className='ml-9 mt-4 md:block hidden'
+                  localizer={localizer}
+                  events={events}
+                  startAccessor="start"
+                  endAccessor="end"
+                  view="day"
+                  date={new Date()}
+                  style={{
+                      height: '450px',
+                      fontSize: '10px',
+                      border: '2px solid white',
+                      boxShadow: 'none',
+                      backgroundColor: 'white !important',
+                  }}
+                  toolbar={false}
+                  messages={{
+                      today: 'Hoy',
+                      previous: '<',
+                      next: '>',
+                      month: 'Mes',
+                      week: 'Semana',
+                      day: 'Día',
+                      agenda: 'Agenda',
+                      allDay: 'Todo el día',
+                      showMore: (total) => (
+                      <span className="underline" style={{ color: secondary }}>
+                          ({total}) más ...
+                      </span>
+                      ),
+                  }}
+                  eventPropGetter={(event, start, end, isSelected) => {
+                    const backgroundColor = '#ffffff';
 
-                  return {
-                  style: {
-                      backgroundColor: backgroundColor,
-                      color: 'black',
-                  },
-                  };
-              }}
-                />
+                    return {
+                    style: {
+                        backgroundColor: backgroundColor,
+                        color: 'black',
+                    },
+                    };
+                }}
+                  />
             </div>
-        <div className='mt-[110px] ml-[1%] py-2 w-[55%] h-[500px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
+        <div className='md:mt-[110px] mt-[70px] ml-[1%] py-2 md:w-[55%] md:h-[500px] h-[570px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
           <Calendar
             localizer={localizer}
             events={events}
@@ -602,7 +609,7 @@ const CustomCalendar = () => {
               border: '2px solid white',
               boxShadow: 'none',
             }}
-            views={['month', 'week', 'day']}
+            views={['year','month', 'week', 'day']}
             view={view}
             onView={setView}
             date={date}
@@ -655,6 +662,11 @@ const CustomCalendar = () => {
                 ),
             }}
           />
+          <div className='md:hidden w-full flex text-black justify-end right-0 mt-2'>
+            <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white flex' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
+              <p className='text-[15px]'><strong>+</strong></p>
+            </button>
+          </div>
           {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative">
@@ -750,6 +762,111 @@ const CustomCalendar = () => {
                 >
                   &times;
                 </button>
+              </div>
+            </div>
+          )}
+          {showModalReq && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[80%] relative">
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setShowModalReq(false)}>
+                  &times;
+                </button>
+                <div
+            className={`text-black ml-5 mt-6 max-w-[90%] max-h-[485px] shadow-lg px-6 pt-5 pb-2 flex flex-col ${
+              permissions.isManager === 1 ? 'divide-y divide-gray-300' : ''
+            }`}
+          >
+            {permissions.isManager === 1 && (
+              <div className="flex-1 flex flex-col ">
+                <div className='flex min-w-[260px]'>
+                  <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3>      
+                </div>
+                <div className="max-h-[200px] overflow-y-auto">
+                  <ul>
+                    {requests.map((request, index) => (
+                      <li key={index} className="mb-4 border-b pb-2 rounded p-2 text-[13px]"
+                      style={{ backgroundColor: request.status === 1 ? '#EDF2F7' : `#ffffff` }}>
+                        <div>
+                          <strong>Solicitante:</strong> {request.reqName}
+                        </div>
+                        <div>
+                          <strong>Inicio:</strong> {new Date(request.start).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <strong>Final:</strong> {new Date(request.end).toLocaleDateString()}
+                        </div>
+                        <div>
+                          <strong>Estatus:</strong>{' '}
+                          {request.status === 0 ? (
+                            <span style={{ color: 'red' }}>Rechazadas</span>
+                          ) : request.status === 2 ? (
+                            <span style={{ color: 'green' }}>Aprobadas</span>
+                          ) : request.status === 1 ? (
+                            'Pendiente'
+                          ) : (
+                            'Desconocido'
+                          )}
+                        </div>
+                        {request.status === 1 && (
+                          <div className='flex justify-between'>                          
+                            <button
+                            className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                            onClick={() => handleApprove(request)}>
+                            Aprobar
+                            </button>
+                            <button
+                            className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                            onClick={() => handleReject(request)}>
+                            Rechazar
+                            </button>
+                          </div>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            )}
+
+            <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
+              <div className='flex min-w-[260px]'>
+                    <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
+                    <div>                  
+                      <button className='px-2 py-1 mt-1 text-[13px] ml-9 pointer rounded text-white' style={{ backgroundColor: primary }} onClick={() => setShowModalPer(true)}>
+                        + Permisos
+                      </button>
+                    </div>            
+                  </div>
+                <div className="max-h-[167px] overflow-y-auto">
+                    <ul>
+                      {owns.map((request, index) => (
+                        <li key={index} className="mb-4 border-b p-2 text-[13px]">
+                          <div>
+                            <strong>Inicio:</strong> {new Date(request.start).toLocaleDateString()}
+                          </div>
+                          <div>
+                            <strong>Final:</strong> {new Date(request.end).toLocaleDateString()}
+                          </div>
+                          <div>
+                            <strong>Estatus:</strong>{' '}
+                            {request.status === 0 ? (
+                              <span style={{ color: 'red' }}>Rechazadas</span>
+                            ) : request.status === 2 ? (
+                              <span style={{ color: 'green' }}>Aprobadas</span>
+                            ) : request.status === 1 ? (
+                              'Pendiente'
+                            ) : (
+                              'Desconocido'
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+              </div>
+            </div>
               </div>
             </div>
           )}
@@ -863,55 +980,7 @@ const CustomCalendar = () => {
             </div>
           )}
         </div>
-        <div>
-          <div className='text-black ml-5 max-w-[90%] shadow-lg px-6 pt-5 pb-2 flex rounded-2xl'>
-            <div>
-              <div>
-                <strong>Checador</strong>
-              </div>
-              <div className='mr-3 text-[30px] text-[#777E90]'>
-                {time}
-              </div>
-            </div>
-            <div className='ml-4'>
-              <div>
-                <button
-                  className={`px-2 py-1 pointer rounded-lg text-[15px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-                  style={{
-                    backgroundColor: primary,
-                    opacity: isChecked ? 0.7 : 1, 
-                    cursor: isChecked ? 'not-allowed' : 'pointer', 
-                   }}
-                  onClick={!isChecked ? handleAddEntrace : undefined} 
-                  disabled={isChecked} 
-                >
-                  {isChecked ? (
-                    <span className="text-[13px] font-semibold text-center">Entrada registrada</span>
-                  ) : (
-                    'Registrar entrada'
-                  )}
-                </button>
-              </div>
-              <div>
-                <button
-                  className={`px-2 py-1 pointer rounded-lg text-[13px] w-[110%] text-white mb-2 mr-2 flex items-center justify-center`}
-                  style={{
-                    backgroundColor: primary,
-                    opacity: !isChecked ? 0.7 : 1, 
-                    cursor: !isChecked ? 'not-allowed' : 'pointer', 
-                   }}
-                  onClick={isChecked ? handleAddLeave : undefined} 
-                  disabled={!isChecked} 
-                >
-                  {!isChecked ? (
-                    <span className="text-[13px] font-semibold text-center">Sin entrada</span>
-                  ) : (
-                    'Registrar salida'
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
+        <div className='md:block hidden'>
           <div
             className={`text-black ml-5 mt-6 max-w-[90%] max-h-[485px] shadow-lg px-6 pt-5 pb-2 flex flex-col ${
               permissions.isManager === 1 ? 'divide-y divide-gray-300' : ''

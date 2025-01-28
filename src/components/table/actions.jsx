@@ -91,7 +91,7 @@ const Actions = ({ onActionClick, rowData, onClose,  onCloseModal }) => {
                             leave="transition ease-in duration-75"
                             leaveFrom="transform opacity-100 scale-100"
                             leaveTo="transform opacity-0 scale-95">
-                            <Menu.Items className="absolute right-0 z-10 mt-1 w-[154px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <Menu.Items className="absolute right-full top-0 z-10 ml-2 w-[154px] origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div className="py-1">
                                 {permissions.Type === 1 || permissions.Type === 2 || permissions.Type === 6 ? (
                                     <Menu.Item>
@@ -100,7 +100,7 @@ const Actions = ({ onActionClick, rowData, onClose,  onCloseModal }) => {
                                             type="submit"
                                             className="bg-transparent"
                                             onClick={handleEditClick}>
-                                                <div className={`flex pl-[20px] pr-[56px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                <div className={`flex pl-[20px] pr-[56px] my-[5px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                     <Image
                                                         className="mr-[30px]"
                                                         src="/icons/pencil.svg"
@@ -120,7 +120,7 @@ const Actions = ({ onActionClick, rowData, onClose,  onCloseModal }) => {
                                         type="submit"
                                         className="bg-transparent"
                                         onClick={handleDeleteClick}>
-                                            <div className={`flex pl-[20px] pr-[36px] my-[15px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                            <div className={`flex pl-[20px] pr-[36px] my-[5px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                 <Image
                                                     className="mr-[30px]"
                                                     src="/icons/trash.svg"

@@ -182,7 +182,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                             leave="transition ease-in duration-75"
                             leaveFrom="opacity-100 scale-100"
                             leaveTo="opacity-0 scale-95">
-                            <Menu.Items className="absolute right-0 z-10 mt-1 w-[154px] origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                            <Menu.Items className="absolute right-full top-0 z-10 ml-2 w-[154px] origin-top-left rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                                 <div className="py-1">
                                     <Menu.Item>
                                         {({ active }) => (
@@ -190,7 +190,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                 type="submit"
                                                 className="bg-transparent"
                                                 onClick={handleEditClick}>
-                                                <div className={`flex pl-[20px] pr-[56px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                <div className={`flex pl-[20px] pr-[56px] my-[5px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                     <Image
                                                         className="mr-[30px]"
                                                         src="/icons/pencil.svg"
@@ -208,7 +208,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                 type="submit"
                                                 className="bg-transparent"
                                                 onClick={handlePassClick}>
-                                                <div className={`flex pl-[20px] pr-[45px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                <div className={`flex pl-[20px] pr-[45px] my-[5px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                     <Image
                                                         className="mr-[20px]"
                                                         src="/icons/pencil.svg"
@@ -226,7 +226,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                 type="submit"
                                                 className="bg-transparent"
                                                 onClick={handleTimeClick}>
-                                                <div className={`flex pl-[20px] pr-[45px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                <div className={`flex pl-[20px] pr-[45px] my-[5px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                     <Image
                                                         className="mr-[20px]"
                                                         src="/icons/pencil.svg"
@@ -244,7 +244,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                 type="submit"
                                                 className="bg-transparent"
                                                 onClick={handleDeleteClick}>
-                                                <div className={`flex pl-[20px] pr-[56px] my-[25px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
+                                                <div className={`flex pl-[20px] pr-[56px] my-[5px] ${active ? 'bg-gray-100 text-gray-900' : 'text-gray-700'}`}>
                                                     <Image
                                                         className="mr-[30px]"
                                                         src="/icons/trash.svg"

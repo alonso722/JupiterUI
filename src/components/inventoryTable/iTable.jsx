@@ -181,7 +181,7 @@ const InventoryTable = () => {
                     )}
                 </div>
             </div>
-            <div className="w-full overflow-y-auto">
+            <div className="w-full overflow-y-auto pb-7">
             <table className="md:w-[1150px] text-left text-black rounded-lg mt-[10px] md:ml-[30px] md:mr-[120px]">
                 <thead style={{ backgroundColor: primary || '#F1CF2B' }} className="text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
