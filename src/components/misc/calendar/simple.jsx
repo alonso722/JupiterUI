@@ -363,13 +363,13 @@ const CustomCalendar = () => {
           </div>
           <div className='flex text-[#777E90] justify-between px-11'>
             <button
-                className='text-[#777E90] rounded text-[20px] py-1 px-2 pointer hidden md:block' 
+                className='text-[#777E90] rounded text-[20px] py-1 px-2 pointer ' 
                 onClick={() => onNavigate('PREV')}>
                 &lt;
             </button>
             <span className='mt-2 text-[15px] text-black w-[100px]'><b>{label}</b></span> 
             <button 
-            className='text-[#777E90] text-[20px] rounded px-2 pointer hidden md:block' 
+            className='text-[#777E90] text-[20px] rounded px-2 pointer ' 
             onClick={() => onNavigate('NEXT')}>
             &gt;
             </button>
