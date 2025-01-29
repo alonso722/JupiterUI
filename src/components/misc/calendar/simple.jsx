@@ -573,28 +573,41 @@ const CustomCalendar = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 />
                 <div className="text-black mb-4">
-                  <div className="flex justify-between">
-                    <label className="block mt-2">Del:</label>
-                    <input
-                      type="date"
-                      className="mb-2 px-2 rounded"
-                      value={newEvent.start ? new Date(newEvent.start).toLocaleDateString('en-CA') : ""}
-                      onChange={(e) => {
-                        setNewEvent({ ...newEvent, start: new Date(e.target.value) });
-                      }}
-                    />
-                    <div className="flex">
-                      <label className="block mt-2">al:</label>
-                      <input
-                        type="date"
-                        className="mb-2 p-2 rounded"
-                        value={newEvent.end ? new Date(newEvent.end).toLocaleDateString('en-CA') : ""}
-                        onChange={(e) => {
-                          setNewEvent({ ...newEvent, end: new Date(e.target.value) });
-                        }}
-                      />
-                    </div>
-                  </div>
+                <div className="flex justify-between">
+  <label className="block mt-2">Del:</label>
+  <input
+    type="date"
+    className="mb-2 px-2 rounded"
+    value={
+      newEvent.start
+        ? new Date(newEvent.start).toISOString().split("T")[0] // Garantiza formato YYYY-MM-DD sin desfase
+        : ""
+    }
+    onChange={(e) => {
+      const [year, month, day] = e.target.value.split("-");
+      const newDate = new Date(Number(year), Number(month) - 1, Number(day)); // Set sin UTC
+      setNewEvent({ ...newEvent, start: newDate });
+    }}
+  />
+  <div className="flex">
+    <label className="block mt-2">al:</label>
+    <input
+      type="date"
+      className="mb-2 p-2 rounded"
+      value={
+        newEvent.end
+          ? new Date(newEvent.end).toISOString().split("T")[0]
+          : ""
+      }
+      onChange={(e) => {
+        const [year, month, day] = e.target.value.split("-");
+        const newDate = new Date(Number(year), Number(month) - 1, Number(day));
+        setNewEvent({ ...newEvent, end: newDate });
+      }}
+    />
+  </div>
+</div>
+
                   <div className="flex justify-between">
                     <label className="block">Horario:</label>
                     <input
