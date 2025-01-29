@@ -532,16 +532,15 @@ const Details = ({ card, onClose }) => {
 
   const isListboxDisabled = () => {
     let isDisabled = true;
-    if (permissions.Type == 1 || permissions.Type == 6) {
-      return isDisabled;
-    }
+    // if (permissions.Type == 1 || permissions.Type == 6) {
+    //   return isDisabled;
+    // }
   
     let parsedWorkflows;
     const storedWorkflows = localStorage.getItem('workflows');
     if (storedWorkflows) {
       parsedWorkflows = JSON.parse(storedWorkflows);
     }
-  
     if (parsedWorkflows && card) {
       if (parsedWorkflows.coordinator === 0) {
         return true; 

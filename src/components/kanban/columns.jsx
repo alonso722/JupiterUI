@@ -97,7 +97,7 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
     };
 
     return (
-        <div className="mt-[110px] md:ml-[150px] px-5 md:px-0 md:mr-[250px] text-neutral-50 rounded overflow-x-auto">
+        <div className="md:mt-[50px] mt-[40px] md:ml-[120px] px-5 pb-8 md:px-0 md:mr-[20px] text-neutral-50 rounded overflow-x-auto">
             <Board 
                 onCardClick={handleCardClick} 
                 cards={cards} 
@@ -207,7 +207,7 @@ const Column = ({ name, headingColor, column, cards, setCards, onCardClick, perm
                 </div>
             </div>
             <div
-                className={`h-[670px] overflow-auto scrollbar-hide transition-colors ${
+                className={`transition-colors ${
                     active ? "bg-neutral-800/50" : "bg-neutral-800/0"
                 }`}>
                 {filteredCards.map((c) => {
