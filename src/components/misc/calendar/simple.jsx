@@ -110,8 +110,8 @@ const CustomCalendar = () => {
       const formattedEvents = events.map(event => {
         const start = new Date(event.start);
         const end = new Date(event.end);
-        start.setHours(start.getHours() + 6);
-        end.setHours(end.getHours() + 6);
+        start.setHours(start.getHours() );
+        end.setHours(end.getHours() );
     
         if (end.getHours() === 0 && end.getMinutes() === 0 && end.getSeconds() === 0) {
           end.setDate(end.getDate() + 1); 
@@ -128,27 +128,6 @@ const CustomCalendar = () => {
     } catch (error) {
       console.error("Error al consultar eventos:", error);
     }    
-  };
-
-  const getChecks = async () => {
-    let parsedPermissions;
-    const storedPermissions = localStorage.getItem('permissions');
-    if (storedPermissions) {
-      parsedPermissions = JSON.parse(storedPermissions);
-    }
-    const uuid = parsedPermissions.uuid;
-    try {
-      const response = await api.post('/user/event/getChecks', { uuid });
-      const events = response.data;
-      const entranceDate = new Date(new Date(events.entrance).getTime() + 6 * 60 * 60 * 1000);
-      const currentDate = new Date();
-      const differenceInHours = (currentDate - entranceDate) / (1000 * 60 * 60);
-      if (differenceInHours < 10) {
-        setIsChecked(true);
-      }
-    } catch (error) {
-      console.error("Error al consultar eventos:", error);
-    }
   };
 
   const getReqs = async () => {
@@ -184,7 +163,6 @@ const CustomCalendar = () => {
   };
   
   useEffect(() => {
-    getChecks();
     fetchEvents();
     getReqs();
     getOwns();
@@ -201,7 +179,7 @@ const CustomCalendar = () => {
       showToast('error', "Por favor, nombre el evento...");
       return;
     }
-    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
+    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) <= new Date(newEvent.start)) {
       showToast('warning', "Revise las fechas de inicio y fin");
       return;
     }
@@ -325,90 +303,6 @@ const CustomCalendar = () => {
         fetchEvents();
     } catch (error) {
         console.error('Error al añadir el evento:', error);
-    }
-  };
-
-  const handleAddEntrace = () => {
-    let parsedPermissions;
-    const storedPermissions = localStorage.getItem('permissions'); 
-    if (storedPermissions) {
-        parsedPermissions = JSON.parse(storedPermissions);
-    }
-    const organization = parsedPermissions.Organization;
-    const uuid = parsedPermissions.uuid;
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          api.post('/user/event/addEntrace', { 
-            ...newEvent,
-            latitude,
-            longitude,
-            type: 1,       
-            title: 'Entrada',
-            orga: organization, 
-            uuid: uuid  
-          })
-            .then((response) => {
-              showToast('success',"Entrada registrada");
-            })
-            .catch((error) => {
-              console.error('Error al añadir el evento:', error);
-            });
-  
-          setEvents([...events, { 
-            ...newEvent,
-            type: 1,       
-            title: 'Entrada'  
-          }]);
-          setShowModal(false);
-          setNewEvent({ title: '', start: new Date(), end: new Date() });
-        },
-        (error) => {
-          console.error('Error al obtener la ubicación:', error);
-        }
-      );
-    } else {
-      console.error('Geolocalización no es soportada por este navegador.');
-    }
-  };
-
-  const handleAddLeave = () => {
-    let parsedPermissions;
-    const storedPermissions = localStorage.getItem('permissions'); 
-    if (storedPermissions) {
-        parsedPermissions = JSON.parse(storedPermissions);
-    }
-    const organization = parsedPermissions.Organization;
-    const uuid = parsedPermissions.uuid;
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          api.post('/user/event/addLeave', { 
-            ...newEvent,
-            latitude,
-            longitude,
-            type: 1,       
-            title: 'Entrada',
-            orga: organization, 
-            uuid: uuid  
-          })
-            .then((response) => {
-              showToast('success',"Salida registrada");
-            })
-            .catch((error) => {
-              console.error('Error al añadir el evento:', error);
-            });
-          setShowModal(false);
-          setNewEvent({ title: '', start: new Date(), end: new Date() });
-        },
-        (error) => {
-          console.error('Error al obtener la ubicación:', error);
-        }
-      );
-    } else {
-      console.error('Geolocalización no es soportada por este navegador.');
     }
   };
 
@@ -679,75 +573,70 @@ const CustomCalendar = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 />
                 <div className="text-black mb-4">
-                  <div className='flex justify-between'> 
+                  <div className="flex justify-between">
                     <label className="block mt-2">Del:</label>
                     <input
                       type="date"
                       className="mb-2 px-2 rounded"
-                      value={
-                        newEvent.start instanceof Date
-                          ? newEvent.start.toISOString().split('T')[0] 
-                          : new Date(newEvent.start).toISOString().split('T')[0]
-                      }
+                      value={newEvent.start ? new Date(newEvent.start).toLocaleDateString('en-CA') : ""}
                       onChange={(e) => {
-                        const [year, month, day] = e.target.value.split("-");
-                        const updatedDate = new Date(newEvent.start || new Date());
-                        updatedDate.setFullYear(year);
-                        updatedDate.setMonth(month - 1);
-                        updatedDate.setDate(day);
-                        setNewEvent({ ...newEvent, start: updatedDate });
+                        setNewEvent({ ...newEvent, start: new Date(e.target.value) });
                       }}
                     />
-                    <div className='flex'>
+                    <div className="flex">
                       <label className="block mt-2">al:</label>
                       <input
                         type="date"
                         className="mb-2 p-2 rounded"
-                        value={
-                          newEvent.end instanceof Date
-                          ? newEvent.end.toISOString().split('T')[0] 
-                          : new Date(newEvent.end).toISOString().split('T')[0]
-                        }
+                        value={newEvent.end ? new Date(newEvent.end).toLocaleDateString('en-CA') : ""}
                         onChange={(e) => {
-                          const [year, month, day] = e.target.value.split("-");
-                          const updatedDate = new Date(newEvent.end || new Date());
-                          updatedDate.setFullYear(year);
-                          updatedDate.setMonth(month - 1);
-                          updatedDate.setDate(day);
-                          setNewEvent({ ...newEvent, end: updatedDate });
+                          setNewEvent({ ...newEvent, end: new Date(e.target.value) });
                         }}
                       />
                     </div>
                   </div>
-                  <div className='flex justify-between'>
+                  <div className="flex justify-between">
                     <label className="block">Horario:</label>
                     <input
                       type="time"
                       className="px-2 rounded"
-                      value={moment(newEvent.start).format('HH:mm')}
+                      value={
+                        newEvent.start
+                          ? new Date(newEvent.start).toLocaleTimeString('en-CA', {
+                              hour12: false,
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : ""
+                      }
                       onChange={(e) => {
-                        const [hours, minutes] = e.target.value.split(':');
-                        const newDate = new Date(newEvent.start);
-                        newDate.setHours(hours);
-                        newDate.setMinutes(minutes);
+                        const [hours, minutes] = e.target.value.split(":");
+                        const newDate = new Date(newEvent.start || Date.now());
+                        newDate.setHours(hours, minutes, 0, 0);
                         setNewEvent({ ...newEvent, start: newDate });
                       }}
-                    /> 
-                    <label className="block ">hasta:</label>
+                    />
+                    <label className="block">hasta:</label>
                     <input
                       type="time"
-                      className="px-2  rounded"
-                      value={moment(newEvent.end).format('HH:mm')}
+                      className="px-2 rounded"
+                      value={
+                        newEvent.end
+                          ? new Date(newEvent.end).toLocaleTimeString('en-CA', {
+                              hour12: false,
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : ""
+                      }
                       onChange={(e) => {
-                        const [hours, minutes] = e.target.value.split(':');
-                        const newDate = new Date(newEvent.end);
-                        newDate.setHours(hours);
-                        newDate.setMinutes(minutes);
+                        const [hours, minutes] = e.target.value.split(":");
+                        const newDate = new Date(newEvent.end || Date.now());
+                        newDate.setHours(hours, minutes, 0, 0);
                         setNewEvent({ ...newEvent, end: newDate });
                       }}
                     />
                   </div>
-
                 </div>
                 <button
                   className="rounded text-white mt-2 py-2 px-3 mb-2"
@@ -898,16 +787,14 @@ const CustomCalendar = () => {
                       type="date"
                       className="mb-2 px-2 rounded"
                       value={
-                        newEvent.start && !isNaN(new Date(newEvent.start))
-                          ? new Date(newEvent.start).toISOString().split('T')[0] 
-                          : '' 
+                        newEvent.start instanceof Date
+                          ? newEvent.start.toISOString().split('T')[0] 
+                          : new Date(newEvent.start).toISOString().split('T')[0]
                       }
                       onChange={(e) => {
                         const [year, month, day] = e.target.value.split("-");
-                        const updatedDate = new Date();
-                        updatedDate.setFullYear(year);
-                        updatedDate.setMonth(month - 1);
-                        updatedDate.setDate(day);
+                        const updatedDate = new Date(year, month - 1, day); 
+                        
                         setNewEvent({ ...newEvent, start: updatedDate });
                       }}
                     />
