@@ -573,41 +573,34 @@ const CustomCalendar = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 />
                 <div className="text-black mb-4">
-                <div className="flex justify-between">
-  <label className="block mt-2">Del:</label>
-  <input
-    type="date"
-    className="mb-2 px-2 rounded"
-    value={
-      newEvent.start
-        ? new Date(newEvent.start).toISOString().split("T")[0] // Garantiza formato YYYY-MM-DD sin desfase
-        : ""
-    }
-    onChange={(e) => {
-      const [year, month, day] = e.target.value.split("-");
-      const newDate = new Date(Number(year), Number(month) - 1, Number(day)); // Set sin UTC
-      setNewEvent({ ...newEvent, start: newDate });
-    }}
-  />
-  <div className="flex">
-    <label className="block mt-2">al:</label>
-    <input
-      type="date"
-      className="mb-2 p-2 rounded"
-      value={
-        newEvent.end
-          ? new Date(newEvent.end).toISOString().split("T")[0]
-          : ""
-      }
-      onChange={(e) => {
-        const [year, month, day] = e.target.value.split("-");
-        const newDate = new Date(Number(year), Number(month) - 1, Number(day));
-        setNewEvent({ ...newEvent, end: newDate });
-      }}
-    />
-  </div>
-</div>
-
+                  <div className="flex justify-between">
+                    <label className="block mt-2">Del:</label>
+                    <input
+                      type="date"
+                      className="mb-2 px-2 rounded"
+                      value={newEvent.start ? newEvent.start.toISOString().split("T")[0] : ""}
+                      onChange={(e) => {
+                        const newDate = new Date(newEvent.start || Date.now());
+                        const [year, month, day] = e.target.value.split("-");
+                        newDate.setFullYear(Number(year), Number(month) - 1, Number(day));
+                        setNewEvent({ ...newEvent, start: newDate });
+                      }}
+                    />
+                    <div className="flex">
+                      <label className="block mt-2">al:</label>
+                      <input
+                        type="date"
+                        className="mb-2 p-2 rounded"
+                        value={newEvent.end ? newEvent.end.toISOString().split("T")[0] : ""}
+                        onChange={(e) => {
+                          const newDate = new Date(newEvent.end || Date.now());
+                          const [year, month, day] = e.target.value.split("-");
+                          newDate.setFullYear(Number(year), Number(month) - 1, Number(day));
+                          setNewEvent({ ...newEvent, end: newDate });
+                        }}
+                      />
+                    </div>
+                  </div>
                   <div className="flex justify-between">
                     <label className="block">Horario:</label>
                     <input
@@ -615,17 +608,14 @@ const CustomCalendar = () => {
                       className="px-2 rounded"
                       value={
                         newEvent.start
-                          ? new Date(newEvent.start).toLocaleTimeString('en-CA', {
-                              hour12: false,
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
+                          ? `${String(newEvent.start.getHours()).padStart(2, "0")}:${String(newEvent.start.getMinutes()).padStart(2, "0")}`
                           : ""
                       }
                       onChange={(e) => {
                         const [hours, minutes] = e.target.value.split(":");
                         const newDate = new Date(newEvent.start || Date.now());
-                        newDate.setHours(hours, minutes, 0, 0);
+                        newDate.setHours(Number(hours));
+                        newDate.setMinutes(Number(minutes));
                         setNewEvent({ ...newEvent, start: newDate });
                       }}
                     />
@@ -635,22 +625,20 @@ const CustomCalendar = () => {
                       className="px-2 rounded"
                       value={
                         newEvent.end
-                          ? new Date(newEvent.end).toLocaleTimeString('en-CA', {
-                              hour12: false,
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
+                          ? `${String(newEvent.end.getHours()).padStart(2, "0")}:${String(newEvent.end.getMinutes()).padStart(2, "0")}`
                           : ""
                       }
                       onChange={(e) => {
                         const [hours, minutes] = e.target.value.split(":");
                         const newDate = new Date(newEvent.end || Date.now());
-                        newDate.setHours(hours, minutes, 0, 0);
+                        newDate.setHours(Number(hours));
+                        newDate.setMinutes(Number(minutes));
                         setNewEvent({ ...newEvent, end: newDate });
                       }}
                     />
                   </div>
                 </div>
+
                 <button
                   className="rounded text-white mt-2 py-2 px-3 mb-2"
                   onClick={handleAddEvent}
