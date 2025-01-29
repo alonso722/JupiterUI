@@ -573,75 +573,48 @@ const CustomCalendar = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 />
                 <div className="text-black mb-4">
+                  {/* Fecha de inicio */}
                   <div className="flex justify-between">
                     <label className="block mt-2">Del:</label>
                     <input
                       type="date"
                       className="mb-2 px-2 rounded"
-                      value={newEvent.start ? newEvent.start.toISOString().split("T")[0] : ""}
-                      onChange={(e) => {
-                        const newDate = new Date(newEvent.start || Date.now());
-                        const [year, month, day] = e.target.value.split("-");
-                        newDate.setFullYear(Number(year), Number(month) - 1, Number(day));
-                        setNewEvent({ ...newEvent, start: newDate });
-                      }}
+                      value={newEvent.startDate || ""}
+                      onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
                     />
                     <div className="flex">
                       <label className="block mt-2">al:</label>
                       <input
                         type="date"
                         className="mb-2 p-2 rounded"
-                        value={newEvent.end ? newEvent.end.toISOString().split("T")[0] : ""}
-                        onChange={(e) => {
-                          const newDate = new Date(newEvent.end || Date.now());
-                          const [year, month, day] = e.target.value.split("-");
-                          newDate.setFullYear(Number(year), Number(month) - 1, Number(day));
-                          setNewEvent({ ...newEvent, end: newDate });
-                        }}
+                        value={newEvent.endDate || ""}
+                        onChange={(e) => setNewEvent({ ...newEvent, endDate: e.target.value })}
                       />
                     </div>
                   </div>
+
+                  {/* Horario de inicio y fin */}
                   <div className="flex justify-between">
                     <label className="block">Horario:</label>
                     <input
                       type="time"
                       className="px-2 rounded"
-                      value={
-                        newEvent.start
-                          ? `${String(newEvent.start.getHours()).padStart(2, "0")}:${String(newEvent.start.getMinutes()).padStart(2, "0")}`
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const [hours, minutes] = e.target.value.split(":");
-                        const newDate = new Date(newEvent.start || Date.now());
-                        newDate.setHours(Number(hours));
-                        newDate.setMinutes(Number(minutes));
-                        setNewEvent({ ...newEvent, start: newDate });
-                      }}
+                      value={newEvent.startTime || ""}
+                      onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
                     />
                     <label className="block">hasta:</label>
                     <input
                       type="time"
                       className="px-2 rounded"
-                      value={
-                        newEvent.end
-                          ? `${String(newEvent.end.getHours()).padStart(2, "0")}:${String(newEvent.end.getMinutes()).padStart(2, "0")}`
-                          : ""
-                      }
-                      onChange={(e) => {
-                        const [hours, minutes] = e.target.value.split(":");
-                        const newDate = new Date(newEvent.end || Date.now());
-                        newDate.setHours(Number(hours));
-                        newDate.setMinutes(Number(minutes));
-                        setNewEvent({ ...newEvent, end: newDate });
-                      }}
+                      value={newEvent.endTime || ""}
+                      onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
                     />
                   </div>
                 </div>
 
                 <button
                   className="rounded text-white mt-2 py-2 px-3 mb-2"
-                  onClick={handleAddEvent}
+                  onClick={() => handleAddEvent(newEvent)}
                   style={{ backgroundColor: primary }}
                 >
                   Añadir
