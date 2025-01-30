@@ -106,7 +106,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
     };
 
     return (
-        <div className="md:flex text-black mt-[50px] w-full px-5 md:px-0">
+        <div className="md:flex text-black mt-[50px] w-full px-5 md:px-0 bg-black">
             <div>
                 <div className="flex text-black align-start text-[22px] md:text-[20px] md:mt-2 pt-5">
                     <p className="mt-5 md:ml-[100px]"><b>¡Bienvenido de vuelta, {name}!</b></p>
