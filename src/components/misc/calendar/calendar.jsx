@@ -158,25 +158,35 @@ const CustomCalendar = () => {
     if (storedPermissions) {
       parsedPermissions = JSON.parse(storedPermissions);
     }
-    const uuid = parsedPermissions.uuid;
-    if (!newEvent?.title){
-      showToast('error',"Por favor, nombre el evento...");
+    const uuid = parsedPermissions?.uuid;
+    if (!newEvent?.title) {
+      showToast('error', "Por favor, nombre el evento...");
       return;
     }
-    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
+  
+    const { startDate, startTime, endDate, endTime } = newEvent;
+    
+    const [startHour, startMinute] = startTime.split(":");
+    const [endHour, endMinute] = endTime.split(":");
+    
+    const start = new Date(`${startDate}T${startHour}:${startMinute}:00`);
+    const end = new Date(`${endDate}T${endHour}:${endMinute}:00`);
+    if (end <= start) {
       showToast('warning', "Revise las fechas de inicio y fin");
       return;
     }
-
+  
     try {
       await api.post('/user/event/add', {
-        ...newEvent,
+        title: newEvent.title,  
+        start,                   
+        end,                     
         type: 2,
         uuid: uuid
       });
-      showToast('success',"Evento registrado");
-      setShowModal(false);
   
+      showToast('success', "Evento registrado");
+      setShowModal(false);
       fetchEvents();
     } catch (error) {
       console.error('Error al añadir el evento:', error);
@@ -422,35 +432,69 @@ return (
         </div>
       </div>
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[300px] h-[32%] relative">
-            <h3 className='mt-2'>Añadir Evento</h3>
-            <input
-              type='text'
-              placeholder='Título'
-              value={newEvent.title}
-              onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}/>
-            <div className='text-black'>
-              <p className='mt-2'>Inicio:</p>
-              <input
-                type='datetime-local'
-                value={moment(newEvent.start).format('YYYY-MM-DDTHH:mm')}
-                onChange={(e) => setNewEvent({ ...newEvent, start: new Date(e.target.value) })}/>
-                <p className='mt-2'>Fin:</p>
-              <input
-                type='datetime-local'
-                value={moment(newEvent.end).format('YYYY-MM-DDTHH:mm')}
-                onChange={(e) => setNewEvent({ ...newEvent, end: new Date(e.target.value) })}/>
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative">
+                <h3 className="my-[20px] ">Añadir Evento</h3>
+                <input
+                  type="text"
+                  placeholder="Título"
+                  className="w-full mb-4 p-2 border border-gray-300 rounded"
+                  value={newEvent.title}
+                  onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                />
+                <div className="text-black mb-4">
+                  <div className="flex justify-between">
+                    <label className="block mt-2">Del:</label>
+                    <input
+                      type="date"
+                      className="mb-2 px-2 rounded"
+                      value={newEvent.startDate || ""}
+                      onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
+                    />
+                    <div className="flex">
+                      <label className="block mt-2">al:</label>
+                      <input
+                        type="date"
+                        className="mb-2 p-2 rounded"
+                        value={newEvent.endDate || ""}
+                        onChange={(e) => setNewEvent({ ...newEvent, endDate: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-between">
+                    <label className="block">Horario:</label>
+                    <input
+                      type="time"
+                      className="px-2 rounded"
+                      value={newEvent.startTime || ""}
+                      onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                    />
+                    <label className="block">hasta:</label>
+                    <input
+                      type="time"
+                      className="px-2 rounded"
+                      value={newEvent.endTime || ""}
+                      onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                    />
+                  </div>
+                </div>
+
+                <button
+                  className="rounded text-white mt-2 py-2 px-3 mb-2"
+                  onClick={() => handleAddEvent(newEvent)}
+                  style={{ backgroundColor: primary }}
+                >
+                  Añadir
+                </button>
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setShowModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
             </div>
-            <button className='rounded text-white p-1' onClick={handleAddEvent} style={{ backgroundColor: primary}}>
-              Añadir
-            </button>
-            <button className='bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700' onClick={() => setShowModal(false)}>
-              &times;
-            </button>
-          </div>
-        </div>
-      )}
+          )}
     </div>
   </div>
   </>

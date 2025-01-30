@@ -1,16 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const NextArrow = (props) => {
-    const { onClick } = props;
+const NextArrow = ({ onClick }) => {
     return (
         <button
-            className="hidden md:block custom-next-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
-            style={{ position: 'absolute', right: '-50px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
+            className="hidden md:block custom-next-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700 absolute right-2 top-1/2 transform -translate-y-1/2 z-10"
             onClick={onClick}
         >
             &gt;
@@ -18,12 +16,10 @@ const NextArrow = (props) => {
     );
 };
 
-const PrevArrow = (props) => {
-    const { onClick } = props;
+const PrevArrow = ({ onClick }) => {
     return (
         <button
-            className="hidden md:block custom-prev-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700"
-            style={{ position: 'absolute', left: '-40px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }}
+            className="hidden md:block custom-prev-arrow bg-white rounded-full shadow-lg w-10 h-10 flex items-center justify-center text-gray-500 hover:text-gray-700 absolute left-2 top-1/2 transform -translate-y-1/2 z-10"
             onClick={onClick}
         >
             &lt;
@@ -33,19 +29,18 @@ const PrevArrow = (props) => {
 
 export const ECarousel = () => {
     const [cards, setCards] = useState([]);
-    const [permissions, setPermissions] = useState([]);
     const { primary, secondary } = useColors();
     const api = useApi();
+    const sliderRef = useRef(null); 
 
     useEffect(() => {
         let parsedPermissions;
         const storedPermissions = localStorage.getItem('permissions');
         if (storedPermissions) {
             parsedPermissions = JSON.parse(storedPermissions);
-            setPermissions(parsedPermissions);
         }
 
-        const orga = parsedPermissions.Organization;
+        const orga = parsedPermissions?.Organization;
 
         api.post('/user/organization/fetchInfo', { orga })
             .then((response) => {
@@ -83,8 +78,8 @@ export const ECarousel = () => {
         slidesToScroll: 1,
         autoplay: true,
         autoplaySpeed: 20000,
-        nextArrow: <NextArrow />,
-        prevArrow: <PrevArrow />,
+        // nextArrow: <NextArrow onClick={() => sliderRef.current.slickNext()} />,
+        // prevArrow: <PrevArrow onClick={() => sliderRef.current.slickPrev()} />,
         responsive: [
             {
                 breakpoint: 1024,
@@ -106,8 +101,8 @@ export const ECarousel = () => {
     };
 
     return (
-        <div className="mt-[30px] md:ml-[45px] text-neutral-50 rounded">
-            <Slider {...settings}>
+        <div className="mt-[30px] md:ml-[45px] md:pr-[45px] md:px-9 text-neutral-50 rounded">
+            <Slider ref={sliderRef} {...settings}>
                 {cards && cards.length > 0 ? (
                     cards.map((card) => (
                         <div key={card.id} className="text-black p-3">
@@ -121,6 +116,9 @@ export const ECarousel = () => {
                     <p>No hay tarjetas disponibles</p>
                 )}
             </Slider>
+            {/* Flechas colocadas fuera del carrusel */}
+            <NextArrow onClick={() => sliderRef.current.slickNext()} />
+            <PrevArrow onClick={() => sliderRef.current.slickPrev()} />
         </div>
     );
 };

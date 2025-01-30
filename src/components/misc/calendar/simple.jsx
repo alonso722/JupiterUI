@@ -210,20 +210,24 @@ const CustomCalendar = () => {
   };
     
   const handleAddPerm = async () => {
+    // Verificar las fechas antes de la conversión
+    console.log("Antes de la conversión:");
+    console.log("start:", newEvent.start);
+    console.log("end:", newEvent.end);
+
     if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
-      showToast('warning', "Revise las fechas de inicio y fin");
-      return;
+        showToast('warning', "Revise las fechas de inicio y fin");
+        return;
     }
+
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
         parsedPermissions = JSON.parse(storedPermissions);
     }
     const uuid = parsedPermissions.uuid;
-    newEvent.start = new Date(newEvent.start).toISOString(); 
-    newEvent.end = new Date(newEvent.end).toISOString(); 
-    let nType;
 
+    let nType;
     switch (type) {
         case 'permiso':
             newEvent.title = 'Permiso';
@@ -245,76 +249,79 @@ const CustomCalendar = () => {
         showToast('error', "Por favor, seleccione una opción...");
         return;
     }
+
     if (type === 'vacaciones') {
         const eventStart = new Date(newEvent.start);
         const eventEnd = new Date(newEvent.end);
         const eventDuration = Math.ceil(
-            (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24) + 1
+            (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24)
         );
-        if(!days){
-          showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
+
+        console.log(eventStart, eventEnd, eventDuration);
+        if (!days) {
+            showToast('error', `Sin encargado para aprobar las vacaciones, póngase en contacto con algún responsable`);
+            return;
         }
         if (eventDuration > days) {
-          if (days === 0) {
-            showToast('error', 'No puedes solicitar vacaciones porque no tienes días disponibles.');
-          } else {
-            showToast('error', `No puedes solicitar ${eventDuration} días de vacaciones. Solo tienes ${days} disponibles.`);
-          }          
+            if (days === 0) {
+                showToast('error', 'No puedes solicitar vacaciones porque no tienes días disponibles.');
+            } else {
+                showToast('error', `No puedes solicitar ${eventDuration} días de vacaciones. Solo tienes ${days} disponibles.`);
+            }
             return;
         }
     }
-    if (type !== 'permiso') {
-      if (newEvent?.start && newEvent?.end) {
-        const today = new Date();
-        const startDate = new Date(newEvent.start);
-        const endDate = new Date(newEvent.end);
-    
-        today.setHours(0, 0, 0, 0);
-        if (endDate < startDate) {
-            showToast('warning', "Revise las fechas de inicio y fin");
-            return;
-        }
-        if (startDate.toDateString() === today.toDateString() || endDate.toDateString() === today.toDateString()) {
-            showToast('warning', "No se puede registrar un evento para el día de hoy");
-            return;
-        }
-    }
-    
-  }
-  if(!manager){
-    showToast('error', `Sin encargado para aprobar las vacaciones, pongase en contacto con algún responsable`); 
-    return;
-  }
-    try {
-        const id = await api.post('/user/event/add', {
-          ...newEvent,
-          type: nType,
-          uuid: uuid,
-      });
-      const verify =  await api.post('/user/vacations/add', {
-        ...newEvent,
-        type: nType,
-        uuid: uuid,
-        manager: manager,
-        eventId: id.data
-      });
-      if(verify.data?.message){
-        showToast('error', 'Fechas empalmadas');
+    console.log(manager)
+    if (!manager) {
+        showToast('error', `Sin encargado para aprobar las vacaciones, póngase en contacto con algún responsable`);
         return;
-      }
+    }
 
-      const noti = await api.post('/user/notifications/addByVacations', {
-        uuid: uuid,
-        manager: manager
-      });
+    try {
+        // Convertir a ISO justo antes de enviar
+        const startISO = new Date(newEvent.start).toISOString();
+        const endISO = new Date(newEvent.end).toISOString();
+
+        // Verificar las fechas después de la conversión
+        console.log("Después de la conversión a ISO:");
+        console.log("startISO:", startISO);
+        console.log("endISO:", endISO);
+
+        const id = await api.post('/user/event/add', {
+            ...newEvent,
+            type: nType,
+            uuid: uuid,
+            start: startISO,
+            end: endISO,
+        });
+
+        const verify = await api.post('/user/vacations/add', {
+            ...newEvent,
+            type: nType,
+            uuid: uuid,
+            manager: manager,
+            eventId: id.data,
+            start: startISO,
+            end: endISO,
+        });
+
+        if (verify.data?.message) {
+            showToast('error', 'Fechas empalmadas');
+            return;
+        }
+
+        await api.post('/user/notifications/addByVacations', {
+            uuid: uuid,
+            manager: manager,
+        });
+
         showToast('success', "Evento registrado");
         setShowModalPer(false);
-
         fetchEvents();
     } catch (error) {
         console.error('Error al añadir el evento:', error);
     }
-  };
+};
 
   const handleApprove = async (request) => {
     const startDate = new Date(request.start);
@@ -411,6 +418,7 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
     api.post('/user/vacations/getVacations', {uuid})
       .then((response) => {
+        console.log("manager", response.data)
         setManager(response.data.manager)
         if(response.status === 207){
           showToast('warning', `Tienes  ${response.data} días resantes del año pasado`); 
@@ -740,113 +748,98 @@ const CustomCalendar = () => {
               </div>
             </div>
           )}
-          {showModalPer && (
-            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-auto relative">
-                <h3 className="mt-2">Indique las fechas a solicitar</h3>
-                <select
-                  value={type}
-                  onChange={(e) => {
-                    setType(e.target.value);
-                    if (e.target.value === "vacaciones") {
-                      getAvailableVacationDays();
-                    }
-                  }}
-                  className="mt-2 mb-4 w-full p-2 border rounded"
-                >
-                  <option value="" disabled>
-                    Selecciona tipo de solicitud
-                  </option>
-                  <option value="vacaciones">Vacaciones</option>
-                  {/* <option value="incapacidad">Incapacidad</option>
-                  <option value="permiso">Permiso</option> */}
-                </select>
-                <div className="text-black mb-4">
-                  <div className="flex justify-between">
-                    <label className="block mt-2">Del:</label>
-                    <input
-                      type="date"
-                      className="mb-2 px-2 rounded"
-                      value={
-                        newEvent.start instanceof Date
-                          ? newEvent.start.toISOString().split('T')[0] 
-                          : new Date(newEvent.start).toISOString().split('T')[0]
-                      }
-                      onChange={(e) => {
-                        const [year, month, day] = e.target.value.split("-");
-                        const updatedDate = new Date(year, month - 1, day); 
-                        
-                        setNewEvent({ ...newEvent, start: updatedDate });
-                      }}
-                    />
-                    <div className="flex">
-                      <label className="block mt-2">al:</label>
-                      <input
-                        type="date"
-                        className="mb-2 p-2 rounded"
-                        value={
-                          newEvent.end instanceof Date
-                          ? newEvent.end.toISOString().split('T')[0] 
-                          : new Date(newEvent.end).toISOString().split('T')[0]
-                        }
-                        onChange={(e) => {
-                          const [year, month, day] = e.target.value.split("-");
-                          const updatedDate = new Date(newEvent.end || new Date());
-                          updatedDate.setFullYear(year);
-                          updatedDate.setMonth(month - 1);
-                          updatedDate.setDate(day);
-                          setNewEvent({ ...newEvent, end: updatedDate });
-                        }}
-                      />
-                    </div>
-                  </div>
-                  {type === "permiso" && (
-                    <div className="flex justify-between mt-4">
-                      <label className="block">Horario:</label>
-                      <input
-                        type="time"
-                        className="px-2 rounded"
-                        value={moment(newEvent.start).format("HH:mm")}
-                        onChange={(e) => {
-                          const [hours, minutes] = e.target.value.split(":");
-                          const newDate = new Date(newEvent.start);
-                          newDate.setHours(hours);
-                          newDate.setMinutes(minutes);
-                          setNewEvent({ ...newEvent, start: newDate });
-                        }}
-                      />
-                      <label className="block">hasta:</label>
-                      <input
-                        type="time"
-                        className="px-2 rounded"
-                        value={moment(newEvent.end).format("HH:mm")}
-                        onChange={(e) => {
-                          const [hours, minutes] = e.target.value.split(":");
-                          const newDate = new Date(newEvent.end);
-                          newDate.setHours(hours);
-                          newDate.setMinutes(minutes);
-                          setNewEvent({ ...newEvent, end: newDate });
-                        }}
-                      />
-                    </div>
-                  )}
-                </div>
-                <button
-                  className="rounded text-white p-1"
-                  onClick={handleAddPerm}
-                  style={{ backgroundColor: primary }}
-                >
-                  Añadir
-                </button>
-                <button
-                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
-                  onClick={() => setShowModalPer(false)}
-                >
-                  &times;
-                </button>
-              </div>
-            </div>
-          )}
+{showModalPer && (
+  <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+    <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-auto relative">
+      <h3 className="mt-2">Indique las fechas a solicitar</h3>
+      <select
+        value={type}
+        onChange={(e) => {
+          setType(e.target.value);
+          if (e.target.value === "vacaciones") {
+            getAvailableVacationDays();
+          }
+        }}
+        className="mt-2 mb-4 w-full p-2 border rounded"
+      >
+        <option value="" disabled>
+          Selecciona tipo de solicitud
+        </option>
+        <option value="vacaciones">Vacaciones</option>
+        <option value="incapacidad">Incapacidad</option>
+        <option value="permiso">Permiso</option>
+      </select>
+      <div className="text-black mb-4">
+        <div className="flex justify-between">
+          <label className="block mt-2">Del:</label>
+          <input
+            type="date"
+            className="mb-2 px-2 rounded"
+            value={newEvent.start || ''} 
+            onChange={(e) => {
+              setNewEvent({ ...newEvent, start: e.target.value });
+            }}
+          />
+          <div className="flex">
+            <label className="block mt-2">al:</label>
+            <input
+              type="date"
+              className="mb-2 p-2 rounded"
+              value={newEvent.end || ''} 
+              onChange={(e) => {
+                setNewEvent({ ...newEvent, end: e.target.value });
+              }}
+            />
+          </div>
+        </div>
+        {type === "permiso" && (
+          <div className="flex justify-between mt-4">
+            <label className="block">Horario:</label>
+            <input
+              type="time"
+              className="px-2 rounded"
+              value={newEvent.start?.split("T")[1]?.substring(0, 5) || ''}
+              onChange={(e) => {
+                const newTime = e.target.value;
+                setNewEvent({ 
+                  ...newEvent, 
+                  start: `${newEvent.start.split("T")[0]}T${newTime}`
+                });
+              }}
+            />
+            <label className="block">hasta:</label>
+            <input
+              type="time"
+              className="px-2 rounded"
+              value={newEvent.end?.split("T")[1]?.substring(0, 5) || ''}
+              onChange={(e) => {
+                const newTime = e.target.value;
+                setNewEvent({ 
+                  ...newEvent, 
+                  end: `${newEvent.end.split("T")[0]}T${newTime}`
+                });
+              }}
+            />
+          </div>
+        )}
+      </div>
+      <button
+        className="rounded text-white p-1"
+        onClick={handleAddPerm}
+        style={{ backgroundColor: primary }}
+      >
+        Añadir
+      </button>
+      <button
+        className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+        onClick={() => setShowModalPer(false)}
+      >
+        &times;
+      </button>
+    </div>
+  </div>
+)}
+
         </div>
         <div className='md:block hidden'>
           <div
