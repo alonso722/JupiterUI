@@ -213,7 +213,6 @@ const CustomCalendar = () => {
   };
     
   const handleAddPerm = async () => {
-    // Verificar las fechas antes de la conversión
     console.log("Antes de la conversión:");
     console.log("start:", newEvent.start);
     console.log("end:", newEvent.end);
@@ -274,18 +273,20 @@ const CustomCalendar = () => {
             return;
         }
     }
-    console.log(manager)
     if (!manager) {
         showToast('error', `Sin encargado para aprobar las vacaciones, póngase en contacto con algún responsable`);
         return;
     }
 
     try {
-        // Convertir a ISO justo antes de enviar
-        const startISO = new Date(newEvent.start).toISOString();
-        const endISO = new Date(newEvent.end).toISOString();
+        const startDate = new Date(newEvent.start);
+        startDate.setHours(startDate.getHours() + 6);
+        const endDate = new Date(newEvent.end);
+        endDate.setHours(endDate.getHours() + 6);
 
-        // Verificar las fechas después de la conversión
+        const startISO = startDate.toISOString();
+        const endISO = endDate.toISOString();
+
         console.log("Después de la conversión a ISO:");
         console.log("startISO:", startISO);
         console.log("endISO:", endISO);
@@ -324,7 +325,7 @@ const CustomCalendar = () => {
     } catch (error) {
         console.error('Error al añadir el evento:', error);
     }
-};
+  };
 
   const handleApprove = async (request) => {
     const startDate = new Date(request.start);
