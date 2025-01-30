@@ -179,17 +179,28 @@ const CustomCalendar = () => {
       showToast('error', "Por favor, nombre el evento...");
       return;
     }
-    if (newEvent?.start && newEvent?.end && new Date(newEvent.end) <= new Date(newEvent.start)) {
+  
+    const { startDate, startTime, endDate, endTime } = newEvent;
+    
+    const [startHour, startMinute] = startTime.split(":");
+    const [endHour, endMinute] = endTime.split(":");
+    
+    const start = new Date(`${startDate}T${startHour}:${startMinute}:00`);
+    const end = new Date(`${endDate}T${endHour}:${endMinute}:00`);
+    if (end <= start) {
       showToast('warning', "Revise las fechas de inicio y fin");
       return;
     }
-
+  
     try {
       await api.post('/user/event/add', {
-        ...newEvent,
+        title: newEvent.title,  
+        start,                   
+        end,                     
         type: 2,
         uuid: uuid
       });
+  
       showToast('success', "Evento registrado");
       setShowModal(false);
       fetchEvents();
@@ -197,8 +208,7 @@ const CustomCalendar = () => {
       console.error('Error al añadir el evento:', error);
     }
   };
-  
-
+    
   const handleAddPerm = async () => {
     if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
       showToast('warning', "Revise las fechas de inicio y fin");
@@ -573,7 +583,6 @@ const CustomCalendar = () => {
                   onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
                 />
                 <div className="text-black mb-4">
-                  {/* Fecha de inicio */}
                   <div className="flex justify-between">
                     <label className="block mt-2">Del:</label>
                     <input
@@ -592,8 +601,6 @@ const CustomCalendar = () => {
                       />
                     </div>
                   </div>
-
-                  {/* Horario de inicio y fin */}
                   <div className="flex justify-between">
                     <label className="block">Horario:</label>
                     <input
