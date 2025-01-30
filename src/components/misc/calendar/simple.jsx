@@ -111,15 +111,15 @@ const CustomCalendar = () => {
 
         const formattedEvents = events.map(event => ({
             title: event.title,
-            start: event.start,
-            end: event.end
+            start: event.start ? new Date(event.start) : null,
+            end: event.end ? new Date(event.end) : null
         }));
 
         setEvents(formattedEvents);
     } catch (error) {
         console.error("Error al consultar eventos:", error);
     }
-  };
+};
 
   const getReqs = async () => {
     let parsedPermissions;
