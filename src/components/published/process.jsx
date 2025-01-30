@@ -127,7 +127,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
                         secondary={secondary}/>
                 </div>
             </div>
-            <div className='mt-[30px] ml-[6%] hidden md:block right-0'>
+            <div className="mt-[30px] hidden md:block ml-auto">
                 <Calendar/>
             </div>
             
