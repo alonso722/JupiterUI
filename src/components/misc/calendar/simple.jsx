@@ -107,6 +107,7 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/event/fetch', { uuid });
       const events = response.data;
+      console.log("Apintar en calendario::",events)
       const formattedEvents = events.map(event => {
         const start = new Date(event.start);
         const end = new Date(event.end);
@@ -140,6 +141,7 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/vacations/getReqs', { uuid });
       const events = response.data;
+      console.log("A pintar en e acept/rech",events)
       setReqs(events);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
@@ -156,6 +158,7 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/vacations/getOwns', { uuid });
       const events = response.data;
+      console.log("A pintar en mias::::::",events)
       setOwns(events);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
