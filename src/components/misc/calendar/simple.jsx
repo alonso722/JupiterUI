@@ -107,7 +107,6 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/event/fetch', { uuid });
       const events = response.data;
-      console.log("Apintar en calendario::",events)
       const formattedEvents = events.map(event => {
         const start = new Date(event.start);
         const end = new Date(event.end);
@@ -141,7 +140,6 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/vacations/getReqs', { uuid });
       const events = response.data;
-      console.log("A pintar en e acept/rech",events)
       setReqs(events);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
@@ -158,7 +156,6 @@ const CustomCalendar = () => {
     try {
       const response = await api.post('/user/vacations/getOwns', { uuid });
       const events = response.data;
-      console.log("A pintar en mias::::::",events)
       setOwns(events);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
@@ -213,10 +210,6 @@ const CustomCalendar = () => {
   };
     
   const handleAddPerm = async () => {
-    console.log("Antes de la conversión:");
-    console.log("start:", newEvent.start);
-    console.log("end:", newEvent.end);
-
     if (newEvent?.start && newEvent?.end && new Date(newEvent.end) < new Date(newEvent.start)) {
         showToast('warning', "Revise las fechas de inicio y fin");
         return;
@@ -258,8 +251,6 @@ const CustomCalendar = () => {
         const eventDuration = Math.ceil(
             (eventEnd.getTime() - eventStart.getTime()) / (1000 * 60 * 60 * 24)
         );
-
-        console.log(eventStart, eventEnd, eventDuration);
         if (!days) {
             showToast('error', `Sin encargado para aprobar las vacaciones, póngase en contacto con algún responsable`);
             return;
@@ -286,11 +277,6 @@ const CustomCalendar = () => {
 
         const startISO = startDate.toISOString();
         const endISO = endDate.toISOString();
-
-        console.log("Después de la conversión a ISO:");
-        console.log("startISO:", startISO);
-        console.log("endISO:", endISO);
-
         const id = await api.post('/user/event/add', {
             ...newEvent,
             type: nType,
@@ -422,7 +408,6 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
     api.post('/user/vacations/getVacations', {uuid})
       .then((response) => {
-        console.log("manager", response.data)
         setManager(response.data.manager)
         if(response.status === 207){
           showToast('warning', `Tienes  ${response.data} días resantes del año pasado`); 
