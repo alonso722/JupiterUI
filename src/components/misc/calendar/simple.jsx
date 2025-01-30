@@ -101,25 +101,35 @@ const CustomCalendar = () => {
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
-        parsedPermissions = JSON.parse(storedPermissions);
+      parsedPermissions = JSON.parse(storedPermissions);
     }
     const uuid = parsedPermissions.uuid;
     try {
-        const response = await api.post('/user/event/fetch', { uuid });
-        const events = response.data;
-        console.log("Apintar en calendario::", events);
-
-        const formattedEvents = events.map(event => ({
-            title: event.title,
-            start: event.start ? new Date(event.start) : null,
-            end: event.end ? new Date(event.end) : null
-        }));
-
-        setEvents(formattedEvents);
+      const response = await api.post('/user/event/fetch', { uuid });
+      const events = response.data;
+      console.log("Apintar en calendario::",events)
+      const formattedEvents = events.map(event => {
+        const start = new Date(event.start);
+        const end = new Date(event.end);
+        start.setHours(start.getHours() );
+        end.setHours(end.getHours() );
+    
+        if (end.getHours() === 0 && end.getMinutes() === 0 && end.getSeconds() === 0) {
+          end.setDate(end.getDate() + 1); 
+        }
+  
+        return {
+          title: event.title,
+          start: start,
+          end: end,
+        };
+      });
+    
+      setEvents(formattedEvents);
     } catch (error) {
-        console.error("Error al consultar eventos:", error);
-    }
-};
+      console.error("Error al consultar eventos:", error);
+    }    
+  };
 
   const getReqs = async () => {
     let parsedPermissions;
@@ -130,15 +140,11 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
     try {
       const response = await api.post('/user/vacations/getReqs', { uuid });
-      const events = response.data.map(event => ({
-          ...event,
-          start: event.start.split("T")[0],
-          end: event.end.split("T")[0]
-      }));
-      console.log("A pintar en e acept/rech", events);
+      const events = response.data;
+      console.log("A pintar en e acept/rech",events)
       setReqs(events);
     } catch (error) {
-        console.error("Error al consultar eventos:", error);
+      console.error("Error al consultar eventos:", error);
     }
   };
 
@@ -151,12 +157,8 @@ const CustomCalendar = () => {
     const uuid = parsedPermissions.uuid;
     try {
       const response = await api.post('/user/vacations/getOwns', { uuid });
-      const events = response.data.map(event => ({
-        ...event,
-        start: event.start.split("T")[0],
-        end: event.end.split("T")[0]
-      }));
-      console.log("A pintar en mias::::::", events);
+      const events = response.data;
+      console.log("A pintar en mias::::::",events)
       setOwns(events);
     } catch (error) {
       console.error("Error al consultar eventos:", error);
