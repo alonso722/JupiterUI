@@ -755,8 +755,8 @@ const CustomCalendar = () => {
           Selecciona tipo de solicitud
         </option>
         <option value="vacaciones">Vacaciones</option>
-        <option value="incapacidad">Incapacidad</option>
-        <option value="permiso">Permiso</option>
+        {/* <option value="incapacidad">Incapacidad</option>
+        <option value="permiso">Permiso</option> */}
       </select>
       <div className="text-black mb-4">
         <div className="flex justify-between">
