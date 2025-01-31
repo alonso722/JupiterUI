@@ -69,9 +69,11 @@ const CustomCalendar = () => {
 
   const handleNavigate = (action) => {
     let newDate = new Date(date);
+
     switch (action) {
       case 'PREV':
         if (view === 'month') {
+          newDate.setDate(1); 
           newDate.setMonth(newDate.getMonth() - 1);
         } else if (view === 'week') {
           newDate.setDate(newDate.getDate() - 7);
@@ -79,8 +81,10 @@ const CustomCalendar = () => {
           newDate.setDate(newDate.getDate() - 1);
         }
         break;
+
       case 'NEXT':
         if (view === 'month') {
+          newDate.setDate(1);
           newDate.setMonth(newDate.getMonth() + 1);
         } else if (view === 'week') {
           newDate.setDate(newDate.getDate() + 7);
@@ -88,15 +92,18 @@ const CustomCalendar = () => {
           newDate.setDate(newDate.getDate() + 1);
         }
         break;
-        case 'TODAY':
-          newDate = new Date();
-          break;
-        default:
-          break;
-    }
-    setDate(newDate);
-  }
 
+      case 'TODAY':
+        newDate = new Date();
+        break;
+
+      default:
+        break;
+    }
+
+    setDate(newDate);
+  };
+  
   const fetchEvents = async () => {
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions');
@@ -737,98 +744,97 @@ const CustomCalendar = () => {
               </div>
             </div>
           )}
-{showModalPer && (
-  <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
-    <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-auto relative">
-      <h3 className="mt-2">Indique las fechas a solicitar</h3>
-      <select
-        value={type}
-        onChange={(e) => {
-          setType(e.target.value);
-          if (e.target.value === "vacaciones") {
-            getAvailableVacationDays();
-          }
-        }}
-        className="mt-2 mb-4 w-full p-2 border rounded"
-      >
-        <option value="" disabled>
-          Selecciona tipo de solicitud
-        </option>
-        <option value="vacaciones">Vacaciones</option>
-        {/* <option value="incapacidad">Incapacidad</option>
-        <option value="permiso">Permiso</option> */}
-      </select>
-      <div className="text-black mb-4">
-        <div className="flex justify-between">
-          <label className="block mt-2">Del:</label>
-          <input
-            type="date"
-            className="mb-2 px-2 rounded"
-            value={newEvent.start || ''} 
-            onChange={(e) => {
-              setNewEvent({ ...newEvent, start: e.target.value });
-            }}
-          />
-          <div className="flex">
-            <label className="block mt-2">al:</label>
-            <input
-              type="date"
-              className="mb-2 p-2 rounded"
-              value={newEvent.end || ''} 
-              onChange={(e) => {
-                setNewEvent({ ...newEvent, end: e.target.value });
-              }}
-            />
-          </div>
-        </div>
-        {type === "permiso" && (
-          <div className="flex justify-between mt-4">
-            <label className="block">Horario:</label>
-            <input
-              type="time"
-              className="px-2 rounded"
-              value={newEvent.start?.split("T")[1]?.substring(0, 5) || ''}
-              onChange={(e) => {
-                const newTime = e.target.value;
-                setNewEvent({ 
-                  ...newEvent, 
-                  start: `${newEvent.start.split("T")[0]}T${newTime}`
-                });
-              }}
-            />
-            <label className="block">hasta:</label>
-            <input
-              type="time"
-              className="px-2 rounded"
-              value={newEvent.end?.split("T")[1]?.substring(0, 5) || ''}
-              onChange={(e) => {
-                const newTime = e.target.value;
-                setNewEvent({ 
-                  ...newEvent, 
-                  end: `${newEvent.end.split("T")[0]}T${newTime}`
-                });
-              }}
-            />
-          </div>
-        )}
-      </div>
-      <button
-        className="rounded text-white p-1"
-        onClick={handleAddPerm}
-        style={{ backgroundColor: primary }}
-      >
-        Añadir
-      </button>
-      <button
-        className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
-        onClick={() => setShowModalPer(false)}
-      >
-        &times;
-      </button>
-    </div>
-  </div>
-)}
-
+          {showModalPer && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-auto relative">
+                <h3 className="mt-2">Indique las fechas a solicitar</h3>
+                <select
+                  value={type}
+                  onChange={(e) => {
+                    setType(e.target.value);
+                    if (e.target.value === "vacaciones") {
+                      getAvailableVacationDays();
+                    }
+                  }}
+                  className="mt-2 mb-4 w-full p-2 border rounded"
+                >
+                  <option value="" disabled>
+                    Selecciona tipo de solicitud
+                  </option>
+                  <option value="vacaciones">Vacaciones</option>
+                  {/* <option value="incapacidad">Incapacidad</option>
+                  <option value="permiso">Permiso</option> */}
+                </select>
+                <div className="text-black mb-4">
+                  <div className="flex justify-between">
+                    <label className="block mt-2">Del:</label>
+                    <input
+                      type="date"
+                      className="mb-2 px-2 rounded"
+                      value={newEvent.start || ''} 
+                      onChange={(e) => {
+                        setNewEvent({ ...newEvent, start: e.target.value });
+                      }}
+                    />
+                    <div className="flex">
+                      <label className="block mt-2">al:</label>
+                      <input
+                        type="date"
+                        className="mb-2 p-2 rounded"
+                        value={newEvent.end || ''} 
+                        onChange={(e) => {
+                          setNewEvent({ ...newEvent, end: e.target.value });
+                        }}
+                      />
+                    </div>
+                  </div>
+                  {type === "permiso" && (
+                    <div className="flex justify-between mt-4">
+                      <label className="block">Horario:</label>
+                      <input
+                        type="time"
+                        className="px-2 rounded"
+                        value={newEvent.start?.split("T")[1]?.substring(0, 5) || ''}
+                        onChange={(e) => {
+                          const newTime = e.target.value;
+                          setNewEvent({ 
+                            ...newEvent, 
+                            start: `${newEvent.start.split("T")[0]}T${newTime}`
+                          });
+                        }}
+                      />
+                      <label className="block">hasta:</label>
+                      <input
+                        type="time"
+                        className="px-2 rounded"
+                        value={newEvent.end?.split("T")[1]?.substring(0, 5) || ''}
+                        onChange={(e) => {
+                          const newTime = e.target.value;
+                          setNewEvent({ 
+                            ...newEvent, 
+                            end: `${newEvent.end.split("T")[0]}T${newTime}`
+                          });
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+                <button
+                  className="rounded text-white p-1"
+                  onClick={handleAddPerm}
+                  style={{ backgroundColor: primary }}
+                >
+                  Añadir
+                </button>
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setShowModalPer(false)}
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         <div className='md:block hidden'>
           <div
