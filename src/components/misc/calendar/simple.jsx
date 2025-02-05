@@ -363,7 +363,7 @@ const CustomCalendar = () => {
   const CustomToolbar = ({ label, onNavigate, onView, view }) => {
     return (
       <div className='mb-1'>
-        <div className='px-5 mt-3' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div className='px-4 mt-3' style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div className='flex'>
           <img src="/icons/calendar.jpeg" alt="Icono" className="h-3 w-3 mt-1" />
           <select
@@ -375,9 +375,9 @@ const CustomCalendar = () => {
             <option value='day'>Día</option>
           </select>
           </div>
-          <div className='flex text-[#777E90] justify-between px-11'>
+          <div className='flex text-[#777E90] justify-between px-8'>
             <button
-                className='text-[#777E90] rounded text-[20px] py-1 px-2 pointer ' 
+                className='text-[#777E90] rounded text-[20px] py-1 px-1 pointer ' 
                 onClick={() => onNavigate('PREV')}>
                 &lt;
             </button>
@@ -389,13 +389,13 @@ const CustomCalendar = () => {
             </button>
         </div>
           <button
-            className='pointer color-black px-2 py-1 rounded-lg text-white hidden md:block'
+            className='pointer color-black px-1 py-1 rounded-lg text-white hidden md:block'
             onClick={() => onNavigate('TODAY')}
             style={{ backgroundColor: primary }}>
             Hoy
           </button>
           <button
-            className='pointer color-black px-2 py-1 rounded-lg text-white md:hidden'
+            className='pointer color-black px-1 py-1 rounded-lg text-white md:hidden'
             onClick={() => setShowModalReq(true)}
             style={{ backgroundColor: primary }}>
             Mis solicitudes
@@ -506,24 +506,25 @@ const CustomCalendar = () => {
                   />
             </div>
         <div className='md:mt-[110px] mt-[70px] ml-[1%] py-2 md:w-[55%] md:h-[500px] h-[570px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
+        <div className="relative w-full h-[80vh]">
           <Calendar
             localizer={localizer}
             events={events}
             startAccessor="start"
             endAccessor="end"
             style={{
-              height: '90%',
+              height: '100%', 
               fontSize: '10px',
               border: '2px solid white',
               boxShadow: 'none',
             }}
-            views={['year','month', 'week', 'day']}
+            views={['year', 'month', 'week', 'day']}
             view={view}
             onView={setView}
             date={date}
             onNavigate={setDate}
             onSelectEvent={(event) => alert(event.title)}
-            popup 
+            popup
             messages={{
               today: 'Hoy',
               previous: '<',
@@ -562,19 +563,20 @@ const CustomCalendar = () => {
               ),
               toolbar: (props) => (
                 <CustomToolbar
-                    label={props.label}
-                    onNavigate={handleNavigate}
-                    onView={setView}
-                    view={view}
+                  label={props.label}
+                  onNavigate={handleNavigate}
+                  onView={setView}
+                  view={view}
                 />
-                ),
+              ),
             }}
           />
-          <div className='md:hidden w-full flex text-black justify-end right-0 mt-2'>
-            <button className='px-2 py-1 text-[14px] pointer rounded-lg text-white flex' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
-              <p className='text-[15px]'><strong>+</strong></p>
-            </button>
-          </div>
+          <button
+            className="absolute bottom-4 right-4 bg-[#5C4033] text-white w-12 h-12 flex items-center justify-center rounded-lg shadow-lg"
+            onClick={() => setShowModal(true)}>
+            +
+          </button>
+        </div>
           {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative">

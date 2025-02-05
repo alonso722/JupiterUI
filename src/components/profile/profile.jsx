@@ -269,7 +269,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                           )}
                         </div>
                         <div className="md:w-full">
-                          <p className="md:mr-9 text-[#B1B5C3] text-[10px]"><strong>CORREO ELECTRÓNICO</strong></p>
+                          <p className="md:mr-9 text-[#B1B5C3] text-[10px] mt-3"><strong>CORREO ELECTRÓNICO</strong></p>
                           <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
                         </div>  
                         {userFilter && (
@@ -354,7 +354,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                   onClose={closeViewer}/>
               )}
             </div>
-            <div className="text-black mt-[80px] ml-[5%] pl-[5%] border-l-4 w-full mb-8 md:w-[20%]">
+            <div className="text-black mt-[30px] ml-[5%] pl-[5%] border-l-4 w-full mb-8 md:w-[20%]">
               <p className="mb-4"><strong>Equipo asignado:</strong></p>
               {inventory.map((item, index) => (
                 <div key={index}>
