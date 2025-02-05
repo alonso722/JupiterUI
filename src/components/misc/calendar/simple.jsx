@@ -506,25 +506,24 @@ const CustomCalendar = () => {
                   />
             </div>
         <div className='md:mt-[110px] mt-[70px] ml-[1%] py-2 md:w-[55%] md:h-[500px] h-[570px] p-2 rounded-lg shadow-xl text-[12px] text-black'>
-        <div className="relative w-full h-[80vh]">
-          <Calendar
+        <Calendar
             localizer={localizer}
             events={events}
             startAccessor="start"
             endAccessor="end"
             style={{
-              height: '100%', 
+              height: '90%',
               fontSize: '10px',
               border: '2px solid white',
               boxShadow: 'none',
             }}
-            views={['year', 'month', 'week', 'day']}
+            views={['year','month', 'week', 'day']}
             view={view}
             onView={setView}
             date={date}
             onNavigate={setDate}
             onSelectEvent={(event) => alert(event.title)}
-            popup
+            popup 
             messages={{
               today: 'Hoy',
               previous: '<',
@@ -563,20 +562,19 @@ const CustomCalendar = () => {
               ),
               toolbar: (props) => (
                 <CustomToolbar
-                  label={props.label}
-                  onNavigate={handleNavigate}
-                  onView={setView}
-                  view={view}
+                    label={props.label}
+                    onNavigate={handleNavigate}
+                    onView={setView}
+                    view={view}
                 />
-              ),
+                ),
             }}
           />
-          <button
-            className="absolute bottom-4 right-4 bg-[#5C4033] text-white w-12 h-12 flex items-center justify-center rounded-lg shadow-lg"
-            onClick={() => setShowModal(true)}>
-            +
-          </button>
-        </div>
+          <div className='md:hidden w-full flex text-black justify-end right-0 mt-2'>
+            <button className='px-2 py-1 text-[20px] w-12 h-12 pointer rounded-lg text-white flex items-center justify-center' style={{ backgroundColor: primary }} onClick={() => setShowModal(true)}>
+              <p className='text-[20px]'><strong>+</strong></p>
+            </button>
+          </div>
           {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative">
