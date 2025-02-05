@@ -269,7 +269,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                           )}
                         </div>
                         <div className="md:w-full">
-                          <p className="md:mr-9 text-[#B1B5C3] text-[10px] md:mt-3"><strong>CORREO ELECTRÓNICO</strong></p>
+                          <p className="md:mr-9 text-[#B1B5C3] text-[10px] mt-3 md:mt-0"><strong>CORREO ELECTRÓNICO</strong></p>
                           <p className="rounded-lg bg-[#EDF2F7] text-[#777E90] pl-3 pr-5 py-2"> {info.mail}</p>
                         </div>  
                         {userFilter && (
