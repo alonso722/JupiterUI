@@ -101,11 +101,11 @@ export const ECarousel = () => {
     };
 
     return (
-        <div className="mt-[30px] md:ml-[45px] md:pr-[45px] md:px-9 text-neutral-50 rounded">
+        <div className="mt-[30px] md:ml-[45px] md:pr-[45px] md:px-9 text-neutral-50 rounded mb-5">
             <Slider ref={sliderRef} {...settings}>
                 {cards && cards.length > 0 ? (
                     cards.map((card) => (
-                        <div key={card.id} className="text-black p-3">
+                        <div key={card.id} className="text-black p-3 pb-7">
                             <div className="rounded-lg md:ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
                                 <p className="text-lg font-bold black">{card.title}</p>
                                 <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>
