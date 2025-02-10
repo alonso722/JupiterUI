@@ -169,11 +169,11 @@ const AddDepartmentForm = ({ onClose, rowData }) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50 px-5 md:px-0">
-      <div className="w-full bg-white p-6 rounded-lg shadow-lg md:bw-[500px] md:h-[500px] relative">
+      <div className="w-full bg-white p-6 rounded-lg shadow-lg md:w-[500px] md:h-[500px] relative">
       <button onClick={onClose} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
         &times;
       </button>
-        <div className='md:flex '>
+        <div className=''>
           <div className=''>
             <h2 className="mt-[15px] mb-4 text-black">
               <input
