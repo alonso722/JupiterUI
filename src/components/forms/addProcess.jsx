@@ -348,28 +348,27 @@ const AddProcessForm = ({ card, onClose }) => {
     }
   };
 
-const getAnnexesIcon = (extension) => {
-  if (annexesInfo && linksInfo && linksInfo.links > 0) {
-    return '/icons/folder.png';
-  }
-  if (extension.length > 1) {
-    return '/icons/folder.png';
-  } else {
-    switch (extension[0].extension.toLowerCase()) {
-      case '.pdf':
-        return '/icons/pdf.png';
-      case '.doc':
-      case '.docx':
-        return '/icons/doc.png';
-      case '.xls':
-      case '.xlsx':
-        return '/icons/excel.png';
-      default:
-        return '/icons/question.png';
+  const getAnnexesIcon = (extension) => {
+    if (annexesInfo && linksInfo && linksInfo.links > 0) {
+      return '/icons/folder.png';
     }
-  }
-};
-
+    if (extension.length > 1) {
+      return '/icons/folder.png';
+    } else {
+      switch (extension[0].extension.toLowerCase()) {
+        case '.pdf':
+          return '/icons/pdf.png';
+        case '.doc':
+        case '.docx':
+          return '/icons/doc.png';
+        case '.xls':
+        case '.xlsx':
+          return '/icons/excel.png';
+        default:
+          return '/icons/question.png';
+      }
+    }
+  };
 
   const handleInputChange = (event) => {
     setDescription(event.target.value); 

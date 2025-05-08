@@ -245,7 +245,7 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                   </div>
                   <div className="">
                     <div className="md:flex w-full justify-between">
-                      <div className="w-full mr-5">
+                      <div className="relative w-full mr-5">
                         <p className="text-[#B1B5C3] text-[10px]">
                           <strong>TELÉFONO</strong>
                         </p>
@@ -260,11 +260,11 @@ export const Profile = ({ departmentFilter, userFilter }) => {
                           }`}/>
                           {isEditable ? (
                             <CiSaveDown2
-                            className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
+                            className="absolute right-3 top-[35px] transform -translate-y-1/2 text-[#4A90E2] cursor-pointer"
                             onClick={handleSaveClick} style={{  color: primary }} />
                           ) : (
                             <CiEdit
-                            className="absolute right-3 top-[45px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
+                            className="absolute right-3 top-[35px] transform -translate-y-1/2 text-[#777E90] cursor-pointer"
                             onClick={handleSaveClick} style={{  color: primary }}/>
                           )}
                         </div>

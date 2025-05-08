@@ -19,7 +19,7 @@ const period = [
   { id: 4, column: 'Periodo a indicar' },
 ];
 
-export const ReportsMenu = () => {
+export const AbsenceReports = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(period[0]);
   const [permissions, setPermissions] = useState([]);
   const [selectedButton, setSelectedButton] = useState(null);
@@ -93,7 +93,6 @@ export const ReportsMenu = () => {
       setSelectedUser([]);
     } else {
       setSelectedUser([value]);
-      //fetchCollaborators(value.id)
     }
   };
 
@@ -161,11 +160,8 @@ export const ReportsMenu = () => {
   
     console.log("concentrado de filtros", reque);
   
-    const endpoints = ["/user/reports/getDaily", "/user/reports/getAttendance", "/user/reports/getVacations"];
-    const endpoint = endpoints[index];
-  
     try {
-      const response = await api.post(endpoint, reque);
+      const response = await api.post("/user/reports/getAbsence", reque);
       console.log(response.data);
       setData(response.data);
     } catch (error) {
@@ -190,45 +186,7 @@ export const ReportsMenu = () => {
     
     doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
         
-    if (selectedButton === 0 ) {
-    doc.text(`\nReporte de asistencia del día ${new Date(Date.now() - 86400000).toLocaleDateString()} \n\n`, 14, 30);
-      const columns = [
-        { header: "Colaborador", dataKey: "colaborator" },
-        { header: "Entrada", dataKey: "entrace" },
-        { header: "Salida", dataKey: "leave" },
-        { header: "Entrada (mts)", dataKey: "distanceEnt" },
-        { header: "Salida (mts)", dataKey: "distanceLeave" },
-        { header: "Corp. Entrada", dataKey: "entraceLoc" },
-        { header: "Corp. Salida", dataKey: "entraceLeave" },
-      ];
-      
-      const formattedData = data.map(row => {
-        const adjustTime = (date) => {
-          if (!date) return ""; 
-          const adjustedDate = new Date(date);
-          adjustedDate.setHours(adjustedDate.getHours() + 6); 
-          return adjustedDate.toLocaleTimeString();
-        };
-      
-        return {
-          colaborator: `${row.name} ${row.last}`,
-          entrace: adjustTime(row.entrance),
-          leave: adjustTime(row.leave),
-          distanceEnt: row.distanceEnt || "",
-          distanceLeave: row.distanceLeave || "",
-          entraceLoc: row.locationEntName || "",
-          entraceLeave: row.locationLeaveName || "",
-        };
-      });
-      
-      doc.autoTable({
-        head: [columns.map(col => col.header)],
-        body: formattedData.map(row => Object.values(row)),
-        startY: 50, 
-      });
-      
-      doc.save(`Asistencia - ${formattedDate}.pdf`);
-    } else if (selectedButton === 1 ) {
+
       let reportTitle = "";
 
       switch (selectedPeriod.id) {
@@ -290,37 +248,8 @@ export const ReportsMenu = () => {
 
       console.log()
     
-      doc.save(`Asistencia - ${formattedDate}.pdf`);
-    } else {
-      const columns = [
-        { header: "Colaborador", dataKey: "colaborator" },
-        { header: "Aprobador", dataKey: "aprobator" },
-        { header: "Inicio", dataKey: "start" },
-        { header: "Fin", dataKey: "end" },
-        { header: "Estatus", dataKey: "status" },
-      ];
-      
-      const formattedData = data.map(row => ({
-        colaborator: `${row.name} ${row.last}`,
-        aprobator: row.aprobatorName || "N/A",
-        start: row.start ? new Date(row.start).toLocaleDateString() : "N/A", 
-        end: row.end ? new Date(row.end).toLocaleDateString() : "N/A", 
-        status: row.status === 0 
-          ? "Rechazado" 
-          : row.status === 1 
-          ? "En revisión" 
-          : row.status === 2 
-          ? "Aprobado" 
-          : "Desconocido",
-      }));
-      
-      doc.autoTable({
-        head: [columns.map(col => col.header)],
-        body: formattedData.map(row => Object.values(row)),
-        startY: 50,
-      });
-      doc.save(`Vacaciones generadas ${formattedDate}.pdf`);
-    }
+      doc.save(`Ausencias - ${formattedDate}.pdf`);
+    
   };
 
   const DateInput = ({ label, value, onChange }) => (
@@ -345,7 +274,7 @@ export const ReportsMenu = () => {
   return (
     <div className="mt-[80px] md:ml-[110px] px-5 md:px-0 mr-[0px] text-neutral-50 rounded overflow-hidden">
       <p className="text-[25px] text-black my-4">
-        <b>Reportes</b>
+        <b>Reportes de ausencias</b>
       </p>
       <div className="flex items-end gap-4">
         <div className="w-60 text-black">
@@ -640,55 +569,18 @@ export const ReportsMenu = () => {
       
     </div>
     <p className="text-black mt-7">Verificar registro de:</p>
-      <div className="flex w-full pl-5 mt-9">
-      {selectedPeriod.id == 0  && (
-        <div className="flex flex-col items-center justify-center mr-5">
-          <button
-            onClick={() => handleButtonClick(0)}
-            className="text-white p-5 rounded border-black border-[1px] mx-5"
-            style={{
-              backgroundColor: selectedButton === 0 ? primary : secondary,
-              color: selectedButton === 0 ? secondary : primary,
-            }}
-          >
-            <FaUserCheck
-              style={{ color: selectedButton === 0 ? secondary : primary, width: "25px", height: "28px" }}
-            />
-          </button>
-          <p className="text-black">Reporte de ayer</p>
-        </div>
-      )}
         <div className="flex flex-col items-center justify-center mr-5">
           <button
             onClick={() => handleButtonClick(1)}
             className="text-white p-5 rounded border-black border-[1px] mx-5"
             style={{
-              backgroundColor: selectedButton === 1 ? primary : secondary,
-              color: selectedButton === 1 ? secondary : primary,
+              backgroundColor:primary ,
+              color: primary,
             }}
           >
-            <FaUserCheck
-              style={{ color: selectedButton === 1 ? secondary : primary, width: "25px", height: "28px" }}
-            />
+          <p className="text-black">Verificar Registros</p>
           </button>
-          <p className="text-black">Asistencia</p>
         </div>
-        <div className="flex flex-col items-center justify-center mx-5">
-          <button
-            onClick={() => handleButtonClick(2)}
-            className="text-white p-5 rounded border-black border-[1px] mx-5"
-            style={{
-              backgroundColor: selectedButton === 2 ? primary : secondary,
-              color: selectedButton === 2 ? secondary : primary,
-            }}
-          >
-            <FaCalendarCheck
-              style={{ color: selectedButton === 2 ? secondary : primary, width: "25px", height: "28px" }}
-            />
-          </button>
-          <p className="text-black">Vacaciones</p>
-        </div>
-      </div>
       <div className="mt-5 p-4 bg-gray-100 rounded">
         {data ? (
           <>
@@ -711,4 +603,4 @@ export const ReportsMenu = () => {
   );
 };
 
-export default ReportsMenu;
+export default AbsenceReports;
