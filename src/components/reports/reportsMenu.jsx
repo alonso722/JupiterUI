@@ -6,6 +6,7 @@ import useApi from "@/hooks/useApi";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useColors } from "@/services/colorService";
+import { toast } from 'react-toastify';
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -32,8 +33,15 @@ export const ReportsMenu = () => {
   const effectMounted = useRef(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState('');
   const api = useApi();
+
+    const showToast = (type, message) => {
+      toast[type](message, {
+        position: 'top-center',
+        autoClose: 2000,
+      });
+    };
 
   useEffect(() => {
     if (!effectMounted.current) {
@@ -78,6 +86,7 @@ export const ReportsMenu = () => {
 
   const handleSelectionDepartment = (value) => {
     setSelectedUser([]);
+    setUsers([]);
     setData(null);
     if (value === null) {
       setSelectedDepartment([]);
@@ -115,32 +124,32 @@ export const ReportsMenu = () => {
       switch (selectedPeriod.id) {
         case 1:
           if (!endDate) {
-            console.error("Falta la fecha para el periodo 1");
-            return alert("Selecciona una fecha válida.");
+            showToast('error', "Selecciona una fecha válida.");
+            return;
           }
           reque.periodFilter = endDate;
           break;
     
         case 2:
           if (!endDate) {
-            console.error("Falta el mes para el periodo 2");
-            return alert("Selecciona un mes válido.");
+            showToast('error', "Selecciona un mes válido.");
+            return;
           }
           reque.periodFilter = endDate;
           break;
     
         case 3:
           if (!year) {
-            console.error("Falta el año para el periodo 3");
-            return alert("Selecciona un año válido.");
+            showToast('error', "Selecciona un año válido.");
+            return;
           }
           reque.periodFilter = year;
           break;
     
         case 4:
           if (!startDate || !endDate) {
-            console.error("Faltan fechas para el periodo 4");
-            return alert("Selecciona la fecha de inicio y de fin.");
+            showToast('error', "Selecciona un periodo fechas válido.");
+            return;
           }
           reque.periodFilter = { start: startDate, end: endDate };
           break;
@@ -178,150 +187,148 @@ export const ReportsMenu = () => {
     fetchData(index);
   };
 
-  const downloadPdf = () => {
-    if (!data || !data.length) {
-      alert("No hay datos para exportar a PDF");
-      return;
-    }
-    const doc = new jsPDF();
-    
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString(); 
-    
-    doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
-        
-    if (selectedButton === 0 ) {
-    doc.text(`\nReporte de asistencia del día ${new Date(Date.now() - 86400000).toLocaleDateString()} \n\n`, 14, 30);
-      const columns = [
-        { header: "Colaborador", dataKey: "colaborator" },
-        { header: "Entrada", dataKey: "entrace" },
-        { header: "Salida", dataKey: "leave" },
-        { header: "Entrada (mts)", dataKey: "distanceEnt" },
-        { header: "Salida (mts)", dataKey: "distanceLeave" },
-        { header: "Corp. Entrada", dataKey: "entraceLoc" },
-        { header: "Corp. Salida", dataKey: "entraceLeave" },
-      ];
-      
-      const formattedData = data.map(row => {
-        const adjustTime = (date) => {
-          if (!date) return ""; 
-          const adjustedDate = new Date(date);
-          adjustedDate.setHours(adjustedDate.getHours() + 6); 
-          return adjustedDate.toLocaleTimeString();
-        };
-      
-        return {
-          colaborator: `${row.name} ${row.last}`,
-          entrace: adjustTime(row.entrance),
-          leave: adjustTime(row.leave),
-          distanceEnt: row.distanceEnt || "",
-          distanceLeave: row.distanceLeave || "",
-          entraceLoc: row.locationEntName || "",
-          entraceLeave: row.locationLeaveName || "",
-        };
-      });
-      
-      doc.autoTable({
-        head: [columns.map(col => col.header)],
-        body: formattedData.map(row => Object.values(row)),
-        startY: 50, 
-      });
-      
-      doc.save(`Asistencia - ${formattedDate}.pdf`);
-    } else if (selectedButton === 1 ) {
-      let reportTitle = "";
+const downloadPdf = () => {
+  if (!data || !data.length) {
+    alert("No hay datos para exportar a PDF");
+    return;
+  }
 
-      switch (selectedPeriod.id) {
-        case 0:
-          reportTitle = "Reporte de asistencia general";
-          break;
-        case 1:
-          reportTitle = `Asistencia del día ${endDate}`;
-          break;
-        case 2:
-          reportTitle = `Asistencia del mes ${endDate}`;
-          break;
-        case 3:
-          reportTitle = `Asistencia del año ${year}`;
-          break;
-        case 4:
-          reportTitle = `Asistencia del periodo de ${startDate} a ${endDate}`;
-          break;
-      }
+  const doc = new jsPDF();
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString();
 
-      if (selectedUser?.length > 0) {
-        reportTitle += `\ndel usuario ${selectedUser[0].userName} ${selectedUser[0].userLast}`;
-      } else if (selectedDepartment?.length > 0) {
-        reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
-      }
+  doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
 
-      doc.text(`\n${reportTitle}\n\n`, 14, 30);
-    
-      const columns = [
-        { header: "Colaborador", dataKey: "colaborator" },
-        { header: "Entrada", dataKey: "entrace" },
-        { header: "Salida", dataKey: "leave" },
-        { header: "Corp. Entrada", dataKey: "entraceLoc" },
-        { header: "Corp. Salida", dataKey: "entraceLeave" },
-      ];
-    
-      const formattedData = data.map(row => {
-        const adjustDateTime = (date) => {
-          if (!date) return ""; 
-          const adjustedDate = new Date(date);
-          adjustedDate.setHours(adjustedDate.getHours() + 6); 
-          return adjustedDate.toLocaleString();
-        };
-    
-        return {
-          colaborator: `${row.name} ${row.last}`,
-          entrace: adjustDateTime(row.entrance),
-          leave: adjustDateTime(row.leave),
-          entraceLoc: row.locationEntName || "",
-          entraceLeave: row.locationLeaveName || "",
-        };
-      });
-    
-      doc.autoTable({
-        head: [columns.map(col => col.header)],
-        body: formattedData.map(row => Object.values(row)),
-        startY: 50, 
-      });
-
-      console.log()
-    
-      doc.save(`Asistencia - ${formattedDate}.pdf`);
-    } else {
-      const columns = [
-        { header: "Colaborador", dataKey: "colaborator" },
-        { header: "Aprobador", dataKey: "aprobator" },
-        { header: "Inicio", dataKey: "start" },
-        { header: "Fin", dataKey: "end" },
-        { header: "Estatus", dataKey: "status" },
-      ];
-      
-      const formattedData = data.map(row => ({
-        colaborator: `${row.name} ${row.last}`,
-        aprobator: row.aprobatorName || "N/A",
-        start: row.start ? new Date(row.start).toLocaleDateString() : "N/A", 
-        end: row.end ? new Date(row.end).toLocaleDateString() : "N/A", 
-        status: row.status === 0 
-          ? "Rechazado" 
-          : row.status === 1 
-          ? "En revisión" 
-          : row.status === 2 
-          ? "Aprobado" 
-          : "Desconocido",
-      }));
-      
-      doc.autoTable({
-        head: [columns.map(col => col.header)],
-        body: formattedData.map(row => Object.values(row)),
-        startY: 50,
-      });
-      doc.save(`Vacaciones generadas ${formattedDate}.pdf`);
-    }
+  const formatDateTime = (date) => {
+    if (!date) return "";
+    const adjustedDate = new Date(date);
+    adjustedDate.setHours(adjustedDate.getHours() + 6);
+    return adjustedDate.toLocaleString("es-MX", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
   };
+
+  if (selectedButton === 0) {
+    doc.text(`\nReporte de asistencia del día ${new Date(Date.now() - 86400000).toLocaleDateString()} \n\n`, 14, 30);
+
+    const columns = [
+      { header: "Colaborador", dataKey: "colaborator" },
+      { header: "Entrada", dataKey: "entrace" },
+      { header: "Salida", dataKey: "leave" },
+      { header: "Entrada (mts)", dataKey: "distanceEnt" },
+      { header: "Salida (mts)", dataKey: "distanceLeave" },
+      { header: "Corp. Entrada", dataKey: "entraceLoc" },
+      { header: "Corp. Salida", dataKey: "entraceLeave" },
+    ];
+
+    const formattedData = data.map(row => ({
+      colaborator: `${row.name} ${row.last}`,
+      entrace: formatDateTime(row.entrance),
+      leave: formatDateTime(row.leave),
+      distanceEnt: row.distanceEnt || "",
+      distanceLeave: row.distanceLeave || "",
+      entraceLoc: row.locationEntName || "",
+      entraceLeave: row.locationLeaveName || "",
+    }));
+
+    doc.autoTable({
+      head: [columns.map(col => col.header)],
+      body: formattedData.map(row => Object.values(row)),
+      startY: 50,
+    });
+
+    doc.save(`Asistencia - ${formattedDate}.pdf`);
+
+  } else if (selectedButton === 1) {
+    let reportTitle = "";
+
+    switch (selectedPeriod.id) {
+      case 0:
+        reportTitle = "Reporte de asistencia general";
+        break;
+      case 1:
+        reportTitle = `Asistencia del día ${endDate}`;
+        break;
+      case 2:
+        reportTitle = `Asistencia del mes ${endDate}`;
+        break;
+      case 3:
+        reportTitle = `Asistencia del año ${year}`;
+        break;
+      case 4:
+        reportTitle = `Asistencia del periodo de ${startDate} a ${endDate}`;
+        break;
+    }
+
+    if (selectedUser?.length > 0) {
+      reportTitle += `\ndel usuario ${selectedUser[0].userName} ${selectedUser[0].userLast}`;
+    } else if (selectedDepartment?.length > 0) {
+      reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
+    }
+
+    doc.text(`\n${reportTitle}\n\n`, 14, 30);
+
+    const columns = [
+      { header: "Colaborador", dataKey: "colaborator" },
+      { header: "Entrada", dataKey: "entrace" },
+      { header: "Salida", dataKey: "leave" },
+      { header: "Corp. Entrada", dataKey: "entraceLoc" },
+      { header: "Corp. Salida", dataKey: "entraceLeave" },
+    ];
+
+    const formattedData = data.map(row => ({
+      colaborator: `${row.name} ${row.last}`,
+      entrace: formatDateTime(row.entrance),
+      leave: formatDateTime(row.leave),
+      entraceLoc: row.locationEntName || "",
+      entraceLeave: row.locationLeaveName || "",
+    }));
+
+    doc.autoTable({
+      head: [columns.map(col => col.header)],
+      body: formattedData.map(row => Object.values(row)),
+      startY: 50,
+    });
+
+    doc.save(`Asistencia - ${formattedDate}.pdf`);
+
+  } else {
+    const columns = [
+      { header: "Colaborador", dataKey: "colaborator" },
+      { header: "Aprobador", dataKey: "aprobator" },
+      { header: "Inicio", dataKey: "start" },
+      { header: "Fin", dataKey: "end" },
+      { header: "Estatus", dataKey: "status" },
+    ];
+
+    const formattedData = data.map(row => ({
+      colaborator: `${row.name} ${row.last}`,
+      aprobator: row.aprobatorName || "N/A",
+      start: row.start ? new Date(row.start).toLocaleDateString("es-MX") : "N/A",
+      end: row.end ? new Date(row.end).toLocaleDateString("es-MX") : "N/A",
+      status: row.status === 0
+        ? "Rechazado"
+        : row.status === 1
+        ? "En revisión"
+        : row.status === 2
+        ? "Aprobado"
+        : "Desconocido",
+    }));
+
+    doc.autoTable({
+      head: [columns.map(col => col.header)],
+      body: formattedData.map(row => Object.values(row)),
+      startY: 50,
+    });
+
+    doc.save(`Vacaciones generadas ${formattedDate}.pdf`);
+  }
+};
 
   const DateInput = ({ label, value, onChange }) => (
     <div className="flex flex-col">
@@ -695,12 +702,17 @@ export const ReportsMenu = () => {
             <p className="text-black">Se encontraron {data.length} registros a reportar.</p>
             <button
               onClick={downloadPdf}
-              className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded"
+              className={`mt-4 px-4 py-2 rounded text-white ${
+                data.length === 0
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-indigo-600 hover:bg-indigo-700'
+              }`}
               style={{
                 backgroundColor: secondary,
               }}
+              disabled={data.length === 0}
             >
-            Generar Reporte
+              Generar Reporte
             </button>
           </>
         ) : (
