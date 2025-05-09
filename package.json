@@ -90,6 +90,7 @@
     "title-editorjs": "^1.0.2",
     "tw-elements": "^2.0.0",
     "vis-network": "^9.1.9",
+    "xlsx": "^0.18.5",
     "yup": "^1.4.0"
   },
   "devDependencies": {

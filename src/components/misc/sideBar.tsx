@@ -196,7 +196,7 @@ export default function Sidebar() {
                 </div>
 
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 3.16.19
+                    V 3.17.20
                 </div>
             </div>
         </div>

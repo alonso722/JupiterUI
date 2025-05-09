@@ -7,6 +7,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { useColors } from "@/services/colorService";
 import { toast } from 'react-toastify';
+import * as XLSX from "xlsx";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -276,6 +277,159 @@ const downloadPdf = () => {
       />
     </div>
   );
+
+    const downloadCSV = () => {
+      if (!data || !data.length) {
+        alert("No hay datos para exportar a CSV");
+        return;
+      }
+  
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString("es-MX");
+  
+      const formatDateTime = (date) => {
+        if (!date) return "";
+        const adjustedDate = new Date(date);
+        adjustedDate.setHours(adjustedDate.getHours() + 6);
+        return adjustedDate.toLocaleString("es-MX", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      };
+  
+      let columns = [];
+      let formattedData = [];
+  
+      if (selectedButton === 0) {
+        columns = [
+          "Colaborador", "Entrada", "Salida", "Entrada (mts)", "Salida (mts)", "Corp. Entrada", "Corp. Salida"
+        ];
+  
+        formattedData = data.map(row => [
+          `${row.name} ${row.last}`,
+          formatDateTime(row.entrance),
+          formatDateTime(row.leave),
+          row.distanceEnt || "",
+          row.distanceLeave || "",
+          row.locationEntName || "",
+          row.locationLeaveName || ""
+        ]);
+  
+      } else if (selectedButton === 1) {
+        columns = [
+          "Colaborador", "Entrada", "Salida", "Corp. Entrada", "Corp. Salida"
+        ];
+  
+        formattedData = data.map(row => [
+          `${row.name} ${row.last}`,
+          formatDateTime(row.entrance),
+          formatDateTime(row.leave),
+          row.locationEntName || "",
+          row.locationLeaveName || ""
+        ]);
+  
+      } else {
+        columns = [
+          "Colaborador", "Aprobador", "Inicio", "Fin", "Estatus"
+        ];
+  
+        formattedData = data.map(row => [
+          `${row.name} ${row.last}`,
+          row.aprobatorName || "N/A",
+          row.start ? new Date(row.start).toLocaleDateString("es-MX") : "N/A",
+          row.end ? new Date(row.end).toLocaleDateString("es-MX") : "N/A",
+          row.status === 0
+            ? "Rechazado"
+            : row.status === 1
+            ? "En revisión"
+            : row.status === 2
+            ? "Aprobado"
+            : "Desconocido"
+        ]);
+      }
+  
+      const csvContent = [
+        columns.join(","),
+        ...formattedData.map(row => row.map(val => `"${val}"`).join(","))
+      ].join("\n");
+  
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `Reporte - ${formattedDate}.csv`;
+      link.click();
+    };
+  
+    const downloadXLSX = () => {
+      if (!data || !data.length) {
+        alert("No hay datos para exportar a Excel");
+        return;
+      }
+  
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString("es-MX");
+  
+      const formatDateTime = (date) => {
+        if (!date) return "";
+        const adjustedDate = new Date(date);
+        adjustedDate.setHours(adjustedDate.getHours() + 6);
+        return adjustedDate.toLocaleString("es-MX", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+      };
+  
+      let rows = [];
+  
+      if (selectedButton === 0) {
+        rows = data.map(row => ({
+          Colaborador: `${row.name} ${row.last}`,
+          Entrada: formatDateTime(row.entrance),
+          Salida: formatDateTime(row.leave),
+          "Entrada (mts)": row.distanceEnt || "",
+          "Salida (mts)": row.distanceLeave || "",
+          "Corp. Entrada": row.locationEntName || "",
+          "Corp. Salida": row.locationLeaveName || ""
+        }));
+      } else if (selectedButton === 1) {
+        rows = data.map(row => ({
+          Colaborador: `${row.name} ${row.last}`,
+          Entrada: formatDateTime(row.entrance),
+          Salida: formatDateTime(row.leave),
+          "Corp. Entrada": row.locationEntName || "",
+          "Corp. Salida": row.locationLeaveName || ""
+        }));
+      } else {
+        rows = data.map(row => ({
+          Colaborador: `${row.name} ${row.last}`,
+          Aprobador: row.aprobatorName || "N/A",
+          Inicio: row.start ? new Date(row.start).toLocaleDateString("es-MX") : "N/A",
+          Fin: row.end ? new Date(row.end).toLocaleDateString("es-MX") : "N/A",
+          Estatus:
+            row.status === 0
+              ? "Rechazado"
+              : row.status === 1
+              ? "En revisión"
+              : row.status === 2
+              ? "Aprobado"
+              : "Desconocido"
+        }));
+      }
+  
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Reporte");
+  
+      XLSX.writeFile(workbook, `Reporte - ${formattedDate}.xlsx`);
+    };
   
 
   const handlePeriodChange = (value) => {
@@ -597,23 +751,39 @@ const downloadPdf = () => {
         {data ? (
           <>
             <p className="text-black">Se encontraron {data.length} registros a reportar.</p>
-            <button
-              onClick={downloadPdf}
-              className={`mt-4 px-4 py-2 rounded text-white ${
-                data.length === 0
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700'
-              }`}
-              style={{
-                backgroundColor: secondary,
-              }}
-              disabled={data.length === 0}
-            >
-              Generar Reporte
-            </button>
+            <div className=" flex gap-3 flex-wrap">
+              <button
+                onClick={downloadPdf}
+                className={`mt-4 px-4 py-2 rounded text-white ${
+                  data.length === 0
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-indigo-600 hover:bg-indigo-700'
+                }`}
+                style={{
+                  backgroundColor: secondary,
+                }}
+                disabled={data.length === 0}
+              >
+                Generar Reporte PDF
+              </button>
+              <button
+                onClick={downloadCSV}
+                className="px-4 py-2 rounded text-white bg-[#2ca089] hover:bg-blue-700"
+                disabled={data.length === 0}
+              >
+                Exportar CSV
+              </button>
+              <button
+                onClick={downloadXLSX}
+                className="px-4 py-2 rounded text-white bg-green-600 hover:bg-green-700"
+                disabled={data.length === 0}
+              >
+                Exportar XLSX
+              </button>
+            </div>
           </>
         ) : (
-          <p className="text-black">Selecciona un reporte para ver los datos</p>
+          <p className="text-black">Verifica los registros para poder generar un reporte</p>
         )}
       </div>
     </div>
