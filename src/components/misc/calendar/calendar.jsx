@@ -25,6 +25,7 @@ const CustomCalendar = () => {
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
   const [isChecked, setIsChecked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFar, setIsFar] = useState(false);
   const [time, setTime] = useState('');
 
   let today = startOfToday();
@@ -193,6 +194,76 @@ const CustomCalendar = () => {
     }
   };
 
+  const handleAddEntraceExt = () => {
+    setIsLoading(true)
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions'); 
+    if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+    }
+    const organization = parsedPermissions.Organization;
+    const uuid = parsedPermissions.uuid;
+
+    if (navigator.geolocation) {
+        // const options = {
+        //     enableHighAccuracy: true, 
+        //     timeout: 7000,           
+        //     maximumAge: 0            
+        // };
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const { latitude, longitude } = position.coords;
+                api.post('/user/event/addEntraceExt', { 
+                  ...newEvent,
+                  latitude,
+                  longitude,
+                  type: 1,       
+                  title: 'Entrada',
+                  orga: organization, 
+                  uuid: uuid  
+                })
+                .then((response) => {
+                    getChecks();
+                    console.log(response)
+                    showToast('success', `${response.data.message}`);
+                })
+                .catch((error) => {
+                  if (error.response && error.response.status === 403) {
+                    showToast('warning', error.response.data);
+                    setIsFar(true); 
+                  } else {
+                    const errorMessage = error.response && error.response.data
+                      ? `Entrada no registrada: ${error.response.data}`
+                      : "Entrada no registrada: Error desconocido";
+                    showToast('warning', errorMessage);
+                    console.error('Error al añadir el evento:', error);
+                  }
+                });     
+
+                setEvents([...events, { 
+                  ...newEvent,
+                  type: 1,       
+                  title: 'Entrada'  
+                }]);
+                setIsFar(false);
+                setNewEvent({ title: '', start: new Date(), end: new Date() });
+                setIsLoading(false)
+            },
+            (error) => {
+                showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+                setIsLoading(false)
+                console.error('Error al obtener la ubicación:', error);
+            },
+            //options 
+        );
+    } else {
+        showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+        setIsLoading(false)
+        console.error('Geolocalización no es soportada por este navegador.');
+    }
+  };
+
   const handleAddEntrace = () => {
     setIsLoading(true)
     let parsedPermissions;
@@ -224,15 +295,21 @@ const CustomCalendar = () => {
                 })
                 .then((response) => {
                     getChecks();
-                    showToast('success', "Entrada registrada");
+                    console.log(response)
+                    showToast('success', `${response.data.message}`);
                 })
                 .catch((error) => {
+                  if (error.response && error.response.status === 403) {
+                    showToast('warning', error.response.data);
+                    setIsFar(true); 
+                  } else {
                     const errorMessage = error.response && error.response.data
-                        ? `Entrada no registrada: ${error.response.data}`
-                        : "Entrada no registrada: Error desconocido";
+                      ? `Entrada no registrada: ${error.response.data}`
+                      : "Entrada no registrada: Error desconocido";
                     showToast('warning', errorMessage);
                     console.error('Error al añadir el evento:', error);
-                });        
+                  }
+                });     
 
                 setEvents([...events, { 
                   ...newEvent,
@@ -489,6 +566,26 @@ return (
                 <button
                   className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
                   onClick={() => setShowModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          )}
+          {isFar && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative items justify-center">
+                <h3 className="my-[20px] ">¿Desea enviar un registro extraodinario tomando en base detalles en su geolocalización?</h3>
+                <button
+                  className="rounded text-white mt-2 py-2 px-3 mb-2"
+                  onClick={() => handleAddEntraceExt(newEvent)}
+                  style={{ backgroundColor: primary }}
+                >
+                  Aceptar
+                </button>
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setIsFar(false)}
                 >
                   &times;
                 </button>
