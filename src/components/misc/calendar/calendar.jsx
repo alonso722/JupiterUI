@@ -225,7 +225,6 @@ const CustomCalendar = () => {
                 })
                 .then((response) => {
                     getChecks();
-                    console.log(response)
                     showToast('success', `${response.data.message}`);
                 })
                 .catch((error) => {
@@ -295,7 +294,6 @@ const CustomCalendar = () => {
                 })
                 .then((response) => {
                     getChecks();
-                    console.log(response)
                     showToast('success', `${response.data.message}`);
                 })
                 .catch((error) => {
@@ -368,8 +366,8 @@ const CustomCalendar = () => {
                     showToast('success', "Salida registrada");
                 })
                 .catch((error) => {
-                    const errorMessage = error.response && error.response.data
-                        ? `Salida no registrada: ${error.response.data}`
+                    const errorMessage = error.response && error.response.data && error.response.data.message
+                        ? `Salida no registrada: ${error.response.data.message}`
                         : "Salida no registrada: Error desconocido";
                     showToast('warning', errorMessage);
                     console.error('Error al añadir el evento:', error);
@@ -575,7 +573,7 @@ return (
           {isFar && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative items justify-center">
-                <h3 className="my-[20px] ">¿Desea enviar un registro extraodinario tomando en base detalles en su geolocalización?</h3>
+                <h3 className="my-[20px] ">¿Desea enviar un registro extraordinario utilizando la información de su geolocalización?</h3>
                 <button
                   className="rounded text-white mt-2 py-2 px-3 mb-2"
                   onClick={() => handleAddEntraceExt(newEvent)}

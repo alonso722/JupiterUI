@@ -58,7 +58,6 @@ export const ReportsMenu = () => {
             id: item.id,
             department: item.department,
           }));
-          console.log(fetchedData)
           setDepartments(fetchedData);
         })
         .catch((error) => {
@@ -70,13 +69,9 @@ export const ReportsMenu = () => {
   }, [api]);
 
   const fetchCollaborators = (value) =>{
-    console.log(value)
     api.get(`/user/users/getUsersByDept/${value}`)
     .then((response) => {
-      console.log(response.data)
       const users = response.data;
-
-      console.log(users)
       setUsers(users);
     })
     .catch((error) => {
@@ -112,9 +107,6 @@ export const ReportsMenu = () => {
     const storedPermissions = localStorage.getItem("permissions");
     const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
     const orga = parsedPermissions?.Organization;
-
-    console.log(selectedDepartment, selectedUser)
-  
     if (!orga) return;
   
     reque.orga = orga;
@@ -168,15 +160,11 @@ export const ReportsMenu = () => {
     if (selectedUser.length > 0) {
       reque.user = selectedUser;
     }
-  
-    console.log("concentrado de filtros", reque);
-  
     const endpoints = ["/user/reports/getDaily", "/user/reports/getAttendance", "/user/reports/getVacations"];
     const endpoint = endpoints[index];
   
     try {
       const response = await api.post(endpoint, reque);
-      console.log(response.data);
       setData(response.data);
     } catch (error) {
       console.error(`Error al consultar ${endpoint}:`, error);
@@ -500,7 +488,6 @@ const downloadPdf = () => {
   const handlePeriodChange = (value) => {
     setSelectedPeriod(value);
     setData(null);
-    console.log('Periodo seleccionado:', value, selectedPeriod);
   };
   
   return (

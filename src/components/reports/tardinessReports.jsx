@@ -58,7 +58,6 @@ export const TardinessReports = () => {
             id: item.id,
             department: item.department,
           }));
-          console.log(fetchedData)
           setDepartments(fetchedData);
         })
         .catch((error) => {
@@ -70,13 +69,9 @@ export const TardinessReports = () => {
   }, [api]);
 
   const fetchCollaborators = (value) =>{
-    console.log(value)
     api.get(`/user/users/getUsersByDept/${value}`)
     .then((response) => {
-      console.log(response.data)
       const users = response.data;
-
-      console.log(users)
       setUsers(users);
     })
     .catch((error) => {
@@ -112,9 +107,6 @@ export const TardinessReports = () => {
     const storedPermissions = localStorage.getItem("permissions");
     const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
     const orga = parsedPermissions?.Organization;
-
-    console.log(selectedDepartment, selectedUser)
-  
     if (!orga) return;
   
     reque.orga = orga;
@@ -168,12 +160,8 @@ export const TardinessReports = () => {
     if (selectedUser.length > 0) {
       reque.user = selectedUser;
     }
-  
-    console.log("concentrado de filtros", reque);
-  
     try {
       const response = await api.post("/user/reports/getTardiness", reque);
-      console.log(response.data);
       setData(response.data);
     } catch (error) {
       console.error(`Error al consultar retardos:`, error);
@@ -435,7 +423,6 @@ const downloadPdf = () => {
   const handlePeriodChange = (value) => {
     setSelectedPeriod(value);
     setData(null);
-    console.log('Periodo seleccionado:', value, selectedPeriod);
   };
   
   return (
