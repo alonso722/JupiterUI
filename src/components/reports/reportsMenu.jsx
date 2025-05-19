@@ -88,7 +88,8 @@ export const ReportsMenu = () => {
       setSelectedDepartment([]);
     } else {
       setSelectedDepartment([value]);
-      fetchCollaborators(value.id)
+      fetchCollaborators(value.id);
+      setSelectedButton("");
     }
   };
 
@@ -98,6 +99,7 @@ export const ReportsMenu = () => {
       setSelectedUser([]);
     } else {
       setSelectedUser([value]);
+      setSelectedButton("");
       //fetchCollaborators(value.id)
     }
   };
@@ -488,6 +490,7 @@ const downloadPdf = () => {
   const handlePeriodChange = (value) => {
     setSelectedPeriod(value);
     setData(null);
+    setSelectedButton("");
   };
   
   return (
@@ -788,55 +791,25 @@ const downloadPdf = () => {
       
     </div>
     <p className="text-black mt-7">Verificar registro de:</p>
-      <div className="flex w-full pl-5 mt-9">
-      {selectedPeriod.id == 0  && (
-        <div className="flex flex-col items-center justify-center mr-5">
-          <button
-            onClick={() => handleButtonClick(0)}
-            className="text-white p-5 rounded border-black border-[1px] mx-5"
-            style={{
-              backgroundColor: selectedButton === 0 ? primary : secondary,
-              color: selectedButton === 0 ? secondary : primary,
-            }}
-          >
-            <FaUserCheck
-              style={{ color: selectedButton === 0 ? secondary : primary, width: "25px", height: "28px" }}
-            />
-          </button>
-          <p className="text-black">Reporte de ayer</p>
-        </div>
-      )}
-        <div className="flex flex-col items-center justify-center mr-5">
-          <button
-            onClick={() => handleButtonClick(1)}
-            className="text-white p-5 rounded border-black border-[1px] mx-5"
-            style={{
-              backgroundColor: selectedButton === 1 ? primary : secondary,
-              color: selectedButton === 1 ? secondary : primary,
-            }}
-          >
-            <FaUserCheck
-              style={{ color: selectedButton === 1 ? secondary : primary, width: "25px", height: "28px" }}
-            />
-          </button>
-          <p className="text-black">Asistencia</p>
-        </div>
-        <div className="flex flex-col items-center justify-center mx-5">
-          <button
-            onClick={() => handleButtonClick(2)}
-            className="text-white p-5 rounded border-black border-[1px] mx-5"
-            style={{
-              backgroundColor: selectedButton === 2 ? primary : secondary,
-              color: selectedButton === 2 ? secondary : primary,
-            }}
-          >
-            <FaCalendarCheck
-              style={{ color: selectedButton === 2 ? secondary : primary, width: "25px", height: "28px" }}
-            />
-          </button>
-          <p className="text-black">Vacaciones</p>
-        </div>
+    <div className="flex w-full pl-5 mt-9">
+      <div className="flex flex-col">
+        <select
+          className="border border-black rounded p-2 text-black"
+          value={selectedButton}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            if (!isNaN(value)) handleButtonClick(value);
+          }}
+        >
+          <option value="">Selecciona un reporte para verificar los datos</option>
+          {selectedPeriod.id == 0 && (
+            <option value={0}>Reporte de ayer</option>
+          )}
+          <option value={1}>Asistencia</option>
+          <option value={2}>Vacaciones</option>
+        </select>
       </div>
+    </div>
       <div className="mt-5 p-4 bg-gray-100 rounded">
         {data ? (
           <>

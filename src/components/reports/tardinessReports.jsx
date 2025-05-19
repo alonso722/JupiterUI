@@ -725,13 +725,9 @@ const downloadPdf = () => {
         <div className="pt-5 mr-5">
           <button
             onClick={() => handleButtonClick(1)}
-            className="text-white p-5 rounded border-black border-[1px] mx-5"
-            style={{
-              backgroundColor: primary,
-              color:  primary,
-            }}
+            className="text-white px-[10px] py-[15px] rounded-lg text-white text-[13px] bg-[#3850FB] border-[1px] w-[131px] h-[40x]"
           >
-          <p className="text-black">Verificar Registros</p>
+          <p>Verificar Registros</p>
           </button>
         </div>
       <div className="mt-5 p-4 bg-gray-100 rounded">
