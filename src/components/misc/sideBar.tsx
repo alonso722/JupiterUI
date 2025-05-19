@@ -22,6 +22,7 @@ export default function Sidebar() {
     const [isExpanded, setIsExpanded] = useState(false);
     const [currentPath, setCurrentPath] = useState('');
     const [showReportsSubmenu, setShowReportsSubmenu] = useState(false);
+    const [showInventorySubmenu, setShowInventorySubmenu] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const { primary, secondary } = useColors();
 
@@ -66,8 +67,8 @@ export default function Sidebar() {
         { path: '/HHRR', icon: RiFolderUserLine, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/reports', icon: RiArchiveDrawerLine, label: 'Reportes', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1, isReport: true },
         { path: '/locations', icon: IoLocationOutline, label: 'Ubicaciones', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/inventory', icon: MdOutlineInventory2, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6 },
-        { path: '/inventory/assigned', icon: MdOutlineComputer, label: 'Equipo asignado', condition: permissions?.Type === 1 || permissions?.Type === 6 },
+        { path: '/inventory', icon: MdOutlineInventory2, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6, isInventory: true },
+        { path: '/permissions', icon: MdOutlineComputer, label: 'Permisos', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/user', icon: FaUsers, label: 'Usuarios', condition: true }
     ];
 
@@ -103,6 +104,8 @@ export default function Sidebar() {
                                     onClick={() => {
                                         if (item.isReport) {
                                             setShowReportsSubmenu(!showReportsSubmenu);
+                                        } else if (item.isInventory) {
+                                            setShowInventorySubmenu(!showInventorySubmenu);
                                         } else {
                                             handleNavigation(item.path);
                                         }
@@ -141,10 +144,37 @@ export default function Sidebar() {
                                 ))}
                             </div>
                         )}
+                        {showInventorySubmenu && (
+                            <div
+                                className="absolute left-full ml-2 mt-[360px] bg-white shadow-lg border rounded-lg p-2 z-50"
+                                style={{ backgroundColor: secondary }}
+                            >
+                                {[
+                                    { label: 'Inventario', path: '/inventory' },
+                                    { label: 'Equipo Asignado', path: '/inventory/assigned' }
+                                ].map((sub, idx) => (
+                                    <button
+                                        key={idx}
+                                        onMouseEnter={() => setHoveredIndex(idx)}
+                                        onMouseLeave={() => setHoveredIndex(null)}
+                                        style={{
+                                            backgroundColor: hoveredIndex === idx ? primary : 'transparent',
+                                            color: hoveredIndex === idx ? 'white' : 'inherit'
+                                        }}
+                                        className="block text-sm text-gray-800 px-2 py-1 text-left w-full rounded"
+                                        onClick={() => {
+                                            setShowReportsSubmenu(false);
+                                            handleNavigation(sub.path);
+                                        }}
+                                    >
+                                        {sub.label}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 
-                {/* Items expandidos (desktop) */}
                 {isExpanded && (
                     <div className="ml-[0px] min-w-[200px] max-w-[200px]">
                         {navItems.map((item, index) => {
@@ -181,7 +211,37 @@ export default function Sidebar() {
                                     </div>
                                 );
                             }
-
+                            
+                            if (item.isInventory) {
+                                return (
+                                    <div key={index} className="relative">
+                                        <div
+                                            className={`relative flex items-center pl-[30px] mt-[27px] hover:bg-opacity-75 cursor-pointer`}
+                                            onClick={() => setShowInventorySubmenu(!showInventorySubmenu)}
+                                            style={{ backgroundColor: currentPath === item.path ? primary : 'transparent', color: currentPath === item.path ? secondary : primary }}
+                                        >
+                                            <item.icon size={24} />
+                                            <p className={`ml-[10px] ${currentPath === item.path ? 'text-white' : ''}`}>{item.label}</p>
+                                        </div>
+                                        {showInventorySubmenu && (
+                                            <div className="ml-[60px] mt-2 flex flex-col gap-2">
+                                                {[
+                                                    { label: 'Inventario', path: '/inventory' },
+                                                    { label: 'Equipo Asignado', path: '/inventory/assigned' }
+                                                ].map((sub, idx) => (
+                                                    <button
+                                                        key={idx}
+                                                        className="text-sm text-left hover:underline text-gray-700"
+                                                        onClick={() => handleNavigation(sub.path)}
+                                                    >
+                                                        {sub.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            }
                             return (
                                 <div
                                     key={index}
@@ -198,7 +258,7 @@ export default function Sidebar() {
                 )}
 
                 <div className="absolute bottom-2 left-2 text-xs text-gray-400">
-                    V 3.17.21
+                    V 3.18.21
                 </div>
             </div>
         </div>

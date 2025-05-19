@@ -14,76 +14,63 @@ import Search from "@/components/table/search";
 import Actions from "./actions";
 import { Button } from "@/components/form/button"; 
 import { colors } from "@/components/types/enums/colors"; 
-import AddAssignedForm from "@/components/forms/addAssigned"; 
+import AddOrganizationForm from "@/components/forms/addOrganization"; 
 import { useRouter } from 'next/navigation';
 import Image from 'next/image'; 
 import { useColors } from '@/services/colorService';
 
-const AssignedTable = () => {
+
+const PermissionsTable = () => {
     const columnHelper = createColumnHelper();
     const api = useApi();
-    const [data, setData] = useState([]);
-    const [departments, setAssigned] = useState([]);
-    const [globalFilter, setGlobalFilter] = useState("");
-    const [refreshTable, setRefreshTable] = useState(false);
-    const [showForm, setShowForm] = useState(false);
-    const effectMounted = useRef(false);
-    const { primary, secondary } = useColors();
 
     const handleActionClick = (id, status) => {
 
     };
-    const fetchData = () => {
-        let parsedPermissions;
-        const storedPermissions = localStorage.getItem('permissions'); 
-        if (storedPermissions) {
-            parsedPermissions = JSON.parse(storedPermissions);
-        }
-        const organization= parsedPermissions.Organization;
-        api.post('/user/assignation/fetch',{organization})
-            .then((response) => {
-                const objects = response.data;
-                setAssigned(objects)
-            const fetchedData = response.data.map(item => {
-                const statusMap = {
-                    1: "En resguardo",
-                    2: "Asignado",
-                    3: "Obsoleto/Dañado"
-                };
 
-                return {
-                    id: item.id,
-                    object: item.object,
-                    user: item.userName, 
-                    searchUser: `${item.userName.name} ${item.userName.last}`, 
-                    location: item.locationName,
-                    locationId: item.location,
-                    uuid: item.uuid,
-                    chars: item.chars,
-                    status: item.status,
-                    searchStatus: statusMap[item.status] || "Estado desconocido" 
-                };
-            });
-                setData(fetchedData);
-                setRefreshTable(false);
-            })
-            .catch((error) => {
-                console.error("Error al consultar asignados:", error);
-            });
-    };
+    const { primary, secondary } = useColors();
+
+    const [data, setData] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState("");
+    const [refreshTable, setRefreshTable] = useState(false);
+    const [permissions, setPermissions] = useState([]);
+    const effectMounted = useRef(false);
+
+    const fetchPermissions = () => {
+
+                            const storedPermissions = localStorage.getItem("permissions");
+                    const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
+                    const organization = parsedPermissions?.Organization;
+                    api.get(`/user/checks/getPermissions/${organization}`)
+                        .then((response) => {
+                        const permissions = response.data.map(item => {
+                        return {
+                            checkId: item.checkId,
+                            uuid: item.user,
+                            name: item.name,
+                            last: item.last,
+                            entrance: formatDate(item.entrance),
+                            entranceName: item.locationEName,
+                            leave: formatDate(item.leave),
+                            leaveName: item.locationLName, 
+                            distanceEnt: item.distanceEnt,
+                            distanceLeave: item.distanceLeave,
+                        };
+                        });
+                        setData(permissions);
+                        })
+                        .catch((error) => {
+                        console.error("Error al consultar departamentos:", error);
+                        });
+    } 
 
     useEffect(() => {
         if (!effectMounted.current) {
-            fetchData();
+            fetchPermissions();
             effectMounted.current = true;
         }
     }, []);
 
-    useEffect(() => {
-        if (refreshTable) {
-            fetchData();
-        }
-    }, [refreshTable]);
 
     const router = useRouter();
     const columns = [
@@ -95,55 +82,81 @@ const AssignedTable = () => {
                         alt="Icono"
                         width={10} 
                         height={10} 
-                        className="h-full w-full"
-                    />
+                        className="h-full w-full"/>
                 </div>
             ),
             header: "", 
             enableSorting: false, 
-        }),
-        columnHelper.accessor("object", {
+        }), 
+        columnHelper.accessor(row => `${row.name} ${row.last}`, {
+            id: "fullName",
+            cell: (info) => (
+                <span
+                    className="underline cursor-pointer"
+                    onClick={() => router.push(`/profile?user=${info.row.original.uuid}`)}
+                >
+                    {info.getValue()}
+                </span>
+            ),
+            header: "Usuario",
+        }),       
+        columnHelper.accessor("entrance", {
             cell: (info) => <span>{info?.getValue()}</span>,
-            header: "Equipo de resguardo",
+            header: "Hora de entrada",
+        }),     
+        columnHelper.accessor("leave", {
+            cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Hora de salida",
+        }),     
+        columnHelper.accessor("distanceEnt", {
+            cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Distancia a corporativo en entrada",
+        }),     
+        columnHelper.accessor("distanceLeave", {
+            cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Distancia a corporativo en salida",
         }),
-        columnHelper.accessor("searchUser", {
-            cell: (info) => {
-                const user = info.row.original.user;
-                return <p>{user?.name ?? ''} {user?.last ?? ''}</p>;
-            },
-            header: "Colaborador",
+        columnHelper.accessor("entranceName", {
+            cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Distancia a corporativo en salida",
         }),
-        columnHelper.accessor("location", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Corporativo",
+        columnHelper.accessor("leaveName", {
+            cell: (info) => <span>{info?.getValue()}</span>,
+            header: "Distancia a corporativo en salida",
         }),
-        columnHelper.accessor("searchStatus", {
-            cell: (info) => <span>{info.getValue()}</span>,
-            header: "Estado",
-        }),
-        columnHelper.accessor("chars", {
+        columnHelper.accessor("checkId", {
             cell: (info) => (
-                <ul className="list-disc overflow-y-auto pl-8 max-h-[60px]">
-                    {info.getValue().map((char, index) => (
-                        <li key={index} className="list-disc">{char.characteristics}: {char.charValue}</li>
-                    ))}
-                </ul>
+                <button
+                    className="rounded p-3 border-2"
+                    onClick={() => handleButtonClick(info.getValue())}
+                >
+                    Aprovar <span>{info?.getValue()}</span>
+                </button>
             ),
-            header: "Características",
-        }),                
-        columnHelper.accessor("actions", {
-            cell: (info) => (
-                <Actions
-                    onActionClick={(id) => handleActionClick(id)}
-                    rowData={info.row.original} 
-                    onClose={() => {
-                        setRefreshTable(true);
-                    }} />
-            ),
-            header: "", 
-            enableSorting: false, 
+            header: "",
+            enableSorting: false,
         }),
-    ];
+    ]; 
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+
+        const formattedDay = day < 10 ? '0' + day : day;
+        const formattedMonth = month < 10 ? '0' + month : month;
+        const formattedHours = hours < 10 ? '0' + hours : hours;
+        const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+        const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
+
+        return `${formattedDay}/${formattedMonth}/${year} ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    };
 
     const table = useReactTable({
         data,
@@ -157,17 +170,21 @@ const AssignedTable = () => {
         getSortedRowModel: getSortedRowModel(),
     });
 
-    const handleButtonClick = () => {
-        setShowForm(!showForm);
-    };
+    const [showForm, setShowForm] = useState(false);
 
-    const handleCloseForm = () => {
-        setShowForm(false);
-        setRefreshTable(true);
+    const handleButtonClick = (id) => {
+        api.put(`/user/checks/apprPermission/${id}`)
+        .then((response) => {
+            fetchPermissions();
+        })
+        .catch((error) => {
+            console.error("Error al consultar departamentos:", error);
+        });
+        fetchPermissions();
     };
 
     if (refreshTable) {
-        return <AssignedTable />;
+        return <PermissionsTable />;
     }
 
     return (
@@ -186,22 +203,9 @@ const AssignedTable = () => {
                         className="md:p-2  outline-none border-b-2 w-[80%] md:w-1/5 focus:md:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
                 </div>
-                <div className="mt-[10px] md:mr-[120px]">
-                    <Button
-                    className="md:w-[126px] md:mr-[130px] text-[13px] px-2 py-1"
-                        color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleButtonClick}>
-                        Añadir +
-                    </Button>
-                    {showForm && (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <AddAssignedForm onClose={handleCloseForm} />
-                        </div>
-                    )}
-                </div>
             </div>
             <div className="w-full overflow-y-auto pb-7">
-            <table className="md:w-[1150px] text-left text-black rounded-lg mt-[10px] md:mr-[130px] md:ml-[30px]">
+            <table className="md:w-[1150px] text-left text-black rounded-lg mt-[10px] md:ml-[30px] md:mr-[120px]">
                 <thead style={{ backgroundColor: primary || '#F1CF2B' }} className="text-black rounded">
                     {table.getHeaderGroups().map((headerGroup) => (
                         <tr key={headerGroup.id}>
@@ -249,7 +253,7 @@ const AssignedTable = () => {
                 </tbody>
             </table>
             </div>
-                {table.getPageCount() > 0 && (
+            {table.getPageCount() > 0 && (
                     <div className="pb-9 flex items-center justify-end mt-2 gap-2 text-black md:mr-[200px]">
                         <button
                             onClick={() => {
@@ -282,4 +286,4 @@ const AssignedTable = () => {
     );
 };
 
-export default AssignedTable;
+export default PermissionsTable;
