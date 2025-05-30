@@ -38,30 +38,32 @@ const PermissionsTable = () => {
 
     const fetchPermissions = () => {
 
-                            const storedPermissions = localStorage.getItem("permissions");
-                    const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
-                    const organization = parsedPermissions?.Organization;
-                    api.get(`/user/checks/getPermissions/${organization}`)
-                        .then((response) => {
-                        const permissions = response.data.map(item => {
-                        return {
-                            checkId: item.checkId,
-                            uuid: item.user,
-                            name: item.name,
-                            last: item.last,
-                            entrance: formatDate(item.entrance),
-                            entranceName: item.locationEName,
-                            leave: formatDate(item.leave),
-                            leaveName: item.locationLName, 
-                            distanceEnt: item.distanceEnt,
-                            distanceLeave: item.distanceLeave,
-                        };
-                        });
-                        setData(permissions);
-                        })
-                        .catch((error) => {
-                        console.error("Error al consultar departamentos:", error);
-                        });
+        const storedPermissions = localStorage.getItem("permissions");
+        const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
+        const organization = parsedPermissions?.Organization;
+        api.get(`/user/checks/getPermissions/${organization}`)
+            .then((response) => {
+                console.log(response.data)
+                const permissions = response.data.map(item => {
+                    
+                    return {
+                        checkId: item.checkId,
+                        uuid: item.user,
+                        name: item.name,
+                        last: item.last,
+                        entrance: formatDate(item.entrance),
+                        entranceName: item.locationEName,
+                        leave: formatDate(item.leave),
+                        leaveName: item.locationLName, 
+                        distanceEnt: item.distanceEnt,
+                        distanceLeave: item.distanceLeave,
+                    };
+                });
+                setData(permissions);
+            })
+            .catch((error) => {
+                console.error("Error al consultar departamentos:", error);
+            });
     } 
 
     useEffect(() => {
@@ -70,7 +72,6 @@ const PermissionsTable = () => {
             effectMounted.current = true;
         }
     }, []);
-
 
     const router = useRouter();
     const columns = [
@@ -117,11 +118,15 @@ const PermissionsTable = () => {
         }),
 
         columnHelper.accessor("distanceLeave", {
-            cell: (info) => {
-                const value = info?.getValue();
-                return <span>{Number(value).toLocaleString()} mts.</span>;
-            },
-            header: "Distancia a corporativo en salida",
+        cell: (info) => {
+            const value = info?.getValue();
+            return (
+            <span>
+                {value != null ? `${Number(value).toLocaleString()} mts.` : ""}
+            </span>
+            );
+        },
+        header: "Distancia a corporativo en salida",
         }),
         columnHelper.accessor("entranceName", {
             cell: (info) => <span>{info?.getValue()}</span>,
@@ -146,6 +151,8 @@ const PermissionsTable = () => {
     ]; 
 
     const formatDate = (dateString) => {
+        console.log(dateString)
+        if(dateString){
         const date = new Date(dateString);
 
         const day = date.getDate();
@@ -163,6 +170,10 @@ const PermissionsTable = () => {
         const formattedSeconds = seconds < 10 ? '0' + seconds : seconds;
 
         return `${formattedDay}/${formattedMonth}/${year} ${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+    } else{
+        return;
+    }
+    
     };
 
     const table = useReactTable({
