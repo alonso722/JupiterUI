@@ -184,7 +184,7 @@ export default function Sidebar() {
                                     {
                                         label: 'Reservación de salas',
                                         path: '/reservations',
-                                        condition: hasRooms === true,
+                                        condition: permissions?.Type === 1 || hasRooms === true,
                                     }
                                 ]
                                 .filter(sub => sub.condition) 
@@ -305,7 +305,7 @@ export default function Sidebar() {
                                                     {
                                                         label: 'Reservación de salas',
                                                         path: '/reservations',
-                                                        condition: hasRooms === true,
+                                                        condition: permissions?.Type === 1 || hasRooms === true,
                                                     }
                                                 ]
                                                 .filter(sub => sub.condition) 
