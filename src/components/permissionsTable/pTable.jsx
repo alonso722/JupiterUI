@@ -109,28 +109,35 @@ const PermissionsTable = () => {
             header: "Hora de salida",
         }),     
         columnHelper.accessor("distanceEnt", {
-            cell: (info) => <span>{info?.getValue()}</span>,
+            cell: (info) => {
+                const value = info?.getValue();
+                return <span>{Number(value).toLocaleString()} mts.</span>;
+            },
             header: "Distancia a corporativo en entrada",
-        }),     
+        }),
+
         columnHelper.accessor("distanceLeave", {
-            cell: (info) => <span>{info?.getValue()}</span>,
+            cell: (info) => {
+                const value = info?.getValue();
+                return <span>{Number(value).toLocaleString()} mts.</span>;
+            },
             header: "Distancia a corporativo en salida",
         }),
         columnHelper.accessor("entranceName", {
             cell: (info) => <span>{info?.getValue()}</span>,
-            header: "Distancia a corporativo en salida",
+            header: "Corporativo de entrada",
         }),
         columnHelper.accessor("leaveName", {
             cell: (info) => <span>{info?.getValue()}</span>,
-            header: "Distancia a corporativo en salida",
+            header: "Corporativo de salida",
         }),
         columnHelper.accessor("checkId", {
             cell: (info) => (
                 <button
-                    className="rounded p-3 border-2"
+                    className="rounded-lg px-3 py-1 border-2"
                     onClick={() => handleButtonClick(info.getValue())}
                 >
-                    Aprovar <span>{info?.getValue()}</span>
+                    Aprobar
                 </button>
             ),
             header: "",

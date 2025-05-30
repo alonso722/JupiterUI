@@ -54,11 +54,19 @@ export default function CompleteAuth({
                         }));
                         localStorage.setItem('permissions', JSON.stringify(permissions));
                         let workflows : any = {};
+                        let rooms : any = {};
                         try {
                             const response = await api.post('/user/auth/workflows', permissions);
                             workflows = response.data;
                             localStorage.setItem('workflows', JSON.stringify(workflows));
 
+                        } catch (error) {
+                            console.error('Error al obtener datos:', error);
+                        }
+                        try {
+                            const response = await api.get(`/user/auth/hasMeetingRooms/${permissions.uuid}`);
+                            rooms = response.data;
+                            localStorage.setItem('rooms', JSON.stringify(rooms));
                         } catch (error) {
                             console.error('Error al obtener datos:', error);
                         }
