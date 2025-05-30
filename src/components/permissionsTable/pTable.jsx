@@ -43,7 +43,6 @@ const PermissionsTable = () => {
         const organization = parsedPermissions?.Organization;
         api.get(`/user/checks/getPermissions/${organization}`)
             .then((response) => {
-                console.log(response.data)
                 const permissions = response.data.map(item => {
                     
                     return {
@@ -151,7 +150,6 @@ const PermissionsTable = () => {
     ]; 
 
     const formatDate = (dateString) => {
-        console.log(dateString)
         if(dateString){
         const date = new Date(dateString);
 
