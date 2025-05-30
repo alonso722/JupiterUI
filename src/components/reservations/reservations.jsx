@@ -57,6 +57,7 @@ const Reservations = () => {
         object: item.object
       }));
       setLocations(fetchedLocations);
+      console.log(schedulesRes.data)
       setSchedules(schedulesRes.data);
       setRefreshTable(false);
 
@@ -176,15 +177,15 @@ const Reservations = () => {
                             <div
                               key={idx}
                               className="p-3 rounded shadow w-[80%] mb-2 text-sm text-black"
-                              style={{ backgroundColor:  secondary }}
+                              style={{ backgroundColor: secondary }}
                             >
-                                <p><strong>Reservado por:</strong> {schedule.reserver.name} {schedule.reserver.last}</p>
-                                <p><strong>Area:</strong> {schedule.department}</p>
-                                <div className="flex mt-3">
-
-                                <p  className="mr-5"><strong>Inicio:</strong> {start.toLocaleString()}</p>
-                                <p><strong>Fin:</strong> {end.toLocaleString()}</p> 
-                                </div>
+                              <p className="text-center font-bold mb-3">{schedule.subject}</p>
+                              <p><strong>Reservado por:</strong> {schedule.reserver.name} {schedule.reserver.last}</p>
+                              <p><strong>Área:</strong> {schedule.department}</p>
+                              <div className="flex mt-3">
+                                <p className="mr-5"><strong>Inicio:</strong> {start.toLocaleString()}</p>
+                                <p><strong>Fin:</strong> {end.toLocaleString()}</p>
+                              </div>
                             </div>
                           );
                         })
