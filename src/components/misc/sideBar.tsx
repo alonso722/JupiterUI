@@ -84,7 +84,7 @@ export default function Sidebar() {
         { path: '/departments', icon: ImOffice, label: 'Departamentos', condition: permissions?.Type === 1 || permissions?.Type === 6 },
         { path: '/HHRR', icon: RiFolderUserLine, label: 'Capital Humano', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/reports', icon: RiArchiveDrawerLine, label: 'Reportes', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1, isReport: true },
-        { path: '/locations', icon: IoLocationOutline, label: 'Ubicaciones',  condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 || hasRooms === true, isLocation: true },
+        { path: '/locations', icon: IoLocationOutline, label: 'Ubicaciones',  condition: permissions?.Type === 1 ||  permissions?.Type === 6 || hasRooms === true, isLocation: true },
         { path: '/inventory', icon: MdOutlineInventory2, label: 'Inventario', condition: permissions?.Type === 1 || permissions?.Type === 6, isInventory: true },
         { path: '/permissions', icon: AiOutlineFileText, label: 'Permisos', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1 },
         { path: '/user', icon: FaUsers, label: 'Usuarios', condition: true }
@@ -157,9 +157,9 @@ export default function Sidebar() {
                                         onMouseLeave={() => setHoveredIndex(null)}
                                         style={{
                                             backgroundColor: hoveredIndex === idx ? primary : 'transparent',
-                                            color: hoveredIndex === idx ? 'white' : 'inherit'
+                                            color: hoveredIndex === idx ? 'white' : 'white'
                                         }}
-                                        className="block text-sm text-gray-800 px-2 py-1 text-left w-full rounded"
+                                        className="block text-sm text-white px-2 py-1 text-left w-full rounded"
                                         onClick={() => {
                                             setShowReportsSubmenu(false);
                                             handleNavigation(sub.path);
@@ -176,18 +176,28 @@ export default function Sidebar() {
                                 style={{ backgroundColor: secondary }}
                             >
                                 {[
-                                    { label: 'Corporativos', path: '/locations', condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1, },
-                                    { label: 'Reservación de salas', path: '/reservations', condition: hasRooms === true, }
-                                ].map((sub, idx) => (
+                                    {
+                                        label: 'Corporativos',
+                                        path: '/locations',
+                                        condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1,
+                                    },
+                                    {
+                                        label: 'Reservación de salas',
+                                        path: '/reservations',
+                                        condition: hasRooms === true,
+                                    }
+                                ]
+                                .filter(sub => sub.condition) 
+                                .map((sub, idx) => (
                                     <button
                                         key={idx}
                                         onMouseEnter={() => setHoveredIndex(idx)}
                                         onMouseLeave={() => setHoveredIndex(null)}
                                         style={{
                                             backgroundColor: hoveredIndex === idx ? primary : 'transparent',
-                                            color: hoveredIndex === idx ? 'white' : 'inherit'
+                                            color: hoveredIndex === idx ? 'white' : 'white'
                                         }}
-                                        className="block text-sm text-gray-800 px-2 py-1 text-left w-full rounded"
+                                        className="block text-sm text-white px-2 py-1 text-left w-full rounded"
                                         onClick={() => {
                                             setShowLocationSubmenu(false);
                                             handleNavigation(sub.path);
@@ -213,9 +223,9 @@ export default function Sidebar() {
                                         onMouseLeave={() => setHoveredIndex(null)}
                                         style={{
                                             backgroundColor: hoveredIndex === idx ? primary : 'transparent',
-                                            color: hoveredIndex === idx ? 'white' : 'inherit'
+                                            color: hoveredIndex === idx ? 'white' : 'white'
                                         }}
-                                        className="block text-sm text-gray-800 px-2 py-1 text-left w-full rounded"
+                                        className="block text-sm text-white px-2 py-1 text-left w-full rounded"
                                         onClick={() => {
                                             setShowInventorySubmenu(false);
                                             handleNavigation(sub.path);
@@ -257,7 +267,7 @@ export default function Sidebar() {
                                                 ].map((sub, idx) => (
                                                     <button
                                                         key={idx}
-                                                        className="text-sm text-left hover:underline text-gray-700"
+                                                        className="text-sm text-left text-white"
                                                         onClick={() => handleNavigation(sub.path)}
                                                     >
                                                         {sub.label}
@@ -287,12 +297,22 @@ export default function Sidebar() {
                                         {showLocationSubmenu && (
                                             <div className="ml-[60px] mt-2 flex flex-col gap-2">
                                                 {[
-                                                    { label: 'Corporativos', path: '/locations' },
-                                                    { label: 'Reservacion de salas', path: '/reservations' }
-                                                ].map((sub, idx) => (
+                                                    {
+                                                        label: 'Corporativos',
+                                                        path: '/locations',
+                                                        condition: permissions?.Type === 1 || permissions?.Type === 6 || permissions?.isRh === 1,
+                                                    },
+                                                    {
+                                                        label: 'Reservación de salas',
+                                                        path: '/reservations',
+                                                        condition: hasRooms === true,
+                                                    }
+                                                ]
+                                                .filter(sub => sub.condition) 
+                                                .map((sub, idx) => (
                                                     <button
                                                         key={idx}
-                                                        className="text-sm text-left hover:underline text-gray-700"
+                                                        className="text-sm text-left text-white"
                                                         onClick={() => handleNavigation(sub.path)}
                                                     >
                                                         {sub.label}
@@ -326,7 +346,7 @@ export default function Sidebar() {
                                                 ].map((sub, idx) => (
                                                     <button
                                                         key={idx}
-                                                        className="text-sm text-left hover:underline text-gray-700"
+                                                        className="text-sm text-left text-white"
                                                         onClick={() => handleNavigation(sub.path)}
                                                     >
                                                         {sub.label}
