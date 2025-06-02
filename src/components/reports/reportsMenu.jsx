@@ -24,7 +24,7 @@ const period = [
 export const ReportsMenu = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(period[0]);
   const [permissions, setPermissions] = useState([]);
-  const [selectedButton, setSelectedButton] = useState(null);
+  const [selectedButton, setSelectedButton] = useState("");
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
   const [data, setData] = useState(null);
@@ -794,11 +794,14 @@ const downloadPdf = () => {
     <div className="flex w-full pl-5 mt-9">
       <div className="flex flex-col">
         <select
-          className="border border-black rounded p-2 text-black"
+          className="border border-2 rounded p-2 text-black"
           value={selectedButton}
           onChange={(e) => {
             const value = Number(e.target.value);
-            if (!isNaN(value)) handleButtonClick(value);
+            if (!isNaN(value)) {
+              handleButtonClick(value);
+            }
+            setSelectedButton(e.target.value);
           }}
         >
           <option value="">Selecciona un reporte para verificar los datos</option>
