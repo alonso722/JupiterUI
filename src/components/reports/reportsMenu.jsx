@@ -24,7 +24,7 @@ const period = [
 export const ReportsMenu = () => {
   const [selectedPeriod, setSelectedPeriod] = useState(period[0]);
   const [permissions, setPermissions] = useState([]);
-  const [selectedButton, setSelectedButton] = useState("");
+  const [selectedButton, setSelectedButton] = useState(null);
   const [departments, setDepartments] = useState([]);
   const [users, setUsers] = useState([]);
   const [data, setData] = useState(null);
@@ -179,6 +179,7 @@ export const ReportsMenu = () => {
   };
 
 const downloadPdf = () => {
+  console.log(selectedButton)
   if (!data || !data.length) {
     alert("No hay datos para exportar a PDF");
     return;
@@ -794,14 +795,11 @@ const downloadPdf = () => {
     <div className="flex w-full pl-5 mt-9">
       <div className="flex flex-col">
         <select
-          className="border border-2 rounded p-2 text-black"
+          className="border border-black rounded p-2 text-black"
           value={selectedButton}
           onChange={(e) => {
             const value = Number(e.target.value);
-            if (!isNaN(value)) {
-              handleButtonClick(value);
-            }
-            setSelectedButton(e.target.value);
+            if (!isNaN(value)) handleButtonClick(value);
           }}
         >
           <option value="">Selecciona un reporte para verificar los datos</option>
