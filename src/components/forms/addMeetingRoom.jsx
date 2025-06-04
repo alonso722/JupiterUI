@@ -5,7 +5,7 @@ import { useColors } from '@/services/colorService';
 import UsersChecks from '../misc/checkbox/usersChecks';
 import InventoryChecks from '../misc/checkbox/inventoryChecks';
 
-const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
+const AddMeetingRoomForm = ({ onClose, roomData, locations }) => {
   const [name, setName] = useState('');
   const [selectedLocationId, setSelectedLocationId] = useState('');
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -29,42 +29,76 @@ const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
       }
       const organization= parsedPermissions.Organization;
     }
+
+    if(roomData){
+      setName(roomData.name);
+      setSelectedUsers(roomData.users);
+    }
+
     effectMounted.current = true;
-  }, [rowData]);
+  }, [roomData]);
 
-const handleAddMeetingRoom = () => {
-  if (!name) {
-    showToast('error', "Por favor, nombre la sala");
-    return;
-  }
+  const handleAddMeetingRoom = () => {
+    if (!name) {
+      showToast('error', "Por favor, nombre la sala");
+      return;
+    }
 
-  if (!selectedLocationId) {
-    showToast('error', "Por favor, seleccione un corporativo");
-    return;
-  }
+    if (!selectedLocationId) {
+      showToast('error', "Por favor, seleccione un corporativo");
+      return;
+    }
 
-  let parsedPermissions;
-  const storedPermissions = localStorage.getItem('permissions');
-  if (storedPermissions) {
-    parsedPermissions = JSON.parse(storedPermissions);
-  }
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+      parsedPermissions = JSON.parse(storedPermissions);
+    }
 
-  const locationDetails = {
-    orga: parsedPermissions.Organization,
-    name: name,
-    locationId: parseInt(selectedLocationId), 
-    selectedUsers: selectedUsers.map(user => user.uuid)
+    const meetingRoomDetalis = {
+      orga: parsedPermissions.Organization,
+      name: name,
+      locationId: parseInt(selectedLocationId), 
+      selectedUsers: selectedUsers.map(user => user.uuid)
+    };
+    api.post('/user/meetingRoom/add', meetingRoomDetalis)
+      .then((response) => {
+        if (response.status === 200) {
+          onClose();
+        }
+      })
+      .catch((error) => {
+        console.error("Error al añadir sala:", error);
+      });
   };
-  api.post('/user/meetingRoom/add', locationDetails)
-    .then((response) => {
-      if (response.status === 200) {
-        onClose();
-      }
-    })
-    .catch((error) => {
-      console.error("Error al añadir sala:", error);
-    });
-};
+
+  const handleEditMeetingRoom = () => {
+    if (!name) {
+      showToast('error', "Por favor, nombre la sala");
+      return;
+    }
+
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+      parsedPermissions = JSON.parse(storedPermissions);
+    }
+
+    const meetingRoomDetalis = {
+      name: name,
+      selectedUsers: selectedUsers.map(user => user.uuid)
+    };
+
+    api.put(`/user/meetingRoom/edit/${roomData.id}`, meetingRoomDetalis)
+      .then((response) => {
+        if (response.status === 200) {
+          onClose();
+        }
+      })
+      .catch((error) => {
+        console.error("Error al añadir sala:", error);
+      });
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50 px-5 md:px-0">
@@ -78,7 +112,7 @@ const handleAddMeetingRoom = () => {
         <div>
           Seleccione un corporativo
         </div>
-        {Array.isArray(locations) && locations.length > 0 && (
+        {!roomData && Array.isArray(locations) && locations.length > 0 && (
             <select
             className="w-[70%] border rounded px-3 py-2 mt-4"
             onChange={(e) => {
@@ -111,12 +145,23 @@ const handleAddMeetingRoom = () => {
         </div>
 
         <div className="mt-9 flex justify-end">
-            <button 
-              onClick={handleAddMeetingRoom} 
-              className="px-2 py-1 rounded text-white ml-5 mr-[20px]  mt-[10px]"
-              style={{ backgroundColor: secondary }}>
-              Añadir sala
+          {roomData ? (
+            <button
+              onClick={handleEditMeetingRoom}
+              className="p-2 rounded text-white ml-5 mr-[20px]  mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
+              Editar sala 
             </button>
+          ) : (
+            <button
+              onClick={handleAddMeetingRoom}
+              className="p-2 rounded text-white ml-5 mr-[20px]  mt-[30px]"
+              style={{ backgroundColor: secondary }}
+            >
+            + Añadir sala
+            </button>
+          )}
         </div>
       </div>
     </div>

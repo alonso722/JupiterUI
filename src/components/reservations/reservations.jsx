@@ -19,6 +19,9 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useColors } from '@/services/colorService';
 
+import { CiEdit, CiSaveDown2 } from "react-icons/ci";
+import { FaRegTrashAlt } from "react-icons/fa";
+
 
 const Reservations = () => {
   const columnHelper = createColumnHelper();
@@ -28,10 +31,14 @@ const Reservations = () => {
   const [meetingRoomsByLocation, setMeetingRoomsByLocation] = useState({});
   const [refreshTable, setRefreshTable] = useState(false);
   const [showForm, setShowForm] = useState(false);
+  const [roomData, setRoomData] = useState("");
+  const [scheduleData, setScheduleData] = useState("");
+  const [deletingRoom, setDeletingRoom] = useState("");
   const [showMeetingForm, setShowMeetingForm] = useState(false);
   const effectMounted = useRef(false);
   const { primary, secondary } = useColors();
   const [permissions, setPermissions] = useState({});
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const fetchData = async () => {
     let parsedPermissions;
@@ -57,7 +64,6 @@ const Reservations = () => {
         object: item.object
       }));
       setLocations(fetchedLocations);
-      console.log(schedulesRes.data)
       setSchedules(schedulesRes.data);
       setRefreshTable(false);
 
@@ -95,6 +101,7 @@ const Reservations = () => {
 
   const handleButtonClick = () => setShowForm(!showForm);
   const handleMeetingClick = () => setShowMeetingForm(!showMeetingForm);
+  
   const handleCloseForm = () => {
     setShowForm(false);
     setRefreshTable(true);
@@ -102,6 +109,37 @@ const Reservations = () => {
   const handleMeetingCloseForm = () => {
     setShowMeetingForm(false);
     setRefreshTable(true);
+  };
+
+  const handleEdit = (room) =>{
+    setRoomData(room)
+    setShowMeetingForm(true)
+  }
+
+  const handleEditSchedule = (schedule) =>{
+    setScheduleData(schedule)
+    setShowForm(true)
+  }
+
+  const handleDelete = (room) =>{
+    setDeletingRoom(room)
+    setIsDeleteModalOpen(true);
+  }
+
+  const handleCancelDelete = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleConfirmDelete = () => {
+    api.delete(`/user/meetingRoom/delete/${deletingRoom}`, )
+      .then((response) => {
+        setIsDeleteModalOpen(false);
+      })
+      .catch((error) => {
+        console.error("Error borrando proceso:", error);
+      });      
+      setIsDeleteModalOpen(false); 
+      fetchData();
   };
 
   if (refreshTable) {
@@ -121,24 +159,30 @@ const Reservations = () => {
           </button>
           {showForm && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <ReservationForm locations={locations} onClose={handleCloseForm} />
+              <ReservationForm locations={locations} onClose={handleCloseForm} scheduleData={scheduleData}/>
             </div>
           )}
         </div>
-        <div className="mt-[10px] md:mr-[120px]">
-          <button
-            className="md:w-[180px] border-2 text-[13px] rounded-lg text-white px-2 py-1"
-            onClick={handleMeetingClick}
-            style={{ backgroundColor:  primary }}
-          >
-            Añadir sala de reuniones +
-          </button>
-          {showMeetingForm && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <AddMeetingRoomForm locations={locations} onClose={handleMeetingCloseForm} />
-            </div>
-          )}
-        </div>
+        {permissions.Type === 1 && (
+          <div className="mt-[10px] md:mr-[120px]">
+            <button
+              className="md:w-[180px] border-2 text-[13px] rounded-lg text-white px-2 py-1"
+              onClick={handleMeetingClick}
+              style={{ backgroundColor: primary }}
+            >
+              Añadir sala de reuniones +
+            </button>
+            {showMeetingForm && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                <AddMeetingRoomForm
+                  roomData={roomData}
+                  locations={locations}
+                  onClose={handleMeetingCloseForm}
+                />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="w-[60%] overflow-y-auto pb-7">
@@ -166,8 +210,15 @@ const Reservations = () => {
 
                   return (
                     <div key={room.id} className="mb-4 ml-4">
-                      <h3 className="text-md font-semibold text-black mb-1">{room.name}</h3>
-
+                      <div className="flex mb-1">
+                        <h3 className="text-md font-semibold border-b-2 border-white text-black mb-1">{room.name}</h3>
+                            <CiEdit
+                              className=" text-black ml-2 mt-1 cursor-pointer"
+                              onClick={() => handleEdit(room)} style={{  color: primary }}/>
+                            <FaRegTrashAlt
+                              className=" text-[#E52A3A] ml-2 mt-1 cursor-pointer"
+                              onClick={() => handleDelete(room.id)} style={{  color: '#E52A3A' }}/>
+                      </div>
                       {roomSchedules.length > 0 ? (
                         roomSchedules.map((schedule, idx) => {
                           const start = new Date(schedule.start);
@@ -176,9 +227,14 @@ const Reservations = () => {
                           return (
                             <div
                               key={idx}
-                              className="p-3 rounded shadow w-[80%] mb-2 text-sm text-black"
+                              className="relative p-3 rounded shadow w-[80%] mb-2 text-sm text-black"
                               style={{ backgroundColor: secondary }}
                             >
+                              <CiEdit
+                                className="absolute top-2 right-2 text-black cursor-pointer"
+                                onClick={() => handleEditSchedule(schedule)}
+                                style={{ color: primary }}
+                              />
                               <p className="text-center font-bold mb-3">{schedule.subject}</p>
                               <p><strong>Reservado por:</strong> {schedule.reserver.name} {schedule.reserver.last}</p>
                               <p><strong>Área:</strong> {schedule.department}</p>
@@ -200,6 +256,22 @@ const Reservations = () => {
           );
         })}
       </div>
+      {isDeleteModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[150px] relative flex flex-col justify-center items-center">
+            <h1 className="mb-[20px] text-center text-black">¿Estás seguro de que deseas eliminar este proceso?</h1>
+            <div className="flex justify-between w-full px-8">
+              <button
+                className="text-white p-3 rounded-lg flex-grow mx-4"
+                onClick={handleConfirmDelete}
+                style={{ backgroundColor: secondary }}>
+                Confirmar
+              </button>
+              <button className="bg-[#E6E8EC]  text-[#2C1C47] p-3 rounded-lg flex-grow mx-4" onClick={handleCancelDelete}>Cancelar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

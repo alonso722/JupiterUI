@@ -41,6 +41,7 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
         const userType = parsedPermissions;
         const orga = parsedPermissions.Organization;
         userType.token = token;
+        console.log("accesooo a procesoss",cooWorkflows)
         api.post('/user/process/fetchTab', { orga, userType, departmentFilter, processFilter, cooWorkflows })
             .then((response) => {
                 localStorage.setItem('uuid', JSON.stringify(response.data.userUUID));

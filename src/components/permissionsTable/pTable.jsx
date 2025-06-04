@@ -151,7 +151,7 @@ const PermissionsTable = () => {
 
     const formatDate = (dateString) => {
         if(dateString){
-        const date = new Date(dateString);
+        const date = new Date(dateString.replace('Z', ''));
 
         const day = date.getDate();
         const month = date.getMonth() + 1;

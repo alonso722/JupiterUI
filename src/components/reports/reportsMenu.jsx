@@ -179,7 +179,6 @@ export const ReportsMenu = () => {
   };
 
 const downloadPdf = () => {
-  console.log(selectedButton)
   if (!data || !data.length) {
     alert("No hay datos para exportar a PDF");
     return;

@@ -9,7 +9,7 @@ import { registerLocale } from "react-datepicker";
 import es from "date-fns/locale/es";
 registerLocale("es", es);
 
-const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
+const ReservationForm = ({ onClose, scheduleData, locations }) => {
   const [meetingRooms, setMeetingRooms] = useState([]);
   const [schedules, setSchedules] = useState([]);
   const [excludedIntervals, setExcludedIntervals] = useState([]);
@@ -46,6 +46,10 @@ const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
       showToast('error', 'Por favor, seleccione fecha y hora de inicio y fin');
       return;
     }
+    if (startDateTime > endDateTime) {
+      showToast('error', 'Verifique las horas de inicio y fin');
+      return;
+    }
 
     let parsedPermissions;
     const storedPermissions = localStorage.getItem('permissions'); 
@@ -69,6 +73,43 @@ const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
       meetingRoomName: meetingRoomObj ? meetingRoomObj.name : ''
     };
     api.post(`/user/schedules/add/${uuid}`, reservationDetails)
+      .then((response) => {
+        if (response.status === 200) {
+          onClose();
+        }
+      })
+      .catch((error) => {
+        console.error("Error al añadir sala:", error);
+      });
+  };
+
+    const handleEditMeeting = () => {
+    if (!selectedMeetingRoom) {
+      showToast('error', 'Por favor, seleccione una sala');
+      return;
+    }
+
+    if (!startDateTime || !endDateTime) {
+      showToast('error', 'Por favor, seleccione fecha y hora de inicio y fin');
+      return;
+    }
+    if (startDateTime > endDateTime) {
+      showToast('error', 'Verifique las horas de inicio y fin');
+      return;
+    }
+    const locationObj = locations.find(loc => loc.id === selectedLocationId);
+    const reservationDetails = {
+      id:scheduleData.id,
+      meetingRoomName:scheduleData.meetingRoomName,
+      reserver:scheduleData.reserver,
+      meetingRoomId: parseInt(selectedMeetingRoom),
+      startDateTime,
+      endDateTime,
+      subject,
+      locationName: locationObj ? locationObj.name : '',
+      selectedUsers: selectedUsers.map(user => user.uuid),
+    };
+    api.put(`/user/schedules/edit/${scheduleData.id}`, reservationDetails)
       .then((response) => {
         if (response.status === 200) {
           onClose();
@@ -122,6 +163,22 @@ const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
     }
   };
 
+    useEffect(() => {
+    if (!effectMounted.current) {
+      if(scheduleData){
+        fetchMeetingRooms(scheduleData.location)
+        setSelectedLocationId(scheduleData.location)
+        setSubject(scheduleData.subject)
+        setSelectedMeetingRoom(scheduleData.room)
+        fetchSchedules(scheduleData.room)
+        setSelectedUsers(scheduleData.users)
+        setStartDateTime(scheduleData.start)
+        setEndDateTime(scheduleData.end)
+      }
+      effectMounted.current = true;
+    }
+  }, [selectedMeetingRoom]);
+
   const isTimeAvailable = (time) => {
     return !excludedIntervals.some(interval =>
       time >= interval.start && time < interval.end
@@ -147,29 +204,33 @@ const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
           />
         </div>
-
-        <div>Seleccione un corporativo</div>
-        {Array.isArray(locations) && locations.length > 0 && (
-          <select
-            className="w-[70%] border rounded px-3 py-2 mt-2 mb-4"
-            onChange={(e) => {
-              const value = e.target.value;
-              setSelectedLocationId(value);
-              fetchMeetingRooms(value);
-            }}
-          >
-            <option value="">Selecciona una opción</option>
-            {locations.map((item) => (
-              <option key={item.id} value={item.id}>{item.name}</option>
-            ))}
-          </select>
-        )}
+        {!scheduleData && (
+        <div>
+          <div>Seleccione un corporativo</div>
+            {Array.isArray(locations) && locations.length > 0 && (
+              <select
+                className="w-[70%] border rounded px-3 py-2 mt-2 mb-4"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedLocationId(value);
+                  fetchMeetingRooms(value);
+                }}
+              >
+                <option value="">Selecciona una opción</option>
+                {locations.map((item) => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+            )}
+        </div>
+         )}
         {Array.isArray(meetingRooms) && meetingRooms.length > 0 ? (
           <>
             <div>
               <p className='mb-2'>Seleccione una sala</p>
               <select
                 className="w-[70%] border rounded px-3 py-2 mb-4"
+                value={selectedMeetingRoom}
                 onChange={(e) => {
                   setSelectedMeetingRoom(e.target.value);
                   fetchSchedules(e.target.value);
@@ -229,18 +290,30 @@ const AddMeetingRoomForm = ({ onClose, rowData, locations }) => {
         </div>
         {startDateTime && endDateTime && (
           <div className="mt-9 flex justify-end">
-            <button
-              onClick={handleAddMeeting}
-              className="px-4 py-2 rounded text-white mt-[10px]"
-              style={{ backgroundColor: secondary }}
-            >
-              Registrar reservación
-            </button>
+
+            {scheduleData ? (
+              <button
+                onClick={handleEditMeeting}
+                className="px-4 py-2 rounded text-white mt-[10px]"
+                style={{ backgroundColor: secondary }}
+              >
+                Editar reservación
+              </button>
+            ) : (
+              <button
+                onClick={handleAddMeeting}
+                className="px-4 py-2 rounded text-white mt-[10px]"
+                style={{ backgroundColor: secondary }}
+              >
+                Registrar reservación
+              </button>
+            )}
           </div>
+          
         )}
       </div>
     </div>
   );
 };
 
-export default AddMeetingRoomForm;
+export default ReservationForm;

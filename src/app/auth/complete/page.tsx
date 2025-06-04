@@ -58,6 +58,7 @@ export default function CompleteAuth({
                         try {
                             const response = await api.post('/user/auth/workflows', permissions);
                             workflows = response.data;
+                            console.log(workflows)
                             localStorage.setItem('workflows', JSON.stringify(workflows));
 
                         } catch (error) {
