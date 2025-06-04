@@ -75,6 +75,7 @@ const ReservationForm = ({ onClose, scheduleData, locations }) => {
     api.post(`/user/schedules/add/${uuid}`, reservationDetails)
       .then((response) => {
         if (response.status === 200) {
+          showToast('success', "Reservación realizada");
           onClose();
         }
       })
@@ -112,6 +113,7 @@ const ReservationForm = ({ onClose, scheduleData, locations }) => {
     api.put(`/user/schedules/edit/${scheduleData.id}`, reservationDetails)
       .then((response) => {
         if (response.status === 200) {
+          showToast('success', "Reservación editada");
           onClose();
         }
       })

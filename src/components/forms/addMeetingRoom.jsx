@@ -64,6 +64,7 @@ const AddMeetingRoomForm = ({ onClose, roomData, locations }) => {
     api.post('/user/meetingRoom/add', meetingRoomDetalis)
       .then((response) => {
         if (response.status === 200) {
+          showToast('success', "Sala registrada");
           onClose();
         }
       })
@@ -92,6 +93,7 @@ const AddMeetingRoomForm = ({ onClose, roomData, locations }) => {
     api.put(`/user/meetingRoom/edit/${roomData.id}`, meetingRoomDetalis)
       .then((response) => {
         if (response.status === 200) {
+          showToast('success', "Sala editada");
           onClose();
         }
       })
