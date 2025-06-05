@@ -287,7 +287,7 @@ const Reservations = () => {
                                 return (
                                   <div
                                     key={idx}
-                                    className="relative p-3 rounded shadow w-[80%] mb-2 text-sm text-black"
+                                    className="relative p-3 rounded shadow w-[80%] mb-2 text-sm text-white"
                                     style={{ backgroundColor: secondary }}
                                   >
                                     <CiEdit
