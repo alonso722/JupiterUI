@@ -250,7 +250,8 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                                                         src="/icons/trash.svg"
                                                         alt="image"
                                                         width={17}
-                                                        height={18} />                                                                                                        Eliminar                                                
+                                                        height={18} />                                                                                                        
+                                                        Baja                                                
                                                 </div>
                                             </button>
                                         )}

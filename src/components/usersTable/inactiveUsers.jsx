@@ -119,10 +119,6 @@ const UsersTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Departamento",
         }),
-        // columnHelper.accessor("role", {
-        //     cell: (info) => <span>{info.getValue()}</span>,
-        //     header: "Rol",
-        // }),
         columnHelper.accessor("actions", {
             cell: (info) => (
                 <Actions
@@ -179,15 +175,6 @@ const UsersTable = () => {
                         onChange={(value) => setGlobalFilter(String(value))}
                         className="p-2 bg-transparent outline-none border-b-2 w-1/5 focus:w-1/3 duration-300 border-purple-950 text-black"
                         placeholder="Buscar"/>
-                </div>
-                <div className="mt-[10px] mr-[120px]">
-                    <Button
-                        className="w-[126px]"
-                        color={colors.DARK_JUPITER_OUTLINE}
-                        onClick={handleButtonClick}>
-                        Añadir +
-                    </Button>
-                    {showForm && <AddUserForm onClose={handleCloseForm} />}
                 </div>
             </div>
             <table className="w-[1150px] text-black text-left mt-[10px] rounded-lg mr-[120px]">

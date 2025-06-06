@@ -86,8 +86,7 @@ const UsersTable = () => {
             .catch((error) => {
                 console.error("Error al consultar usuarios:", error);
             });
-    };
-    
+    };  
     
     const fetchIns = () => {
         let parsedPermissions;
@@ -120,14 +119,16 @@ const UsersTable = () => {
                         default:
                             role = 'Desconocido';
                     }
-    
+
                     return {
                         uuid: item.uuid,
                         name: item.name,
                         last: item.last,
-                        department: item.department_name,   
+                        department: item.department_name,
+                        until: item.until ? item.until.split('T')[0] : null, 
+                        status: item.status,
                         mail: item.mail,
-                        phone :item.phone,  
+                        phone: item.phone,
                         role: role,
                     };
                 });
@@ -166,7 +167,8 @@ const UsersTable = () => {
                         alt="Icono"
                         width={10} 
                         height={10} 
-                        className="h-full w-full"/>
+                        className="h-full w-full"
+                    />
                 </div>
             ),
             header: "", 
@@ -193,14 +195,25 @@ const UsersTable = () => {
             cell: (info) => <span>{info.getValue()}</span>,
             header: "Teléfono",
         }),
-        columnHelper.accessor("time", {
+        !toggleOn && columnHelper.accessor("time", {
             cell: (info) => {
                 const time = info.getValue();
-                return(
+                return (
                     <span>
                         {time ? `${time.entrance.slice(0, 5)} - ${time.leave.slice(0, 5)}` : 'Sin horario registrado'}
                     </span>
-                )
+                );
+            },
+            header: "Horario",
+        }),
+        toggleOn && columnHelper.accessor("until", {
+            cell: (info) => {
+                const time = info.getValue();
+                return (
+                    <span>
+                        {time ? `${time} ` : 'Sin horario registrado'}
+                    </span>
+                );
             },
             header: "Horario",
         }),
@@ -219,7 +232,7 @@ const UsersTable = () => {
             header: "", 
             enableSorting: false, 
         }),
-    ];    
+    ].filter(Boolean); 
 
     const table = useReactTable({
         data,

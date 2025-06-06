@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment, act } from 'react';
 import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
 import { Listbox, Transition } from '@headlessui/react';
@@ -16,6 +16,8 @@ const AddUserForm = ({ user, onClose }) => {
   const [userMail, setUserMail] = useState('');
   const [userPass, setUserPass] = useState('');
   const [userDate, setUserDate] = useState('');
+  const [userUntil, setUntilDate] = useState('');
+  const [active, setActive] = useState('');
   const [selectedDepartments, setSelectedDepartments] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
   const effectMounted = useRef(false);
@@ -107,6 +109,8 @@ const AddUserForm = ({ user, onClose }) => {
               mail: response.data.mail,
               pass: response.data.pass,
               date: response.data.date,
+              until: response.data.until,
+              active: response.data.active
             };
             setData(fetchedData);
             setUserName(fetchedData.name);
@@ -114,6 +118,8 @@ const AddUserForm = ({ user, onClose }) => {
             setUserMail(fetchedData.mail);
             setUserPass(fetchedData.pass);
             setUserDate(fetchedData.date);
+            setUntilDate(fetchedData.until);
+            setActive(fetchedData.active);
           })
           .catch((error) => {
             console.error("Error al consultar usuario:", error);
@@ -214,11 +220,11 @@ const AddUserForm = ({ user, onClose }) => {
       userMail,
       userPass,
       userDate,
+      userUntil,
       department: selectedDepartments[0].department,
       role: roleName,
       uuid,
     };
-
     api.post('/user/users/edit', userDetails)
     .then((response) => {
       if (response.data.code === 200) {
@@ -327,7 +333,7 @@ const AddUserForm = ({ user, onClose }) => {
             />
           </div>
           <div className="mt-[20px] mb-4 text-black w-[70%]">
-            <p className='mb-2'>Fecha de ingreso:</p>
+            <p className='mb-2'>Fecha de ingreso: </p>
             <input
               type="date"
               placeholder="Fecha de ingreso"
@@ -336,6 +342,18 @@ const AddUserForm = ({ user, onClose }) => {
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </div>
+          {active === 0 && (
+            <div className="mt-[20px] mb-4 text-black w-[70%]">
+              <p className='mb-2'>Fecha de baja:</p>
+              <input
+                type="date"
+                placeholder="Fecha de ingreso"
+                value={userUntil ? userUntil.split('T')[0] : ''} 
+                onChange={(e) => setUntilDate(e.target.value)}
+                className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
+              />
+            </div>
+          )}
           {!user && (
             <p className="mt-[20px] mb-4 text-black w-[70%]">
               <input
