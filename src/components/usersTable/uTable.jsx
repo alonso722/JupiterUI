@@ -211,11 +211,11 @@ const UsersTable = () => {
                 const time = info.getValue();
                 return (
                     <span>
-                        {time ? `${time} ` : 'Sin horario registrado'}
+                        {time ? `${time} ` : 'Sin fecha de baja registrada'}
                     </span>
                 );
             },
-            header: "Horario",
+            header: "Fecha de baja",
         }),
         columnHelper.accessor("actions", {
             cell: (info) => (
