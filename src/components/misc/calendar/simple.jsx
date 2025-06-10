@@ -23,7 +23,11 @@ const CustomCalendar = () => {
   const [events, setEvents] = useState([]);
   const [requests, setReqs] = useState([]);
   const [owns, setOwns] = useState([]);
+  const [rejects, setRejects] = useState([]);
+  const [reqToRej, setReqToRej] = useState({});
   const [showModal, setShowModal] = useState(false);
+  const [rejectModal, setRejectModal] = useState(false);
+  const [selectedReasons, setSelectedReasons] = useState([]);
   const [showModalReq, setShowModalReq] = useState(false);
   const [showModalPer, setShowModalPer] = useState(false);
   const [newEvent, setNewEvent] = useState({ title: '', start: new Date(), end: new Date() });
@@ -49,6 +53,15 @@ const CustomCalendar = () => {
           parsedPermissions = JSON.parse(storedPermissions);
           setPermissions(parsedPermissions);
       }
+
+      const orga = parsedPermissions.Organization;
+        api.get(`/user/vacations/getVacRejs/${orga}`)
+          .then((response) => {
+            setRejects(response.data)
+          })
+          .catch((error) => {
+              console.error("Error al consultar usuarios:", error);
+          });
       const updateTime = () => {
           const currentTime = new Date().toLocaleTimeString('es-ES', {
               hour: '2-digit',
@@ -343,21 +356,45 @@ const CustomCalendar = () => {
     getOwns();
 };
 
-  const handleReject = async (request) => {
+  const handleInfoReject = async (request) => {
     let update = {};
     update.id = request.id;
     update.eventId = request.eventId;
     update.status = 0;
     update.uuid = request.requester;
-    const requester = await api.post('/user/vacations/updateReq', update);
-    const uuid = requester.data.uuid;
-    const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
-    if(response.status == 200){
-      showToast('success', "Respuesta enviada");
+    setReqToRej(update);
+    setRejectModal(true);
+  };
+
+  const toggleReason = (reason) => {
+    setSelectedReasons((prev) =>
+      prev.includes(reason)
+        ? prev.filter((r) => r !== reason)
+        : [...prev, reason]
+    );
+  };
+
+  const handleReject = async () => {
+    if (selectedReasons.length === 0) {
+      alert("Debe seleccionar al menos un motivo");
+      return;
     }
-    fetchEvents();
-    getReqs();
-    getOwns();
+    let update = {};
+    update = reqToRej;
+    update.reason = selectedReasons;
+    
+        const requester = await api.post('/user/vacations/updateReq', update);
+      const uuid = requester.data.uuid;
+      const response = await api.post('/user/notifications/addByVacationsStatus', {uuid});
+      if(response.status == 200){
+        showToast('success', "Respuesta enviada");
+      }
+      fetchEvents();
+      getReqs();
+      getOwns();
+
+    setRejectModal(false);
+    setSelectedReasons([]);
   };
   
   const CustomToolbar = ({ label, onNavigate, onView, view }) => {
@@ -639,6 +676,42 @@ const CustomCalendar = () => {
               </div>
             </div>
           )}
+          {rejectModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+              <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[350px] h-auto max-h-[80%] overflow-y-auto relative">
+                <h3 className="my-[20px] text-center">Seleccione un motivo de rechazo</h3>
+
+                <div className="space-y-2 mb-4">
+                  {rejects.map((motivo, index) => (
+                    <label key={index} className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        value={motivo}
+                        checked={selectedReasons.includes(motivo)}
+                        onChange={() => toggleReason(motivo)}
+                        className="form-checkbox h-4 w-4 text-purple-600"
+                      />
+                      <span>{motivo}</span>
+                    </label>
+                  ))}
+                </div>
+
+                <button
+                  className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 w-full"
+                  onClick={handleReject}
+                >
+                  Rechazar
+                </button>
+
+                <button
+                  className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700"
+                  onClick={() => setRejectModal(false)}
+                >
+                  &times;
+                </button>
+              </div>
+            </div>
+          )}
           {showModalReq && (
             <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[80%] relative">
@@ -692,7 +765,7 @@ const CustomCalendar = () => {
                             </button>
                             <button
                             className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-                            onClick={() => handleReject(request)}>
+                            onClick={() => handleInfoReject(request)}>
                             Rechazar
                             </button>
                           </div>
@@ -882,7 +955,7 @@ const CustomCalendar = () => {
                             </button>
                             <button
                             className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-                            onClick={() => handleReject(request)}>
+                            onClick={() => handleInfoReject(request)}>
                             Rechazar
                             </button>
                           </div>

@@ -5,12 +5,15 @@ import { useColors } from '@/services/colorService';
 
 const VacationsForm = ({ isOpen, onClose }) => {
   const [files, setFiles] = useState([]);
-  const [title, setTitle] = useState('');
+  const [users, setUsers] = useState([]);
   const [days, setDays] = useState([]);
   const [yearStart, setYearStart] = useState('');
   const [yearEnd, setYearEnd] = useState('');
   const [yearsDays, setYearsDays] = useState('');
   const [isBlockMode, setIsBlockMode] = useState(false);
+  const [selectedUuid, setSelectedUuid] = useState('');
+  const [rejectionInput, setRejectionInput] = useState('');
+  const [rejectionReasons, setRejectionReasons] = useState([]);
   const { primary, secondary } = useColors();
   const effectMounted = useRef(false);
   const api = useApi();
@@ -26,7 +29,9 @@ const VacationsForm = ({ isOpen, onClose }) => {
     const organization = parsedPermissions.Organization;
     api.post('/user/vacations/fetch', { organization })
         .then((response) => {
-          setDays(response.data);
+          setSelectedUuid(response.data.manager.uuid)
+          setDays(response.data.days);
+          setRejectionReasons(response.data.rej);
         })
         .catch((error) => {
             console.error("Error al consultar usuarios:", error);
@@ -35,6 +40,25 @@ const VacationsForm = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (!effectMounted.current) {
+
+      let parsedPermissions;
+      const storedPermissions = localStorage.getItem('permissions');
+      if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+      }
+      let organization = parsedPermissions?.Organization;
+      if (organization) {
+        api.get(`/user/users/fetchHHRR/${organization}`)
+          .then((response) => {
+            setUsers(response.data)
+          })
+          .catch((error) => {
+            console.error("Error al consultar usuarios:", error);
+          });
+      } else {
+        console.warn("El valor de organization es inválido o no está definido.");
+        setOptions([]);
+      }
       fetchData();
       effectMounted.current = true;
     }
@@ -127,10 +151,11 @@ const VacationsForm = ({ isOpen, onClose }) => {
     const orga = parsedPermissions?.Organization;
   
     let adjustment = {
+      manager: selectedUuid,
+      rejects: rejectionReasons,
       days: days,
       orga: orga,
     };
-  
     try {
       const response = await api.post('/user/vacations/adjustment', adjustment);
       if (response.status === 200) {
@@ -141,7 +166,23 @@ const VacationsForm = ({ isOpen, onClose }) => {
       console.error("Error al consultar procesos:", error);
     }
   };
-    
+
+  const handleChange = (e) => {
+    setSelectedUuid(e.target.value);
+  };
+
+  const handleAddRejection = () => {
+    const motivo = rejectionInput.trim();
+    if (!motivo || rejectionReasons.includes(motivo)) return;
+
+    setRejectionReasons((prev) => [...prev, motivo]);
+    setRejectionInput('');
+  };
+
+  const handleRemoveRejection = (motivo) => {
+    setRejectionReasons((prev) => prev.filter((item) => item !== motivo));
+  };
+ 
   if (!isOpen) return null;
 
   return (
@@ -153,7 +194,60 @@ const VacationsForm = ({ isOpen, onClose }) => {
         >
           &times;
         </button>
-        <h2 className="text-2xl mb-2 text-black">Días asignados por tiempo laborado</h2>
+        <h2 className="text-2xl mb-2 text-black"><b>Ajustes de vacaciones</b></h2>
+        <div>
+          <h2 className="text-lg mb-2 text-black">Encargado de vacaciones</h2>
+          <select
+            className="p-2 border rounded text-black w-[50%]"
+            value={selectedUuid}
+            onChange={handleChange}
+          >
+            <option value="" className='text-black'>Seleccione un encargado</option>
+            {users.map((user) => (
+              <option key={user.uuid} value={user.uuid}>
+                {user.name} {user.last}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <h2 className="text-lg mb-2 text-black">Motivos de rechazo de vacaciones</h2>
+          <div className="flex mb-2">
+            <input
+              type="text"
+              value={rejectionInput}
+              onChange={(e) => setRejectionInput(e.target.value)}
+              placeholder="Escribe un motivo"
+              className="px-2 py-1 border border-gray-300 rounded w-[70%] text-black"
+            />
+            <button
+              onClick={handleAddRejection}
+              className="ml-2 px-3 py-1 text-white rounded"
+              style={{ backgroundColor: primary }}
+            >
+              + Agregar
+            </button>
+          </div>
+
+          <div className="flex flex-wrap max-h-[150px] overflow-y-auto border-b-2 border-gray-300">
+            {rejectionReasons.map((motivo) => (
+              <div
+                key={motivo}
+                className="bg-gray-200 text-black p-2 m-1 rounded flex items-center max-w-[400px] overflow-hidden whitespace-nowrap"
+              >
+                <span className="truncate">{motivo}</span>
+                <button
+                  onClick={() => handleRemoveRejection(motivo)}
+                  className="ml-2 text-red-500"
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+        <h2 className="text-lg mb-2 text-black">Días asignados por tiempo laborado</h2>
+
         <p className="text-[11px] text-slate-400 mb-4 border-b-2 pb-2 mr-5">
           De no realizar un ajuste en los días, se asignarán los establecidos en la Ley Federal del Trabajo*
         </p>

@@ -570,8 +570,9 @@ return (
               </div>
             </div>
           )}
-          {isFar && (
-            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
+    </div>
+      {isFar && (
+            <div className="fixed inset-0 mr-5 flex items-center justify-center bg-[#2C1C47] bg-opacity-30 z-50">
               <div className="bg-white p-6 rounded-lg shadow-lg w-[350px] h-[40%] relative items justify-center">
                 <h3 className="my-[20px] ">¿Desea enviar un registro extraordinario utilizando la información de su geolocalización?</h3>
                 <button
@@ -590,7 +591,6 @@ return (
               </div>
             </div>
           )}
-    </div>
   </div>
   </>
 );
