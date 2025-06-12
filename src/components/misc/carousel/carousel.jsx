@@ -34,41 +34,58 @@ export const ECarousel = () => {
     const sliderRef = useRef(null); 
 
     useEffect(() => {
-        let parsedPermissions;
-        const storedPermissions = localStorage.getItem('permissions');
-        if (storedPermissions) {
-            parsedPermissions = JSON.parse(storedPermissions);
+    let parsedPermissions;
+    const storedPermissions = localStorage.getItem('permissions');
+    if (storedPermissions) {
+        parsedPermissions = JSON.parse(storedPermissions);
+    }
+
+    const orga = parsedPermissions?.Organization;
+
+    api.post('/user/organization/fetchInfo', { orga })
+        .then((response) => {
+        const data = response.data;
+        let valuesArray = [];
+        if (data.values) {
+            valuesArray = JSON.parse(data.values);
+        }
+        const fetchedCards = [
+            { id: 1, title: "Historia", description: data.history },
+            { id: 2, title: "Misión", description: data.mision },
+            { id: 3, title: "Visión", description: data.vision },
+        ];
+        if (valuesArray.length > 0) {
+            valuesArray.forEach((valueObj, index) => {
+            fetchedCards.push({
+                id: 4 + index,
+                title: valueObj.value,
+                description: valueObj.description
+            });
+            });
         }
 
-        const orga = parsedPermissions?.Organization;
-
-        api.post('/user/organization/fetchInfo', { orga })
+        api.get(`/user/media/getSliders/${orga}`)
             .then((response) => {
-                const data = response.data;
-                let valuesArray = [];
-                if (data.values) {
-                    valuesArray = JSON.parse(data.values);
-                }
-                const fetchedCards = [
-                    { id: 1, title: "Historia", description: data.history },
-                    { id: 2, title: "Misión", description: data.mision },
-                    { id: 3, title: "Visión", description: data.vision },
-                ];
-                if (valuesArray.length > 0) {
-                    valuesArray.forEach((valueObj, index) => {
-                        fetchedCards.push({
-                            id: 4 + index,
-                            title: valueObj.value,
-                            description: valueObj.description
-                        });
-                    });
-                }
-                setCards(fetchedCards);
+            const sliderImages = response.data; 
+
+            const imageCards = sliderImages.map((item, idx) => ({
+                id: 1000 + idx, 
+                title: `Imagen Carrusel ${idx + 1}`,
+                description: "", 
+                imageUrl: `${process.env.NEXT_PUBLIC_MS_FILES}/api/v1/file?f=${item.link}`
+            }));
+
+            setCards([...fetchedCards, ...imageCards]);
             })
             .catch((error) => {
-                console.error("Error al consultar información:", error);
+            console.error("Error al consultar imágenes del carrusel:", error);
+            setCards(fetchedCards);
             });
-
+        })
+        .catch((error) => {
+        console.error("Error al consultar información:", error);
+        setCards([]); 
+        });
     }, []);
 
     const settings = {
@@ -103,18 +120,28 @@ export const ECarousel = () => {
     return (
         <div className="mt-[30px] md:ml-[45px] md:pr-[45px] md:px-9 text-neutral-50 rounded mb-5">
             <Slider ref={sliderRef} {...settings}>
-                {cards && cards.length > 0 ? (
-                    cards.map((card) => (
-                        <div key={card.id} className="text-black p-3 pb-7">
-                            <div className="rounded-lg md:ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
-                                <p className="text-lg font-bold black">{card.title}</p>
-                                <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p>No hay tarjetas disponibles</p>
-                )}
+            {cards && cards.length > 0 ? (
+                cards.map((card) => (
+                <div key={card.id} className="text-black p-3 pb-7">
+                    {card.imageUrl ? (
+                    <div className="rounded-lg md:ml-[10px] border-2 p-6 shadow-xl flex items-center justify-center max-h-[150px] overflow-hidden bg-white">
+                        <img
+                        src={card.imageUrl}
+                        alt="Imagen Carrusel"
+                        className="max-h-[130px] object-contain"
+                        />
+                    </div>
+                    ) : (
+                    <div className="rounded-lg md:ml-[10px] border-2 overflow-y-auto max-h-[150px] p-6 text-black shadow-xl">
+                        <p className="text-lg font-bold">{card.title}</p>
+                        <span className="text-sm my-2 text-gray-black whitespace-pre-wrap">{card.description}</span>
+                    </div>
+                    )}
+                </div>
+                ))
+            ) : (
+                <p>No hay tarjetas disponibles</p>
+            )}
             </Slider>
             {/* Flechas colocadas fuera del carrusel */}
             <NextArrow onClick={() => sliderRef.current.slickNext()} />

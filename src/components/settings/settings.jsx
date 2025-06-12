@@ -5,6 +5,7 @@ import { SketchPicker } from 'react-color';
 import useApi from '@/hooks/useApi';
 import { useColors } from '@/services/colorService';
 import UsersChecks from '../misc/checkbox/usersChecks';
+import AddSliders from "./addSliders";
 
 export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryColor = "#442E69" }) => {
     const [permissions, setPermissions] = useState([]);
@@ -440,6 +441,8 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     </div>
                 )}
             </div>
+            
+            <AddSliders />
         </div>
     );    
 };
