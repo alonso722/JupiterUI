@@ -100,14 +100,21 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                     const valuesString = data.t01_organization_values; 
                     const valuesArray = JSON.parse(valuesString);
                     setValues(valuesArray);        
-                    setSelectedUsers(data.users)     
-                    if (imageData?.data) { 
-                        const arrayBuffer = imageData.data;  
-                        const blob = new Blob([new Uint8Array(arrayBuffer)], { type: data.t01_logo_mimetype });
-                        const url = URL.createObjectURL(blob);
-                        setLogoUrl(url);
-                    } 
-            
+                    setSelectedUsers(data.users)
+                    if (imageData) {
+                        const url = `${process.env.NEXT_PUBLIC_MS_FILES}/api/v1/file?f=${imageData}`;
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error("No se pudo cargar la imagen");
+
+                            const blob = await response.blob();
+                            const objectUrl = URL.createObjectURL(blob);
+                            setLogoUrl(objectUrl);
+                        } catch (error) {
+                            console.error("Error al cargar la imagen:", error);
+                            setLogoUrl(null);
+                        }
+                    }       
                     setPriColor(data.t01_primary_color || initialPrimaryColor);
                     setSecColor(data.t01_secondary_color || initialSecondaryColor);
                     setInfo(data);
@@ -131,43 +138,40 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
         }
     };
 
-    const handleSubmit = async () => {
-        if (!files) {
-            showToast('error', 'Por favor, seleccione un archivo para cargar.');
-            return;
-        }
-        const file = Array.isArray(files) ? files[0] : files;
-        if (!file.type.startsWith('image/')) {
-            showToast('error', 'El archivo seleccionado no es una imagen.');
-            return;
-        }
+    const handleSubmit= async () => {
+    if (!files) {
+        toast.warn("No has seleccionado una imagen.");
+        return;
+    }
+    try {
+        let imgPath = "";
+
         const formData = new FormData();
-        formData.append('file', file);
-        const orga = permissions.Organization || '';
-        formData.append('orga', orga);
+        formData.append("file", files);
 
-        try {
-            const response = await api.post('/user/organization/updateLogo', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'orgaId': orga,
-                },
-            });
+        const response = await api.post("/user/file/store", formData);
 
-            if (response.status === 200) {
-                showToast('success', 'Imagen cargada exitosamente.');
-                closeModal();
-                setTimeout(() => {
-                    window.location.reload();
-                }, 2000);  
-            } else {
-                showToast('error', 'Error al cargar la imagen.');
-            }
-        } catch (error) {
-            console.error('Error en la solicitud:', error);
-            showToast('error', 'Error en la solicitud.');
+        if (response?.data?.path) {
+            imgPath = response.data.path;
+        } else {
+            toast.error("Error al subir la imagen.");
+            return;
         }
-    };
+
+        const data = {
+            imgId: imgPath,
+            orga: permissions.Organization,
+        };
+        await api.post("/user/organization/updateLogo", { data });
+
+        toast.success("Imagen del carrusel guardada correctamente.");
+        closeModal();
+
+    } catch (error) {
+        console.error("Error al guardar la imagen:", error);
+        toast.error("Error al guardar la miniatura.");
+    }
+};
 
     const handlePrimaryColorChange = (newColor) => {
         setPriColor(newColor.hex); 

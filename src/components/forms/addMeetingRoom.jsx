@@ -116,7 +116,7 @@ const AddMeetingRoomForm = ({ onClose, roomData, locations }) => {
         </div>
         {!roomData && Array.isArray(locations) && locations.length > 0 && (
             <select
-            className="w-[70%] border rounded px-3 py-2 mt-4"
+            className="w-[80%] border rounded px-3 py-2 mt-4"
             onChange={(e) => {
                 setSelectedLocationId(e.target.value); 
                 const selected = locations.find(d => d.id === parseInt(e.target.value));
@@ -141,7 +141,7 @@ const AddMeetingRoomForm = ({ onClose, roomData, locations }) => {
                 className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
         </div>
-        <div className='max-h-[300px] h-[200px] max-w-[200px] mr-3 ml-5 md:ml-0'>
+        <div className='max-h-[300px] h-[200px] max-w-[80%] mr-3 ml-5 md:ml-0'>
           <p className="block text-sm font-medium leading-6 text-black">Colaboradores permitidos a reservar la sala</p>
           <UsersChecks selectedOptions={selectedUsers} setSelectedOptions={setSelectedUsers}/>
         </div>

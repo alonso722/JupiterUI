@@ -89,7 +89,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
             case '3':
                 return 'Aprobación';
             case '4':
-                return 'Aprobado';
+                return 'Publicado';
             default:
                 return 'Edición';
         }
@@ -141,7 +141,7 @@ export const Published = ({ departmentFilter, processFilter }) => {
 };
 
 const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }) => {
-    const approvedCards = cards.filter(card => card.column === 'Aprobado');
+    const approvedCards = cards.filter(card => card.column === 'Publicado');
 
     return (
         <div className="flex w-[100%] border-t-4 md:mt-[220px] pt-2 flex-wrap justify-center">

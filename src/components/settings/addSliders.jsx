@@ -167,7 +167,7 @@ const saveThumbnail = async () => {
     );
 
     return (
-        <div className="w-full mt-6 px-4">
+        <div className="w-full mt-6 px-4 text-black">
             <label className="block mb-2 font-semibold">Subir imágenes del carrusel</label>
             <input type="file" multiple onChange={handleImgsChange} className="mb-6" />
 

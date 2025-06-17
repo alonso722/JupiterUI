@@ -35,6 +35,7 @@ export const ReportsMenu = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [year, setYear] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const api = useApi();
 
     const showToast = (type, message) => {
@@ -63,6 +64,28 @@ export const ReportsMenu = () => {
         .catch((error) => {
           console.error("Error al consultar departamentos:", error);
         });
+        const orga = parsedPermissions.Organization;
+          api.post('/user/organization/getLogo', {orga})
+            .then(async (response) => {
+                const imageData = response.data.data[0].buffer;
+                    if (imageData) {
+                        const url = `${process.env.NEXT_PUBLIC_MS_FILES}/api/v1/file?f=${imageData}`;
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error("No se pudo cargar la imagen");
+
+                            const blob = await response.blob();
+                            const objectUrl = URL.createObjectURL(blob);
+                            setLogoUrl(objectUrl);
+                        } catch (error) {
+                            console.error("Error al cargar la imagen:", error);
+                            setLogoUrl(null);
+                        }
+                    }   
+              })
+              .catch((error) => {
+                console.error("Error al consultar nombre:", error);
+              });
 
       effectMounted.current = true;
     }
@@ -178,34 +201,75 @@ export const ReportsMenu = () => {
     fetchData(index);
   };
 
-const downloadPdf = () => {
-  if (!data || !data.length) {
-    alert("No hay datos para exportar a PDF");
-    return;
-  }
-
-  const doc = new jsPDF();
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString();
-
-  doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
-
-  const formatDateTime = (date) => {
-    if (!date) return "";
-    const adjustedDate = new Date(date);
-    adjustedDate.setHours(adjustedDate.getHours() + 6);
-    return adjustedDate.toLocaleString("es-MX", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
+  const getBase64FromUrl = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
     });
   };
 
+    const formatDateTime = (date) => {
+      if (!date) return "";
+      const adjustedDate = new Date(date);
+      adjustedDate.setHours(adjustedDate.getHours() + 6);
+      return adjustedDate.toLocaleString("es-MX", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    };
+
+  const downloadPdf = async () => {
+    if (!data || !data.length) {
+      alert("No hay datos para exportar a PDF");
+      return;
+    }
+
+    const doc = new jsPDF();
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString();
+
+    const topY = 15;
+    const middleY = 25;
+    const bottomY = 30;
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+
   if (selectedButton === 0) {
-    doc.text(`\nReporte de asistencia del día ${new Date(Date.now() - 86400000).toLocaleDateString()} \n\n`, 14, 30);
+
+    const reporteGenerado = `Reporte generado el ${formattedDate}`;
+    const reporteAsistencia = `Reporte de asistencia del día ${new Date(Date.now() - 86400000).toLocaleDateString()}`;
+    const textWidth = doc.getTextWidth(reporteGenerado);
+    const centerX = (pageWidth - (textWidth / 4)) / 2;
+
+    doc.setDrawColor(primary);
+    doc.setLineWidth(1);       
+    doc.line(14, topY - 6, pageWidth - 14, topY - 6); 
+
+    doc.setFontSize(14);
+    doc.text("\nReporte de asistencia", 14, topY); 
+
+    if (logoUrl) {
+      try {
+        const base64Logo = await getBase64FromUrl(logoUrl);
+        const imageWidth = 40;
+        const imageHeight = 12;
+        const rightX = pageWidth - imageWidth - 14; 
+        doc.addImage(base64Logo, 'PNG', rightX, topY - 0, imageWidth, imageHeight); 
+      } catch (error) {
+        console.error("Error al insertar logo en PDF:", error);
+      }
+    }
+
+    doc.setFontSize(6);
+    doc.text(reporteGenerado, centerX, middleY); 
+    doc.text(reporteAsistencia, 14, bottomY);
 
     const columns = [
       { header: "Colaborador", dataKey: "colaborator" },
@@ -230,96 +294,139 @@ const downloadPdf = () => {
     doc.autoTable({
       head: [columns.map(col => col.header)],
       body: formattedData.map(row => Object.values(row)),
-      startY: 50,
+      startY: bottomY + 10,
+      headStyles: {
+        fillColor: primary,
+        textColor: '#FFFFFF', 
+        halign: 'center',
+        fontSize: 7,
+      },
+      styles: {
+        fontSize: 6,
+      }
     });
 
     doc.save(`Asistencia - ${formattedDate}.pdf`);
-
   } else if (selectedButton === 1) {
+    const reporteGenerado = `Reporte generado el ${formattedDate}`;
+
+    const textWidth = doc.getTextWidth(reporteGenerado);
+    const centerX = (pageWidth - (textWidth / 4)) / 2;
+
+    doc.setDrawColor(primary);
+    doc.setLineWidth(1);       
+    doc.line(14, topY - 6, pageWidth - 14, topY - 6);
+
+    doc.setFontSize(14);
+    doc.text("\nReporte de asistencia", 14, topY); 
     let reportTitle = "";
+
+    if (logoUrl) {
+      try {
+        const base64Logo = await getBase64FromUrl(logoUrl);
+        const imageWidth = 40;
+        const imageHeight = 12;
+        const rightX = pageWidth - imageWidth - 14; 
+        doc.addImage(base64Logo, 'PNG', rightX, topY - 0, imageWidth, imageHeight); 
+      } catch (error) {
+        console.error("Error al insertar logo en PDF:", error);
+      }
+    }
 
     switch (selectedPeriod.id) {
       case 0:
-        reportTitle = "Reporte de asistencia general";
-        break;
+       reportTitle = "Reporte de asistencia general";
+      break;
       case 1:
         reportTitle = `Asistencia del día ${endDate}`;
-        break;
+      break;
       case 2:
         reportTitle = `Asistencia del mes ${endDate}`;
-        break;
+      break;
       case 3:
         reportTitle = `Asistencia del año ${year}`;
-        break;
+      break;
       case 4:
         reportTitle = `Asistencia del periodo de ${startDate} a ${endDate}`;
-        break;
-    }
+      break;
+      }
 
-    if (selectedUser?.length > 0) {
-      reportTitle += `\ndel usuario ${selectedUser[0].userName} ${selectedUser[0].userLast}`;
-    } else if (selectedDepartment?.length > 0) {
-      reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
-    }
+      if (selectedUser?.length > 0) {
+        reportTitle += `\ndel usuario ${selectedUser[0].userName} ${selectedUser[0].userLast}`;
+      } else if (selectedDepartment?.length > 0) {
+        reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
+      }
 
-    doc.text(`\n${reportTitle}\n\n`, 14, 30);
+      doc.setFontSize(6);
+      doc.text(reporteGenerado, centerX, middleY); 
+      doc.text(reportTitle, 14, bottomY);
 
-    const columns = [
-      { header: "Colaborador", dataKey: "colaborator" },
-      { header: "Entrada", dataKey: "entrace" },
-      { header: "Salida", dataKey: "leave" },
-      { header: "Corp. Entrada", dataKey: "entraceLoc" },
-      { header: "Corp. Salida", dataKey: "entraceLeave" },
-    ];
+      const columns = [
+        { header: "Colaborador", dataKey: "colaborator" },
+        { header: "Entrada", dataKey: "entrace" },
+        { header: "Salida", dataKey: "leave" },
+        { header: "Corp. Entrada", dataKey: "entraceLoc" },
+        { header: "Corp. Salida", dataKey: "entraceLeave" },
+      ];
 
-    const formattedData = data.map(row => ({
-      colaborator: `${row.name} ${row.last}`,
-      entrace: formatDateTime(row.entrance),
-      leave: formatDateTime(row.leave),
-      entraceLoc: row.locationEntName || "",
-      entraceLeave: row.locationLeaveName || "",
-    }));
+      const formattedData = data.map(row => ({
+        colaborator: `${row.name} ${row.last}`,
+        entrace: formatDateTime(row.entrance),
+        leave: formatDateTime(row.leave),
+        entraceLoc: row.locationEntName || "",
+        entraceLeave: row.locationLeaveName || "",
+      }));
 
-    doc.autoTable({
-      head: [columns.map(col => col.header)],
-      body: formattedData.map(row => Object.values(row)),
-      startY: 50,
-    });
+      doc.autoTable({
+        head: [columns.map(col => col.header)],
+        body: formattedData.map(row => Object.values(row)),
+        startY: bottomY + 10,
+        headStyles: {
+          fillColor: primary,
+          textColor: '#FFFFFF', 
+          halign: 'center',
+          fontSize: 7,
+        },
+        styles: {
+          fontSize: 6,
+        }
+      });
 
-    doc.save(`Asistencia - ${formattedDate}.pdf`);
+      doc.save(`Asistencia - ${formattedDate}.pdf`);
 
-  } else {
-    const columns = [
-      { header: "Colaborador", dataKey: "colaborator" },
-      { header: "Aprobador", dataKey: "aprobator" },
-      { header: "Inicio", dataKey: "start" },
-      { header: "Fin", dataKey: "end" },
-      { header: "Estatus", dataKey: "status" },
-    ];
+    } 
+    // else {
+    //   const columns = [
+    //     { header: "Colaborador", dataKey: "colaborator" },
+    //     { header: "Aprobador", dataKey: "aprobator" },
+    //     { header: "Inicio", dataKey: "start" },
+    //     { header: "Fin", dataKey: "end" },
+    //     { header: "Estatus", dataKey: "status" },
+    //   ];
 
-    const formattedData = data.map(row => ({
-      colaborator: `${row.name} ${row.last}`,
-      aprobator: row.aprobatorName || "N/A",
-      start: row.start ? new Date(row.start).toLocaleDateString("es-MX") : "N/A",
-      end: row.end ? new Date(row.end).toLocaleDateString("es-MX") : "N/A",
-      status: row.status === 0
-        ? "Rechazado"
-        : row.status === 1
-        ? "En revisión"
-        : row.status === 2
-        ? "Aprobado"
-        : "Desconocido",
-    }));
+    //   const formattedData = data.map(row => ({
+    //     colaborator: `${row.name} ${row.last}`,
+    //     aprobator: row.aprobatorName || "N/A",
+    //     start: row.start ? new Date(row.start).toLocaleDateString("es-MX") : "N/A",
+    //     end: row.end ? new Date(row.end).toLocaleDateString("es-MX") : "N/A",
+    //     status: row.status === 0
+    //       ? "Rechazado"
+    //       : row.status === 1
+    //       ? "En revisión"
+    //       : row.status === 2
+    //       ? "Aprobado"
+    //       : "Desconocido",
+    //   }));
 
-    doc.autoTable({
-      head: [columns.map(col => col.header)],
-      body: formattedData.map(row => Object.values(row)),
-      startY: 50,
-    });
+    //   doc.autoTable({
+    //     head: [columns.map(col => col.header)],
+    //     body: formattedData.map(row => Object.values(row)),
+    //     startY: 50,
+    //   });
 
-    doc.save(`Vacaciones generadas ${formattedDate}.pdf`);
-  }
-};
+    //   doc.save(`Vacaciones generadas ${formattedDate}.pdf`);
+    // }
+  };
 
   const downloadCSV = () => {
     if (!data || !data.length) {
@@ -474,18 +581,38 @@ const downloadPdf = () => {
     XLSX.writeFile(workbook, `Reporte - ${formattedDate}.xlsx`);
   };
 
-  const DateInput = ({ label, value, onChange }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-gray-300 px-2 py-1 text-black"
-      />
-    </div>
-  );
-  
+  const DateInput = ({ label, value, onChange }) => {
+    const [inputValue, setInputValue] = useState(value || "");
+
+    useEffect(() => {
+      if (value !== inputValue) {
+        setInputValue(value || "");
+      }
+    }, [value]);
+
+    const handleChange = (e) => {
+      setInputValue(e.target.value);
+    };
+
+    const handleBlur = () => {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(inputValue)) {
+        onChange(inputValue);
+      }
+    };
+
+    return (
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <input
+          type="date"
+          value={inputValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="rounded border border-gray-300 px-2 py-1 text-black"
+        />
+      </div>
+    );
+  };
 
   const handlePeriodChange = (value) => {
     setSelectedPeriod(value);
@@ -806,7 +933,7 @@ const downloadPdf = () => {
             <option value={0}>Reporte de ayer</option>
           )}
           <option value={1}>Asistencia</option>
-          <option value={2}>Vacaciones</option>
+          {/* <option value={2}>Vacaciones</option> */}
         </select>
       </div>
     </div>

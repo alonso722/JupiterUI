@@ -35,6 +35,7 @@ export const AbsenceReports = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [year, setYear] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const api = useApi();
 
     const showToast = (type, message) => {
@@ -44,11 +45,44 @@ export const AbsenceReports = () => {
       });
     };
 
+  const getBase64FromUrl = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  };
+
   useEffect(() => {
     if (!effectMounted.current) {
       const storedPermissions = localStorage.getItem("permissions");
       const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
       const organization = parsedPermissions?.Organization;
+
+      const orga = parsedPermissions.Organization;
+        api.post('/user/organization/getLogo', {orga})
+          .then(async (response) => {
+            const imageData = response.data.data[0].buffer;
+            if (imageData) {
+              const url = `${process.env.NEXT_PUBLIC_MS_FILES}/api/v1/file?f=${imageData}`;
+              try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error("No se pudo cargar la imagen");
+
+                  const blob = await response.blob();
+                  const objectUrl = URL.createObjectURL(blob);
+                  setLogoUrl(objectUrl);
+              } catch (error) {
+                console.error("Error al cargar la imagen:", error);
+                setLogoUrl(null);
+              }
+            }   
+          })
+          .catch((error) => {
+            console.error("Error al consultar nombre:", error);
+          });
 
       api.post("/user/departments/fetch", { organization })
         .then((response) => {
@@ -174,20 +208,45 @@ export const AbsenceReports = () => {
     fetchData(index);
   };
 
-const downloadPdf = () => {
+const downloadPdf = async () => {
   if (!data || !data.length) {
     alert("No hay datos para exportar a PDF");
     return;
   }
 
   const doc = new jsPDF();
-
   const today = new Date();
   const formattedDate = today.toLocaleDateString();
 
-  doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
+  const topY = 15;
+  const middleY = 25;
+  const bottomY = 30;
 
+  const reporteGenerado = `Reporte generado el ${formattedDate}`;
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const textWidth = doc.getTextWidth(reporteGenerado);
+  const centerX = (pageWidth - (textWidth / 4)) / 2;
+
+  doc.setDrawColor(primary);
+  doc.setLineWidth(1);       
+  doc.line(14, topY - 6, pageWidth - 14, topY - 6); 
+
+  doc.setFontSize(14);
+  doc.text("\nReporte de ausencias", 14, topY); 
   let reportTitle = "";
+
+  if (logoUrl) {
+    try {
+      const base64Logo = await getBase64FromUrl(logoUrl);
+      const imageWidth = 40;
+      const imageHeight = 12;
+      const rightX = pageWidth - imageWidth - 14; 
+      doc.addImage(base64Logo, 'PNG', rightX, topY - 0, imageWidth, imageHeight); 
+    } catch (error) {
+      console.error("Error al insertar logo en PDF:", error);
+    }
+  }
 
   switch (selectedPeriod.id) {
     case 0:
@@ -213,7 +272,9 @@ const downloadPdf = () => {
     reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
   }
 
-  doc.text(`\n${reportTitle}\n\n`, 14, 30);
+    doc.setFontSize(6);
+    doc.text(reporteGenerado, centerX, middleY); 
+    doc.text(reportTitle, 14, bottomY);
 
   const columns = [
     { header: "Colaborador", dataKey: "colaborator" },
@@ -241,11 +302,20 @@ const downloadPdf = () => {
     };
   });
 
-  doc.autoTable({
-    head: [columns.map(col => col.header)],
-    body: formattedData.map(row => Object.values(row)),
-    startY: 50,
-  });
+    doc.autoTable({
+      head: [columns.map(col => col.header)],
+      body: formattedData.map(row => Object.values(row)),
+      startY: bottomY + 10,
+      headStyles: {
+        fillColor: primary,
+        textColor: '#FFFFFF', 
+        halign: 'center',
+        fontSize: 7,
+      },
+      styles: {
+        fontSize: 6,
+      }
+    });
 
   doc.save(`Ausencias - ${formattedDate}.pdf`);
 };
@@ -386,17 +456,38 @@ const downloadPdf = () => {
     XLSX.writeFile(workbook, `Reporte Ausencias - ${formattedDate}.xlsx`);
   };
 
-  const DateInput = ({ label, value, onChange }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-gray-300 px-2 py-1 text-black"
-      />
-    </div>
-  );
+  const DateInput = ({ label, value, onChange }) => {
+    const [inputValue, setInputValue] = useState(value || "");
+
+    useEffect(() => {
+      if (value !== inputValue) {
+        setInputValue(value || "");
+      }
+    }, [value]);
+
+    const handleChange = (e) => {
+      setInputValue(e.target.value);
+    };
+
+    const handleBlur = () => {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(inputValue)) {
+        onChange(inputValue);
+      }
+    };
+
+    return (
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <input
+          type="date"
+          value={inputValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="rounded border border-gray-300 px-2 py-1 text-black"
+        />
+      </div>
+    );
+  };
   
 
   const handlePeriodChange = (value) => {

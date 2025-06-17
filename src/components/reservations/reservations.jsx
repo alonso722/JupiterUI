@@ -200,40 +200,40 @@ const Reservations = () => {
   return (
     <div className="md:w-full mt-[100px] md:ml-[80px] md:py-5 px-3 md:px-10 text-white fill-gray-400 overflow-x-auto">
       <div className="flex justify-between mb-5">
-        <div className="mt-[10px] md:mr-[120px]">
+        <div className="mt-[10px] md:mr-[120px] flex">
           <button
-            className="md:w-[126px] border-2 text-[13px] rounded-lg text-white px-2 py-1"
+            className="md:w-[130px] border-2 text-[13px] rounded-lg text-white px-2 py-1 mr-[40px]"
             onClick={handleButtonClick}
             style={{ backgroundColor:  primary }}
           >
             Reservar +
           </button>
+          {permissions.Type === 1 && (
+            <div className=" md:mr-[120px]">
+              <button
+                className="md:w-[200px] md:h-[40px] border-2 text-[13px] rounded-lg text-white px-2 py-1"
+                onClick={handleMeetingClick}
+                style={{ backgroundColor: primary }}
+              >
+                Añadir sala de reuniones +
+              </button>
+              {showMeetingForm && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <AddMeetingRoomForm
+                    roomData={roomData}
+                    locations={locations}
+                    onClose={handleMeetingCloseForm}
+                  />
+                </div>
+              )}
+            </div>
+          )}
           {showForm && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <ReservationForm locations={locations} onClose={handleCloseForm} scheduleData={scheduleData}/>
             </div>
           )}
         </div>
-        {permissions.Type === 1 && (
-          <div className="mt-[10px] md:mr-[120px]">
-            <button
-              className="md:w-[180px] border-2 text-[13px] rounded-lg text-white px-2 py-1"
-              onClick={handleMeetingClick}
-              style={{ backgroundColor: primary }}
-            >
-              Añadir sala de reuniones +
-            </button>
-            {showMeetingForm && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <AddMeetingRoomForm
-                  roomData={roomData}
-                  locations={locations}
-                  onClose={handleMeetingCloseForm}
-                />
-              </div>
-            )}
-          </div>
-        )}
       </div>
 
       <div className="w-[60%] overflow-y-auto pb-7">
@@ -241,9 +241,14 @@ const Reservations = () => {
           const meetingRooms = meetingRoomsByLocation[location.id] || [];
 
           return (
-            <div key={location.id} className="mb-8">
-              <div className=" text-white px-4 py-2 rounded-md mb-2"
-                style={{ backgroundColor:  primary }}>
+            <div key={location.id} className="mb-8 border-b-2">
+              <div className=" text-black px-4 py-2 rounded-md mb-2 flex border--2">
+                <div className="w-4 h-4 mr-2 rounded-full mt-1"
+                  style={{
+                    backgroundColor: primary,
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                  }}/>
                 <h2 className="text-md font-bold">{location.name}</h2>
               </div>
 
@@ -257,8 +262,8 @@ const Reservations = () => {
 
                   return (
                     <div key={room.id} className="mb-4 ml-4">
-                      <div className="flex mb-1 border-b-2">
-                        <h3 className="text-md font-semibold border-b-2 border-white text-black mb-1">{room.name}</h3>
+                      <div className="flex mb-1 ">
+                        <h3 className="text-md font-semibold  border-white text-black mb-1">{room.name}</h3>
                         <CiEdit
                           className=" text-black ml-2 mt-1 cursor-pointer"
                           onClick={() => handleEdit(room)} style={{ color: primary }} />
@@ -312,7 +317,7 @@ const Reservations = () => {
                                 );
                               })
                             ) : (
-                              <p className="text-sm text-gray-400">Sin reservaciones</p>
+                              <p className="text-sm text-black">Sin reservaciones para hoy</p>
                             )}
                           </div>
                         );

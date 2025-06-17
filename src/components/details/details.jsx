@@ -14,7 +14,7 @@ const status = [
   { id: 1, column: 'Edición' },
   { id: 2, column: 'Revisión' },
   { id: 3, column: 'Aprobación' },
-  { id: 4, column: 'Aprobado' },
+  { id: 4, column: 'Publicado' },
 ];
 
 function classNames(...classes) {
@@ -318,7 +318,7 @@ const Details = ({ card, onClose }) => {
 
   function getEventTypeText(log) {
     if(!card?.column){
-      card.column = 'Aprobado'
+      card.column = 'Publicado'
     }
     switch (log.type) {
       case 21:
@@ -557,7 +557,7 @@ const Details = ({ card, onClose }) => {
         case "Aprobación":
             isDisabled = !parsedWorkflows.aprobatorOf.includes(cardId);
             break;
-        case "Aprobado":
+        case "Publicado":
             isDisabled = true;
             break;
         default:
@@ -639,9 +639,9 @@ const Details = ({ card, onClose }) => {
             <p className="text-[#7A828A] text-[16px]" title={departmentNameF}>
               {typeof departmentNameF === 'string' && (departmentNameF.length > 50 ? departmentNameF.substring(0, 50) + "..." : departmentNameF)}
             </p>
-              {card.column === "Aprobado" && updated && !isNaN(new Date(updated).getTime()) && (
+              {card.column === "Publicado" && updated && !isNaN(new Date(updated).getTime()) && (
                 <p className="text-black text-xs text-center flex-grow text-right">
-                  Aprobado: <strong>{new Date(updated).toLocaleString()}</strong>
+                  Publicado: <strong>{new Date(updated).toLocaleString()}</strong>
                 </p>
               )}
             </div>
@@ -788,7 +788,7 @@ const Details = ({ card, onClose }) => {
                 disabled={!document || isListboxDisabled()}>
                 {({ open }) => (
                   <>
-                    <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
+                    <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Actualizar estado del proceso</Listbox.Label>
                     <div className="relative mt-2">
                       <Listbox.Button
                         className={`relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6 max-w-[150px] ${
@@ -858,7 +858,7 @@ const Details = ({ card, onClose }) => {
                   Rechazar
                 </button>
               )}
-              {!isListboxDisabled() && card.column === "Aprobado" && (
+              {!isListboxDisabled() && card.column === "Publicado" && (
                 <button
                   className="text-white px-4 py-2 rounded"
                   style={{ backgroundColor: secondary }}

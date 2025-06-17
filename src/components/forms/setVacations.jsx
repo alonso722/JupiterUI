@@ -96,51 +96,48 @@ const VacationsForm = ({ isOpen, onClose }) => {
   };
 
   const handleSubmit = async () => {
-    if (days.length === 0) {
-      showToast('warning', "Agregue al menos un ajuste");
-      return;
-    }
-  
-    const minDaysByYears = [
-      { minYears: 1, maxYears: 1, minDays: 12 },
-      { minYears: 2, maxYears: 2, minDays: 14 },
-      { minYears: 3, maxYears: 3, minDays: 16 },
-      { minYears: 4, maxYears: 4, minDays: 18 },
-      { minYears: 5, maxYears: 5, minDays: 20 },
-      { minYears: 6, maxYears: 10, minDays: 22 },
-      { minYears: 11, maxYears: 15, minDays: 24 },
-      { minYears: 16, maxYears: 20, minDays: 26 },
-      { minYears: 21, maxYears: 25, minDays: 28 },
-      { minYears: 26, maxYears: 30, minDays: 30 },
-    ];
-  
-    const hasInvalidDays = days.some((entry) => {
-      const upperYearsWorking = entry.end; 
-      const range = minDaysByYears.find(
-        (r) => upperYearsWorking >= r.minYears && upperYearsWorking <= r.maxYears
-      );
+    if (days.length > 0) {
+      const minDaysByYears = [
+        { minYears: 1, maxYears: 1, minDays: 12 },
+        { minYears: 2, maxYears: 2, minDays: 14 },
+        { minYears: 3, maxYears: 3, minDays: 16 },
+        { minYears: 4, maxYears: 4, minDays: 18 },
+        { minYears: 5, maxYears: 5, minDays: 20 },
+        { minYears: 6, maxYears: 10, minDays: 22 },
+        { minYears: 11, maxYears: 15, minDays: 24 },
+        { minYears: 16, maxYears: 20, minDays: 26 },
+        { minYears: 21, maxYears: 25, minDays: 28 },
+        { minYears: 26, maxYears: 30, minDays: 30 },
+      ];
+    
+      const hasInvalidDays = days.some((entry) => {
+        const upperYearsWorking = entry.end; 
+        const range = minDaysByYears.find(
+          (r) => upperYearsWorking >= r.minYears && upperYearsWorking <= r.maxYears
+        );
 
-      const isValid = range ? entry.days >= range.minDays : true;
-  
-      return !isValid;
-    });
-  
-    if (hasInvalidDays) {
-      showToast('error', "Los días asignados no pueden ser menores al mínimo permitido según los años trabajados");
-      return;
-    }
-  
-    const hasOverlappingBlocks = days.some((current, index) =>
-      days.some((other, otherIndex) =>
-        index !== otherIndex &&
-        current.start <= other.end &&
-        current.end >= other.start
-      )
-    );
-  
-    if (hasOverlappingBlocks) {
-      showToast('error', "Hay bloques de días que se solapan. Ajuste las fechas para evitar empalmes.");
-      return;
+        const isValid = range ? entry.days >= range.minDays : true;
+    
+        return !isValid;
+      });
+    
+      if (hasInvalidDays) {
+        showToast('error', "Los días asignados no pueden ser menores al mínimo permitido según los años trabajados");
+        return;
+      }
+    
+      const hasOverlappingBlocks = days.some((current, index) =>
+        days.some((other, otherIndex) =>
+          index !== otherIndex &&
+          current.start <= other.end &&
+          current.end >= other.start
+        )
+      );
+    
+      if (hasOverlappingBlocks) {
+        showToast('error', "Hay bloques de días que se solapan. Ajuste las fechas para evitar empalmes.");
+        return;
+      }
     }
   
     let parsedPermissions;

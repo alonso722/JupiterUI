@@ -77,7 +77,7 @@ export const Kanban = ({ departmentFilter, processFilter, processIdNot }) => {
             case '3':
                 return 'Aprobación';
             case '4':
-                return 'Aprobado';
+                return 'Publicado';
             case '5':
                 return 'Historico';
             default:
@@ -151,8 +151,8 @@ const Board = ({ onCardClick, cards, setCards, permissions, primary, secondary }
                 secondary={secondary}
             />
             <Column
-                name="Aprobado"
-                column="Aprobado"
+                name="Publicado"
+                column="Publicado"
                 headingColor={secondary}
                 cards={cards}
                 setCards={setCards}

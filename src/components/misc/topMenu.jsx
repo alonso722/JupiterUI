@@ -87,15 +87,22 @@ export default function TopNewMenuClientDashboard() {
                 router.push('/auth/login');
             }
             api.post('/user/organization/getLogo', {orga})
-            .then((response) => {
-                const buffer = response.data.data[0];
-                const imageData = response.data.data[0];
-                if(imageData?.buffer?.data){
-                    const arrayBuffer = imageData.buffer.data;
-                    const blob = new Blob([new Uint8Array(arrayBuffer)], { type: imageData.type });
-                    const url = URL.createObjectURL(blob);
-                    setLogoUrl(url);
-                }
+            .then(async (response) => {
+                const imageData = response.data.data[0].buffer;
+                    if (imageData) {
+                        const url = `${process.env.NEXT_PUBLIC_MS_FILES}/api/v1/file?f=${imageData}`;
+                        try {
+                            const response = await fetch(url);
+                            if (!response.ok) throw new Error("No se pudo cargar la imagen");
+
+                            const blob = await response.blob();
+                            const objectUrl = URL.createObjectURL(blob);
+                            setLogoUrl(objectUrl);
+                        } catch (error) {
+                            console.error("Error al cargar la imagen:", error);
+                            setLogoUrl(null);
+                        }
+                    }   
               })
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);

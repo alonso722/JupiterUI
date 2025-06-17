@@ -11,7 +11,7 @@ const StatusSelect = ({ onSelectionChange }) => {
     { id: 1, column: 'Edición' },
     { id: 2, column: 'Revisión' },
     { id: 3, column: 'Aprobación' },
-    { id: 4, column: 'Aprobado' },
+    { id: 4, column: 'Publicado' },
   ];
 
   const [selectedStatus, setSelectedStatus] = useState(status[0]); 
@@ -25,7 +25,7 @@ const StatusSelect = ({ onSelectionChange }) => {
     <Listbox value={selectedStatus} onChange={handleSelectionChange}>
       {({ open }) => (
         <>
-          <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Estado del proceso</Listbox.Label>
+          <Listbox.Label className="block text-sm font-medium leading-6 text-gray-900">Actualizar estado del proceso</Listbox.Label>
           <div className="relative mt-2">
             <Listbox.Button className="relative w-full cursor-default rounded-md bg-white py-1.5 pl-3 pr-10 text-left text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6">
               <span className="flex items-center">

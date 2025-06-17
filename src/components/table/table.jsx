@@ -105,7 +105,7 @@ const TanStackTable = () => {
             case '3':
                 return 'Aprobación';
             case '4':
-                return 'Aprobado';
+                return 'Publicado';
             case '5':
                 return 'Historico';
             default:

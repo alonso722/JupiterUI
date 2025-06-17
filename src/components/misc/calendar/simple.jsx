@@ -722,10 +722,10 @@ const CustomCalendar = () => {
                 </button>
                 <div
             className={`text-black ml-5 mt-6 max-w-[90%] max-h-[485px] shadow-lg px-6 pt-5 pb-2 flex flex-col ${
-              permissions.isManager === 1 ? 'divide-y divide-gray-300' : ''
+              permissions.isManager === 1 || permissions.isRh === 1 ? 'divide-y divide-gray-300' : ''
             }`}
           >
-            {permissions.isManager === 1 && (
+            {permissions.isManager === 1 || permissions.isRh === 1 && (
               <div className="flex-1 flex flex-col ">
                 <div className='flex min-w-[260px]'>
                   <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3>      
@@ -777,7 +777,7 @@ const CustomCalendar = () => {
               </div>
             )}
 
-            <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
+            <div className={`flex-1 ${permissions.isManager === 1 || permissions.isRh === 1 ? 'mt-4' : ''} flex flex-col`}>
               <div className='flex min-w-[260px]'>
                     <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
                     <div>                  
@@ -912,10 +912,10 @@ const CustomCalendar = () => {
         <div className='md:block hidden'>
           <div
             className={`text-black ml-5 mt-6 max-w-[90%] max-h-[485px] shadow-lg px-6 pt-5 pb-2 flex flex-col ${
-              permissions.isManager === 1 ? 'divide-y divide-gray-300' : ''
+              permissions.isManager === 1 || permissions.isRh === 1 ? 'divide-y divide-gray-300' : ''
             }`}
           >
-            {permissions.isManager === 1 && (
+            {permissions.isManager === 1 || permissions.isRh === 1 && (
               <div className="flex-1 flex flex-col ">
                 <div className='flex min-w-[260px]'>
                   <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3>      
@@ -967,7 +967,7 @@ const CustomCalendar = () => {
               </div>
             )}
 
-            <div className={`flex-1 ${permissions.isManager === 1 ? 'mt-4' : ''} flex flex-col`}>
+            <div className={`flex-1 ${permissions.isManager === 1 || permissions.isRh === 1 ? 'mt-4' : ''} flex flex-col`}>
             <div className='flex min-w-[260px]'>
                   <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
                   <div>                  

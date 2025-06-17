@@ -35,6 +35,7 @@ export const TardinessReports = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [year, setYear] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const api = useApi();
 
     const showToast = (type, message) => {
@@ -49,6 +50,28 @@ export const TardinessReports = () => {
       const storedPermissions = localStorage.getItem("permissions");
       const parsedPermissions = storedPermissions ? JSON.parse(storedPermissions) : null;
       const organization = parsedPermissions?.Organization;
+
+      const orga = parsedPermissions.Organization;
+      api.post('/user/organization/getLogo', {orga})
+        .then(async (response) => {
+          const imageData = response.data.data[0].buffer;
+          if (imageData) {
+            const url = `${process.env.NEXT_PUBLIC_MS_FILES}/api/v1/file?f=${imageData}`;
+            try {
+              const response = await fetch(url);
+              if (!response.ok) throw new Error("No se pudo cargar la imagen");
+                const blob = await response.blob();
+                const objectUrl = URL.createObjectURL(blob);
+                setLogoUrl(objectUrl);
+            } catch (error) {
+              console.error("Error al cargar la imagen:", error);
+              setLogoUrl(null);
+            }
+          }   
+        })
+        .catch((error) => {
+          console.error("Error al consultar nombre:", error);
+        });
 
       api.post("/user/departments/fetch", { organization })
         .then((response) => {
@@ -167,104 +190,161 @@ export const TardinessReports = () => {
       console.error(`Error al consultar retardos:`, error);
     }
   };  
+  
+    const formatDateTime = (date) => {
+      if (!date) return "";
+      const adjustedDate = new Date(date);
+      adjustedDate.setHours(adjustedDate.getHours() + 6);
+      return adjustedDate.toLocaleString("es-MX", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    };
 
   const handleButtonClick = (index) => {
     setSelectedButton(index);
     fetchData(index);
   };
 
-const downloadPdf = () => {
-  if (!data || !data.length) {
-    alert("No hay datos para exportar a PDF");
-    return;
-  }
+  const downloadPdf = async () => {
+    if (!data || !data.length) {
+      alert("No hay datos para exportar a PDF");
+      return;
+    }
 
-  const doc = new jsPDF();
+    const doc = new jsPDF();
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString("es-MX");
 
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString("es-MX");
+    const topY = 15;
+    const middleY = 25;
+    const bottomY = 30;
 
-  doc.text(`\nReporte generado el ${formattedDate}`, 14, 20);
+    const reporteGenerado = `Reporte generado el ${formattedDate}`
 
-  let reportTitle = "";
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const textWidth = doc.getTextWidth(reporteGenerado);
+    const centerX = (pageWidth - (textWidth / 4)) / 2;
 
-  switch (selectedPeriod.id) {
-    case 0:
-      reportTitle = "Reporte general de retardos";
-      break;
-    case 1:
-      reportTitle = `Retardos del día ${endDate}`;
-      break;
-    case 2:
-      reportTitle = `Retardos del mes ${endDate}`;
-      break;
-    case 3:
-      reportTitle = `Retardos del año ${year}`;
-      break;
-    case 4:
-      reportTitle = `Retardos del periodo de ${startDate} a ${endDate}`;
-      break;
-  }
+    doc.setDrawColor(primary);
+    doc.setLineWidth(1);       
+    doc.line(14, topY - 6, pageWidth - 14, topY - 6); 
 
-  if (selectedUser?.length > 0) {
-    reportTitle += `\ndel usuario ${selectedUser[0].userName} ${selectedUser[0].userLast}`;
-  } else if (selectedDepartment?.length > 0) {
-    reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
-  }
+    doc.setFontSize(14);
+    doc.text("\nReporte de retardos", 14, topY); 
+    let reportTitle = "";
 
-  doc.text(`\n${reportTitle}\n\n`, 14, 30);
+    if (logoUrl) {
+      try {
+        const base64Logo = await getBase64FromUrl(logoUrl);
+        const imageWidth = 40;
+        const imageHeight = 12;
+        const rightX = pageWidth - imageWidth - 14; 
+        doc.addImage(base64Logo, 'PNG', rightX, topY - 0, imageWidth, imageHeight); 
+      } catch (error) {
+        console.error("Error al insertar logo en PDF:", error);
+      }
+    }
 
-  const columns = [
-    { header: "Colaborador", dataKey: "colaborator" },
-    { header: "Entrada", dataKey: "entrace" },
-    { header: "Salida", dataKey: "leave" },
-    { header: "Corp. Entrada", dataKey: "entraceLoc" },
-    { header: "Corp. Salida", dataKey: "entraceLeave" },
-  ];
+    switch (selectedPeriod.id) {
+      case 0:
+        reportTitle = "Reporte general de retardos";
+        break;
+      case 1:
+        reportTitle = `Retardos del día ${endDate}`;
+        break;
+      case 2:
+        reportTitle = `Retardos del mes ${endDate}`;
+        break;
+      case 3:
+        reportTitle = `Retardos del año ${year}`;
+        break;
+      case 4:
+        reportTitle = `Retardos del periodo de ${startDate} a ${endDate}`;
+        break;
+    }
 
-  const formatDateTime = (date) => {
-    if (!date) return "";
-    const adjustedDate = new Date(date);
-    adjustedDate.setHours(adjustedDate.getHours() + 6);
-    return adjustedDate.toLocaleString("es-MX", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
+    if (selectedUser?.length > 0) {
+      reportTitle += `\ndel usuario ${selectedUser[0].userName} ${selectedUser[0].userLast}`;
+    } else if (selectedDepartment?.length > 0) {
+      reportTitle += `\ndel departamento ${selectedDepartment[0].department}`;
+    }
+
+    doc.setFontSize(6);
+    doc.text(reporteGenerado, centerX, middleY); 
+    doc.text(reportTitle, 14, bottomY);
+
+    const columns = [
+      { header: "Colaborador", dataKey: "colaborator" },
+      { header: "Entrada", dataKey: "entrace" },
+      { header: "Salida", dataKey: "leave" },
+      { header: "Corp. Entrada", dataKey: "entraceLoc" },
+      { header: "Corp. Salida", dataKey: "entraceLeave" },
+    ];
+
+    const formattedData = data.map(row => ({
+      colaborator: `${row.name} ${row.last}`,
+      entrace: formatDateTime(row.entrance),
+      leave: formatDateTime(row.leave),
+      entraceLoc: row.locationEntName || "",
+      entraceLeave: row.locationLeaveName || "",
+    }));
+
+    doc.autoTable({
+      head: [columns.map(col => col.header)],
+      body: formattedData.map(row => Object.values(row)),
+      startY: bottomY + 10,
+      headStyles: {
+        fillColor: primary,
+        textColor: '#FFFFFF', 
+        halign: 'center',
+        fontSize: 7,
+      },
+      styles: {
+        fontSize: 6,
+      }
     });
+
+    doc.save(`Retardos - ${formattedDate}.pdf`);
   };
 
-  const formattedData = data.map(row => ({
-    colaborator: `${row.name} ${row.last}`,
-    entrace: formatDateTime(row.entrance),
-    leave: formatDateTime(row.leave),
-    entraceLoc: row.locationEntName || "",
-    entraceLeave: row.locationLeaveName || "",
-  }));
 
-  doc.autoTable({
-    head: [columns.map(col => col.header)],
-    body: formattedData.map(row => Object.values(row)),
-    startY: 50,
-  });
+  const DateInput = ({ label, value, onChange }) => {
+    const [inputValue, setInputValue] = useState(value || "");
 
-  doc.save(`Retardos - ${formattedDate}.pdf`);
-};
+    useEffect(() => {
+      if (value !== inputValue) {
+        setInputValue(value || "");
+      }
+    }, [value]);
 
+    const handleChange = (e) => {
+      setInputValue(e.target.value);
+    };
 
-  const DateInput = ({ label, value, onChange }) => (
-    <div className="flex flex-col">
-      <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
-      <input
-        type="date"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="rounded border border-gray-300 px-2 py-1 text-black"
-      />
-    </div>
-  );
+    const handleBlur = () => {
+      if (/^\d{4}-\d{2}-\d{2}$/.test(inputValue)) {
+        onChange(inputValue);
+      }
+    };
+
+    return (
+      <div className="flex flex-col">
+        <label className="text-sm font-medium text-gray-700 mb-1">{label}</label>
+        <input
+          type="date"
+          value={inputValue}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          className="rounded border border-gray-300 px-2 py-1 text-black"
+        />
+      </div>
+    );
+  };
 
     const downloadCSV = () => {
       if (!data || !data.length) {
