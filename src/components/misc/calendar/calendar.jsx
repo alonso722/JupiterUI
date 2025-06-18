@@ -42,7 +42,7 @@ const CustomCalendar = () => {
   let lastDayWeekday = getDay(lastDayCurrentMonth);
 
   let previousMonthDays = eachDayOfInterval({
-    start: sub(firstDayCurrentMonth, { days: firstDayWeekday }),
+    start: sub(firstDayCurrentMonth, { days: firstDayWeekday === 0 ? 7 : firstDayWeekday }),
     end: sub(firstDayCurrentMonth, { days: 1 }),
   });
 
