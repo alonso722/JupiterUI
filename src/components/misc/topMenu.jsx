@@ -107,40 +107,44 @@ export default function TopNewMenuClientDashboard() {
               .catch((error) => {
                 console.error("Error al consultar nombre:", error);
               });
-              api.post('/user/notifications/fetch', {uuid})
-              .then((response) => {
+            api.post('/user/notifications/fetch', { uuid })
+            .then((response) => {
                 const nots = response.data;
-              
+
                 const keyToLabelMap = {
-                  cv: 'Currículum',
-                  birth: 'Acta de nacimiento',
-                  address: 'Comp. de domicilio',
-                  dni: 'Ident. Oficial',
-                  socio: 'Cartilla',
-                  studies: 'Comprobante de estudios',
-                  recommendationP: 'Recomendaciones',
-                  nss: 'Número de Seguro Social',
-                  bills: 'Cuenta Bancaria',
-                  saving: 'Crédito INFONAVIT',
-                  data: 'Requisición de personal',
-                  recommendation: 'Referencia Laboral',
-                  conf: 'Autorizacion de contratación',
-                  medic: 'Certificado médico',
-                  driver: 'Licencia de conducir',
-                  fiscal: 'Constancia de situación fiscal',
-                  curp: 'CURP',
-                  contract: 'Contrato',
-                  annx: 'Hoja de control'
+                cv: 'Currículum',
+                birth: 'Acta de nacimiento',
+                address: 'Comp. de domicilio',
+                dni: 'Ident. Oficial',
+                socio: 'Cartilla',
+                studies: 'Comprobante de estudios',
+                recommendationP: 'Recomendaciones',
+                nss: 'Número de Seguro Social',
+                bills: 'Cuenta Bancaria',
+                saving: 'Crédito INFONAVIT',
+                data: 'Requisición de personal',
+                recommendation: 'Referencia Laboral',
+                conf: 'Autorizacion de contratación',
+                medic: 'Certificado médico',
+                driver: 'Licencia de conducir',
+                fiscal: 'Constancia de situación fiscal',
+                curp: 'CURP',
+                contract: 'Contrato',
+                annx: 'Hoja de control'
                 };
-                const updatedNots = nots.map((notification) => {
-                  const updatedFile = keyToLabelMap[notification.file] || notification.file;
-                  return { ...notification, file: updatedFile };
-                });
+
+                const updatedNots = nots
+                .map((notification) => {
+                    const updatedFile = keyToLabelMap[notification.file] || notification.file;
+                    return { ...notification, file: updatedFile };
+                })
+                .reverse(); 
+
                 setNotifications(updatedNots);
-              })              
-              .catch((error) => {
+            })
+            .catch((error) => {
                 console.error("Error al consultar notificaciones", error);
-              });
+            });
               fetchLogo();
               getTime();
             effectMounted.current = true;

@@ -918,7 +918,7 @@ const CustomCalendar = () => {
             }`}
           >
             <p className='text-black'>Permisos:{permissions.isManager}:::::::::{permissions.isRh}</p>
-            {permissions.isManager === 1 || permissions.isRh === 1 && (
+            {(permissions.isManager == 1 || permissions.isRh == 1 || permissions.isManager === 1 || permissions.isRh === 1) && (
               <div className="flex-1 flex flex-col ">
                 <div className='flex min-w-[260px]'>
                   <p className='text-black'>Permisos:{permissions.isManager}:::::::::{permissions.isRh}</p>
@@ -928,7 +928,7 @@ const CustomCalendar = () => {
                   <ul>
                     {requests.map((request, index) => (
                       <li key={index} className="mb-4 border-b pb-2 rounded p-2 text-[13px]"
-                      style={{ backgroundColor: request.status === 1 ? '#EDF2F7' : `#ffffff` }}>
+                          style={{ backgroundColor: request.status === 1 ? '#EDF2F7' : '#ffffff' }}>
                         <div>
                           <strong>Solicitante:</strong> {request.reqName}
                         </div>
@@ -953,14 +953,14 @@ const CustomCalendar = () => {
                         {request.status === 1 && (
                           <div className='flex justify-between'>                          
                             <button
-                            className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
-                            onClick={() => handleApprove(request)}>
-                            Aprobar
+                              className="mt-2 bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700 transition"
+                              onClick={() => handleApprove(request)}>
+                              Aprobar
                             </button>
                             <button
-                            className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
-                            onClick={() => handleInfoReject(request)}>
-                            Rechazar
+                              className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+                              onClick={() => handleInfoReject(request)}>
+                              Rechazar
                             </button>
                           </div>
                         )}
@@ -970,7 +970,6 @@ const CustomCalendar = () => {
                 </div>
               </div>
             )}
-
             <div className={`flex-1 ${permissions.isManager === 1 || permissions.isRh === 1 ? 'mt-4' : ''} flex flex-col`}>
             <div className='flex min-w-[260px]'>
                   <h3 className="text-[13px] mb-2 mt-2"><b>Mis vacaciones</b></h3> 
