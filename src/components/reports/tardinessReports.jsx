@@ -306,6 +306,7 @@ export const TardinessReports = () => {
       },
       styles: {
         fontSize: 6,
+          halign: 'center',
       }
     });
 
@@ -805,7 +806,7 @@ export const TardinessReports = () => {
         <div className="pt-5 mr-5">
           <button
             onClick={() => handleButtonClick(1)}
-            className="text-white px-[10px] py-[15px] rounded-lg text-white text-[13px] bg-[#3850FB] border-[1px] w-[131px] h-[40x]"
+            className="text-white px-[10px] py-[10px] rounded-lg text-white text-[13px] bg-[#3850FB] border-[1px] w-[131px] h-[40x]"
           >
           <p>Verificar Registros</p>
           </button>

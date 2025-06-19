@@ -297,12 +297,13 @@ export const ReportsMenu = () => {
       startY: bottomY + 10,
       headStyles: {
         fillColor: primary,
-        textColor: '#FFFFFF', 
+        textColor: '#FFFFFF',
         halign: 'center',
         fontSize: 7,
       },
       styles: {
         fontSize: 6,
+        halign: 'center', 
       }
     });
 
@@ -389,6 +390,7 @@ export const ReportsMenu = () => {
         },
         styles: {
           fontSize: 6,
+          halign: 'center',
         }
       });
 

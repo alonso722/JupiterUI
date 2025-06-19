@@ -164,7 +164,7 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
         };
         await api.post("/user/organization/updateLogo", { data });
 
-        toast.success("Imagen del carrusel guardada correctamente.");
+        toast.success("Imagen guardada correctamente.");
         closeModal();
 
     } catch (error) {

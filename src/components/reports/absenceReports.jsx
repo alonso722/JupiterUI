@@ -314,6 +314,7 @@ const downloadPdf = async () => {
       },
       styles: {
         fontSize: 6,
+          halign: 'center',
       }
     });
 
@@ -795,9 +796,9 @@ const downloadPdf = async () => {
         <div className="flex mr-5 pt-5">
           <button
             onClick={() => handleButtonClick(1)}
-            className="text-white px-[10px] py-[15px] rounded-lg text-white text-[13px] bg-[#3850FB] border-[1px] w-[131px] h-[40x]"
+            className="text-white px-[10px] py-[10px] rounded-lg text-white text-[13px] bg-[#3850FB] border-[1px] w-[131px] h-[40x]"
           >
-          <p className="text-black">Verificar Registros</p>
+          <p className="">Verificar Registros</p>
           </button>
         </div>
       <div className="mt-5 p-4 bg-gray-100 rounded">
