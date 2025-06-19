@@ -51,6 +51,7 @@ const CustomCalendar = () => {
       const storedPermissions = localStorage.getItem('permissions'); 
       if (storedPermissions) {
           parsedPermissions = JSON.parse(storedPermissions);
+          console.log("permisos:::::::::", parsedPermissions)
           setPermissions(parsedPermissions);
       }
 

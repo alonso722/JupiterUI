@@ -70,7 +70,7 @@ export default function CompleteAuth({
                         } catch (error) {
                             console.error('Error al obtener datos:', error);
                         }
-                        if(permissions.isManager == 1){
+                        if(permissions.isManager === 1 || permissions.isRh === 1){
                             try {
                                 const response = await api.post('/user/vacations/getReqs', { uuid: permissions.uuid });
                                 if (response.data && response.data.length > 0) {
