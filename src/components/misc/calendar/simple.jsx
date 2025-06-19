@@ -729,6 +729,7 @@ const CustomCalendar = () => {
             {permissions.isManager === 1 || permissions.isRh === 1 && (
               <div className="flex-1 flex flex-col ">
                 <div className='flex min-w-[260px]'>
+                  <p className='text-black'>Permisos:{permissions.isManager}:::::::::{permissions.isRh}</p>
                   <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3>      
                 </div>
                 <div className="max-h-[200px] overflow-y-auto">
@@ -916,9 +917,11 @@ const CustomCalendar = () => {
               permissions.isManager === 1 || permissions.isRh === 1 ? 'divide-y divide-gray-300' : ''
             }`}
           >
+            <p className='text-black'>Permisos:{permissions.isManager}:::::::::{permissions.isRh}</p>
             {permissions.isManager === 1 || permissions.isRh === 1 && (
               <div className="flex-1 flex flex-col ">
                 <div className='flex min-w-[260px]'>
+                  <p className='text-black'>Permisos:{permissions.isManager}:::::::::{permissions.isRh}</p>
                   <h3 className="text-[13px] mb-2 mt-2"><b>Solicitud de vacaciones</b></h3>      
                 </div>
                 <div className="max-h-[200px] overflow-y-auto">
