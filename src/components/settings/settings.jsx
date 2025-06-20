@@ -429,7 +429,8 @@ export const Settings = ({ initialPrimaryColor = "##F1CF2B", initialSecondaryCol
                             <button onClick={closeModal} className="bg-transparent rounded absolute top-2 pb-1 w-[35px] right-2 text-2xl font-bold text-black hover:text-gray-700">
                                 &times;
                             </button>
-                            <h2 className="text-2xl mb-4 text-black">Cargar nuevo logo</h2>
+                            <h2 className="text-2xl mb-1 text-black">Cargar nuevo logo</h2>
+                            <p className="text-[10px] text-[#9CA3AF] mb-3">Dimensiones recomendadas 160 × 48 px</p>
                             <input type="file" onChange={handleFileChange} className="mb-4" />
                             <div>                    
                                 <button

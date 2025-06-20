@@ -45,6 +45,16 @@ export const TardinessReports = () => {
       });
     };
 
+  const getBase64FromUrl = async (url) => {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  };
+
   useEffect(() => {
     if (!effectMounted.current) {
       const storedPermissions = localStorage.getItem("permissions");
@@ -241,10 +251,25 @@ export const TardinessReports = () => {
     if (logoUrl) {
       try {
         const base64Logo = await getBase64FromUrl(logoUrl);
-        const imageWidth = 40;
-        const imageHeight = 12;
-        const rightX = pageWidth - imageWidth - 14; 
-        doc.addImage(base64Logo, 'PNG', rightX, topY - 0, imageWidth, imageHeight); 
+
+        const img = new Image();
+        img.src = base64Logo;
+
+        await new Promise((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = (err) => reject(err);
+        });
+
+        const originalWidth = img.width;
+        const originalHeight = img.height;
+
+        const targetHeight = 12;
+        const scaleFactor = targetHeight / originalHeight;
+        const scaledWidth = originalWidth * scaleFactor;
+
+        const rightX = pageWidth - scaledWidth - 14;
+
+        doc.addImage(base64Logo, 'PNG', rightX, topY, scaledWidth, targetHeight);
       } catch (error) {
         console.error("Error al insertar logo en PDF:", error);
       }
