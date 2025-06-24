@@ -119,8 +119,11 @@ const SetTime = ({ onActionClick, rowData, onClose }) => {
 
         const cleanTime = (timeStr) => {
             const [rawHour, rawMinute] = (timeStr || '').split(':');
-            const hour = rawHour && rawHour !== 'undefined' ? rawHour.padStart(2, '0') : '00';
-            const minute = rawMinute && rawMinute !== 'undefined' ? rawMinute.padStart(2, '0') : '00';
+            const isValidNumber = (val) => /^\d{1,2}$/.test(val);
+
+            const hour = isValidNumber(rawHour) ? rawHour.padStart(2, '0') : '00';
+            const minute = isValidNumber(rawMinute) ? rawMinute.padStart(2, '0') : '00';
+
             return `${hour}:${minute}`;
         };
 
@@ -140,7 +143,6 @@ const SetTime = ({ onActionClick, rowData, onClose }) => {
             uuid: rowData.uuid,
             time
         };
-
         api.post('/user/time/setTime', payload)
             .then((response) => {
                 if (response.status === 200) {

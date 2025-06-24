@@ -103,7 +103,6 @@ const AddUserForm = ({ user, onClose }) => {
         const uuid = user.rowData.uuid;
         api.post('/user/users/fetchEdit', { uuid })
           .then((response) => {
-            console.log(response)
             const fetchedData = {
               uuid: user.rowData.uuid,
               name: response.data.name,

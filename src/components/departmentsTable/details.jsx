@@ -35,6 +35,7 @@ const Annexes = ({ onClose, department }) => {
           if (managerUser) {
               info.t02_department_manager = `${managerUser.userName} ${managerUser.userLast}`;
           }
+          console.log(info)
           setInfo(info);
         } catch (error) {
           console.error("Error al consultar procesos:", error);
@@ -45,50 +46,6 @@ const Annexes = ({ onClose, department }) => {
     }
   }, [api, department]);
 
-  const getFileIcon = (filename) => {
-    if (!filename) {
-      return '/icons/question.png';
-    }
-    const extension = filename.split('.').pop().toLowerCase();
-    switch (extension) {
-      case 'pdf':
-        return '/icons/pdf.png';
-      case 'doc':
-      case 'docx':
-        return '/icons/doc.png';
-      case 'xls':
-      case 'xlsx':
-        return '/icons/excel.png';
-      default:
-        return '/icons/question.png';
-    }
-  };
-
-  const handleAnxDownload = async (path) => {
-    if (path) {
-      window.open(process.env.NEXT_PUBLIC_MS_FILES+'/api/v1/file?f=' + path, '_blank');
-      //const uuid = localStorage.getItem('uuid');
-      let parsedPermissions;
-      const storedPermissions = localStorage.getItem('permissions'); 
-      if (storedPermissions) {
-          parsedPermissions = JSON.parse(storedPermissions);
-          setPermissions(parsedPermissions);
-      }
-      const uuid = parsedPermissions.uuid;
-
-      const log = {};
-      log.uuid = uuid;
-      log.type = 24;
-      log.id = department;
-      try {
-        await api.post('/user/log/setLog', log);
-      } catch (error) {
-        console.error("Error al hacer el registro:", error);
-      }
-    } else {
-      console.error("URL del documento no está disponible");
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -105,9 +62,9 @@ const Annexes = ({ onClose, department }) => {
                 {Array.isArray(info.users) && info.users.length > 0 ? (
                     info.users.map((user, index) => (
                         <div key={index} className="flex-shrink-0 flex flex-col items-start justify-center w-full">
-                            <p className="text-black text-sm">
-                                -{user.userName} {user.userLast}
-                            </p>
+                          <p className="text-black text-sm">
+                            -<b>{user.position ? `${user.position}:` : ''}</b> {user.userName} {user.userLast}
+                          </p>
                         </div>
                     ))
                 ) : (
