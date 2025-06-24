@@ -5,6 +5,7 @@ import AddUserForm from '../forms/addUser';
 import useApi from '@/hooks/useApi';
 import { toast } from 'react-toastify';
 import { useColors } from '@/services/colorService';
+import SetTime from './setTime';
 
 const Actions = ({ onActionClick, rowData, onClose }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -142,6 +143,7 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
     };
 
     const handleCancelTime = () => {
+        onClose();
         setModalTime(false);
     };
 
@@ -307,75 +309,9 @@ const Actions = ({ onActionClick, rowData, onClose }) => {
                     </div>
                 </div>
             )}
-            {isTimeOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-[#2C1C47] bg-opacity-30">
-                <div className="bg-white p-6 rounded-lg shadow-lg w-[500px] h-[300px] relative flex flex-col justify-center items-center">
-                    <h1 className="mb-4 text-center text-black">Seleccione las horas de entrada y salida</h1>
-                    <div className="mb-4 flex justify-center items-center w-[80%]">
-                        <span className="mr-2 text-black">Entrada:</span>
-                        <select
-                            className="p-2 border rounded mr-2"
-                            value={entrance.split(':')[0] || ''}
-                            onChange={(e) => setEntrance(`${e.target.value}:${entrance.split(':')[1] || '00'}`)}
-                        >
-                            <option value="" disabled>Hora</option>
-                            {Array.from({ length: 24 }, (_, i) => (
-                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
-                            ))}
-                        </select>
-                        <select
-                            className="p-2 border rounded ml-2"
-                            value={entrance.split(':')[1] || ''}
-                            onChange={(e) => setEntrance(`${entrance.split(':')[0] || '00'}:${e.target.value}`)}
-                        >
-                            <option value="" disabled>Minuto</option>
-                            {Array.from({ length: 60 }, (_, i) => (
-                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
-                            ))}
-                        </select>
-                    </div>
-                    <div className="mb-4 flex justify-center items-center w-[80%]">
-                        <span className="mr-2 text-black">Salida:</span>
-                        <select
-                            className="p-2 border rounded mr-2"
-                            value={leave.split(':')[0] || ''}
-                            onChange={(e) => setLeave(`${e.target.value}:${leave.split(':')[1] || '00'}`)}
-                        >
-                            <option value="" disabled>Hora</option>
-                            {Array.from({ length: 24 }, (_, i) => (
-                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
-                            ))}
-                        </select>
-                        <select
-                            className="p-2 border rounded ml-2"
-                            value={leave.split(':')[1] || ''}
-                            onChange={(e) => setLeave(`${leave.split(':')[0] || '00'}:${e.target.value}`)}>
-                            <option value="" disabled>Minuto</option>
-                            {Array.from({ length: 60 }, (_, i) => (
-                                <option key={i} value={i.toString().padStart(2, '0')}>{i.toString().padStart(2, '0')}</option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className="flex justify-between w-full px-8">
-                        <button
-                            className="text-white p-3 rounded-lg flex-grow mx-4"
-                            onClick={() => handleConfirmTime({
-                                entranceTimestamp: generateTimestamp(entrance),
-                                leaveTimestamp: generateTimestamp(leave)
-                            })}
-                            style={{ backgroundColor: secondary }}>
-                            Confirmar
-                        </button>
-                        <button
-                            className="bg-[#E6E8EC] text-[#2C1C47] p-3 rounded-lg flex-grow mx-4"
-                            onClick={handleCancelTime}>
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )}
+                {isTimeOpen && (
+                <SetTime user={selectedCard} onClose={handleCancelTime} rowData={rowData} /> 
+            )}
         </div>
     );
 };

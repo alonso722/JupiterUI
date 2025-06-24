@@ -50,7 +50,20 @@ const DepartmentsChart = ({ onClose }) => {
         const parseHierarchy = (nodes) => {
             nodes.forEach((node) => {
                 const tooltip = node.manager ? `Manager: ${node.manager}` : '';
-                data.push([node.department, node.parent ? node.parent : null, 1, tooltip]);
+                const htmlContent = `
+                    <div style="text-align: center;">
+                        <div style="font-weight: bold;">${node.department}</div>
+                        ${node.manager ? `<div style="font-size: 12px; color: #FFFFFF;">${node.manager}</div>` : ''}
+                    </div>
+                `;
+
+                data.push([
+                    { v: node.department, f: htmlContent },
+                    node.parent || null,
+                    1,
+                    tooltip
+                ]);
+
                 if (node.children && node.children.length > 0) {
                     parseHierarchy(node.children);
                 }

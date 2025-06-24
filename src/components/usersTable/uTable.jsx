@@ -56,12 +56,22 @@ const UsersTable = () => {
                 const fetchedData = response.data.data.map(item => {
                     let entrance = '';
                     let leave = '';
-                    if (item.time) {
-                        const entranceDate = new Date(item.time.entrance);
-                        const leaveDate = new Date(item.time.leave);
+                    if (Array.isArray(item.time) && item.time.length > 0) {
+                        const firstTime = item.time[0];
+
+                        const [entranceHour, entranceMinute] = firstTime.entrance.split(':').map(Number);
+                        const [leaveHour, leaveMinute] = firstTime.leave.split(':').map(Number);
+
+                        const today = new Date();
+                        const entranceDate = new Date(today);
+                        entranceDate.setUTCHours(entranceHour, entranceMinute, 0, 0);
+
+                        const leaveDate = new Date(today);
+                        leaveDate.setUTCHours(leaveHour, leaveMinute, 0, 0);
+
                         entrance = entranceDate.getUTCHours().toString().padStart(2, '0') + ':' + entranceDate.getUTCMinutes().toString().padStart(2, '0');
                         leave = leaveDate.getUTCHours().toString().padStart(2, '0') + ':' + leaveDate.getUTCMinutes().toString().padStart(2, '0');
-    
+
                         if (leaveDate < entranceDate) {
                             leaveDate.setDate(leaveDate.getDate() + 1); 
                             leave = leaveDate.getUTCHours().toString().padStart(2, '0') + ':' + leaveDate.getUTCMinutes().toString().padStart(2, '0');
@@ -77,7 +87,8 @@ const UsersTable = () => {
                         time: {
                             entrance,
                             leave 
-                        }
+                        },
+                        days: item.time
                     };
                 });
                 setData(fetchedData);
