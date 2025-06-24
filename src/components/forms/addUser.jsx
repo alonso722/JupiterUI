@@ -13,6 +13,7 @@ const AddUserForm = ({ user, onClose }) => {
   const [orga, setOrga] = useState('');
   const [userName, setUserName] = useState('');
   const [userLast, setUserLast] = useState('');
+  const [userPosition, setUserPosition] = useState('');
   const [userMail, setUserMail] = useState('');
   const [userPass, setUserPass] = useState('');
   const [userDate, setUserDate] = useState('');
@@ -102,6 +103,7 @@ const AddUserForm = ({ user, onClose }) => {
         const uuid = user.rowData.uuid;
         api.post('/user/users/fetchEdit', { uuid })
           .then((response) => {
+            console.log(response)
             const fetchedData = {
               uuid: user.rowData.uuid,
               name: response.data.name,
@@ -110,11 +112,13 @@ const AddUserForm = ({ user, onClose }) => {
               pass: response.data.pass,
               date: response.data.date,
               until: response.data.until,
-              active: response.data.active
+              active: response.data.active,
+              position: response.data.position
             };
             setData(fetchedData);
             setUserName(fetchedData.name);
             setUserLast(fetchedData.last);
+            setUserPosition(fetchedData.position);
             setUserMail(fetchedData.mail);
             setUserPass(fetchedData.pass);
             setUserDate(fetchedData.date);
@@ -167,6 +171,7 @@ const AddUserForm = ({ user, onClose }) => {
       orga,
       userName,
       userLast,
+      userPosition,
       userMail,
       userPass,
       userDate,
@@ -217,6 +222,7 @@ const AddUserForm = ({ user, onClose }) => {
     const userDetails = {
       userName,
       userLast,
+      userPosition,
       userMail,
       userPass,
       userDate,
@@ -260,6 +266,15 @@ const AddUserForm = ({ user, onClose }) => {
               placeholder="Apellidos del usuario"
               value={userLast}
               onChange={(e) => setUserLast(e.target.value)}
+              className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
+            />
+          </p>
+          <p className=" mt-[15px] mb-4 text-black w-[70%]">
+            <input
+              type="text"
+              placeholder="Puesto del usuario"
+              value={userPosition}
+              onChange={(e) => setUserPosition(e.target.value)}
               className="w-full border-b border-gray-300 focus:border-purple-500 outline-none"
             />
           </p>
