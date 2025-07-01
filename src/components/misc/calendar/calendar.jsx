@@ -85,12 +85,15 @@ const CustomCalendar = () => {
 
   useEffect(() => {
     const updateTime = () => {
-        const currentTime = new Date().toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false, 
-        });
-        setTime(currentTime);
+      const currentDateTime = new Date().toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      setTime(currentDateTime);
     };
 
     updateTime(); 
@@ -401,7 +404,7 @@ return (
     <div className='text-black shadow-lg px-2 md:px-6 pt-5 pb-2 md:flex rounded-2xl mx-auto w-full max-w-[95%] md:max-w-[600px]'>
     <div className='flex md:block text-[12px] md:text-[30px] justify-between'>
       <strong>Checador</strong>
-      <div className='text-[12px] md:text-[30px] text-[#777E90]'>
+      <div className="text-[8px] md:text-[20px] ml-2 md:ml-0 text-[#777E90] text-center">
         {time}
       </div>
     </div>

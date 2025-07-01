@@ -182,6 +182,7 @@ const AddUserForm = ({ user, onClose }) => {
     api.post('/user/users/add', userDetails)
     .then((response) => {
       if (response.data.code === 200) {
+        showToast('success',"Usuario agregado");
         onClose();
       }
     })
@@ -233,6 +234,7 @@ const AddUserForm = ({ user, onClose }) => {
     api.post('/user/users/edit', userDetails)
     .then((response) => {
       if (response.data.code === 200) {
+        showToast('success',"Usuario editado");
         onClose();
       }
     })

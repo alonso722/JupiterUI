@@ -35,7 +35,6 @@ const Annexes = ({ onClose, department }) => {
           if (managerUser) {
               info.t02_department_manager = `${managerUser.userName} ${managerUser.userLast}`;
           }
-          console.log(info)
           setInfo(info);
         } catch (error) {
           console.error("Error al consultar procesos:", error);
