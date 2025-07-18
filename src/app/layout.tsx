@@ -2,7 +2,7 @@
 
 import { Inter, Montserrat, Poppins } from 'next/font/google';
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import '@/styles/globals.css';
 import '@/styles/colors.css';
@@ -31,6 +31,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
 
   const handleInactivity = () => {
@@ -39,10 +40,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
 
   const resetTimer = () => {
     if (timeoutId.current) clearTimeout(timeoutId.current);
-    timeoutId.current = setTimeout(handleInactivity, 300000); 
+    timeoutId.current = setTimeout(handleInactivity, 300000); // 5 minutos
   };
 
   useEffect(() => {
+    if (pathname.startsWith('/meetings')) return;
+
     const events = ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'];
     events.forEach(event => window.addEventListener(event, resetTimer));
     resetTimer();
@@ -51,7 +54,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
       if (timeoutId.current) clearTimeout(timeoutId.current);
       events.forEach(event => window.removeEventListener(event, resetTimer));
     };
-  }, [router]);
+  }, [pathname, router]);
 
   return (
     <html>

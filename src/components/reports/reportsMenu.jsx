@@ -233,7 +233,10 @@ export const ReportsMenu = () => {
 
     const doc = new jsPDF();
     const today = new Date();
-    const formattedDate = today.toLocaleDateString();
+    const formattedDate = today.toLocaleString('es-MX', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    });
 
     const topY = 15;
     const middleY = 25;
@@ -253,7 +256,7 @@ export const ReportsMenu = () => {
     doc.line(14, topY - 6, pageWidth - 14, topY - 6); 
 
     doc.setFontSize(14);
-    doc.text("\nReporte de asistencia", 14, topY); 
+    doc.text("\nReporte de asistencia de ayer", 14, topY); 
 
   if (logoUrl) {
       try {
@@ -290,8 +293,6 @@ export const ReportsMenu = () => {
       { header: "Colaborador", dataKey: "colaborator" },
       { header: "Entrada", dataKey: "entrace" },
       { header: "Salida", dataKey: "leave" },
-      { header: "Entrada (mts)", dataKey: "distanceEnt" },
-      { header: "Salida (mts)", dataKey: "distanceLeave" },
       { header: "Corp. Entrada", dataKey: "entraceLoc" },
       { header: "Corp. Salida", dataKey: "entraceLeave" },
     ];

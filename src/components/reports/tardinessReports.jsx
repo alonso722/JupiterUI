@@ -228,7 +228,10 @@ export const TardinessReports = () => {
 
     const doc = new jsPDF();
     const today = new Date();
-    const formattedDate = today.toLocaleDateString("es-MX");
+    const formattedDate = today.toLocaleString('es-MX', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    });
 
     const topY = 15;
     const middleY = 25;

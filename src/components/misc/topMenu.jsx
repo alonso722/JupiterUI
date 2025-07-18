@@ -105,7 +105,7 @@ export default function TopNewMenuClientDashboard() {
                     }   
               })
               .catch((error) => {
-                console.error("Error al consultar nombre:", error);
+                console.error("Error al consultar logo:", error);
               });
             api.post('/user/notifications/fetch', { uuid })
             .then((response) => {
