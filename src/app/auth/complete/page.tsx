@@ -53,13 +53,21 @@ export default function CompleteAuth({
                             token: storedToken
                         }));
                         localStorage.setItem('permissions', JSON.stringify(permissions));
-                        let workflows : any = {};
-                        let rooms : any = {};
+
+                        let deviceId = localStorage.getItem('device_id');
+                        if (!deviceId) {
+                            deviceId = crypto.randomUUID(); 
+                            localStorage.setItem('device_id', deviceId); 
+                            document.cookie = `device_id=${deviceId}; path=/; max-age=31536000`; 
+                        }
+
+                        let workflows: any = {};
+                        let rooms: any = {};
+
                         try {
                             const response = await api.post('/user/auth/workflows', permissions);
                             workflows = response.data;
                             localStorage.setItem('workflows', JSON.stringify(workflows));
-
                         } catch (error) {
                             console.error('Error al obtener datos:', error);
                         }
@@ -70,38 +78,40 @@ export default function CompleteAuth({
                         } catch (error) {
                             console.error('Error al obtener datos:', error);
                         }
-                        if(permissions.isManager === 1 || permissions.isRh === 1){
+
+                        if (permissions.isManager === 1 || permissions.isRh === 1) {
                             try {
-                                const response = await api.post('/user/vacations/getReqs', { uuid: permissions.uuid });
+                                const response = await api.post('/user/vacations/getReqs', {
+                                    uuid: permissions.uuid
+                                });
+
                                 if (response.data && response.data.length > 0) {
-                                    const hasPendingRequests = response.data.some((req: { status: number; }) => req.status === 1);
-                                
+                                    const hasPendingRequests = response.data.some(
+                                        (req: { status: number }) => req.status === 1
+                                    );
+
                                     if (hasPendingRequests) {
                                         await api.post('/user/notifications/addByResend', {
                                             uuid: permissions.uuid
                                         });
                                     }
-                                }                                
+                                }
                             } catch (error) {
                                 console.error('Error al obtener datos:', error);
                             }
                         }
-                        
-                        if (permissions.ISO === 0) {
-                            router.push('/auth/login');
-                            showToast('error','No tienes acceso a este servicio');
-                        } else if (workflows.coordinator === 0) {
+
+                        if (workflows.coordinator === 0) {
                             router.push('/dashboard/home');
-                            showToast('success','Autenticación completada.');
+                            showToast('success', 'Autenticación completada.');
                         } else {
                             router.push('/dashboard/home');
-                            showToast('success','Autenticación completada.');
+                            showToast('success', 'Autenticación completada.');
                         }
-                        
                     })
                     .catch((error) => {
                         console.error("Error al enviar el token:", error);
-                        showToast('error','Error al enviar el token');
+                        showToast('error', 'Error al enviar el token');
                         setFailed(true);
                     })
                     .finally(() => {

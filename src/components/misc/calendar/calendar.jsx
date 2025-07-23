@@ -155,6 +155,27 @@ const CustomCalendar = () => {
     effectMounted.current = true;
   }
   }, [fetchEvents]);
+
+    const getDeviceId = () => {
+    let deviceId = localStorage.getItem('device_id');
+    if (!deviceId) {
+      deviceId = crypto.randomUUID();
+      localStorage.setItem('device_id', deviceId);
+      document.cookie = `device_id=${deviceId}; path=/; max-age=31536000`;
+    }
+    return deviceId;
+  };
+
+  const getIp = async () => {
+    try {
+      const res = await fetch('https://api.ipify.org?format=json');
+      const data = await res.json();
+      return data.ip;
+    } catch (error) {
+      console.error('Error al obtener IP:', error);
+      return '0.0.0.0';
+    }
+  };
   
   const handleAddEvent = async () => {
     let parsedPermissions;
@@ -197,141 +218,138 @@ const CustomCalendar = () => {
     }
   };
 
-  const handleAddEntraceExt = () => {
-    setIsLoading(true)
+  const handleAddEntraceExt = async () => {
+    setIsLoading(true);
     let parsedPermissions;
-    const storedPermissions = localStorage.getItem('permissions'); 
+    const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
-        parsedPermissions = JSON.parse(storedPermissions);
+      parsedPermissions = JSON.parse(storedPermissions);
     }
+
     const organization = parsedPermissions.Organization;
     const uuid = parsedPermissions.uuid;
+    const device_id = getDeviceId();
+    const ip_address = await getIp();
 
     if (navigator.geolocation) {
-        // const options = {
-        //     enableHighAccuracy: true, 
-        //     timeout: 7000,           
-        //     maximumAge: 0            
-        // };
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                api.post('/user/event/addEntraceExt', { 
-                  ...newEvent,
-                  latitude,
-                  longitude,
-                  type: 1,       
-                  title: 'Entrada',
-                  orga: organization, 
-                  uuid: uuid  
-                })
-                .then((response) => {
-                    getChecks();
-                    showToast('success', `${response.data.message}`);
-                })
-                .catch((error) => {
-                  if (error.response && error.response.status === 403) {
-                    showToast('warning', error.response.data);
-                    setIsFar(true); 
-                  } else {
-                    const errorMessage = error.response && error.response.data
-                      ? `Entrada no registrada: ${error.response.data}`
-                      : "Entrada no registrada: Error desconocido";
-                    showToast('warning', errorMessage);
-                    console.error('Error al añadir el evento:', error);
-                  }
-                });     
+          api.post('/user/event/addEntraceExt', {
+            ...newEvent,
+            latitude,
+            longitude,
+            type: 1,
+            title: 'Entrada',
+            orga: organization,
+            uuid: uuid,
+            device_id,
+            ip_address
+          })
+          .then((response) => {
+            getChecks();
+            showToast('success', `${response.data.message}`);
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 403) {
+              showToast('warning', error.response.data);
+              setIsFar(true);
+            } else {
+              const errorMessage = error.response?.data
+                ? `Entrada no registrada: ${error.response.data}`
+                : "Entrada no registrada: Error desconocido";
+              showToast('warning', errorMessage);
+              console.error('Error al añadir el evento:', error);
+            }
+          });
 
-                setEvents([...events, { 
-                  ...newEvent,
-                  type: 1,       
-                  title: 'Entrada'  
-                }]);
-                setIsFar(false);
-                setNewEvent({ title: '', start: new Date(), end: new Date() });
-                setIsLoading(false)
-            },
-            (error) => {
-                showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
-                setIsLoading(false)
-                console.error('Error al obtener la ubicación:', error);
-            },
-            //options 
-        );
+          setEvents([...events, {
+            ...newEvent,
+            type: 1,
+            title: 'Entrada'
+          }]);
+          setIsFar(false);
+          setNewEvent({ title: '', start: new Date(), end: new Date() });
+          setIsLoading(false);
+        },
+        (error) => {
+          showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+          setIsLoading(false);
+          console.error('Error al obtener la ubicación:', error);
+        }
+      );
     } else {
-        showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
-        setIsLoading(false)
-        console.error('Geolocalización no es soportada por este navegador.');
+      showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+      setIsLoading(false);
+      console.error('Geolocalización no es soportada por este navegador.');
     }
   };
-
-  const handleAddEntrace = () => {
-    setIsLoading(true)
+  const handleAddEntrace = async () => {
+    setIsLoading(true);
     let parsedPermissions;
-    const storedPermissions = localStorage.getItem('permissions'); 
+    const storedPermissions = localStorage.getItem('permissions');
     if (storedPermissions) {
-        parsedPermissions = JSON.parse(storedPermissions);
+      parsedPermissions = JSON.parse(storedPermissions);
     }
+
     const organization = parsedPermissions.Organization;
     const uuid = parsedPermissions.uuid;
+    const device_id = getDeviceId();
+    const ip_address = await getIp();
 
     if (navigator.geolocation) {
-        // const options = {
-        //     enableHighAccuracy: true, 
-        //     timeout: 7000,           
-        //     maximumAge: 0            
-        // };
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const { latitude, longitude } = position.coords;
-                api.post('/user/event/addEntrace', { 
-                  ...newEvent,
-                  latitude,
-                  longitude,
-                  type: 1,       
-                  title: 'Entrada',
-                  orga: organization, 
-                  uuid: uuid  
-                })
-                .then((response) => {
-                    getChecks();
-                    showToast('success', `${response.data.message}`);
-                })
-                .catch((error) => {
-                  if (error.response && error.response.status === 403) {
-                    showToast('warning', error.response.data);
-                    setIsFar(true); 
-                  } else {
-                    const errorMessage = error.response && error.response.data
-                      ? `Entrada no registrada: ${error.response.data}`
-                      : "Entrada no registrada: Error desconocido";
-                    showToast('warning', errorMessage);
-                    console.error('Error al añadir el evento:', error);
-                  }
-                });     
+          api.post('/user/event/addEntrace', {
+            ...newEvent,
+            latitude,
+            longitude,
+            type: 1,
+            title: 'Entrada',
+            orga: organization,
+            uuid: uuid,
+            device_id,
+            ip_address
+          })
+          .then((response) => {
+            getChecks();
+            showToast('success', `${response.data.message}`);
+          })
+          .catch((error) => {
+            if (error.response && error.response.status === 403) {
+              showToast('warning', error.response.data);
+              setIsFar(true);
+            } else {
+              const errorMessage = error.response?.data
+                ? `Entrada no registrada: ${error.response.data}`
+                : "Entrada no registrada: Error desconocido";
+              showToast('warning', errorMessage);
+              console.error('Error al añadir el evento:', error);
+            }
+          });
 
-                setEvents([...events, { 
-                  ...newEvent,
-                  type: 1,       
-                  title: 'Entrada'  
-                }]);
-                setShowModal(false);
-                setNewEvent({ title: '', start: new Date(), end: new Date() });
-                setIsLoading(false)
-            },
-            (error) => {
-                showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
-                setIsLoading(false)
-                console.error('Error al obtener la ubicación:', error);
-            },
-            //options 
-        );
+          setEvents([...events, {
+            ...newEvent,
+            type: 1,
+            title: 'Entrada'
+          }]);
+          setShowModal(false);
+          setNewEvent({ title: '', start: new Date(), end: new Date() });
+          setIsLoading(false);
+        },
+        (error) => {
+          showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+          setIsLoading(false);
+          console.error('Error al obtener la ubicación:', error);
+        }
+      );
     } else {
-        showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
-        setIsLoading(false)
-        console.error('Geolocalización no es soportada por este navegador.');
+      showToast('warning', 'Su organización necesita acceso a su ubicación, por favor, permita el acceso.');
+      setIsLoading(false);
+      console.error('Geolocalización no es soportada por este navegador.');
     }
   };
 
